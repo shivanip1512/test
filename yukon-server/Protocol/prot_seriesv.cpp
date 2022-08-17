@@ -555,13 +555,6 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
     YukonError_t retval = ClientErrors::None;
     seriesv_pointdata pd;
     CtiTime Now;
-    
-    if (xfer.getInCountActual() < 5) 
-    {
-        CTILOG_ERROR(dout, "Value of _inCountActual() < 5");
-        return ClientErrors::BadLength;
-    }
-    
     unsigned long in_actual = xfer.getInCountActual();
     unsigned long in_body   = in_actual - 3;
 

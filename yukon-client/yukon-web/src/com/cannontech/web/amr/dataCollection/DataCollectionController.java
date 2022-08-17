@@ -2,7 +2,6 @@ package com.cannontech.web.amr.dataCollection;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +33,12 @@ import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
-import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -60,6 +59,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 import com.cannontech.web.tools.mapping.MappingColorCollection;
 import com.cannontech.web.util.WebFileUtils;
@@ -104,7 +104,7 @@ public class DataCollectionController {
             log.error(errorMsg);
             json.put("errorMessage", errorMsg);
         }
-        
+
         Instant runTime = dataCollectionWidgetService.getRunTime(false);
         json.put("lastAttemptedRefresh", runTime == null ? runTime : runTime.getMillis());
         Instant nextRun = dataCollectionWidgetService.getRunTime(true);
@@ -153,7 +153,6 @@ public class DataCollectionController {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         List<RfnGateway> gateways = recentPointValueDao.getRfnGatewayList(group, subGroups, includeDisabled);
-        gateways.sort(Comparator.comparing(RfnGateway::getName, String.CASE_INSENSITIVE_ORDER));
         if (ranges == null) {
             ranges = RangeType.values();
         }
@@ -211,8 +210,7 @@ public class DataCollectionController {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled,
                                                                   selectedGatewayIds, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
-        List<YukonPao> devices = allDetail.getResultList().stream().map(d -> d.getPaoIdentifier()).collect(Collectors.toList());
-
+        List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
         if (actionType == CollectionActionUrl.MAPPING) {
@@ -224,9 +222,9 @@ public class DataCollectionController {
                     .map(d -> d.getPaoIdentifier().getPaoId())
                     .collect(Collectors.toList());
                 DeviceCollection rangeCollection = producer.createDeviceCollection(deviceIds);
-                MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColorHex(), range.getLabelKey());
+                MappingColorCollection mapCollection = new MappingColorCollection(rangeCollection, range.getColor(), range.getLabelKey());
                 colorCollections.add(mapCollection);
-                mappingMap.put(range.getColorHex(), deviceIds);
+                mappingMap.put(range.getColor(), deviceIds);
             }
             attrs.addFlashAttribute("mappingColors", mappingMap);
             attrs.addFlashAttribute("colorCollections", colorCollections);

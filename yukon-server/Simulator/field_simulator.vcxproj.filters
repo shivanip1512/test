@@ -108,9 +108,6 @@
     <ClCompile Include="NodeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="field_simulator_message_serialization.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BchBehavior.h">
@@ -213,12 +210,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\NodeInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\field_simulator_message_serialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\FieldSimulatorMsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

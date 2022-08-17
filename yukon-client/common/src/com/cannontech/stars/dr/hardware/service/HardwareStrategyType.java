@@ -7,6 +7,5 @@ public enum HardwareStrategyType {
     ECOBEE,
     HONEYWELL,
     ITRON,
-    METER,
-    EATON_CLOUD
+    METER
 }

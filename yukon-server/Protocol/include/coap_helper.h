@@ -3,7 +3,6 @@
 #include "dlldefs.h"
 
 #include "e2e_messaging.h"
-#include "streamBuffer.h"
 
 extern "C" {
 #include "coap/pdu.h"
@@ -38,7 +37,6 @@ public:
     static scoped_pdu_ptr make_confirmable_request(RequestMethod method, unsigned long token, unsigned short id);
     static scoped_pdu_ptr make_get_continuation(unsigned long token, unsigned short id, const BlockSize size, const unsigned num);
     static scoped_pdu_ptr make_nonconfirmable_request(RequestMethod method, unsigned long token, unsigned short id);
-    static scoped_pdu_ptr make_nonconfirmable_request(RequestMethod method, unsigned short id);
     static scoped_pdu_ptr make_ack(unsigned long token, unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack(unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data);
@@ -65,12 +63,5 @@ enum class ResponseCode {
     Forbidden     = COAP_RESPONSE_CODE(403),
     NotAcceptable = COAP_RESPONSE_CODE(406),
 };
-
-enum class Options : unsigned short
-{
-    OSCORE  = 9,
-};
-
-IM_EX_PROT StreamBufferSink& operator<<(StreamBufferSink& s, const ResponseCode r);
 
 }

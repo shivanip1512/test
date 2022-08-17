@@ -1,7 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -15,14 +14,14 @@ import java.util.TimeZone;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.LocaleUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/com/cannontech/mockContext.xml","/com/cannontech/core/service/dateContext.xml"})
 public class FlexibleDateParserTest {
     
@@ -100,7 +99,7 @@ public class FlexibleDateParserTest {
         for (DatePair pair : pairs) {
             try {
                 Date date = parser.parseDate(pair.userInput, DateOnlyMode.START_OF_DAY, testLocale, testTimeZone);
-                assertEquals(pair.fullDate, date, pair.userInput + " doesn't match expected value");
+                assertEquals(pair.userInput + " doesn't match expected value", pair.fullDate, date);
             } catch (ParseException e) {
                 fail("unable to parse date: " + pair.userInput);
             }

@@ -54,14 +54,12 @@
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
-<entry key="yukon.web.modules.dr.paoType.LM_EATON_CLOUD_PROGRAM">Eaton Cloud Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_HONEYWELL_PROGRAM">Honeywell Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ITRON_PROGRAM">Itron Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_METER_DISCONNECT_PROGRAM">Meter Disconnect Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
-<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EATON_CLOUD">Eaton Cloud Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ITRON">Itron Group</entry>
@@ -486,14 +484,35 @@
 <entry key="yukon.web.modules.dr.home.ecobee.groups">groups</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.title">ecobee Configuration</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.errorChecking">Error Checking</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.dataCollection">Data Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.dailyDataCollection">Daily Collection</entry>
 <entry key="yukon.web.modules.dr.home.ecobee.configure.successful">Settings Successfully Saved</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.exceededDateRange">Exceeded 7 Day Date Range</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.downloadInitiated">Download Initiated</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.requestRuntimeReport.label">Request Runtime Report</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.title">Sync Issues ({0})</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.stats.tooltip">(Current Total) / (Monthly Limit)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.downloadReport">Download Report</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (5 most recent)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.helpText">
+    Click "Request Runtime Report" button to request runtime details from ecobee. Select up to a 7 day period and one or more Load Groups for requested runtime details.
+    This process may take several minutes to complete. Once all data is received, the report will be available and the download button next to the individual request will be enabled. Click the button next to the requested item to download the file.
+</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.title">Download (maximum 7-day date range)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.none">No recent downloads.</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.endDate">End Date</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.startDate">Start Date</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.inProgress">Download In Progress</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.ready">Ready</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.failed">Failed</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.maxDayRange">(Maximum Seven Day Range)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.dateOutOfRange">The selected date range is too long.</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.download.missingSerialNumbers">No device serial numbers exist for specified load group(s).</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.none">No ecobee sync issues.</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.serialNumber">SN:</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.group">Group:</entry>
@@ -510,32 +529,35 @@
     <![CDATA[
         These issues indicate that the Yukon system and the ecobee system are out of sync in some way.
         <ul>
-            <li>Missing Group: A load management group exists in Yukon that does not have a corresponding group in ecobee.</li>
-            <li>Extraneous Group: A group exists in ecobee that does not correspond to any Yukon load management group.</li>
+            <li>Missing Set: A load management group exists in Yukon that does not have a corresponding management set in ecobee.</li>
+            <li>Mislocated Set: The management set in ecobee corresponds to a Yukon load management group, but the set is in an unexpected location in the ecobee hierarchy.</li>
+            <li>Extraneous Set: A management set exists in ecobee that does not correspond to any Yukon load management group.</li>
             <li>Missing Device: A device exists in Yukon that has no corresponding device in ecobee.</li>
-            <li>Mislocated Device: The device in ecobee corresponds to a Yukon device, but the device is in an unexpected group in ecobee.</li>
+            <li>Mislocated Device: The device in ecobee corresponds to a Yukon device, but the device is in an unexpected location in the ecobee hierarchy.</li>
             <li>Extraneous Device: A device exists in ecobee that does not correspond to a device in Yukon.</li>
         </ul>
     ]]>
 </entry>
 <entry key="yukon.web.modules.dr.ecobee.details.fixAll">Yukon will attempt to fix all sync issues.</entry>
-
-<!-- Keys for Ecobee Zeus -->
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_GROUP">Ecobee group "{0}" is missing</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_GROUP">Ecobee group "{1}" does not correspond to any Yukon group</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_DEVICE">Ecobee is missing the device "{2}"</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISLOCATED_DEVICE">Device "{2}" is in the wrong ecobee group</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_DEVICE">Device "{2}" does not correspond to any Yukon device</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_GROUP.detail">Ecobee group "{0}" is missing. To fix this issue, Yukon will create the group in ecobee.</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_GROUP.detail">Ecobee group "{1}" does not correspond to any Yukon group. To fix this issue, Yukon will delete the group.</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". To fix this issue, Yukon will create or enroll the device in ecobee.</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISLOCATED_DEVICE.detail.unenroll">Device "{2}" is in the wrong ecobee group. To fix this issue, Yukon will unenroll the device from group "{1}".</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISLOCATED_DEVICE.detail.enroll">Device "{2}" is in the wrong ecobee group. To fix this issue, Yukon will enroll the device to group "{0}".</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_DEVICE.detail">Device "{2}" in ecobee does not correspond to any Yukon device. To fix this issue, create and enroll the device in Yukon.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_MANAGEMENT_SET">Ecobee set "{0}" is missing</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_MANAGEMENT_SET">Ecobee set "{1}" is mislocated</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_MANAGEMENT_SET">Ecobee set "{1}" does not correspond to any Yukon group</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_DEVICE">Ecobee is missing the device "{2}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_DEVICE">Device "{2}" is in the wrong ecobee set</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_DEVICE">Device "{2}" does not correspond to any Yukon device</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_MANAGEMENT_SET.detail">Ecobee set "{0}" is missing. To fix this issue, Yukon will create the set in ecobee.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_MANAGEMENT_SET.detail">Ecobee set "{1}" is mislocated. To fix this issue, Yukon will move the set to "{0}".</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_MANAGEMENT_SET.detail">Ecobee set "{1}" does not correspond to any Yukon group. To fix this issue, Yukon will delete the set.</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". To fix this issue, Yukon will add the device to set "{0}".</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.MISLOCATED_DEVICE.detail">Device "{2}" is in the wrong ecobee set. To fix this issue, Yukon will move the device from set "{1}" to set "{0}"</entry>
+<entry key="yukon.web.modules.dr.ecobee.discrepancyType.EXTRANEOUS_DEVICE.detail">Device "{2}" in ecobee set "{1}" does not correspond to any Yukon device. To fix this issue, create and enroll the device in Yukon.</entry>
 <entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NONE">No error occurred.</entry>
 <entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.COMMUNICATION">The sync issue could not be fixed due to a communication error with the ecobee server.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NO_SET">The sync issue could not be fixed because the specified set was not found.</entry>
+<entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NO_DEVICE">The sync issue could not be fixed because the specified device was not found.</entry>
 <entry key="yukon.web.modules.dr.ecobee.reconciliationErrorType.NOT_FIXABLE">Yukon cannot fix this type of sync issue.</entry>
 
+<entry key="yukon.web.modules.dr.ecobee.queryType.DATA_COLLECTION">Data Collection</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.DEMAND_RESPONSE">Demand Response</entry>
 <entry key="yukon.web.modules.dr.ecobee.queryType.SYSTEM">System</entry>
 
@@ -699,24 +721,15 @@ Examples of discrepancies that will be displayed:
 
 <!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
-<entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText">
-<![CDATA[<span class="fwb bg-color-green txt-color-white">Confirmed Success</span>
+<entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
 <br>
 The devices in this category have reported DR message for the event.
-<br>
-<span class="fwb bg-color-blue txt-color-white">Confirmed Success After Retry</span>
-<br>
-The devices in this category have reported DR message for the event after retry.
-<br>
-<span class="fwb bg-color-orange txt-color-white">Failed</span>
-<br>
-The devices in this category have failed to receive the DR message for the event.
-<br>
-<span class="fwb bg-color-grey txt-color-white">Unreported</span>
+<br><br>
+<span style="background-color:orange; color:white ;font-weight:bold">Unreported</span>
 <br>
 The devices in this category have not reported DR message for the event.
 ]]></entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.externalEventID">External Event Id</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.eventID">Event Id</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.program">Program</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.group">Group</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.startTime">Start Time</entry>
@@ -727,16 +740,12 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.participationState">Participation State</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.serialNumber">Serial Number</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.optOutStatus">OptOut Status</entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.failReason">Fail Reason</entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.retryTime">Retry Time</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.progress">Device Status</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.pageName">Event Participation Summary</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.dateRange">Date Range</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.numEvents">Events Found</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.download">Download</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmed">{0} Confirmed</entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmedAfterRetry">{0} Confirmed After Retry</entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.failed">{0} Failed</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.unreported">{0} Unreported</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.noRecentEvents">No Recent Events</entry>
 
@@ -934,11 +943,9 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeSetpoint">ecobee Setpoint</entry>
-<entry key="yukon.web.modules.dr.gearControlMethod.EcobeePlus">eco+</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellSetpoint">Honeywell Setpoint</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.ItronCycle">Itron Cycle</entry>
-<entry key="yukon.web.modules.dr.gearControlMethod.EatonCloudCycle">Eaton Cloud Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
@@ -1140,12 +1147,12 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.home.rfPerformance.infoText">
 <![CDATA[Below are the statuses:
         <ul>
-            <li><span class="fwb bg-color-green txt-color-white">Confirmed Success (Green)</span> - 
-                    The devices in this category have reported receiving the unique RF broadcast performance message for the selected day.</li>
-                    <li><span class="fwb bg-color-orange txt-color-white">Confirmed Missed (Orange)</span> - 
-                    The devices in this category have reported all available data for the selected day and the analysis has determined the unique broadcast performance message was not received by the device.</li>
-                    <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
-                    The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique broadcast performance receipt for the device. When the data is received, the device will re-categorized appropriately.</li>
+            <li><span class="fwb bg-color-pie-green txt-color-white">Confirmed Success (Green)</span> - 
+            Device received the unique RF Broadcast Performance test message.</li>
+            <li><span class="fwb bg-color-orange txt-color-white">Confirmed Missed (Orange)</span> - 
+            Device did not receive the unique RF Broadcast Performance test message.</li>
+            <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
+            Device has not yet reported all data required to confirm or deny receipt of unique RF Broadcast Performance test message.</li>
         </ul>]]></entry>
         
 <!-- Disconnect Status -->

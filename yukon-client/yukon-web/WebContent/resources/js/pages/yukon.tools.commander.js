@@ -127,26 +127,11 @@ yukon.tools.commander = (function () {
         var field = $('#command-text'),
             command = field.val(),
             dialog = $('#prompt-dialog'),
-            at = command.search(_regex.firstPrompt),
-            target = _targetButtons[$('#target-row .on').attr('id')],
-            isExpressCom = target === _targetTypes.ecom,
-            isVersaCom = target === _targetTypes.vcom;
+            at = command.search(_regex.firstPrompt);
             
         if (at != -1) {
-        	var inputPrompt = _regex.firstPrompt.exec(command)[1],
-        		isLoadGroup = inputPrompt === 'LoadGroup',
-        		inputText = dialog.find('.js-prompt-input'),
-        		expressComPicker = yukon.pickers['expressComGroupPicker'],
-        		versaComPicker = yukon.pickers['versaComGroupPicker'];
-            dialog.find('.js-prompt-text').text(inputPrompt);
-            inputText.val('');
-            versaComPicker.clearSelected()
-            versaComPicker.clearEntireSelection();
-            expressComPicker.clearSelected()
-            expressComPicker.clearEntireSelection();
-            inputText.toggleClass('dn', ((isExpressCom || isVersaCom) && isLoadGroup));
-            dialog.find('.js-prompt-expresscom-group-picker').toggleClass('dn', !(isExpressCom && isLoadGroup));
-            dialog.find('.js-prompt-versacom-group-picker').toggleClass('dn', !(isVersaCom && isLoadGroup));
+            dialog.find('.js-prompt-text').text(_regex.firstPrompt.exec(command)[1]);
+            dialog.find('.js-prompt-input').val('');
             yukon.ui.dialog('#prompt-dialog');
         } else {
             // For some reason setting focus immediately doesn't work.
@@ -327,9 +312,7 @@ yukon.tools.commander = (function () {
                 $('#route-id').val = targetStore.routeId;
                 option.data('routeId', targetStore.routeId);
                 option.data('serialNumber', targetStore.serialNumber);
-                option.find('.icon').toggleClass('icon-database-add icon-arrow-forward');
-                option.find('.icon-database-add').html(yg.iconSvg.iconDatabaseAdd);
-                option.find('.icon-arrow-forward').html(yg.iconSvg.iconArrowForward);
+                option.find('.icon').toggleClass('icon-database-add icon-textfield');
             }
             option.find('.dropdown-option-label').text(element.label);
             $('.js-recent-menu').append(option);
@@ -377,31 +360,31 @@ yukon.tools.commander = (function () {
         // Do some validation before we fire a request
         if (!params.command) {
             valid = false;
-            field.addClass('animate__animated shake-subtle error')
-            .one(yg.events.animationend, function() { $(this).removeClass('animate__animated shake-subtle error'); });
+            field.addClass('animated shake-subtle error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
             
             if (!Modernizr.cssanimations) {
-                setTimeout(function () { field.removeClass('animate__animated shake-subtle error'); }, 1500);
+                setTimeout(function () { field.removeClass('animated shake-subtle error'); }, 1500);
             }
         }
         if (!params.paoId && (target === _targetTypes.device || target === _targetTypes.lmGroup)) {
             valid = false;
             picker = target === _targetTypes.device ? $('.js-device-picker') : $('.js-lm-group-picker');
-            picker.addClass('animate__animated shake-subtle')
+            picker.addClass('animated shake-subtle')
             .one(yg.events.animationend, function() { 
-                $(this).removeClass('animate__animated shake-subtle error').find('.b-label').removeClass('error'); 
+                $(this).removeClass('animated shake-subtle error').find('.b-label').removeClass('error'); 
             }).find('.b-label').addClass('error');
             
             if (!Modernizr.cssanimations) {
-                setTimeout(function () { picker.removeClass('animate__animated shake-subtle').find('.b-label').removeClass('error'); }, 1500);
+                setTimeout(function () { picker.removeClass('animated shake-subtle').find('.b-label').removeClass('error'); }, 1500);
             }
         } else if ((target === _targetTypes.ecom || target === _targetTypes.vcom) && !params.serialNumber) {
             valid = false;
-            $('#serial-number').addClass('animate__animated shake-subtle error')
-            .one(yg.events.animationend, function() { $(this).removeClass('animate__animated shake-subtle error'); });
+            $('#serial-number').addClass('animated shake-subtle error')
+            .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
             
             if (!Modernizr.cssanimations) {
-                setTimeout(function () { $('#serial-number').removeClass('animate__animated shake-subtle error'); }, 1500);
+                setTimeout(function () { $('#serial-number').removeClass('animated shake-subtle error'); }, 1500);
             }
         }
         
@@ -927,10 +910,6 @@ yukon.tools.commander = (function () {
                 $('#prompt-dialog').dialog('close');
                 field.focus();
                 _promptForInput();
-            });
-            
-            $(document).on('yukon:tools:commander:group:picker:closed', function (ev, items, picker) {
-                $('#prompt-dialog').find('.js-prompt-input').val(items[0].paoName);
             });
             
             $(document).on('keyup mouseup', '#commandPriority', function() {

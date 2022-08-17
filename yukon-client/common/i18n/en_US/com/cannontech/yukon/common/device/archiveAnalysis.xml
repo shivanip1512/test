@@ -145,14 +145,6 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.time">Include Exact Time Only</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingsAt">readings at</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysOffset">Days Offset</entry>
-    
-    <!-- Used by export home and schedule export pages -->
-    <entry key="yukon.web.modules.tools.bulk.onInterval">Include Interval Times Only</entry>
-    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_5">5 Minutes</entry>
-    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_15">15 Minutes</entry>
-    <entry key="yukon.web.modules.tools.bulk.intervals.MINUTES_30">30 Minutes</entry>
-    <entry key="yukon.web.modules.tools.bulk.intervals.HOURS_1">1 Hour</entry>
-    <entry key="yukon.web.modules.tools.bulk.intervals.DAYS_1">Daily (Midnight)</entry>
 
     <!-- exporter.jsp -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.saveFormat.label">Save Format</entry>
@@ -310,6 +302,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE.description">Results may contain multiple rows per device and attribute. Data points (attributes) are selected at run time. Commonly used for exporting multiple readings over a given date range for one or more devices.</entry>
 
     <!-- archivedValueExporter validation -->
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.startDateRequired">A valid start date is required. Format: MM/dd/yyyy. </entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.endDateRequired">A valid end date is required. Format: MM/dd/yyyy. </entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatError.delimiterRequired">The delimiter cannot be blank.</entry>
@@ -326,10 +319,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.MAX">Max</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.MIN">Min</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.EARLIEST">Earliest</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.SUM">Sum</entry>
 
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.LATITUDE">Latitude</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.LONGITUDE">Longitude</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.METER_NUMBER">Meter Number</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.DEVICE_NAME">Device Name</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.DEVICE_TYPE">Device Type</entry>
@@ -393,23 +383,4 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.pageDescription">Data Export Device Selection</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.selectionContainer.title">Select Devices</entry>
         
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldValue">Field Value</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldValue.DEFAULT">Default</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldValue.CMEP">CMEP</entry>
-    
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.pageName">Format Template</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.VIEW.contextualPageName">Template Preview</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.template">Template</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview">Preview</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.useTemplate">Use Template</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType.useTemplate.description">Create a format from a pre-defined template.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error">An error occurred in parsing the available format templates. Please check the log for details.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.error">An error occurred in parsing the available format template. Please check the log for details.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.notApplicable">{0} is not applicable for {1} type.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.required">{0} is required for {1} type.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.invalid">Invalid {0} type.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.validationFailed"><![CDATA[The template is invalid, please correct the following issues:</br>]]></entry>
-     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.parseTemplate.lineBreaker"><![CDATA[</br>]]></entry>
-
 </properties>

@@ -16,12 +16,7 @@
    </target>
 
    <target name="clean">
-        <move file="lib" tofile="lib-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="lib-delete"/>  
-            </daemons>
-        </parallel>
+       <delete dir="lib"/>
     </target>
    
 </project>

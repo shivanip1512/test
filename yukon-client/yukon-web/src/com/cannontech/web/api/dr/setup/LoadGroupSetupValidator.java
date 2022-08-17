@@ -3,15 +3,16 @@ package com.cannontech.web.api.dr.setup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.common.validator.YukonValidationUtils;
 
 public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleValidator<T> {
-    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
+    @Autowired private LMValidatorHelper lmValidatorHelper;
+
+    private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     public LoadGroupSetupValidator() {
         super((Class<T>) LoadGroupBase.class);
     }
@@ -23,16 +24,16 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
     @Override
     protected void doValidation(T loadGroup, Errors errors) {
         // Type 
-        yukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
+        lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
         // Group Name
-        yukonApiValidationUtils.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
         // kWCapacity
-        yukonApiValidationUtils.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
+        lmValidatorHelper.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
         if (!errors.hasFieldErrors("kWCapacity")) {
-            yukonApiValidationUtils.checkRange(errors, "kWCapacity", loadGroup.getkWCapacity(), 0.0, 99999.999, true);
+            YukonValidationUtils.checkRange(errors, "kWCapacity", loadGroup.getkWCapacity(), 0.0, 99999.999, true);
         }
         if (loadGroup.getType() == PaoType.MACRO_GROUP) {
-            errors.rejectValue("type", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "load group" }, "");
+            errors.rejectValue("type", key + "type.invalid", new Object[] { "load group" }, "");
         }
     }
 

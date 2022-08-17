@@ -14,34 +14,28 @@ yukon.ami.meterDetails = (function () {
     
     mod = {
             
-        updateMeterTypeFields : function() {
-            var rfMeterTypes = yukon.fromJson('#rf-meter-types'),
-                mctMeterTypes = yukon.fromJson('#mct-meter-types'),
-                virtualMeterType = yukon.fromJson('#virtual-meter-type'),
-                meterType = $('#meter-type').val(),
-                isRF = rfMeterTypes.indexOf(meterType) !== -1,
-                isMCT = mctMeterTypes.indexOf(meterType) !== -1,
-                isVirtual = virtualMeterType.indexOf(meterType) !== -1;
-            if (isRF) {
-                $('.js-rf-fields').removeClass('dn');
-                $('.js-mct-fields').addClass('dn');
-                $('.js-ied-fields').addClass('dn');
-            } else if (isMCT) {
-                $('.js-mct-fields').removeClass('dn');
-                $('.js-rf-fields').addClass('dn');
-                $('.js-ied-fields').addClass('dn');
-            } else if (isVirtual) {
-                $('.js-mct-fields').addClass('dn');
-                $('.js-rf-fields').addClass('dn');
-                $('.js-ied-fields').addClass('dn');
-            }
-            else {
-                $('.js-ied-fields').removeClass('dn');
-                $('.js-mct-fields').addClass('dn');
-                $('.js-rf-fields').addClass('dn');
-            }
-            
-        },
+            updateMeterTypeFields : function() {
+                var rfMeterTypes = yukon.fromJson('#rf-meter-types'),
+                    mctMeterTypes = yukon.fromJson('#mct-meter-types'),
+                    meterType = $('#meter-type').val(),
+                    isRF = rfMeterTypes.indexOf(meterType) !== -1,
+                    isMCT = mctMeterTypes.indexOf(meterType) !== -1;
+                if (isRF) {
+                    $('.js-rf-fields').removeClass('dn');
+                    $('.js-mct-fields').addClass('dn');
+                    $('.js-ied-fields').addClass('dn');
+                } else if (isMCT) {
+                    $('.js-mct-fields').removeClass('dn');
+                    $('.js-rf-fields').addClass('dn');
+                    $('.js-ied-fields').addClass('dn');
+                }
+                else {
+                    $('.js-ied-fields').removeClass('dn');
+                    $('.js-mct-fields').addClass('dn');
+                    $('.js-rf-fields').addClass('dn');
+                }
+                
+            },
         
         /** Initialize this module. */
         init: function () {
@@ -55,8 +49,7 @@ yukon.ami.meterDetails = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#contentPopup').html(xhr.responseText);
-                        mod.updateMeterTypeFields();
-                    }
+                        mod.updateMeterTypeFields();                    }
                 });
             });
 
@@ -88,14 +81,9 @@ yukon.ami.meterDetails = (function () {
                             "ui-dialog": 'ov'
                         },
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
-                        modal: true,
-                        open: function () {
-							mod.updateMeterTypeFields();
-						}});
+                        modal: true});
                 });
-                
             });
-            
             $('.js-copy-meter').click(function () {
                 var content = $('#contentPopup'),
                 deviceId = $('#device-id').val(),
@@ -114,7 +102,6 @@ yukon.ami.meterDetails = (function () {
                         modal: true});
                 });
             });
-            
             $('.js-hide-dropdown').click(function () {
                 $('.dropdown-menu').hide()
             });

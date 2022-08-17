@@ -9,19 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 @Service
 public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
 
-    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
-    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
+    private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
+
+    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     public MacroLoadGroupValidator() {
         super(MacroLoadGroup.class);
@@ -30,25 +29,25 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     @Override
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
-        yukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
-        yukonApiValidationUtils.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
+        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {
-                errors.rejectValue("type", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "macro load group" }, "");
+                errors.rejectValue("type", key + "type.invalid", new Object[] { "macro load group" }, "");
             }
         }
 
         if (!errors.hasFieldErrors("assignedLoadGroups")) {
             if (CollectionUtils.isEmpty(loadGroup.getAssignedLoadGroups())) {
-                errors.rejectValue("assignedLoadGroups", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Load Group" }, "");
+                errors.rejectValue("assignedLoadGroups", key + "assignedLoadGroup.required");
             }
         }
 
         if (CollectionUtils.isNotEmpty(loadGroup.getAssignedLoadGroups())) {
             Set<Integer> duplicateLoadGroupsIds = getDuplicateLoadGroupsIds(loadGroup.getAssignedLoadGroups());
             if (CollectionUtils.isNotEmpty(duplicateLoadGroupsIds)) {
-                errors.reject(ApiErrorDetails.DUPLICATE_VALUE.getCodeString(), new Object[] {"Load Group", "Load Group ID", duplicateLoadGroupsIds },
+                errors.reject(key + "assignedLoadGroup.duplicate.notAllowed", new Object[] { duplicateLoadGroupsIds },
                     "");
             }
         }
@@ -61,7 +60,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
        List<Integer> groupIds =assignedLoadGroups.stream()
                                                  .map(LMPaoDto::getId)
                                                  .collect(Collectors.toList());
-       return lmApiValidatorHelper.findDuplicates(groupIds);
+       return lmValidatorHelper.findDuplicates(groupIds);
 
     }
 

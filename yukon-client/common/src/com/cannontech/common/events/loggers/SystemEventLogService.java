@@ -1,18 +1,13 @@
 package com.cannontech.common.events.loggers;
 
-import java.util.Date;
-
 import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException;
-import com.cannontech.common.log.model.YukonLogger;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 
@@ -159,43 +154,5 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
-
-    /* Attributes and Attribute Assignments */
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void attributeCreated(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeId) Integer attributeId, @Arg(ArgEnum.attributeName) String attributeName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void attributeUpdated(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeName) String attributeName, String newAttributeName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void attributeDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeName) String attributeName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void attributeAssigned(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
-            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) Integer PointOffset);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void attributeAssignmentDeleted(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.attributeName) String attributeName, @Arg(ArgEnum.paoType) PaoType paoType,
-            @Arg(ArgEnum.pointType) PointType pointType, @Arg(ArgEnum.pointOffset) Integer PointOffset);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void decryptionFailed(@Arg(ArgEnum.yukonService) String yukonService,
-            @Arg(ArgEnum.serverIdentifier) String serverIdentifier, @Arg(ArgEnum.type) String typeOrValue, @Arg(ArgEnum.startTime) Instant timeStamp);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerAdded(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
-            @Arg(ArgEnum.endDate) Date expirationDate, @Arg(ArgEnum.username) LiteYukonUser user);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerUpdated(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.level) String loggerLevel,
-            @Arg(ArgEnum.endDate) Date date, @Arg(ArgEnum.username) LiteYukonUser user);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
-    public void loggerDeleted(@Arg(ArgEnum.name) String loggerName, @Arg(ArgEnum.username) LiteYukonUser user);
 
 }

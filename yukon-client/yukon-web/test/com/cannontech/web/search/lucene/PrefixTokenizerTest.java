@@ -1,8 +1,5 @@
 package com.cannontech.web.search.lucene;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -10,17 +7,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import junit.framework.TestCase;
+
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.junit.jupiter.api.Test;
 
-public class PrefixTokenizerTest {
+public class PrefixTokenizerTest extends TestCase {
     private YukonObjectAnalyzer analyzer;
 
     /*
      * Test method for 'com.cannontech.common.search.PrefixTokenizer.next()'
      */
-    @Test
     public void testNext() throws Exception {
         String testInput = "Hello_my -name (is) /65412";
         List<String> expectedList = Arrays.asList(new String[] {
@@ -77,14 +74,13 @@ public class PrefixTokenizerTest {
         stream.end();
         stream.close();
 
-        assertEquals(expectedList, tokeTextList, "Lists don't match");
+        assertEquals("Lists don't match", expectedList, tokeTextList);
     }
 
     /**
      * Test to be sure that {@link PrefixTokenizer#TOKEN_DELIMITER_PATTERN} matches the same characters as
      * {@link PrefixTokenizer#isTokenChar(int)} since they have slightly different code for performance reasons.
      */
-    @Test
     public void testIsTokenChar() {
         Pattern tokenDelimiterPattern = Pattern.compile(PrefixTokenizer.TOKEN_DELIMITER_PATTERN);
         for (char c = 0; c < Character.MAX_VALUE; c++) {

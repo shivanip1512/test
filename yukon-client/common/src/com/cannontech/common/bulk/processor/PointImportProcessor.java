@@ -24,7 +24,6 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 import static com.cannontech.common.bulk.model.PointImportParameters.*;
@@ -150,6 +149,4 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
     }
 
     protected abstract void createPoint(ImportRow row);
-    
-    protected abstract PointType getPointType(ImportRow row);
 }

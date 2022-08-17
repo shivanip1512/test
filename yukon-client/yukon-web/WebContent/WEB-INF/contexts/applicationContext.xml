@@ -16,8 +16,6 @@
     
     <bean class="com.cannontech.web.stars.gateway.model.GatewaySettingsValidator"/>
     
-    <bean class="com.cannontech.web.stars.gateway.GatewayBulkUpdateValidator"/>
-    
     <bean class="com.cannontech.web.tools.mapping.LocationValidator"/>
     
     <bean class="com.cannontech.web.tools.commander.service.CommanderServiceImpl"/>
@@ -183,16 +181,11 @@
         <property name="required" value="true"/>
     </bean>
     
-    <bean id="widgetInput.infrastructureWarningDeviceCategory" class="com.cannontech.web.widget.support.SimpleWidgetInput">
-        <property name="name" value="widgetInput.infrastructureWarningDeviceCategory"/>
-        <property name="description" value="type of InfrastructureWarningDeviceCategory"/>
-        <property name="required" value="false"/>
-    </bean>
-    
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
         
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
   
+    <bean class="com.cannontech.web.dr.ecobee.service.impl.DataDownloadServiceImpl"/>
     <bean class="com.cannontech.common.util.RecentResultsCache">
         <qualifier value="ecobeeReads"/>
     </bean>
@@ -341,9 +334,6 @@
                 </entry>
                 <entry key="METER_PROGRAMMING">
                     <ref bean="meterProgrammingBackingService"/>
-                </entry>
-                <entry key="DEVICE_CONFIG_SUMMARY">
-                    <ref bean="deviceConfigSummaryBackingService"/>
                 </entry>
             </map>
         </property>
@@ -889,7 +879,7 @@
                     <list>
                         <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
                         <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
-                        <ref bean="jacksonHttpMessageConverter"/>
+                        <ref bean="jacksonHttpMsgConverter"/>
                     </list>
                 </property>
             </bean>
@@ -983,7 +973,6 @@
     <!-- MULTISPEAK -->
     <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
     <bean id="mspSearchFieldsProviderV3" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3"/>
-     <bean id="mspSearchFieldsProviderV4" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV4"/>
     <bean id="mspSearchFieldsProviderV5" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV5"/>
     <bean id="mspHandler" class="com.cannontech.web.multispeak.MspHandler"/>
 
@@ -993,13 +982,6 @@
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
     <bean id="cisSearchMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProvider"/>
-    
-    <bean id="serviceLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV4"/>
-    <bean id="eaLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV4"/>
-    <bean id="facilityIdMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProviderv4"/>
-    <bean id="accountNumberMspMeterSearchMethodResultProviderv4" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProviderV4"/>
-    <bean id="custIdMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProviderV4"/>
-    <bean id="cisSearchMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProviderV4"/>
     
     <bean id="serviceLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV5"/>
     <bean id="eaLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV5"/>
@@ -1078,7 +1060,7 @@
 
     <bean id="hardwareModelHelper" class="com.cannontech.web.stars.dr.operator.HardwareModelHelper"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareReadServiceImpl"/>
-    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EatonCloudHardwareReadNowStrategy"/>
+    <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.EcobeeHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.PlcHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.RfHardwareReadNowStrategy"/>
     <bean class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ItronHardwareReadNowStrategy"/>
@@ -1113,7 +1095,6 @@
     <bean id="exportAttributeValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
     <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
-    <bean class="com.cannontech.web.tools.dataExporter.validator.ExportFormatTemplateValidator"/>
 
     <bean id="lmReportedDataBackingService" class="com.cannontech.web.updater.dr.LmReportedDataBackingService"/>
     <jms:listener-container 
@@ -1137,8 +1118,13 @@
     
     <!-- Contextual Menu Beans (start) -->
     <bean id="meterMenuDecider" class="com.cannontech.web.contextualMenu.MeterMenuDecider"/>
-    <bean id="eventsMenuDecider" class="com.cannontech.web.contextualMenu.EventsMenuDecider"/>
+    <bean id="meterAndRelayMenuDecider" class="com.cannontech.web.contextualMenu.MeterAndRelayMenuDecider"/>
 
+    <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/tools/data-exporter/view"/>
+        <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
+    </bean>
     <bean id="menuItemBulkCollectionAction" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <constructor-arg value="/bulk/collectionActions"/>
     </bean>
@@ -1170,6 +1156,25 @@
         <constructor-arg value="/bulk/archiveDataAnalysis/home/setup"/>
         <constructor-arg value="ARCHIVED_DATA_ANALYSIS"/>
     </bean>
+    <bean id="menuItemBulkDeviceCollectionReport" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/deviceCollectionReport"/>
+    </bean>
+    <bean id="menuItemBulkPointsAdd" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/addPoints/home"/>
+        <constructor-arg value="ADD_REMOVE_POINTS"/>
+    </bean>
+    <bean id="menuItemBulkPointsRemove" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/removePoints/home"/>
+        <constructor-arg value="ADD_REMOVE_POINTS"/>
+    </bean>
+    <bean id="menuItemBulkPointsUpdate" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/updatePoints/home"/>
+        <constructor-arg value="ADD_REMOVE_POINTS"/>
+    </bean>
     <bean id="menuItemBulkRouteLocate" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/bulk/routeLocate/home"/>
@@ -1177,13 +1182,13 @@
         <constructor-arg value="LOCATE_ROUTE"/>
     </bean>
     <bean id="menuItemBulkGroupAdd" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/bulk/group/selectGroup?addRemove=ADD"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="DEVICE_GROUP_MODIFY"/>
     </bean>
     <bean id="menuItemBulkGroupRemove" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/bulk/group/selectGroup?addRemove=REMOVE"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="DEVICE_GROUP_MODIFY"/>
@@ -1195,7 +1200,7 @@
         <constructor-arg value="GROUP_COMMANDER"/>
     </bean>
     <bean id="menuItemMapDevices" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/tools/map"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
@@ -1204,6 +1209,19 @@
         <constructor-arg value="/group/groupMeterRead/homeCollection"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
+    <bean id="menuItemBulkMassChange" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/massChange/massChangeSelect"/>
+        <constructor-arg value="DEVICE_ACTIONS"/>
+        <constructor-arg value="MASS_CHANGE"/>
+    </bean>
+    <bean id="menuItemBulkMassDelete" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <constructor-arg value="/bulk/massDelete/massDelete"/>
+        <constructor-arg value="DEVICE_ACTIONS"/>
+        <constructor-arg value="MASS_DELETE"/>
+    </bean>
+
     <bean id="menuItemMeterDetail" class="com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/meter/home"/>
@@ -1211,14 +1229,8 @@
     </bean>
     
     <bean id="menuItemRelayDetail" class="com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/stars/relay/home"/>
-    </bean>
-    
-    <bean id="menuItemGatewayDetail" class="com.cannontech.web.contextualMenu.model.menuEntry.SingleDeviceMenuAction">
-        <property name="decider" ref="eventsMenuDecider"/>
-        <constructor-arg value="/stars/gateways"/>
-        <constructor-arg value="false"/>
     </bean>
 
     <bean id="separatorMenuItem" class="com.cannontech.web.contextualMenu.model.menuEntry.MenuSeparator"/>
@@ -1252,20 +1264,6 @@
            </list>
         </property>
     </bean>
-    
-    <bean id="gatewayMenuSingleDevice" class="com.cannontech.web.contextualMenu.model.menu.SingleDeviceMenu">
-        <property name="menuEntries">
-            <list>
-                <ref bean="menuItemGatewayDetail"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkGroupAdd"/>
-                <ref bean="menuItemBulkGroupRemove"/>
-                <ref bean="menuItemMapDevices"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkCollectionAction"/>
-           </list>
-        </property>
-    </bean>
 
     <bean id="meterMenuDeviceCollection" class="com.cannontech.web.contextualMenu.model.menu.DeviceCollectionMenu">
         <property name="menuEntries">
@@ -1284,7 +1282,8 @@
     <!-- Contextual Menu Beans (end) -->
 
     <bean class="com.cannontech.web.common.chart.service.impl.ChartServiceImpl"/>
-    <bean class="com.cannontech.web.common.chart.service.impl.HighChartServiceImpl"/>
+    <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
+    <bean class="com.cannontech.web.common.chart.service.impl.AssetAvailabilityChartServiceImpl"/>
 
     <bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
     <bean class="com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper"/>
@@ -1319,13 +1318,11 @@
         <property name="memoryAttribute" value="WEB_SERVICE_MEMORY_UTILIZATION" />
     </bean>
     
-    <bean class="com.cannontech.web.common.service.impl.CachedPointDataCorrelationServiceImpl"/>
+    <bean class="com.cannontech.web.updater.point.CachedPointDataCorrelationServiceImpl"/>
     
     <bean class="com.cannontech.web.support.service.impl.SystemHealthServiceImpl"/>
     <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
-    
-    <bean class="com.cannontech.web.support.systemPerformanceMetrics.service.impl.SystemPerformanceMetricsServiceImpl"/>
     
     <bean class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.fileUploadDao.impl.WaterNodeFileUploadDaoImpl"/>
@@ -1386,8 +1383,6 @@
      
      <bean id="meterProgrammingBackingService" class="com.cannontech.web.updater.meterProgramming.MeterProgrammingBackingService"/>
      
-     <bean id="deviceConfigSummaryBackingService" class="com.cannontech.web.updater.deviceConfigSummary.DeviceConfigSummaryBackingService"/>
-     
      <bean class="com.cannontech.web.paonote.validator.PaoNoteValidator"/>
      <bean id="scheduledDataImportService" class="com.cannontech.web.scheduledDataImport.service.impl.ScheduledDataImportServiceImpl"/>
      <bean class="com.cannontech.web.common.scheduledDataImportTask.ScheduledDataImportTaskJobWrapperFactory"/>
@@ -1396,12 +1391,6 @@
 
      <!-- Setup -->
     <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.api.client.errorHandler.CustomDefaultResponseErrorHandler" />
-    <bean id="apacheHttpClientRequestFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"/>
-    <bean id="defaultUriBuilderFactory" class="org.springframework.web.util.DefaultUriBuilderFactory">
-        <property name="encodingMode">
-            <value type="org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode">VALUES_ONLY</value>
-        </property>
-    </bean>
     <bean id="apiRestTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="messageConverters">
             <list>
@@ -1410,29 +1399,23 @@
                 <ref bean="jacksonHttpMessageConverter"/>
             </list>
         </property>
-        <property name="errorHandler" ref="customDefaultResponseErrorHandler"/>
-        <!-- Need to use Apache request factory for PATCH support -->
-        <property name="requestFactory" ref="apacheHttpClientRequestFactory"/>
-        <property name="uriTemplateHandler" ref="defaultUriBuilderFactory"/>
+        <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
      </bean>
 
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
 
     <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
+
     <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl">
         <qualifier value="macroLoadGroup" />
     </bean>
 
     <bean class="com.cannontech.dr.area.service.impl.ControlAreaSetupServiceImpl"/>
 
-    <bean class="com.cannontech.deviceReadings.service.impl.DeviceReadingsServiceImpl"/>
-    <bean id="deviceReadingRequestValidator" class="com.cannontech.web.api.deviceReadings.DeviceReadingRequestValidator" />
     <bean id="loadGroupSetupValidator" class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
     <bean id="macroLoadGroupValidator" class="com.cannontech.web.api.dr.macro.MacroLoadGroupValidator" />
     <bean id="lmDeleteValidator" class="com.cannontech.web.api.dr.setup.LMDeleteValidator" />
-    <bean id="lmDeleteApiValidator" class="com.cannontech.web.api.dr.setup.LMDeleteApiValidator" />
     <bean id="lmCopyValidator" class="com.cannontech.web.api.dr.setup.LMCopyValidator" />
-    <bean id="lmCopyApiValidator" class="com.cannontech.web.api.dr.setup.LMCopyApiValidator" />
     <bean id="loadProgramCopy" class="com.cannontech.web.api.dr.program.LMProgramCopyValidator" />
     <bean id="loadProgramValidator" class="com.cannontech.web.api.dr.program.LMProgramValidator" />
     <bean id="controlAreaValidator" class="com.cannontech.web.api.dr.controlArea.ControlAreaSetupValidator" />
@@ -1440,8 +1423,6 @@
     <bean class="com.cannontech.web.api.token.TokenHelper"/>
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
-    <bean class="com.cannontech.web.api.dr.setup.LMApiValidatorHelper"/>
-    <bean class="com.cannontech.common.validator.YukonValidationUtilsCommon"/>
     <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl">
         <qualifier value="controlScenario" />
     </bean>
@@ -1468,19 +1449,14 @@
     <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMProgramConstraintSetupDaoImpl"/>
     <bean class="com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder"/>
     
-    <bean class="com.cannontech.web.tools.notificationGroup.NotificationGroupControllerHelper"/>
-    
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
-    <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearApiValidatorHelper"/>
-    <bean id="eatonCloudCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EatonCloudCycleGearFieldsValidator"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
     <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
     <bean id="ecobeeSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeSetpointGearFieldsValidator"/>
-    <bean id="ecobeePlusGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeePlusGearFieldsValidator"/>
     <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
     <bean id="trueCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.TrueCycleGearFieldsValidator"/>
     <bean id="magnitudeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MagnitudeCycleGearFieldsValidator"/>
@@ -1499,97 +1475,11 @@
     <bean id="sepCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepCycleGearFieldsValidator"/>
     <bean id="sepTemperatureOffsetGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepTemperatureOffsetGearFieldsValidator"/>
     
-    <bean class="com.cannontech.web.common.service.StartupCancelationService"/>
+    <bean class="com.cannontech.web.collectionActions.service.StartupCancelationService"/>
 
     <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
 
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
     
-    <bean class="com.cannontech.web.stars.gateway.model.ConnectedDevicesHelper"/>
-    <bean class="com.cannontech.web.stars.service.impl.RfnCellularCommDataServiceImpl"/>
     <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
-    <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
-    <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
-    <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
-    <bean class="com.cannontech.common.validator.YukonApiValidationHelper"/>
-    <bean class="com.cannontech.common.validator.YukonValidationHelperCommon"/>
-    <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
-    <bean class="com.cannontech.web.stars.rtu.validator.RtuDnpValidationUtil"/>
-    <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
-    <bean class="com.cannontech.web.stars.signalTransmitter.SignalTransmitterValidator"/>
-    <bean class="com.cannontech.web.tools.notificationGroup.NotificationGroupValidator"/>
-    <bean class="com.cannontech.web.stars.routes.RouteValidator"/>
-    <bean class="com.cannontech.web.stars.routes.MacroRouteValidator"/>
-    
-    <bean class="com.cannontech.web.admin.AttributeValidator"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiController"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiValidator"/>
-    <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentCreationApiValidator"/>
-
-    <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
-
-    <bean class="com.cannontech.web.stars.commChannel.CommChannelSetupHelper"/>
-
-    <bean class="com.cannontech.web.api.point.PointCreateApiValidator"/>
-    <bean class="com.cannontech.web.api.point.AccumulatorPointApiValidator"/>
-    <bean class="com.cannontech.web.api.point.AnalogPointApiValidator"/>
-    <bean class="com.cannontech.web.api.point.StatusPointApiValidator"/>
-    <bean class="com.cannontech.web.api.point.CalcStatusPointApiValidator"/>
-    <bean class="com.cannontech.web.api.point.CalcAnalogPointApiValidator"/>
-    <bean class="com.cannontech.web.api.point.CalcPointValidationHelper"/>
-    <bean class="com.cannontech.web.api.point.PointCopyApiValidator"/>
-    <bean class="com.cannontech.web.tools.points.service.impl.PointEditorServiceImpl"/>
-    <bean class="com.cannontech.web.tools.points.service.impl.PointModelFactory"/>
-    <bean class="com.cannontech.common.trend.service.impl.TrendServiceImpl"/>
-    <bean class="com.cannontech.web.api.trend.TrendCreateValidator"/>
-    <bean class="com.cannontech.web.api.trend.TrendValidator"/>
-    <bean class="com.cannontech.web.api.trend.TrendValidatorHelper"/>
-    <bean class="com.cannontech.web.api.trend.TrendApiValidatorHelper"/>
-    <bean class="com.cannontech.web.api.trend.ResetPeakValidatorHelper"/>
-    <bean class="com.cannontech.web.api.trend.ResetPeakApiValidator"/>
-    <bean class="com.cannontech.web.tools.trends.validator.ResetPeakPopupValidator"/>
-    <bean class="com.cannontech.web.api.loggers.YukonLoggersApiValidator"/>
-    <bean class="com.cannontech.web.admin.YukonLoggersValidator"/>
-
-    <bean class="com.cannontech.web.api.picker.PickerSearchApiValidator"/>
-    <bean class="com.cannontech.web.api.picker.PickerIdSearchApiValidator"/>
-
-    <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
-    <bean class="com.cannontech.web.admin.service.impl.CustomAttributeServiceImpl"/>
-
-    <bean class="com.cannontech.web.tools.reports.service.impl.AggregateIntervalReportServiceImpl"/>  
-    <bean class="com.cannontech.web.api.aggregateIntervalDataReport.AggregateIntervalDataReportValidator"/>
-    
-    <bean class="com.cannontech.web.bulk.service.impl.DeviceConfigAssignServiceImpl"/>
-    
-    <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceValidator"/>
-    <bean class="com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService"/>
-    
-    <bean class="com.cannontech.web.api.route.RouteApiValidator"/>
-    <bean class="com.cannontech.web.api.route.RouteCCUApiValidator"/>	
-    <bean class="com.cannontech.web.api.route.RouteApiValidatorHelper"/>
-    <bean class="com.cannontech.web.api.route.RouteApiCreateValidator"/>
-    <bean class="com.cannontech.web.api.route.service.impl.RouteServiceImpl"/>
-    <bean class="com.cannontech.web.api.route.service.impl.RouteHelperImpl"/>
-    
-
-    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidator"/>	
-    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidatorHelper"/>
-    <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiCreateValidator"/>
-    <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
-    
-    <bean class="com.cannontech.web.dr.eatonCloud.service.impl.v1.EatonCloudSecretRotationServiceImplV1"/>
-    
-    <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCreateValidator"/>
-    <bean class="com.cannontech.web.api.terminal.PagingTerminalApiValidator"/>
-    <bean class="com.cannontech.web.api.terminal.service.impl.PagingTerminalServiceImpl"/>
-    <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCopyValidator"/>
-    
-    <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
-    <bean class="com.cannontech.web.api.notificationGroup.NotificationGroupApiValidator"/>
-    <bean class="com.cannontech.web.api.notificationGroup.NotificationGroupApiCreateValidator"/>
-   <!--  <bean class="com.cannontech.web.api.schedules.service.impl.SeasonScheduleServiceImpl"/> -->
-    
-    <!-- <bean class="com.cannontech.web.api.schedules.service.impl.HolidayScheduleServiceImpl"/> -->
 </beans>

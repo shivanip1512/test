@@ -1,14 +1,12 @@
 <?xml version="1.0" ?>
-<project name="cloud-service" default="all" basedir="../..">
+<project name="cloud-service" default="all">
 
-    <property file="${basedir}/yukon-build/build_version.properties"/>
+    <property file="../../yukon-client/build/build.properties"/>
 
     <target name="all" depends="clean,build" />
-    <tstamp>
-        <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
-    </tstamp>
 
     <target name="build">
+
         <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
@@ -23,61 +21,14 @@
         </copy>
     </target>
 
-    <target name="build-cloud">
-        <property name="cloud.build.dir" value="${basedir}/yukon-applications/cloud-service/build" />
-        <property name="install.bag" value="${basedir}/yukon-install" />
-
-        <!-- Base Component -->
-        <mkdir dir="${cloud.build.dir}"/>
-        <mkdir dir="${cloud.build.dir}/Runtime"/>
-        <mkdir dir="${cloud.build.dir}/Client/bin"/>
-    	<mkdir dir="${cloud.build.dir}/Server/Log"/>
-
-        <!-- Yukon Base Component (Client) -->
-        <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="yes">
-            <fileset dir="yukon-client/third-party">
-                <include name="wrapper.jar"/>
-                <include name="wrapperApp.jar"/>
-            	<include name="wrapperApp9.jar"/>
-                <include name="ahessian.jar"/>
-                <include name="commons-text-1.6.jar"/>
-                <include name="netty-all-4.1.36.Final.jar"/>
-                <include name="commons-configuration2-2.3.jar"/>
-                <include name="commons-vfs2-2.2.jar"/>
-                <include name="commons-collections-3.2.2.jar"/>
-                <include name="commons-io-2.11.0.jar"/>
-                <include name="commons-lang-2.6.jar"/>
-                <include name="commons-lang3-3.8.1.jar"/>
-                <include name="commons-logging-1.1.3.jar"/>
-                <include name="jna-5.10.0.jar"/>
-                <include name="jna-platform-5.10.0.jar"/>
-                <include name="permit-reflect-0.4.jar"/>
-                <include name="commons-cli-1.4.jar"/>
-                <include name="groovy-patch.jar"/>
-                <include name="groovy-4.0.0.jar"/>
-             </fileset>     	
-        </copy>
-
-        <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="true">
-            <fileset dir="yukon-client/tools/src/main/resources" includes="setjavapath.bat" />
-            <fileset dir="yukon-applications/cloud-service/conf" excludes="install_cloudService.bat"/>
-        	<fileset dir="yukon-applications/cloud-service/src/main/resources" includes="cloudservice.properties"/>
-            <fileset dir="yukon-client/lib">
-                <include name="yukon-cloud-service.jar"/>
-            </fileset>
-        </copy>
-
-        <!-- JRE Component -->
-        <copy todir="${cloud.build.dir}/Runtime" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/JRE"/>
-        </copy> 
-
-        <zip destfile="${cloud.build.dir}/cloudservice_${DSTAMP}_${TSTAMP}_${version.major}.${version.minor}.${version.revision}.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
-    </target>
-
     <target name="clean">
-       <delete dir="${basedir}/yukon-applications/cloud-service/build" />
-       <delete dir="${basedir}/yukon-applications/cloud-service/bin" />
+        <echo message="Deleting cloud service build directory."/>
+        <exec dir="" executable="cmd" failonerror="false" failifexecutionfails="false">
+                 <arg value="/c"/>
+                 <arg value="gradlew"/>
+                 <arg value="clean"/>
+        </exec>
+        <echo message="Cloud service build directory deleted."/>
     </target>
 
     <target name="runUnitTests" />

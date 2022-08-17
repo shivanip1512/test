@@ -36,13 +36,4 @@ public class CISInformationController {
         return mspHandler.getMspInformation(meter, mav, context);
     }
 
-    @RequestMapping("viewCISDetailsV4/{deviceId}")
-    public ModelAndView viewCISDetailsV4(HttpServletRequest request, ModelMap map, YukonUserContext context,
-            @PathVariable int deviceId) {
-        ModelAndView mav = new ModelAndView("setup/cisDetailsV4.jsp");
-        YukonMeter meter = meterDao.getForId(deviceId);
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        return mspHandler.getMspInformation(meter, mav, context);
-    }
 }

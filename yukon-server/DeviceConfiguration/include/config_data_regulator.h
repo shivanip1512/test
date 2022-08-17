@@ -17,9 +17,6 @@ public:
     static const std::string heartbeatPeriod;
     static const std::string heartbeatValue;
     static const std::string heartbeatMode;
-    static const std::string installOrientation;
-    static const std::string minTapPosition;
-    static const std::string maxTapPosition;
 };
 
 }

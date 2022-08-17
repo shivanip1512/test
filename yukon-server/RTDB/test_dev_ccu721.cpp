@@ -3,10 +3,6 @@
 #include "dev_ccu721.h"
 #include "prot_emetcon.h"
 
-#include "cti_asmc.h"
-
-#include "boost_test_helpers.h"
-
 using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_dev_ccu721 )
@@ -19,8 +15,6 @@ struct Test_Ccu721Device : Cti::Devices::Ccu721Device
 
     using Ccu721Device::writeBWord;
     using Ccu721Device::decodeEWord;
-    
-    void setAddress(uint8_t address) { _klondike.setAddresses(address, 127); }
 };
 
 BOOST_AUTO_TEST_CASE(test_ccu721_bword)
@@ -247,149 +241,6 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
     //  and that we got the right OM back
     BOOST_CHECK_EQUAL(entries.size(), 1);
     BOOST_CHECK_EQUAL(entries.front(), &om);
-}
-
-
-BOOST_AUTO_TEST_CASE(test_ccu721_dtran_reject)
-{
-    Test_Ccu721Device test_ccu721;
-
-    test_ccu721.setAddress(3);
-
-    OUTMESS om;
-
-    om.EventCode = DTRAN | BWORD;
-    om.Priority = 7;
-
-    om.Buffer.BSt.Address = 2906827;
-    om.Buffer.BSt.DlcRoute.RepVar = 7;
-    om.Buffer.BSt.DlcRoute.RepFixed = 31;
-    om.Buffer.BSt.DlcRoute.Stages = 0;
-    om.Buffer.BSt.DlcRoute.Bus = 0;
-    om.Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Read;
-    om.Buffer.BSt.Function = 0x90;
-    om.Buffer.BSt.Length = 3;
-
-    test_ccu721.recvCommRequest(&om);
-
-    CtiXfer xfer;
-
-    //  Generate an IDLC reset
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 5);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 0);
-
-    Cti::Test::byte_str idlc_reset =
-        "7e 07 1f 39 aa";
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        idlc_reset.begin(), idlc_reset.end(),
-        xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_REQUIRE_EQUAL(test_ccu721.isTransactionComplete(), false);
-
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 0);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 5);
-
-    Cti::Test::byte_str idlc_reset_ack =
-        "7e 06 73 8b 1a";
-
-    std::copy(
-        idlc_reset_ack.bytes.begin(),
-        idlc_reset_ack.bytes.end(),
-        xfer.getInBuffer());
-    xfer.setInCountActual(idlc_reset_ack.bytes.size());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_CHECK_EQUAL(test_ccu721.isTransactionComplete(), false);
-
-    //  Generate the Check Status
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 7);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 0);
-
-    Cti::Test::byte_str check_status =
-        "7e 07 10 01 11 ba 36";
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        check_status.begin(), check_status.end(),
-        xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_REQUIRE_EQUAL(test_ccu721.isTransactionComplete(), false);
-
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 0);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 5);
-
-    Cti::Test::byte_str check_status_ack =
-        "7e 06 11 07"
-        " 81"  //  response command
-        " 11"  //  requested command
-        " 00 00"   //  status bytes
-        " 08"      //  slots available
-        " 90 75"   //  expected sequence
-        " 2b 01";  //  crc
-
-    std::copy(
-        check_status_ack.bytes.begin(),
-        check_status_ack.bytes.end(),
-        xfer.getInBuffer());
-    xfer.setInCountActual(check_status_ack.bytes.size());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_CHECK_EQUAL(test_ccu721.isTransactionComplete(), false);
-
-    //  Generate the DTRAN request
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 19);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 0);
-
-    Cti::Test::byte_str out_expected =
-        "7e 07 30 0d"
-        " 01"
-        " 90 75"
-        " 01"
-        " 00 07"
-        " af fb 16 b2 d9 0c d0"
-        " 97 61";
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        out_expected.begin(), out_expected.end(), 
-        xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_CHECK_EQUAL(test_ccu721.isTransactionComplete(), false);
-
-    test_ccu721.generate(xfer);
-
-    BOOST_CHECK_EQUAL(xfer.getOutCount(), 0);
-    BOOST_CHECK_EQUAL(xfer.getInCountExpected(), 5);
-
-    Cti::Test::byte_str inbound =
-        "7e 06 32 07 c1 01 40 00 02 92 75 4b 24";
-
-    std::copy(
-        inbound.bytes.begin(),
-        inbound.bytes.end(),
-        xfer.getInBuffer());
-    xfer.setInCountActual(inbound.bytes.size());
-
-    BOOST_CHECK_EQUAL(test_ccu721.decode(xfer, ClientErrors::None), ClientErrors::None);
-    BOOST_CHECK_EQUAL(test_ccu721.isTransactionComplete(), true);
-
-    INMESS inmess;
-
-    test_ccu721.sendCommResult(inmess);
-
-    BOOST_CHECK_EQUAL(inmess.ErrorCode, ClientErrors::BadSequence);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

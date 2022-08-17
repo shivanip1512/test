@@ -11,16 +11,15 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     CtiMutex _abortConnMux;
     bool     _canAbortConn;
-    std::atomic_bool _reconnected;
 
-    void recordRegistration      ( const CtiRegistrationMsg& msg );
-    void recordPointRegistration ( const CtiPointRegistrationMsg& msg );
+    void recordRegistration      ( const CtiMessage& msg );
+    void recordPointRegistration ( const CtiMessage& msg );
     void writeRegistration       ();
 
-    void messagePeek ( const CtiMessage& msg ) override;
+    virtual void messagePeek ( const CtiMessage& msg );
 
-    bool establishConnection () override;
-    void abortConnection     () override;
+    virtual bool establishConnection ();
+    virtual void abortConnection     ();
 
     std::unique_ptr<cms::ExceptionListener> _exceptionListener;
 
@@ -33,6 +32,4 @@ public:
                           int termSeconds = 3 );
 
     virtual ~CtiClientConnection ();
-
-    bool hasReconnected();
 };

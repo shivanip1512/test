@@ -5,11 +5,10 @@ import java.util.Collection;
 import org.apache.thrift.TBase;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TMemoryBuffer;
 import org.apache.thrift.transport.TMemoryInputTransport;
 import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TTransportException;
 
-import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.serialization.MessageFactory;
 import com.cannontech.messaging.serialization.SerializationException;
 import com.cannontech.messaging.serialization.thrift.util.ThriftConverterHelper;
@@ -38,15 +37,11 @@ public class ThriftMessageFactory extends MessageFactory {
     }
 
     public static TProtocol createDefaultProtocol(byte[] data) {
-        try {
-            return createDefaultProtocol(new TMemoryInputTransport(data));
-        } catch (TTransportException e) {
-            throw new TransportException(e);
-        }
+        return createDefaultProtocol(new TMemoryInputTransport(data));
     }
 
-    protected static YukonTMemoryBuffer createDefaultMemoryBufferTransport() {
-        return new YukonTMemoryBuffer(512);
+    protected static TMemoryBuffer createDefaultMemoryBufferTransport() {
+        return new TMemoryBuffer(512);
     }
 
     @SuppressWarnings("unchecked")

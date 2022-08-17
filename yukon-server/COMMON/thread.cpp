@@ -5,8 +5,6 @@
 #include "logger.h"
 #include "win_helper.h"
 
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <process.h>
 
 using Cti::getSystemErrorMessage;
@@ -48,19 +46,6 @@ void CtiThread::start()
       {
           const DWORD err = GetLastError();
           CTILOG_ERROR(dout, "_beginthreadex() failed with error code " << err <<" -> "<< getSystemErrorMessage(err));
-      }
-      else
-      {
-          static const std::string class_prefix = "class ";
-          auto raw_name = typeid(*this).name();
-
-          if( boost::algorithm::starts_with(raw_name, class_prefix) )
-          {
-             //  Trim off the "class " prefix if present
-             raw_name += class_prefix.size();
-          }
-
-          CTILOG_INFO(dout, "Started " << raw_name << " [0x" << std::hex << std::setw(8) << std::setfill('0') << _thread_id << "]");
       }
    }
 }

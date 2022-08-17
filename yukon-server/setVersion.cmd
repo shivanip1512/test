@@ -7,55 +7,81 @@ for %%I in (%*) do (
 
 rem  Look for the build_version.properties based on the location of this
 rem  script.  %~dp0 resolves out to the scripts directory
-for /F "eol=# tokens=1,2 delims== " %%a in (%~dp0..\yukon-build\build_version.properties) do (
-    if NOT "%%a"=="" if NOT "%%b"=="" set props.%%a=%%b
+for /f "tokens=1* delims== " %%p in (%~dp0..\yukon-build\build_version.properties) do (
+
+rem It's nigh impossible to handle variables with () in then in a batch 
+rem script so instead of using version.external we use 
+rem version.external.filenameSafe
+    if "%%p" == "version.external.filenameSafe" (
+        set my_version=%%q
+    )
+    if "%%p" == "version.internal" (
+        set my_version_details=%%q
+    )
 )
 
-rem Retrieve the Git commit hash
+rem parse the version into nodes.
+for /f "tokens=1,2,3 delims=." %%p in ("%my_version_details%") do (
+        set my_version_maj=%%p
+        set my_version_min=%%q
+        set my_version_rev=%%r
+)
+
+rem parse the build number out of the external version
+for /f "tokens=4 delims=_" %%p in ("%my_version%") do (
+        set my_version_build=%%p
+)
+
+rem Get the SVN global revison number
 FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
-SET git_hash=%%F
+SET my_version_git=%%F
 )
 
-rem Build Release Number
-FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD --count`) DO (
-SET git_commit_current_count=%%F
-SET /a build_release_number=git_commit_current_count-props.git.commit.init.count
-)
+rem YUKON_BUILD_RELEASE_NUMBER
 
-SET version_dot_triplet=%props.version.major%.%props.version.minor%.%props.version.revision%
-SET version_csv_triplet=%props.version.major%,%props.version.minor%,%props.version.revision%
+SET my_build_release_number=0
+if not "%YUKON_BUILD_RELEASE_NUMBER%"=="" (
+SET my_build_release_number=%YUKON_BUILD_RELEASE_NUMBER%
+)
 
 rem Use this file for communicating revision stuff to the .cpp and .rc build
-set version_filename=%~dp0common\include\version.h
+set versionFileName=%~dp0common\include\version.h
 
 echo +---------------------------------------
 echo ^|
-echo ^| Build version   : %version_dot_triplet% ^(build %build_release_number%^)
-echo ^| Build mode      : %build_mode%
-echo ^| Build Git hash  : %git_hash%
+echo ^| Build version      : %my_version_maj%.%my_version_min% ^(build %my_version_build%^)
+echo ^| Build details      : %my_version_details%
+echo ^| Build increment    : %my_build_release_number%
+echo ^| Build mode         : %build_mode%
+echo ^| Build Git revision : %my_version_git%
 echo ^|
 echo +---------------------------------------
+
+rem Only update if we need to.
+set updateVersion=0
+
+rem version.h exist?
+if not exist %versionFileName% set updateVersion=1
 
 setlocal enabledelayedexpansion
 rem if it exists, check if it needs updating
-if exist %version_filename% (
-  for /f "tokens=2* delims== " %%p in (%version_filename%) do (
-    if "%%p" == "D_PRODUCT_VERSION_STR" (
+if "%updateVersion%" == "0" (
+  for /f "tokens=2* delims== " %%p in (%versionFileName%) do (
+    if "%%p" == "D_FILE_VERSION_STR" (
       call :trim %%q rev
-      if not "!rev!" == "%version_dot_triplet%.%git_hash%" set do_version_update=1
+      if not "!rev!" == "%my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_git%" set updateVersion=1
     )
   )
-) else (
-  set do_version_update=1
 )
 
-if defined do_version_update (
-  echo Updating %version_filename%
-  echo #define D_FILE_VERSION %version_csv_triplet%,%build_release_number% >%version_filename%
-  echo #define D_PRODUCT_VERSION_STR %version_dot_triplet%.%git_hash% >>%version_filename%
-  echo.>>%version_filename%
+if "%updateVersion%" == "1" (
+  echo Updating %versionFileName%
+  echo #define D_FILE_VERSION %my_version_maj%,%my_version_min%,%my_build_release_number%,%my_version_rev% >%versionFileName%
+  echo #define D_PRODUCT_VERSION_STR %my_version_maj%.%my_version_min%.%my_version_rev%.%my_version_git% >>%versionFileName%
+  echo.>>%versionFileName%
 
-  echo #define BUILD_VERSION %version_dot_triplet% ^(build %build_release_number%^) >>%version_filename%
+  echo #define BUILD_VERSION %my_version_maj%.%my_version_min%.%my_build_release_number% ^(build %my_version_build%^) >>%versionFileName%
+  echo #define BUILD_VERSION_DETAILS %my_version_details% >>%versionFileName%
 )
 
 goto :EOF

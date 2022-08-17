@@ -1,14 +1,13 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DeviceGroupEditorDaoImplTest {
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
     }
 
@@ -19,7 +18,7 @@ public class DeviceGroupEditorDaoImplTest {
         for (int count = 0; count < 5; ++count) {
             sql = dao.getRelativeGroupSql(count, false);
             int actual = StringUtils.countMatches(sql, "?");
-            assertEquals(count, actual, "Number of ? must equal count");
+            Assert.assertEquals("Number of ? must equal count", count, actual);
         }
     }
 

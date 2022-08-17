@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.RowMapper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
@@ -34,8 +33,6 @@ import com.google.common.collect.Lists;
 
 public class YukonJdbcTemplate extends JdbcTemplate {
     private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
-    
-    private static final int defaultBatchSize = 50000;
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
@@ -128,7 +125,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
      * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
      */
     public void yukonBatchUpdate(SqlStatementBuilder sql) {
-        yukonBatchUpdate(sql, defaultBatchSize);
+        yukonBatchUpdate(sql, ChunkingSqlTemplate.DEFAULT_SIZE);
     }
 
     /**
@@ -184,8 +181,12 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                                     .map(values -> values.get(deleteColumnIndex))
                                     .collect(Collectors.toList());
 
-                            ChunkingSqlTemplate chunkingJdbcTemplate = new ChunkingSqlTemplate(this);
-                            chunkingJdbcTemplate.update(new DeleteBeforeInsertSqlGenerator(sql), deleteValues);
+                            SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+                            deleteSql.append("DELETE FROM").append(batchUpdater.getTableName());
+                            deleteSql.append("WHERE").append(deleteByColumn).in(deleteValues);
+                            deleteSql.appendFragment(batchUpdater.getDeleteBeforeInsertClauses());
+                            log.trace("Delete sql: " + deleteSql.getDebugSql());
+                            update(deleteSql);
                         }
 
                         // Insert the batch of rows
@@ -233,23 +234,5 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                     }
                 });
         log.debug("Inserted {} out of {}", inserted.count, total);
-    }
-
-    class DeleteBeforeInsertSqlGenerator implements SqlFragmentGenerator<Object> {
-
-        SqlBatchUpdater batchUpdater = null;
-
-        public DeleteBeforeInsertSqlGenerator(SqlStatementBuilder sql) {
-            batchUpdater = sql.getBatchUpdater();
-        }
-
-        @Override
-        public SqlFragmentSource generate(List<Object> deviceIds) {
-            SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-            deleteSql.append("DELETE FROM").append(batchUpdater.getTableName());
-            deleteSql.append("WHERE").append(batchUpdater.getDeleteBeforeInsertColumn()).in(deviceIds);
-            deleteSql.appendFragment(batchUpdater.getDeleteBeforeInsertClauses());
-            return deleteSql;
-        }
     }
 }

@@ -4,17 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
@@ -24,17 +23,9 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
 public class DeviceArchiveSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(DeviceArchiveSimulatorMessageHandler.class);
-
+    private JmsTemplate jmsTemplate;
     @Autowired @Qualifier("longRunning") private Executor executor;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    private YukonJmsTemplate jmsTemplate;
     private boolean isRunning = false;
-
-    @PostConstruct
-    public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_ARCHIVE);
-    }
 
     public DeviceArchiveSimulatorMessageHandler() {
         super(SimulatorType.DEVICE_ARCHIVE);
@@ -59,7 +50,7 @@ public class DeviceArchiveSimulatorMessageHandler extends SimulatorMessageHandle
                                 }
                                 RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
                                 response.setRfnIdentifiers(rfnIdentifiers);
-                                jmsTemplate.convertAndSend(response);
+                                jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getQueue().getName(), response);
                             } catch (Exception e) {
                                 log.error("Asynchronous device creation failed", e);
                             } finally {
@@ -78,5 +69,11 @@ public class DeviceArchiveSimulatorMessageHandler extends SimulatorMessageHandle
         }
         return new SimulatorResponseBase(false);
     }
-
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+    }
 }

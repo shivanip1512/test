@@ -6,12 +6,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -20,11 +20,14 @@ import com.cannontech.common.util.ExceptionHelper;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
+    protected static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     protected ConfigurationSource configurationSource;
-    protected YukonJmsTemplate jmsTemplate;
+    protected ConnectionFactory connectionFactory;
     protected ExecutorService readRequestThreadPool;
     protected String configurationName;
+    protected String requestQueueName;
+    protected boolean pubSubDomain = false;   // Queue (not a Topic)
     protected boolean internalMessage = false;
     
     /**
@@ -32,11 +35,13 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
      *        services (not Network Manager). This prevents message details from be logged to the RFN comms
      *        log.
      */
-    public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+    public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource, 
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
-        this.jmsTemplate = jmsTemplate;
+        this.connectionFactory = connectionFactory;
+        this.requestQueueName = requestQueueName;
+        this.pubSubDomain = isPubSubDomain;
         this.internalMessage = isInternalMessage;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);
@@ -61,7 +66,15 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
             @Override
             public void run() {
                 try {
-                    log.trace("RequestReplyTemplateBase execute Start {}", requestPayload.toString());
+                    JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+                    if (!internalMessage && rfnLogger.isInfoEnabled()) {
+                        rfnLogger.info("<<< " + requestPayload.toString());
+                    } else if (internalMessage && rfnLogger.isDebugEnabled()) {
+                        rfnLogger.debug("<<< " + requestPayload.toString());
+                    }
+                    if (log.isTraceEnabled()) {
+                        log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
+                    }
                     jmsTemplate.execute(new SessionCallback<Object>() {
 
                         @Override
@@ -75,7 +88,7 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                         }
 
                     }, true);
-                    log.trace("RequestReplyTemplateBase execute End {}", requestPayload.toString());
+                    log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
                 } catch (Exception e) {
                     callback.handleException(e);
                 } finally {
@@ -85,40 +98,6 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
         });
     }
 
-    /**
-     * Adds an entry in rfnLogger
-     */
-    private void log(String text) {
-        if (jmsTemplate.isCommsLoggingDisabled()) {
-            return;
-        }
-        Logger commsLogger = jmsTemplate.getCommsLogger();
-        if (!internalMessage && commsLogger.isInfoEnabled()) {
-            commsLogger.info(text);
-        } else if (internalMessage && commsLogger.isDebugEnabled()) {
-            commsLogger.debug(text);
-        }
-    }
-    
-    protected void logRequest(String request){
-        log("<<< Sent " + request);
-    }
-    
-    protected void logReply(String request, String reply) {
-        log(">>> Received " + reply + " for " + request);
-    }
-    
     protected abstract <Q extends Serializable> void doJmsWork(Session session,
             Q requestPayload, T callback) throws JMSException;
-    
-    /**
-     * Send message after setting DeliveryMode, Priority and TimeToLive if explicitQosEnabled is true.
-     */
-    protected void sendMessage(MessageProducer producer, ObjectMessage message) throws JMSException {
-        if (jmsTemplate.isExplicitQosEnabled()) {
-            producer.send(message, jmsTemplate.getDeliveryMode(), jmsTemplate.getPriority(), jmsTemplate.getTimeToLive());
-        } else {
-            producer.send(message);
-        }
-    }
 }

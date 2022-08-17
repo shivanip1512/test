@@ -19,18 +19,29 @@ pipeline {
 
                     steps {
                         script {
-                            try {
-                                if (params.CLEAN_WORKSPACE) {
-                                    cleanWs()
-                                }
+                            if (params.RELEASE_MODE) {
+                                cleanWs()
+                            } else {
+                                //Use Jenkins build number to create Yukon Build version for normal builds.
                                 env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
+                            }
+                            try {
                                 bat 'java -version'
                                 def scmVars = checkout([$class: 'GitSCM',
-                                                        branches: [[name: 'refs/heads/master']],
-                                                        doGenerateSubmoduleConfigurations: false,
-                                                        extensions: [],
-                                                        submoduleCfg: [],
-                                                        userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                          branches: [[name: 'refs/heads/release/7.4']],
+                                          doGenerateSubmoduleConfigurations: false,
+                                          extensions: [[$class: 'CloneOption',
+                                                        honorRefspec: true, noTags: true,
+                                                        reference: '', shallow: true, timeout: 30],
+                                                       [$class: 'SparseCheckoutPaths',
+                                                        sparseCheckoutPaths: [[path: 'yukon-help'],
+                                                                              [path: 'yukon-client'],
+                                                                              [path: 'yukon-build'],
+                                                                              [path: 'yukon-shared'],
+                                                                              [path: 'yukon-applications']]],
+                                                       [$class: 'AuthorInChangelog']],
+                                          submoduleCfg: [],
+                                          userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 env.GIT_COMMIT = scmVars.GIT_COMMIT
 
@@ -59,16 +70,24 @@ pipeline {
 
                     steps {
                         script {
+                            if (params.RELEASE_MODE) {
+                                cleanWs()
+                            }
                             try {
-                                if (params.CLEAN_WORKSPACE) {
-                                    cleanWs()
-                                }
                                 checkout([$class: 'GitSCM',
-                                          branches: [[name: 'refs/heads/master']],
+                                          branches: [[name: 'refs/heads/release/7.4']],
                                           doGenerateSubmoduleConfigurations: false,
-                                          extensions: [],
+                                          extensions: [[$class: 'CloneOption',
+                                                        honorRefspec: true, noTags: true,
+                                                        reference: '', shallow: true, timeout: 30],
+                                                       [$class: 'SparseCheckoutPaths',
+                                                        sparseCheckoutPaths: [[path: 'yukon-server'],
+                                                                              [path: 'yukon-build'],
+                                                                              [path: 'yukon-client/build/ant/bin'],
+                                                                              [path: 'yukon-shared']]],
+                                                       [$class: 'AuthorInChangelog']],
                                           submoduleCfg: [],
-                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                          userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 bat './yukon-build/go.bat build-server'
 
@@ -85,76 +104,65 @@ pipeline {
 
             }
         }
-        stage('installer-executetestcase') {
-            parallel {
-                stage('installer') {
-                    agent {
-                        label "install"
-                    }
-                    tools {
-                        jdk "jdk-11(18.9)"
-                    }
-                    steps {
-                        // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
-                        script {
-                            try {
-                                if (params.CLEAN_WORKSPACE) {
-                                    cleanWs()
-                                }
-                                checkout([$class: 'GitSCM',
-                                          branches: [[name: "${env.GIT_COMMIT}"]],
-                                          doGenerateSubmoduleConfigurations: false,
-                                          extensions: [],
-                                          submoduleCfg: [],
-                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
-
-                                // The stashed folders are modified during the build, which means a simple
-                                // unstash leaves data behind. Here we manually wipe these folders before unstashing.
-                                dir('yukon-client') {
-                                    deleteDir()
-                                }
-                                unstash 'yukon-client'
-
-                                dir('yukon-server') {
-                                    deleteDir()
-                                }
-                                unstash 'yukon-server'
-
-                                bat './yukon-applications/cloud-service/go.bat clean build-cloud'
-
-                                bat './yukon-build/go.bat build-install'
-
-                                bat './yukon-build/go.bat clean build-dist-server'
-
-                                archiveArtifacts artifacts: 'yukon-build/dist/*, yukon-applications/cloud-service/build/*.zip'
-                            } catch (Exception) {
-                                currentBuild.result = 'FAILURE'
-                                //Added sleep so that it capture full log for current stage
-                                sleep(5)
-                                sendEmailNotification("${env.STAGE_NAME}")
-                            }
-                        }
+        stage('installer') {
+            agent {
+                label "install"
+            }
+            tools {
+                jdk "jdk-11(18.9)"
+            }
+            steps {
+                script {
+                    if (params.RELEASE_MODE) {
+                        cleanWs()
                     }
                 }
-                stage('java-testcase') {
-                    agent {
-                        label "java"
-                    }
-                    tools {
-                        jdk "jdk-11(18.9)"
-                    }
-                    steps {
-                        script {
-                            try {
-                                // Running All JUnit Test cases - Test 3
-                                bat './yukon-build/go.bat runUnitTests'
-                            } catch (Exception) {
-                                currentBuild.result = 'FAILURE'
-                                //Added sleep so that it capture full log for current stage
-                                sleep(5)
-                                sendEmailNotification("${env.STAGE_NAME}")
-                            }
+
+                // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
+                script {
+                    try {
+                        checkout([$class: 'GitSCM',
+                                  branches: [[name: 'refs/heads/release/7.4']],
+                                  doGenerateSubmoduleConfigurations: false,
+                                  extensions: [[$class: 'CloneOption',
+                                                honorRefspec: true, noTags: true,
+                                                reference: '', shallow: true, timeout: 30],
+                                               [$class: 'SparseCheckoutPaths',
+                                                sparseCheckoutPaths: [[path: 'yukon-install'],
+                                                                      [path: 'yukon-build'],
+                                                                      [path: 'yukon-database'],
+                                                                      [path: 'yukon-applications']]],
+                                               [$class: 'AuthorInChangelog']],
+                                  submoduleCfg: [],
+                                  userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+
+                        // The stashed folders are modified during the build, which means a simple
+                        // unstash leaves data behind. Here we manually wipe these folders before unstashing.
+                        dir('yukon-client') {
+                            deleteDir()
                         }
+                        unstash 'yukon-client'
+
+                        dir('yukon-server') {
+                            deleteDir()
+                        }
+                        unstash 'yukon-server'
+                        bat './yukon-build/go.bat build-install'
+
+                        if (params.RELEASE_MODE) {
+                            bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
+                            bat './yukon-build/go.bat init clean symstore build-dist'
+                            bat 'net use p: /delete'
+                        } else {
+                            bat './yukon-build/go.bat clean build-dist-pdb'
+                        }
+
+                        archiveArtifacts artifacts: 'yukon-build/dist/*'
+                    } catch (Exception) {
+                        currentBuild.result = 'FAILURE'
+                        //Added sleep so that it capture full log for current stage
+                        sleep(5)
+                        sendEmailNotification("${env.STAGE_NAME}")
                     }
                 }
             }

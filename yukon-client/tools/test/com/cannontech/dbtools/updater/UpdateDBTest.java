@@ -1,8 +1,5 @@
 package com.cannontech.dbtools.updater;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -11,7 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.MockConfigurationSource;
@@ -40,7 +38,7 @@ public class UpdateDBTest {
             configSource.setAccessible(true);
             configSource.set(this, source);
         } catch (Exception e) {
-            fail(e.getMessage());
+            Assert.fail(e.getMessage());
         }
         
         List<String> fileStrings = getBasicFileStrings();
@@ -48,13 +46,13 @@ public class UpdateDBTest {
         
         // Note this is currently true, but is not necessary for correct behavior.
         // The error ignore begin and end lines are "meta" info but could be real lines
-        assertEquals(8, result.size());
+        Assert.assertEquals(8, result.size());
         
-        assertEquals(result.get(0).getValue().toString(), "UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;");
-        assertEquals(result.get(5).getValue().toString(), "UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2;");
+        Assert.assertEquals(result.get(0).getValue().toString(), "UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;");
+        Assert.assertEquals(result.get(5).getValue().toString(), "UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2;");
         
         // start/end block is all on one line in the output.
-        assertEquals(result.get(6).getValue().toString(), "/* @start-block */ "
+        Assert.assertEquals(result.get(6).getValue().toString(), "/* @start-block */ "
                                                                + "UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0; "
                                                                + "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1; "
                                                                + "UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2; "
@@ -62,7 +60,7 @@ public class UpdateDBTest {
                                                                + "SELECT @regulatorCommReportingTwo = '100'; " // Cparm does not exist, unchanged
                                                                + "/* @end-block */");
         
-        assertEquals(result.get(7).getValue().toString(), "insert into CTIDatabase values('32.0', 'BobTheBuilder', '07-NOV-2120', 'Latest Update', 3 );");
+        Assert.assertEquals(result.get(7).getValue().toString(), "insert into CTIDatabase values('32.0', 'BobTheBuilder', '07-NOV-2120', 'Latest Update', 3 );");
     }
     
     private List<String> getBasicFileStrings() {
@@ -118,48 +116,48 @@ public class UpdateDBTest {
         List<UpdateLine> result = updateDB.convertToUpdateLines(fileStrings, null, null);
 
         /* Validate total no of update lines returned */
-        assertEquals(22, result.size());
+        Assert.assertEquals(22, result.size());
 
         /* Validate some valid update lines with some meta properties */
-        assertEquals("YUK-21", result.get(0).getMetaProps().get("start"));
+        Assert.assertEquals("YUK-21", result.get(0).getMetaProps().get("start"));
 
-        assertEquals(true, result.get(1).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(1).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-21', '7.0.1', GETDATE())"));
 
-        assertEquals("YUK-21", result.get(2).getMetaProps().get("end"));
+        Assert.assertEquals("YUK-21", result.get(2).getMetaProps().get("end"));
 
         /* YUK-26 will be executed and contains metadata - @start-block and @end-block */
-        assertEquals(true, result.get(2).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(2).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())"));
 
-        assertEquals(true, result.get(2).getValue().toString().contains("/* @start-block */")
+        Assert.assertEquals(true, result.get(2).getValue().toString().contains("/* @start-block */")
             && result.get(2).getValue().toString().contains("/* @end-block */"));
 
-        assertEquals(true, result.get(4).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(4).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-111', '7.0.1', GETDATE())"));
 
         /* YUK-25 will be executed and contains metadata - @start-block and @end-block */
-        assertEquals(true, result.get(12).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(12).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE())"));
 
-        assertEquals(true, result.get(12).getValue().toString().contains("/* @start-block */")
+        Assert.assertEquals(true, result.get(12).getValue().toString().contains("/* @start-block */")
             && result.get(12).getValue().toString().contains("/* @end-block */"));
 
-        assertEquals(true, result.get(13).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(13).getValue().toString().contains(
             "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
 
         /* YUK-32 will be executed should contains metadata - @ignore-begin */
-        assertEquals("YUK-32 if YUK-16225", result.get(15).getMetaProps().get("start"));
+        Assert.assertEquals("YUK-32 if YUK-16225", result.get(15).getMetaProps().get("start"));
 
-        assertEquals("ignore-begin", result.get(15).getMetaProps().get("error"));
+        Assert.assertEquals("ignore-begin", result.get(15).getMetaProps().get("error"));
 
         /* YUK-30 will be executed and should contain metadata - @error warn-once */
-        assertEquals("warn-once", result.get(20).getMetaProps().get("error"));
+        Assert.assertEquals("warn-once", result.get(20).getMetaProps().get("error"));
 
-        assertEquals(true, result.get(20).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(20).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())"));
 
-        assertEquals(true, result.get(21).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(21).getValue().toString().contains(
             "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())"));
 
         /*
@@ -170,30 +168,30 @@ public class UpdateDBTest {
             String rowValue = row.getValue().toString();
             boolean shouldProcess = ReflectionTestUtils.invokeMethod(dbUpdater, "shouldProcessLine", row, updateIds);
             if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-21', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-111', '7.0.1', GETDATE())")) {
-                assertEquals(false, shouldProcess);
+                Assert.assertEquals(false, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-116', '7.0.1', GETDATE())")) {
-                assertEquals(false, shouldProcess);
+                Assert.assertEquals(false, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-23', '7.0.1', GETDATE())")) {
-                assertEquals(false, shouldProcess);
+                Assert.assertEquals(false, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-24', '7.0.1', GETDATE())")) {
-                assertEquals(false, shouldProcess);
+                Assert.assertEquals(false, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-32', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-33', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             } else if (rowValue.contains(
                 "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())")) {
-                assertEquals(true, shouldProcess);
+                Assert.assertEquals(true, shouldProcess);
             }
         });
 
@@ -209,12 +207,12 @@ public class UpdateDBTest {
         try {
             fileStrings = IOUtils.readLines(is);
         } catch (IOException e) {
-            fail(e.getMessage());
+            Assert.fail(e.getMessage());
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                fail(e.getMessage());
+                Assert.fail(e.getMessage());
             }
         }
         return fileStrings;

@@ -31,7 +31,7 @@
                  </tags:nameValueContainer2>
             </i:simplePopup>
             
-            <table class="compact-results-table no-stripes no-borders">
+            <table class="compact-results-table no-stripes">
                 <thead>
                     <c:if test="${showControlHistorySummary}">
                         <tr>

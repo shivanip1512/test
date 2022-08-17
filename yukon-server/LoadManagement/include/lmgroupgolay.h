@@ -26,8 +26,6 @@ DECLARE_COLLECTABLE( CtiLMGroupGolay );
 
     CtiLMGroupGolay& operator=(const CtiLMGroupGolay& right);
 
-    std::size_t getFixedSize() const override   { return sizeof( *this ); }
-
     /* Static Members */
 
 private:

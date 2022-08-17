@@ -90,8 +90,6 @@
     <bean class="com.cannontech.web.search.lucene.index.site.DataExportFormatPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.RelayPaoTypeHandler"/>
     <bean class="com.cannontech.web.search.lucene.index.site.RtuPaoTypeHandler"/>
-    <bean class="com.cannontech.web.search.lucene.index.site.VirtualDevicePaoTypeHandler"/>
-    <bean class="com.cannontech.web.search.lucene.index.site.CommChannelPaoTypeHandler"/>
 
     <bean class="com.cannontech.web.search.lucene.index.SiteSearchIndexManager">
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>

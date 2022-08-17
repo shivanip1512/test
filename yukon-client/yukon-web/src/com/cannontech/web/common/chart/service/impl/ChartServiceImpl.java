@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartInterval;
@@ -17,11 +20,12 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
@@ -34,6 +38,7 @@ public class ChartServiceImpl implements ChartService {
     
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PointDao pointDao;
+    @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -59,7 +64,7 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setMinimumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setGroupingUsed(false);
 
-            UnitOfMeasure unitMeasure = UnitOfMeasure.getForId(pointUnit.getUomID());
+            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
             String chartIntervalString = messageSourceAccessor.getMessage(graphDetail.getInterval().getIntervalString());
             String units =
                 messageSourceAccessor.getMessage(graphDetail.getConverterType().getFormattedUnits(unitMeasure, chartIntervalString));
@@ -90,7 +95,7 @@ public class ChartServiceImpl implements ChartService {
                 if (graphDetail.getInterval().getMillis() >= ChartInterval.DAY.getMillis()) {
                     axisChartData = getXAxisMinMaxValues(graphDetail.getInterval(), chartData, graphDetail.isMin());
                 } else {
-                    axisChartData = chartData;
+                    axisChartData = chartData.stream().map(e -> adjustForFlotTimezone(e)).collect(Collectors.toList());
                 }
                 graph.setLines(graphDetail.getLines());
                 graph.setPoints(graphDetail.getPoints());
@@ -113,7 +118,6 @@ public class ChartServiceImpl implements ChartService {
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);
             graph.setAxisIndex(graphDetail.getAxisIndex());
-            graph.setPointId(graphDetail.getPointId());
 
             // don't include zero-data graphs if there are more than one graph - amCharts chokes.
             if (graphDetails.size() == 1 || chartData.size() > 0) {
@@ -162,7 +166,7 @@ public class ChartServiceImpl implements ChartService {
             long thisInterval = interval.roundDownToIntervalUnit(new Date(thisValue.getId())).getTime();
             if (thisInterval != currentInterval) {
                 // New interval, add last intervals min(if isMinRequired is true) , max
-                ChartValue<Double> adjustedValue = currentMinMax;
+                ChartValue<Double> adjustedValue = adjustForFlotTimezone(currentMinMax);
                 minMaxChartValues.add(adjustedValue);
                 currentMinMax = thisValue;
                 currentInterval = thisInterval;
@@ -180,7 +184,7 @@ public class ChartServiceImpl implements ChartService {
             }
         }
         // Don't forget the last one
-        minMaxChartValues.add(currentMinMax);
+        minMaxChartValues.add(adjustForFlotTimezone(currentMinMax));
         return minMaxChartValues;
     }
 
@@ -192,5 +196,17 @@ public class ChartServiceImpl implements ChartService {
         return oldValue.getValue().doubleValue() == currentValue.getValue().doubleValue()
                                                     && currentValue.getTime() > oldValue.getTime();
     }
-
+    /**
+     * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+     * Here we fake it out by adding the server timezone offset to the timestamp
+     * so the times line up between the plot and the data.
+     */
+    private ChartValue<Double> adjustForFlotTimezone(ChartValue<Double> originalChartValue) {
+        ChartValue<Double> adjusted = new ChartValue<Double>(originalChartValue);
+        long timeStamp = adjusted.getTime();
+        timeStamp += TimeZone.getDefault().getOffset(timeStamp);
+        adjusted.setTime(timeStamp);
+        adjusted.setId(timeStamp);
+        return adjusted;
+    }
 }

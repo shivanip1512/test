@@ -19,16 +19,15 @@ import org.springframework.validation.BindingResult;
 import com.cannontech.common.dr.setup.AddressLevel;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.EmetconRelayUsage;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
-import com.cannontech.common.dr.setup.LoadGroupRFNExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
@@ -39,13 +38,13 @@ import com.cannontech.common.dr.setup.VersacomAddressUsage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
-import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.ImmutableList;
@@ -76,20 +75,55 @@ public class LoadGroupSetupControllerHelper {
         
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
-            if (isViewMode) {
-                LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
-                setExpresscomAttributes(loadGroup, model);
-            } else {
-                setCommunicationRoute(model, request, userContext);
-                addExpresscomModelAttributes(model);
-            }
-            break;
         case LM_GROUP_RFN_EXPRESSCOMM:
             if (isViewMode) {
-                LoadGroupRFNExpresscom loadGroup = (LoadGroupRFNExpresscom) model.get("loadGroup");
-                setExpresscomAttributes(loadGroup, model);
+                LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
+
+                List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
+                List<AddressUsage> loadAddressUsage =
+                    addressUsage.stream().filter(e -> e.isLoadAddressUsage()).collect(Collectors.toList());
+                List<AddressUsage> geoAddressUsage =
+                    new ArrayList<>(CollectionUtils.subtract(addressUsage, loadAddressUsage));
+                model.addAttribute("loadAddressUsage", loadAddressUsage);
+                model.addAttribute("geoAddressUsage", geoAddressUsage);
+
+                if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
+                    model.addAttribute("displayGeo", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
+                    model.addAttribute("displaySubstation", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
+                    model.addAttribute("displayFeeder", true);
+                    loadGroup.setFeeder(getFormattedAddress(loadGroup.getFeeder()));
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
+                    model.addAttribute("displayZip", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
+                    model.addAttribute("displayUser", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
+                    model.addAttribute("displaySerial", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
+                    model.addAttribute("displayProgram", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
+                    model.addAttribute("displaySplinter", true);
+                }
+                if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
+                    model.addAttribute("loadSelected", true);
+                }
             } else {
-                addExpresscomModelAttributes(model);
+                if (type == PaoType.LM_GROUP_EXPRESSCOMM) {
+                    setCommunicationRoute(model, request, userContext);
+                }
+                model.addAttribute("protocolPriority", ControlPriority.values());
+                model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
+                model.addAttribute("feederList", getBitAddressLevel());
+                model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
+                model.addAttribute("loadsList", Loads.values());
             }
             break;
         case LM_GROUP_ITRON:
@@ -145,7 +179,7 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("addressLevels", AddressLevel.values());
             model.addAttribute("isMctAddressSelected", loadGroupMCT.getLevel() == AddressLevel.MCT_ADDRESS);
             model.addAttribute("mctAddressEnumVal", AddressLevel.MCT_ADDRESS);
-            model.addAttribute("relayUsageList", Lists.newArrayList(Relays.values()));
+            model.addAttribute("relayUsageList", Relays.values());
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
                 BindingResult result = (BindingResult) model.get(bindingResultKey);
                 if (result.hasFieldErrors("mctDeviceId")) {
@@ -182,7 +216,7 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
             if (loadGroupPoint.getPointUsage() != null && loadGroupPoint.getPointUsage().getId() != null ) {
-                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getName());
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getStateText());
                 setControlStartState(loadGroupPoint, model, request, userContext);
             }
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
@@ -194,57 +228,7 @@ public class LoadGroupSetupControllerHelper {
                 }
             }
             break;
-        case LM_GROUP_EATON_CLOUD:
-            model.addAttribute("isEatonCloudGroupSelected", true);
-            model.addAttribute("relayIds", ImmutableList.of(1, 2, 3, 4));
-            break;
         }
-    }
-
-    private void addExpresscomModelAttributes(ModelMap model) {
-        model.addAttribute("protocolPriority", ControlPriority.values());
-        model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
-        model.addAttribute("feederList", getBitAddressLevel());
-        model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
-        model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
-    }
-
-    private void setExpresscomAttributes(LoadGroupRFNExpresscom loadGroup, ModelMap model) {
-            List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
-            List<AddressUsage> loadAddressUsage = addressUsage.stream().filter(e -> e.isLoadAddressUsage())
-                    .collect(Collectors.toList());
-            List<AddressUsage> geoAddressUsage = new ArrayList<>(CollectionUtils.subtract(addressUsage, loadAddressUsage));
-            model.addAttribute("loadAddressUsage", loadAddressUsage);
-            model.addAttribute("geoAddressUsage", geoAddressUsage);
-
-            if (loadGroup.getAddressUsage().contains(AddressUsage.GEO)) {
-                model.addAttribute("displayGeo", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.SUBSTATION)) {
-                model.addAttribute("displaySubstation", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.FEEDER)) {
-                model.addAttribute("displayFeeder", true);
-                loadGroup.setFeeder(getFormattedAddress(loadGroup.getFeeder()));
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.ZIP)) {
-                model.addAttribute("displayZip", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.USER)) {
-                model.addAttribute("displayUser", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.SERIAL)) {
-                model.addAttribute("displaySerial", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.PROGRAM)) {
-                model.addAttribute("displayProgram", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.SPLINTER)) {
-                model.addAttribute("displaySplinter", true);
-            }
-            if (loadGroup.getAddressUsage().contains(AddressUsage.LOAD)) {
-                model.addAttribute("loadSelected", true);
-            }
     }
 
     /**
@@ -252,16 +236,13 @@ public class LoadGroupSetupControllerHelper {
      */
     private void setCommunicationRoute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         // Give API call to get all routes
-        List<RouteBaseModel> routes = new ArrayList<>();
+        List<LiteYukonPAObject> routes = new ArrayList<>();
         String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
-        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, 
-                                                                                          request, 
-                                                                                          url,
-                                                                                          Object.class, 
-                                                                                          HttpMethod.GET);
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+            LiteYukonPAObject.class, HttpMethod.GET, LiteYukonPAObject.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            routes = (List<RouteBaseModel>) response.getBody();
+            routes = (List<LiteYukonPAObject>) response.getBody();
         }
         model.addAttribute("routes", routes);
     }
@@ -272,19 +253,14 @@ public class LoadGroupSetupControllerHelper {
     private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
             YukonUserContext userContext) {
         // Give API call to get all control state
-        List<LMDto> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.pointUrl + loadGroupPoint.getPointUsage().getId() + "/states");
+        List<ControlRawState> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + loadGroupPoint.getPointUsage().getId());
         ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<LMDto>) response.getBody();
+            startStates = (List<ControlRawState>) response.getBody();
         }
-
-        // Raw state is either 0 or 1 in Control start state of Point Load Group
-        startStates = startStates.stream()
-                                 .filter(state -> (state.getId() == 0 || state.getId() == 1))
-                                 .collect(Collectors.toList());
         model.addAttribute("startStates", startStates);
     }
 
@@ -295,14 +271,10 @@ public class LoadGroupSetupControllerHelper {
     public void setDefaultValues(LoadGroupBase group, LiteYukonUser liteYukonUser) {
         switch (group.getType()) {
         case LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_RFN_EXPRESSCOMM:
             LoadGroupExpresscom expresscomGroup = ((LoadGroupExpresscom) group);
             expresscomGroup.setServiceProvider(1);
             expresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
-            break;
-        case LM_GROUP_RFN_EXPRESSCOMM:
-            LoadGroupRFNExpresscom rfnExpresscomGroup = ((LoadGroupRFNExpresscom) group);
-            rfnExpresscomGroup.setServiceProvider(1);
-            rfnExpresscomGroup.setProtocolPriority(ControlPriority.DEFAULT);
             break;
         case LM_GROUP_VERSACOM:
             ((LoadGroupVersacom) group).setSectionAddress(0);
@@ -364,12 +336,6 @@ public class LoadGroupSetupControllerHelper {
             if (result.hasFieldErrors("relayUsage")) {
                 flash.setError(result.getFieldError("relayUsage"));
             }
-            break;
-        case LM_GROUP_EATON_CLOUD:
-            if (result.hasFieldErrors("relayUsage")) {
-                flash.setError(result.getFieldError("relayUsage"));
-            }
-            break;
         }
     }
 

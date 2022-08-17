@@ -20,7 +20,7 @@
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -66,10 +66,10 @@
                                 <cti:param name="monitorId" value="${monitor.id}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" 
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" 
                                                href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitor.id} ${!monitor.enabled? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitor.id} ${monitor.enabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -86,7 +86,7 @@
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -133,9 +133,9 @@
                                 <cti:param name="monitorId" value="${monitorId}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isOutageEnabled)? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isOutageEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -156,7 +156,7 @@
 
     <c:if test="${not empty tamperFlagMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -203,9 +203,9 @@
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${monitor.name}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isTamperEnabled)? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isTamperEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -225,7 +225,7 @@
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -265,9 +265,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isStatusEnabled)? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isStatusEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>
@@ -288,7 +288,7 @@
 
     <c:if test="${not empty porterResponseMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -326,9 +326,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitor.monitorId} ${!(isPorterEnabled)? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitor.monitorId} ${isPorterEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>
@@ -349,7 +349,7 @@
 
     <c:if test="${not empty validationMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -395,9 +395,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isValidationEnabled)? 'dn': ''}" 
-                                               icon="icon-disable"/>
+                                               icon="icon-delete"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isValidationEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>

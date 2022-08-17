@@ -27,8 +27,6 @@ public class RfnTestEvent {
     private Instant timestamp = new Instant();
     private String meterConfigurationId;
     private MeterConfigurationStatus meterConfigurationStatus;
-    private String oldDnp3Address;
-    private String newDnp3Address;
     
     public int getSerialFrom() {
         return serialFrom;
@@ -148,17 +146,5 @@ public class RfnTestEvent {
             meterConfigurationStatus.setDetailedConfigurationStatusCode(new DetailedConfigurationStatusCode((short)0));
         }
         return meterConfigurationStatus;
-    }
-    public String getOldDnp3Address() {
-        return oldDnp3Address;
-    }
-    public void setOldDnp3Address(String oldDnp3Address) {
-        this.oldDnp3Address = oldDnp3Address;
-    }
-    public String getNewDnp3Address() {
-        return newDnp3Address;
-    }
-    public void setNewDnp3Address(String newDnp3Address) {
-        this.newDnp3Address = newDnp3Address;
     }
 }

@@ -11,17 +11,12 @@
 
 #include "ConstraintViolation.h"
 
-extern const CtiTime gEndOfCtiTime;
+extern CtiTime gEndOfCtiTime;
 
 // Nonexistent window
 const CtiLMProgramControlWindow *no_window = 0;
 
-struct tzOverride {
-    const decltype(Cti::Test::set_to_central_timezone()) scopedOverride = Cti::Test::set_to_central_timezone();
-};
-
 BOOST_AUTO_TEST_SUITE( test_lmprogram )
-
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
@@ -115,8 +110,6 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_more_than_one_day_negative_offset)
     BOOST_CHECK_EQUAL( time.second(),             0 );
 }
 
-
-BOOST_FIXTURE_TEST_SUITE( test_wallclock, tzOverride )
 
 BOOST_AUTO_TEST_CASE(test_get_wallclock_time_spring_2009_dst)
 {
@@ -231,7 +224,6 @@ BOOST_AUTO_TEST_CASE(test_get_wallclock_time_fall_2009_dst_invalid_time)
     BOOST_CHECK_EQUAL( time.second(),             0 );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
 
 /*
 *** TESTING: getControlWindow()
@@ -438,7 +430,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -450,7 +442,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(14400, today);     // 4:00am
     CtiTime stopTime = GetTimeFromOffsetAndDate(21600, today);      // 6:00am
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
@@ -467,7 +459,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -479,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(14400, today);     // 4:00am
     CtiTime stopTime = GetTimeFromOffsetAndDate(36000, today);      // 10:00am
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
@@ -496,7 +488,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -508,7 +500,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(14400, today);     // 4:00am
     CtiTime stopTime = GetTimeFromOffsetAndDate(72000, today);      // 8:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
@@ -525,7 +517,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -537,7 +529,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(36000, today);     // 10:00am
     CtiTime stopTime = GetTimeFromOffsetAndDate(43200, today);      // noon
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -547,7 +539,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -559,7 +551,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(36000, today);     // 10:00am
     CtiTime stopTime = GetTimeFromOffsetAndDate(64800, today);      // 6:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeSameDate,
@@ -576,7 +568,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -588,7 +580,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(64800, today);     // 6:00pm
     CtiTime stopTime = GetTimeFromOffsetAndDate(72000, today);      // 8:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeSameDate,
@@ -604,7 +596,7 @@ BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -628,7 +620,7 @@ BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
     BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
     BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlWindows(startTime, stopTime));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlWindows(startTime.seconds(), stopTime.seconds()));
     BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
 
 }
@@ -639,7 +631,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -652,7 +644,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(108000, today);     // 6:00am tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
@@ -852,7 +844,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -865,7 +857,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(122400, today);     // 10:00am tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
@@ -884,7 +876,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -897,7 +889,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(158400, today);     // 8:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
@@ -916,7 +908,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -928,7 +920,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(122400, today);    // 10:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(129600, today);     // noon tomorrow
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -938,7 +930,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -951,7 +943,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(122400, today);    // 10:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(151200, today);     // 6:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
@@ -970,7 +962,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -983,7 +975,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiTime startTime = GetTimeFromOffsetAndDate(151200, today);    // 6:00pm tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(158400, today);     // 8:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our window is tomorrow the constraint error message should report tomorrows control window
@@ -1008,7 +1000,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_bo
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1020,7 +1012,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_bo
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(18000, today);      // 5:00am
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1030,7 +1022,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1043,7 +1035,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(43200, today);      // noon
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
@@ -1062,7 +1054,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1075,7 +1067,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(79200, today);      // 10:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
@@ -1094,7 +1086,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1107,7 +1099,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(104400, today);     // 5:00am tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
@@ -1126,7 +1118,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1139,7 +1131,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(129600, today);     // noon tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
@@ -1158,7 +1150,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1171,7 +1163,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(165600, today);     // 10:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time falls in yesterdays window, the constraint error message should report yesterdays control window
@@ -1190,7 +1182,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1203,7 +1195,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(43200, today);     // noon
     CtiTime stopTime = GetTimeFromOffsetAndDate(50400, today);      // 2:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
@@ -1220,7 +1212,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1232,7 +1224,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(43200, today);     // noon
     CtiTime stopTime = GetTimeFromOffsetAndDate(79200, today);      // 10:00pm
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
@@ -1249,7 +1241,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1261,7 +1253,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(43200, today);     // noon
     CtiTime stopTime = GetTimeFromOffsetAndDate(104400, today);     // 5:00am tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
@@ -1278,7 +1270,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1290,7 +1282,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(43200, today);     // noon
     CtiTime stopTime = GetTimeFromOffsetAndDate(129600, today);     // noon tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
@@ -1307,7 +1299,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1319,7 +1311,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(43200, today);     // noon
     CtiTime stopTime = GetTimeFromOffsetAndDate(165600, today);     // 10:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStartTimeOverMidnight,
@@ -1336,7 +1328,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1348,7 +1340,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(79200, today);     // 10:00pm
     CtiTime stopTime = GetTimeFromOffsetAndDate(82800, today);      // 11:00pm
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1358,7 +1350,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1370,7 +1362,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(79200, today);     // 10:00pm
     CtiTime stopTime = GetTimeFromOffsetAndDate(104400, today);     // 5:00am tomorrow
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1380,7 +1372,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1392,7 +1384,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(79200, today);     // 10:00pm
     CtiTime stopTime = GetTimeFromOffsetAndDate(129600, today);     // noon tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
@@ -1409,7 +1401,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1421,7 +1413,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(79200, today);     // 10:00pm
     CtiTime stopTime = GetTimeFromOffsetAndDate(165600, today);     // 10:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
@@ -1438,7 +1430,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1450,7 +1442,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(104400, today);     // 5:00am tomorrow
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1460,7 +1452,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1472,7 +1464,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(129600, today);     // noon tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
@@ -1489,7 +1481,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1501,7 +1493,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(100800, today);    // 4:00am tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(165600, today);     // 10:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TTT_InvalidProposedCAStopTimeOverMidnight,
@@ -1518,7 +1510,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1531,7 +1523,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(129600, today);    // noon tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(144000, today);     // 4:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
@@ -1550,7 +1542,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1563,7 +1555,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(129600, today);    // noon tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(165600, today);     // 10:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     // since our start time has moved out beyond todays window, we compare to tomorrows, error message reflects that
@@ -1582,7 +1574,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1594,7 +1586,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(165600, today);    // 10:00pm tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(169200, today);     // 11:00pm tomorrow
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1604,7 +1596,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1616,7 +1608,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(165600, today);    // 10:00pm tomorrow
     CtiTime stopTime = GetTimeFromOffsetAndDate(190800, today);     // 5:00am day after tomorrow
 
-    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime, stopTime, today));
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
     BOOST_CHECK_EQUAL(   0, constraints.getViolations().size() );
 }
 
@@ -1626,7 +1618,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1638,7 +1630,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiTime startTime = GetTimeFromOffsetAndDate(1800, today);      // 12:30am
     CtiTime stopTime = GetTimeFromOffsetAndDate(43200, today);      // noon
 
-    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, stopTime, startTime, today));
+    BOOST_CHECK_EQUAL(false, constraints.checkControlAreaControlWindows(controlArea, stopTime.seconds(), startTime.seconds(), today));
     BOOST_CHECK_EQUAL(    1, constraints.getViolations().size() );
 
     ConstraintViolation cv = ConstraintViolation(ConstraintViolation::CV_TT_ProposedStartAfterStop,

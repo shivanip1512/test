@@ -29,8 +29,6 @@
 #include "coroutine_util.h"
 #include "MessageCounter.h"
 
-#include "std_helper.h"
-
 #include <boost/range.hpp>
 
 #include <iostream>
@@ -313,7 +311,7 @@ void CtiCalcLogicService::Run( )
                     calcThread.reset();
                 }
 
-                auto tempCalcThread = std::make_unique<CtiCalculateThread>();
+                unique_ptr<CtiCalculateThread> tempCalcThread( new CtiCalculateThread );
 
                 if( ! readCalcPoints( tempCalcThread.get() ))
                 {
@@ -330,7 +328,12 @@ void CtiCalcLogicService::Run( )
                         // try it again
                         if(calcThread)
                         {
-                            tempCalcThread->stealPointMaps(*calcThread);
+                            tempCalcThread->setPeriodicPointMap(calcThread->getPeriodicPointMap());
+                            tempCalcThread->setOnUpdatePointMap(calcThread->getOnUpdatePointMap());
+                            tempCalcThread->setConstantPointMap(calcThread->getConstantPointMap());
+                            tempCalcThread->setHistoricalPointMap(calcThread->getHistoricalPointMap());
+
+                            calcThread->clearPointMaps();
                         }
                         else
                         {
@@ -446,13 +449,7 @@ void CtiCalcLogicService::Run( )
                             break; // exit the loop and reload
                         }
 
-                        if( dispatchConnection->hasReconnected() )
-                        {
-                            //  If we reconnected to Dispatch in the last 30 seconds, re-register for our points...
-                            _registerForPoints();
-                            //  ... then wait 30 seconds before checking the _lastDispatchMessageTime again
-                        }
-                        else if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
+                        if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
                         {
                             CTILOG_WARN(dout, "CalcLogic has not heard from dispatch for at least 7 minutes.");
 
@@ -551,7 +548,7 @@ void CtiCalcLogicService::_outputThread()
                 {
                     CtiLockGuard<CtiCriticalSection> outboxGuard(calcThread->outboxMux);
 
-                    while( calcThread->hasOutboxEntries( ) )
+                    while( calcThread->outboxEntries( ) )
                     {
                         outboxEntries.emplace_back(calcThread->getOutboxEntry());
                     }
@@ -578,7 +575,7 @@ void CtiCalcLogicService::_outputThread()
             {
                 if( entry && entry->getCount() > 0 )
                 {
-                    dispatchConnection->WriteConnQue( std::move(entry), CALLSITE );
+                    dispatchConnection->WriteConnQue( entry.release(), CALLSITE );
                 }
             }
         }
@@ -609,20 +606,21 @@ void CtiCalcLogicService::_inputThread( void )
         {
             boost::scoped_ptr<CtiMessage> incomingMsg;
 
-            incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
-
-            if ( incomingMsg )
+            //  while i'm not getting anything
+            while( ! incomingMsg )
             {
+                incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
+
                 mc.increment();
-            }
 
-            if(!_shutdownOnThreadTimeout)
-            {
-                threadStatus.monitorCheck();
-            }
-            else
-            {
-                threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
+                if(!_shutdownOnThreadTimeout)
+                {
+                    threadStatus.monitorCheck();
+                }
+                else
+                {
+                    threadStatus.monitorCheck(&CtiCalcLogicService::sendUserQuit);
+                }
             }
 
             _inputFunc.waitForResume();
@@ -660,40 +658,17 @@ void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, Cti
     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
     if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
     {
-        Cti::GlobalSettings::reload();
+        GlobalSettings::reload();
 
         doutManager.reloadSettings();
+    }
 
+    // only reload on if a database change was made to a point
+    if( dbChgMsg.getDatabase() != ChangePointDb)
+    {
         return;
     }
 
-    switch( dbChgMsg.getDatabase() )
-    {
-        case ChangePAODb:
-            return handlePaoChange(dbChgMsg);
-        case ChangePointDb:
-            return handlePointChange(dbChgMsg, thread);
-    }
-}
-
-void CtiCalcLogicService::handlePaoChange(const CtiDBChangeMsg& dbChgMsg)
-{
-    if( dbChgMsg.getTypeOfChange() == ChangeTypeAdd )
-    {
-        if( isDatabaseCalcDeviceID(dbChgMsg.getId()) )
-        {
-            // always load when a point is added
-            _update = true;
-            _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
-            _dbChangeMessages.push(dbChgMsg);
-
-            CTILOG_INFO(dout, "Database change - DeviceDB.  Setting reload flag. Reload at " << _nextCheckTime);
-        }
-    }
-}
-
-void CtiCalcLogicService::handlePointChange(const CtiDBChangeMsg& dbChgMsg, CtiCalculateThread & thread)
-{
     const long changedId  = dbChgMsg.getId();
     const int  changeType = dbChgMsg.getTypeOfChange();
 
@@ -799,7 +774,7 @@ void CtiCalcLogicService::handleMultiMsg( const CtiMultiMsg &multiMsg, CtiCalcul
         CTILOG_DEBUG(dout, "Processing Multi Message with: "<< multiMsg.getData().size() <<" messages");
     }
 
-    for( const auto *msg : multiMsg.getData() )
+    for each( const CtiMessage *msg in multiMsg.getData() )
     {
         if( msg )
         {
@@ -868,7 +843,6 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
                                   "WHERE CB.POINTID = ?";
 
     DatabaseConnection connection { getCalcQueryTimeout() };
-
     DatabaseReader rdr { connection, sqlCore };
 
     rdr << aPointID;
@@ -876,50 +850,6 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
     rdr.execute();
 
     // Return whether the ID exists in the DB
-    return rdr();
-}
-
-bool CtiCalcLogicService::isDatabaseCalcDeviceID(const long aDeviceID)
-{
-    //  Find any calc point on the specified device ID
-    static const string subquery = 
-        "SELECT *"
-        " FROM CALCBASE cb JOIN POINT p"
-                " ON cb.POINTID=p.POINTID"
-        " WHERE"
-            " p.PAObjectID=?";
-
-    static const string sqlServer = 
-        "SELECT 1"
-        " WHERE EXISTS (" + subquery + ")";
-    static const string oracle = 
-        "SELECT 1"
-        " FROM DUAL"
-        " WHERE EXISTS (" + subquery + ")";
-
-    DatabaseConnection connection{ getCalcQueryTimeout() };
-    DatabaseReader rdr{ connection };
-
-    switch( connection.getClientType() )
-    {
-        case DatabaseConnection::ClientType::Oracle:
-            rdr.setCommandText(oracle);
-            CTILOG_DEBUG(dout, rdr.asString());
-            break;
-        case DatabaseConnection::ClientType::SqlServer:
-            rdr.setCommandText(sqlServer);
-            CTILOG_DEBUG(dout, rdr.asString());
-            break;
-        default:
-            CTILOG_ERROR(dout, "Unhandled client type " << Cti::as_underlying(connection.getClientType()));
-            return true;  //  Reload all devices since we can't check this one with a query
-    }
-
-    rdr << aDeviceID;
-
-    rdr.execute();
-
-    //  Indicate whether we found a calc point on the device
     return rdr();
 }
 
@@ -1131,12 +1061,6 @@ void CtiCalcLogicService::pauseInputThread()
     try
     {
         _inputFunc.pause();
-
-        while ( ! _inputFunc.isWaiting() )
-        {
-            // spin until the thread hits the waitForResume()...  then we know for sure that we've paused
-            Sleep(0);
-        }
     }
     catch(...)
     {
@@ -1204,7 +1128,7 @@ void CtiCalcLogicService::updateCalcData()
             CTILOG_DEBUG(dout, "DBUpdate done changing points");
         }
 
-        calcThread->clearPointMaps();
+        calcThread->clearAndDestroyPointMaps();
         readCalcPoints(calcThread.get());
         _registerForPoints();
 

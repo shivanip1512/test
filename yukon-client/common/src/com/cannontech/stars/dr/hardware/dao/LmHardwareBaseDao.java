@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
@@ -48,10 +47,5 @@ public interface LmHardwareBaseDao {
      * Returns the serial numbers for the supplied inventoryIds. 
      */
     public List<String> getSerialNumberForInventoryIds(Collection<Integer> inventoryId);
-
-    /**
-     * Returns PaoIdentifier for the given serialNumber. 
-     */
-    PaoIdentifier getDeviceIdBySerialNumber(String serialNumber);
     
 }

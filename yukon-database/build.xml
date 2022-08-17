@@ -90,6 +90,7 @@
     </target>
 
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
+        <antcall target="git-checkout"/>
         <property name="databaseName" value="TempDBCreation_${version.major}_${version.minor}_${version.revision}" />
         <property environment="env" />
         
@@ -170,11 +171,27 @@
             <arg path = "../${dbSnapshot}"/>
         </exec>
 
+        <!-- Config git credential" before commit changes -->
+        <antcall target="config-git-credential" />
+
+        <!-- Commit snapshot chenges -->
         <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="mssql.xml" />
             </args>
         </git>
+        <git command="commit" dir="../${dbSnapshot}">
+            <args>
+                <arg value="-m Checking in the latest database snapshot" />
+            </args>
+        </git>
+        <git command="push" dir="../${dbSnapshot}">
+            <args>
+                <arg value="origin"/>
+                <arg value="HEAD:release/7.4"/>
+            </args>
+        </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
@@ -195,7 +212,7 @@
             userid="sys as sysdba"
             password="cti">
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
             <transaction src="tempCreateDatabase.sql" /> 
         </sql>
@@ -217,7 +234,7 @@
             <arg value="--schema=${databaseName}"/>
             <arg value="--outputXmlFile=../${dbSnapshot}/oracle.xml"/>
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
         </java>
         
@@ -229,7 +246,7 @@
             userid="sys as sysdba"
             password="cti">
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>
@@ -245,11 +262,24 @@
             <arg path = "../${dbSnapshot}"/>
         </exec>
 
+        <!-- Commit snapshot chenges -->
         <git command="add" dir="../${dbSnapshot}">
             <args>
                 <arg value="oracle.xml" />
             </args>
         </git>
+        <git command="commit" dir="../${dbSnapshot}">
+            <args>
+                 <arg value="-m Checking in the latest database snapshot" />
+            </args>
+        </git>
+        <git command="push" dir="../${dbSnapshot}">
+            <args>
+                <arg value="origin"/>
+                <arg value="HEAD:release/7.4"/>
+            </args>
+        </git>
+        <echo message="Snapshot complete and checked in" />
     </target>
 
 </project>

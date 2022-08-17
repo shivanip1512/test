@@ -145,14 +145,14 @@ YukonError_t CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
                 address %= 10000;
             }
 
-            _snprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, 7, "0000000" );
-            _snprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, 4, "%04d", address );
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "0000000" );
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "%04d", address );
         }
         else
         {
             //  otherwise, just address by serial number
-            _snprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, 7, "%07d", address );
-            _snprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, 4, "0000");
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.ADDRS, "%07d", address );
+            sprintf((CHAR*)OutMessage->Buffer.FPSt.u.PCC.GRP, "0000");
         }
 
 

@@ -127,7 +127,7 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
         terminalServerSharedPort.setPAOName(commChannel.getName());
         terminalServerSharedPort.setPortID(directPort.getCommPort().getPortID());
         terminalServerSharedPort.setPortName(commChannel.getName());
-        terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0,0));
+        terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
 
         // Create the default points for the port
         SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
@@ -236,14 +236,15 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
                     YukonPao meter;
                     if (meterType.getPaoType().isRfn()) {
-                        RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
-                                .get(0);
-                        RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address),
-                                templateSettings.getManufacturer(),
-                                templateSettings.getModel());
                         if (meterType.getPaoType().isRfRelay()) {
-                            meter = deviceCreationService.createRfnDeviceByDeviceType(meterType.getPaoType(), meterName, rfId, true);
+                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address), "EATON", "RFRelay");
+                            meter = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_RELAY, meterName, rfId, true);
                         } else {
+                            RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(meterType.getPaoType())
+                                                                                        .get(0);
+                            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(address),
+                                                                   templateSettings.getManufacturer(),
+                                                                   templateSettings.getModel());
                             meter = createRfnMeter(devAmr, meterType.getPaoType(), meterName, rfId, true);
                         }
                     } else {

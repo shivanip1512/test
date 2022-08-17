@@ -28,35 +28,11 @@
         
 		<delete dir="${yukon.lib}/WebContent" />
 		<delete file="${yukon.lib}/yukon-web.jar" />
+		<delete dir="build" />
+		<delete dir="${yukon.web.src_build}"/>
 
-        <move file="build" tofile="build-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="build-delete"/>  
-            </daemons>
-        </parallel>
-
-        <move file="${yukon.web.src_build}" tofile="${yukon.web.src_build}-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="${yukon.web.src_build}-delete"/>  
-            </daemons>
-        </parallel>
-
-        <move file="${yukon-web}/build_jsp" tofile="${yukon-web}/build_jsp-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="${yukon-web}/build_jsp-delete"/>  
-            </daemons>
-        </parallel>
-
-        <move file="${yukon-web}/WebContent_temp" tofile="${yukon-web}/WebContent_temp-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="${yukon-web}/WebContent_temp-delete"/>  
-            </daemons>
-        </parallel>
-
+        <delete dir="${yukon-web}/build_jsp" />
+        <delete dir="${yukon-web}/WebContent_temp" />
         <delete dir="${yukon-web}/WebContent_merged" />
         <delete file="${yukon-web}/generated_web.xml" />
 		
@@ -74,7 +50,6 @@
 		       target="${yukon.javac.target}" 
 	 	       source="${yukon.javac.source}"
 		       debug="${yukon.javac.debug}">
-            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 		        <fileset dir="${yukon.build}/lib">
 		            <include name="*.jar"/>
@@ -146,7 +121,6 @@
                target="${yukon.javac.target}" 
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
-            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath refid="jspc.class.path"/>
         </javac>
         <jar jarfile="${yukon.lib}/yukon-web-jsp.jar" basedir="${yukon-web}/build_jsp/" excludes="*.xml *.jar"/>
@@ -156,7 +130,7 @@
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="false" />
+            <param name="halt" value="no" />
             <param name="srcdir" value="test"/>
             <param name="destdir" value="test/build" />
         </antcall>
@@ -180,7 +154,6 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
-            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
@@ -199,20 +172,23 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <jacoco:agent property="jacocoagent" destfile="${yukon.lib}/coverage/yukon-web-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" />
-        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="${halt}">
+        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
             <classpath id="junit.class.path">
-                <pathelement location="${srcdir}" />
-                <pathelement location="${destdir}" />
+                <pathelement location="${srcdir}"/>
+                <pathelement location="${destdir}"/>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
                     <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
-            <arg value="--scan-classpath"/>
-            <arg line="--reports-dir ${test.results.dir}"/>
-            <jvmarg value="${jacocoagent}"/>
-        </java>
+            <formatter type="xml" />
+            <batchtest todir="${test.results.dir}">
+                <fileset dir="${destdir}">
+                    <include name="**/*Test.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+
         <!-- Create the html reports for test results -->
         <property name="test.results.dir" value="test/unitTestResults" />
         <junitreport todir="${test.results.dir}">

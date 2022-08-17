@@ -154,8 +154,6 @@ public class CcHomeController {
     
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
-        // increased array size from default value of 256 to 1000
-        binder.setAutoGrowCollectionLimit(1000);
         datePropertyEditorFactory.setupDateTimePropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
     
@@ -1025,8 +1023,8 @@ public class CcHomeController {
         //Validation
         DataBinder binder = new DataBinder(programFields);
         BindingResult bindingResult = binder.getBindingResult();
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(bindingResult, "programName", programName, false, 255);
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programName", programName, false, 255);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
         YukonValidationUtils.checkIsPositiveInt(bindingResult, "programLastIdentifier", programLastIdentifier);
 
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
@@ -1125,7 +1123,7 @@ public class CcHomeController {
         } else {
             parameter.setParameterValue(null);
         }
-        YukonValidationUtils.checkIsNumberPositiveIntOrDouble(bindingResult, programFields, parameterInput);
+        YukonValidationUtils.checkIsValidNumber(bindingResult, programFields, parameterInput);
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revision/{revision}")

@@ -431,10 +431,7 @@ YukonError_t CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list<
         /* Do the extra delay if the message is a completing type */
         if( Xfer.isMessageComplete() )
         {
-            if ( auto postCommWaitDelay = std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) )
-            {
-                CTISleep( postCommWaitDelay );
-            }
+            if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
         }
 
         if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
@@ -555,7 +552,7 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
 
                 if(Dev->getAddress() == RTUGLOBAL || Dev->getAddress() == CCUGLOBAL)
                 {
-                    CTISleep( std::max<ULONG>( Dev->getPostDelay(), getDelay( POST_REMOTE_DELAY ) ) );
+                    CTISleep (Dev->getPostDelay());
                 }
             }
         }
@@ -754,7 +751,7 @@ string CtiPortTCPIPDirect::getSQLCoreStatement()
     static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
                                    "CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, "
                                    "CP.sharedporttype, CP.sharedsocketnumber, PST.baudrate, PST.cdwait, PST.linesettings, "
-                                   "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, TMG.PostCommWait, "
+                                   "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, "
                                    "TSV.ipaddress, TSV.socketportnumber, TSV.encodingkey, TSV.encodingtype "
                                "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG, PortTerminalServer TSV "
                                "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "

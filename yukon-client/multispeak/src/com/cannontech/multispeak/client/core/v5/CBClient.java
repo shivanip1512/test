@@ -35,7 +35,6 @@ import com.cannontech.msp.beans.v5.cb_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.cb_server.PingURL;
 import com.cannontech.msp.beans.v5.cb_server.PingURLResponse;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -64,7 +63,7 @@ public class CBClient implements ICBClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -80,7 +79,7 @@ public class CBClient implements ICBClient {
             
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();
                 if (arrayOfString != null) {
@@ -99,7 +98,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersByContactInfoResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getMetersByContactInfo, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getMetersByContactInfo, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -111,7 +110,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersByAccountIDsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMetersByAccountIDs,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -123,7 +122,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersByCustomerIDsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getMetersByCustomerIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getMetersByCustomerIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -135,7 +134,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersBySearchStringResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getMetersBySearchString, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getMetersBySearchString, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -147,7 +146,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetAllServiceLocationsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getAllServiceLocations, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getAllServiceLocations, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -159,7 +158,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetDomainsByDomainNamesResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getDomainsByDomainNames, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getDomainsByDomainNames, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -171,7 +170,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersByNetworkModelRefsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getMetersByNetworkModelRefs, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getMetersByNetworkModelRefs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -183,7 +182,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetCustomersByMeterIDsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getCustomersByMeterIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getCustomersByMeterIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -195,7 +194,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetServiceLocationsByMeterIDsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getServiceLocationsByMeterIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getServiceLocationsByMeterIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -207,7 +206,7 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMetersByServiceLocationIDsResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getMetersByServiceLocationIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                getMetersByServiceLocationIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }

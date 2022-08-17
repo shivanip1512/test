@@ -94,41 +94,8 @@
     </c:forEach>
 </ul>
 
-<div class="page-action-area">
-    <cti:button classes="action primary" nameKey="confirm"  id="copy-option" data-popup="#confirm-popup"/>
-    <cti:msg2 var="confirmationTitle" key="yukon.web.modules.dr.cc.init.confirmationPopup.title"/>
-    <cti:msg2 var="confirmText" key="yukon.web.components.button.ok.label"/>
-    <div class="dn" id="confirm-popup" data-title="${confirmationTitle}" data-dialog data-ok-text="${confirmText}" 
-         data-event="yukon:event:confirm">
-        <cti:list var="arguments">
-            <cti:item value="${program.name}"/>
-            <cti:item value="${program.programType.name}"/>
-        </cti:list>
-        <h3><i:inline key=".messagedetail" arguments="${arguments}"/></h3>
-        <br><b><i:inline key=".confirmation.parameters"/></b></br>
-        <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".notificationTime">
-                <cti:formatDate type="FULL" value="${event.notificationTime}"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".startTime">
-                <cti:formatDate type="FULL" value="${event.startTime}"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".stopTime">
-                <cti:formatDate type="FULL" value="${event.stopTime}"/>
-            </tags:nameValue2>
-            <c:if test="${event.eventType.accounting or event.eventType.notification}">
-                <tags:nameValue2 nameKey=".confirmation.duration">
-                    <cti:formatDuration type="DHMS_REDUCED" value="${event.duration * 60 * 1000}"/>
-                </tags:nameValue2>
-            </c:if>
-        </tags:nameValueContainer2>
-    </div>
-    <cti:url var="cancelUrl" value="/dr/cc/home"/>
-    <cti:button href="${cancelUrl}" nameKey="cancel"/>
-</div>
-
 <cti:url var="url" value="/dr/cc/program/${event.programId}/createEvent"/>
-<form:form id="confirm-form" modelAttribute="event" action="${url}">
+<form:form modelAttribute="event" action="${url}">
     <cti:csrfToken/>
     
     <form:hidden path="eventType"/>
@@ -142,6 +109,12 @@
     <form:hidden path="selectedGroupIds"/>
     <form:hidden path="selectedCustomerIds"/>
     <form:hidden path="initialEventId"/>
+    
+    <div class="page-action-area">
+        <cti:button type="submit" classes="action primary" nameKey="confirm"/>
+        
+        <cti:url var="cancelUrl" value="/dr/cc/home"/>
+        <cti:button href="${cancelUrl}" nameKey="cancel"/>
+</div>
 </form:form>
-<cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js" />
 </cti:standardPage>

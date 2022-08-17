@@ -6,7 +6,6 @@ import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormat
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.util.TimeIntervals;
 
 public class ArchivedValuesExporter {
 
@@ -16,8 +15,6 @@ public class ArchivedValuesExporter {
     private Set<Attribute> attributes;
     private DataRange runDataRange;
     private DataRange scheduleDataRange;
-    private boolean onInterval;
-    private TimeIntervals interval;
     
     public int getFormatId() {
         return formatId;
@@ -64,21 +61,5 @@ public class ArchivedValuesExporter {
     }
     public void setScheduleDataRange(DataRange scheduleDataRange) {
         this.scheduleDataRange = scheduleDataRange;
-    }
-    
-    public boolean isOnInterval() {
-        return onInterval;
-    }
-    
-    public void setOnInterval(boolean onInterval) {
-        this.onInterval = onInterval;
-    }
-    
-    public TimeIntervals getInterval() {
-        return interval;
-    }
-    
-    public void setInterval(TimeIntervals interval) {
-        this.interval = interval;
     }
 }

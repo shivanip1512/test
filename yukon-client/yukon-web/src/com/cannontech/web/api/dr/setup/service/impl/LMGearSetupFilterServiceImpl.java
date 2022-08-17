@@ -13,7 +13,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
@@ -55,11 +54,7 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
     private static final String baseKey = "yukon.web.modules.dr.setup.gear.";
     private static final String rampInFieldName = "rampIn";
     private static final String setpointFieldName = "setpoint";
-    private static final String refreshShedType = "refreshShedType";
-    private static final String shedTime = "shedTime";
     private static final String modeFieldName = "mode";
-    private static final String maxShedTime = "maxShedTime";
-    private static final String fixedShedTime = "fixedShedTime";
 
     private static Set<String> excludeGearFields = Set.of("groupSelectionMethod", "stopCommandRepeat", "capacityReduction", "numberOfGroups");
 
@@ -221,13 +216,6 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
 
         if (controlMethod == GearControlMethod.ThermostatRamping || controlMethod == GearControlMethod.SepTemperatureOffset) {
             fieldPath = getFieldName(controlMethod, fieldPath, fieldValueMap);
-        } else if (controlMethod == GearControlMethod.TimeRefresh && StringUtils.equals(fieldPath, shedTime)) {
-            CycleCountSendType cycleCountSendType = CycleCountSendType.valueOf(fieldValueMap.get(refreshShedType));
-            if (cycleCountSendType == CycleCountSendType.DynamicShedTime) {
-                fieldPath = maxShedTime;
-            } else {
-                fieldPath = fixedShedTime;
-            }
         }
         String fieldName = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + fieldPath));
         return "<b>" + fieldName + "</b>";

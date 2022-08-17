@@ -151,7 +151,7 @@
                                     </div>
                                 </td>
                                 <cti:checkRolesAndProperties value="MANAGE_SCHEDULES">
-                                    <td>
+                                    <td class="tar">
                                         <%@ include file="../scheduleCog.jspf" %>
                                     </td>
                                 </cti:checkRolesAndProperties>

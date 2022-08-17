@@ -1,7 +1,5 @@
 #pragma once
 
-#include "amq_connection.h"
-
 namespace cms {
 class Session;
 class Message;
@@ -50,20 +48,12 @@ private:
     std::unique_ptr<cms::Session> consumerSession;
     std::unique_ptr<cms::Session> producerSession;
 
-    std::unique_ptr<Messaging::ActiveMQ::ManagedConsumer> batteryNodeGetRequestConsumer;
-    std::unique_ptr<Messaging::ActiveMQ::MessageListener> batteryNodeGetRequestListener;
-    
-    std::unique_ptr<Messaging::ActiveMQ::ManagedConsumer> batteryNodeSetRequestConsumer;
-    std::unique_ptr<Messaging::ActiveMQ::MessageListener> batteryNodeSetRequestListener;
-
-    std::unique_ptr<Messaging::ActiveMQ::ManagedConsumer> e2eRequestConsumer;
-    std::unique_ptr<Messaging::ActiveMQ::MessageListener> e2eRequestListener;
+    std::unique_ptr<Messaging::ActiveMQ::ManagedConsumer> requestConsumer;
+    std::unique_ptr<Messaging::ActiveMQ::MessageListener> requestListener;
                     
-    std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> e2eConfirmProducer;
-    std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> e2eIndicationProducer;
+    std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> confirmProducer;
+    std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> indicationProducer;
 
-    void handleBatteryNodeGetChannelConfigRequest(const cms::Message* msg);
-    void handleBatteryNodeSetChannelConfigRequest(const cms::Message* msg);
     void handleE2eDtRequest(const cms::Message *msg);
     void delayProcessing(float delay, const Messaging::Rfn::E2eDataRequestMsg requestMsg);
     void processE2eDtRequest(const Messaging::Rfn::E2eDataRequestMsg requestMsg);
@@ -78,11 +68,6 @@ private:
     Bytes buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const Bytes&);
-
-    auto handleStatusRequest(const Messaging::ActiveMQConnectionManager::MessageDescriptor& md)
-            -> std::unique_ptr<Messaging::ActiveMQConnectionManager::SerializedMessage>;
-    auto handleConfigurationRequest(const Messaging::ActiveMQConnectionManager::MessageDescriptor& md)
-            -> std::unique_ptr<Messaging::ActiveMQConnectionManager::SerializedMessage>;
 };
 
 }

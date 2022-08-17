@@ -51,11 +51,9 @@
                     </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="INTERACT">
+                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
                                 <cm:dropdownOption key=".connect" classes="js-connect" icon="icon-connect" 
                                     data-device-id="${paoId}"/>
-                            </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="OWNER">
                                 <c:choose>
                                     <c:when test="${fn:contains(optedOutDevices, pao.inventoryId)}">
                                         <cti:msg2 var="disconnectNotAllowed" key=".disconnectNotAllowed"/>

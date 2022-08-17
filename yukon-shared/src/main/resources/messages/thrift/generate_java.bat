@@ -1,12 +1,5 @@
-setlocal
-
-if [%1] == [-all] (
-    set _all=-OnlyRecentlyModified 0
-    shift
-)
-
-if not [%1] == [] (
-    set _files=-Files """%*"""
-)
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command .\generate.ps1 -Type java %_all% %_files%
+set THRIFT_VERSION=0.13.0
+set JAVA_OUTPUT_DIR=..\..\..\..\..\..\yukon-client\common\src
+set THRIFT_EXE=%DEV_ENVIRONMENT%\libraries\apache\thrift\%THRIFT_VERSION%\bin\thrift-%THRIFT_VERSION%.exe
+if [%1] == [] (set FILES=*.thrift) ELSE (set FILES=%*)
+for %%f in (%FILES%) do %THRIFT_EXE% -out %JAVA_OUTPUT_DIR% --gen java:beans %%f

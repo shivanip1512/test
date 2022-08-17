@@ -63,6 +63,4 @@ public interface YukonImageDao {
     /** Load an image from the database */
     LiteYukonImage load(int imageId);
     
-    /** get content type of yukon image */
-    public String getImageContentType(LiteYukonImage image);
 }

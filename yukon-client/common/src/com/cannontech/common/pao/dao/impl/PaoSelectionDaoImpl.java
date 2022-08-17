@@ -63,12 +63,6 @@ public class PaoSelectionDaoImpl implements PaoSelectionDao {
                 }
                 paoData.setAddressOrSerialNumber(addressOrSerialNumber);
             }
-            if (neededData.contains(OptionalField.LATITUDE)) {
-                paoData.setLatitude(rs.getString("Latitude"));
-            }
-            if (neededData.contains(OptionalField.LONGITUDE)) {
-                paoData.setLongitude(rs.getString("Longitude"));
-            }
         }
     }
 
@@ -87,7 +81,6 @@ public class PaoSelectionDaoImpl implements PaoSelectionDao {
         final boolean needsCarrierAddress = neededData.contains(OptionalField.CARRIER_ADDRESS);
         final boolean needsRouteName = neededData.contains(OptionalField.ROUTE_NAME);
         final boolean needsAddressOrSerialNumber = neededData.contains(OptionalField.ADDRESS_OR_SERIAL_NUMBER);
-        final boolean needsCoordinates = neededData.contains(OptionalField.LATITUDE) || neededData.contains(OptionalField.LONGITUDE);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -106,9 +99,6 @@ public class PaoSelectionDaoImpl implements PaoSelectionDao {
                 if (needsAddressOrSerialNumber) {
                     sql.append(", DCS.Address AS RFNAddress, RFNA.SerialNumber");
                 }
-                if (needsCoordinates) {
-                    sql.append(", PLOC.Latitude, PLOC.Longitude");
-                }
 
                 sql.append("FROM YukonPaobject YP");
                 if (needsMeterNumber) {
@@ -124,9 +114,6 @@ public class PaoSelectionDaoImpl implements PaoSelectionDao {
                 if (needsAddressOrSerialNumber) {
                     sql.append("LEFT JOIN DeviceCarrierSettings DCS on YP.PaobjectId = DCS.DeviceId");
                     sql.append("LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YP.PaobjectId");
-                }
-                if (needsCoordinates) {
-                    sql.append("LEFT JOIN PaoLocation PLOC on YP.PaobjectId = PLOC.PaobjectId");
                 }
 
                 sql.append("WHERE YP.PaobjectId").in(subList);

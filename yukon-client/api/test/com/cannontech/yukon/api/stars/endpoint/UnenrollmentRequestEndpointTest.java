@@ -1,14 +1,13 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -25,7 +24,7 @@ public class UnenrollmentRequestEndpointTest {
     private Namespace ns;
     private String childNodePath = "//y:unenrollmentResponse/y:enrollmentResultList/y:programEnrollmentResult";
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         ns = YukonXml.getYukonNamespaceForDefault();    
         enrollmentTestService = new EnrollmentHelperEndpointServiceMock();
@@ -52,12 +51,12 @@ public class UnenrollmentRequestEndpointTest {
                                     new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
-        assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
-        assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
-        assertEquals("NOT_FOUND", enrollmentResponses.get(0).getLoadProgramName());
-        assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
-        assertEquals("NotFoundException", enrollmentResponses.get(0).getFailureErrorCode());
-        assertEquals("The program name supplied does not exist.", enrollmentResponses.get(0).getFailureErrorDescription());
+        Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
+        Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
+        Assert.assertEquals("NOT_FOUND", enrollmentResponses.get(0).getLoadProgramName());
+        Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
+        Assert.assertEquals("NotFoundException", enrollmentResponses.get(0).getFailureErrorCode());
+        Assert.assertEquals("The program name supplied does not exist.", enrollmentResponses.get(0).getFailureErrorDescription());
 
     }
     
@@ -78,12 +77,12 @@ public class UnenrollmentRequestEndpointTest {
                                     new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
-        assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
-        assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
-        assertEquals("ILLEGAL_ARGUMENT", enrollmentResponses.get(0).getLoadProgramName());
-        assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
-        assertEquals("IllegalArgumentException", enrollmentResponses.get(0).getFailureErrorCode());
-        assertEquals("The load group supplied does not belong to the program supplied.", enrollmentResponses.get(0).getFailureErrorDescription());
+        Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
+        Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
+        Assert.assertEquals("ILLEGAL_ARGUMENT", enrollmentResponses.get(0).getLoadProgramName());
+        Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
+        Assert.assertEquals("IllegalArgumentException", enrollmentResponses.get(0).getFailureErrorCode());
+        Assert.assertEquals("The load group supplied does not belong to the program supplied.", enrollmentResponses.get(0).getFailureErrorDescription());
 
     }
 
@@ -104,10 +103,10 @@ public class UnenrollmentRequestEndpointTest {
                                     new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
         
         
-        assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
-        assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
-        assertEquals("load program name", enrollmentResponses.get(0).getLoadProgramName());
-        assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
+        Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
+        Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
+        Assert.assertEquals("load program name", enrollmentResponses.get(0).getLoadProgramName());
+        Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
     }
     
     @Test
@@ -127,15 +126,15 @@ public class UnenrollmentRequestEndpointTest {
                                     new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
-        assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
-        assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
-        assertEquals("load program name 1", enrollmentResponses.get(0).getLoadProgramName());
-        assertEquals("load group name 1", enrollmentResponses.get(0).getLoadGroupName());
+        Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
+        Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
+        Assert.assertEquals("load program name 1", enrollmentResponses.get(0).getLoadProgramName());
+        Assert.assertEquals("load group name 1", enrollmentResponses.get(0).getLoadGroupName());
 
-        assertEquals("7654321", enrollmentResponses.get(1).getAccountNumber());
-        assertEquals("0987654321", enrollmentResponses.get(1).getSerialNumber());
-        assertEquals("load program name 2", enrollmentResponses.get(1).getLoadProgramName());
-        assertEquals("load group name 2", enrollmentResponses.get(1).getLoadGroupName());
+        Assert.assertEquals("7654321", enrollmentResponses.get(1).getAccountNumber());
+        Assert.assertEquals("0987654321", enrollmentResponses.get(1).getSerialNumber());
+        Assert.assertEquals("load program name 2", enrollmentResponses.get(1).getLoadProgramName());
+        Assert.assertEquals("load group name 2", enrollmentResponses.get(1).getLoadGroupName());
     
     }
 
@@ -156,10 +155,10 @@ public class UnenrollmentRequestEndpointTest {
                                     new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
-        assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
-        assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
-        assertEquals("load program name", enrollmentResponses.get(0).getLoadProgramName());
-        assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
+        Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
+        Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
+        Assert.assertEquals("load program name", enrollmentResponses.get(0).getLoadProgramName());
+        Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
 
     }
 

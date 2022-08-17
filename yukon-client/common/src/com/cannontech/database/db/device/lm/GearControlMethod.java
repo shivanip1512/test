@@ -10,10 +10,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
-import com.cannontech.database.data.device.lm.EatonCloudCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
-import com.cannontech.database.data.device.lm.EcobeePlusGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.HoneywellSetpointGear;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
@@ -42,7 +40,6 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SepCycle(SepCycleGear.class, "SEP Cycle", PaoType.LM_SEP_PROGRAM),
     EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_ECOBEE_PROGRAM),
     EcobeeSetpoint(EcobeeSetpointGear.class, "ecobee Setpoint", PaoType.LM_ECOBEE_PROGRAM),
-    EcobeePlus(EcobeePlusGear.class, "ecobee Plus", PaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
     HoneywellSetpoint(HoneywellSetpointGear.class, "Honeywell Setpoint", PaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),
@@ -59,8 +56,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping", PaoType.LM_DIRECT_PROGRAM),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak", PaoType.LM_DIRECT_PROGRAM),
     MeterDisconnect(MeterDisconnectGear.class, "Meter Disconnect", PaoType.LM_METER_DISCONNECT_PROGRAM),
-    EatonCloudCycle(EatonCloudCycleGear.class, "Eaton Cloud Cycle", PaoType.LM_EATON_CLOUD_PROGRAM),
-    NoControl(NoControlGear.class, "No Control", PaoType.LM_EATON_CLOUD_PROGRAM, PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
+    NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
     private static final Logger log = YukonLogManager.getLogger(GearControlMethod.class);
     static ImmutableSetMultimap<PaoType, GearControlMethod> gearTypesByProgramType;

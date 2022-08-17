@@ -2259,7 +2259,6 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
     string resultString;
 
     std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
-    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
     if( InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection ))
@@ -3577,7 +3576,6 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         string resultString;
 
         std::unique_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr));
-        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
         CtiCommandParser parse(InMessage.Return.CommandStr);
 

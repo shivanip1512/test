@@ -8,12 +8,10 @@
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="OUTAGE"/>
         <tag name="RFN_EVENTS"/>
-        <tag name="RFN1200_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" init="true"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="DNP3 Address Changed" init="true" attributes="DNP3_ADDRESS_CHANGED"/>
         <pointInfo name="Failed Upgrade Signature Verification" init="true"/>
@@ -23,6 +21,5 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Outstation DNP3 SerComm Locked" init="true" attributes="OUTSTATION_DNP3_SERCOMM_LOCKED"/>
         <pointInfo name="Time Sync Failed" init="true" attributes="TIME_SYNC_FAILED"/>
-        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
     </pointInfos>
 </pao>

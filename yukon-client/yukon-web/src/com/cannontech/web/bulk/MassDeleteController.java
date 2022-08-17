@@ -32,8 +32,6 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -44,8 +42,6 @@ public class MassDeleteController {
 
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private HardwareService hardwareService;
-    @Autowired private InventoryDao inventoryDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PaoPersistenceDao paoPersistenceDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
@@ -110,9 +106,6 @@ public class MassDeleteController {
         try {
             if (paoPersistenceDao.supports(device)) {
                 paoPersistenceService.deletePao(device);
-            } else if (device.getPaoIdentifier().getPaoType().isCloudLcr()) {
-                int inventoryId = inventoryDao.getYukonInventoryForDeviceId(device.getPaoIdentifier().getPaoId()).getInventoryIdentifier().getInventoryId();
-                hardwareService.deleteHardware(YukonUserContext.system.getYukonUser(), true, inventoryId);
             } else {
                 deviceDao.removeDevice(device);
             }

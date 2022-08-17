@@ -13,7 +13,7 @@ const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
 extern const std::vector<uint8_t> payload { 
     0x1e, 
-    0x00, 0x11,  //  17 TLVs
+    0x00, 0x10,  //  16 TLVs
     //  TLV 1
     0x00, 0x01,  //  TOU Enable/Disable
     0x00, 0x01,
@@ -62,21 +62,21 @@ extern const std::vector<uint8_t> payload {
     0x00, 0x03,  //  TOU Holiday
     0x00, 0x0c,
         //  Holiday 1
-        0x5A, 0xA9, 0x3B, 0x26,
+        0x5A, 0xA9, 0x3B, 0x26, //  
         //  Holiday 2
-        0x5B, 0x34, 0x53, 0x9D,
+        0x5B, 0x34, 0x53, 0x9D, //
         //  Holiday 3
-        0x00, 0x00, 0x00, 0x00,  //  unset
+        0x5A, 0x7B, 0x45, 0x42, 
     //  TLV 4
     0x00, 0x04,  //  Demand Freeze Day
     0x00, 0x01,
         0x20,  //  32
     //  TLV 5
     0x00, 0x05,  //  Interval recording
-    0x00, 0x2d,
+    0x00, 0x25,
         0x00, 0x00, 0x1c, 0x20,  //  7200
         0x00, 0x01, 0x51, 0x80,  //  86400
-        0x09,  //  9 metrics
+        0x07,  //  7 metrics
         0x00, 0x01, 0x00, 0x00,
         0x00, 0x09, 0x00, 0x08,
         0x00, 0x0a, 0x00, 0x10,
@@ -84,12 +84,10 @@ extern const std::vector<uint8_t> payload {
         0x00, 0x02, 0x00, 0x00,
         0x00, 0x03, 0x00, 0x00,
         0x00, 0x04, 0x00, 0x00,
-        0x01, 0x00, 0x00, 0x00,  //  invalid recording metric 256
-        0x08, 0xd0, 0x00, 0x00,  //  invalid recording metric 2256
     //  TLV 6
     0x00, 0x06,  // Channel selection
-    0x00, 0x25,
-        0x09,
+    0x00, 0x1d,
+        0x07,
         0x00, 0x05, 0x00, 0x00,
         0x00, 0x09, 0x00, 0x08,
         0x00, 0x0a, 0x00, 0x10,
@@ -97,8 +95,6 @@ extern const std::vector<uint8_t> payload {
         0x00, 0x06, 0x00, 0x00,
         0x00, 0x07, 0x00, 0x00,
         0x00, 0x08, 0x00, 0x00,
-        0x01, 0x00, 0x00, 0x00,  //  invalid recording metric 256
-        0x08, 0xd0, 0x00, 0x00,  //  invalid recording metric 2256
     //  TLV 7
     0x00, 0x07,  //  Disconnect
     0x00, 0x06,
@@ -195,11 +191,7 @@ extern const std::vector<uint8_t> payload {
     0x00, 0x0f,  //  Voltage profile status
     0x00, 0x05,
         0x02,  //  temporary enable
-        0x51, 0x23, 0x45, 0x67, //  enabled-until timestamp
-    //  TLV 16
-    0x00, 0x10,  //  Metrology disable
-    0x00, 0x01,
-        0x01  //  Metrology disabled
+        0x51, 0x23, 0x45, 0x67  //  enabled-until timestamp
     };
 
 BOOST_AUTO_TEST_CASE(test_request)
@@ -377,141 +369,6 @@ BOOST_AUTO_TEST_CASE(test_one_tlv)
     BOOST_CHECK_EQUAL(cmd.touEnabled.value(), Cti::Devices::Commands::RfnTouConfigurationCommand::TouEnable);
 }
 
-BOOST_AUTO_TEST_CASE(test_disconnect_modes)
-{
-    //  On demand
-    {
-        const std::vector<uint8_t> payload {
-            0x1e,
-            0x00, 0x01,
-            //  TLV 7
-            0x00, 0x07,  //  Disconnect
-            0x00, 0x02,
-            0x01, //  disconnect mode
-            0x77, //  reconnect mode
-            };
-
-        RfnConfigNotificationCommand cmd;
-
-        std::string exp = "Device Configuration Request:"
-            "\nDisconnect configuration:"
-            "\n    Disconnect mode  : on demand"
-            "\n    Reconnect method : 119";
-
-        const auto result = cmd.handleResponse(execute_time, payload);
-
-        BOOST_REQUIRE_EQUAL(result.size(), 1);
-
-        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
-        BOOST_CHECK(result[0].points.empty());
-        BOOST_CHECK_EQUAL(result[0].description, exp);
-
-        BOOST_REQUIRE(cmd.disconnect);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 1);
-        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
-    }
-
-    //  Demand threshold
-    {
-        const std::vector<uint8_t> payload{
-            0x1e,
-            0x00, 0x01,
-            //  TLV 7
-            0x00, 0x07,  //  Disconnect
-            0x00, 0x06,
-            0x02, //  disconnect mode
-            0x00, //  reconnect mode
-            0x17, //  demand interval
-            0x97, //  demand threshold
-            0x05, //  connect delay
-            0x09, //  max disconnects
-        };
-
-        RfnConfigNotificationCommand cmd;
-
-        std::string exp = "Device Configuration Request:"
-            "\nDisconnect configuration:"
-            "\n    Disconnect mode  : demand threshold"
-            "\n    Reconnect method : 0"
-            "\n    Demand interval  : 23 minutes"
-            "\n    Demand threshold : 15.100000000000001kW"
-            "\n    Connect delay    : 5 minutes"
-            "\n    Max disconnects  : 9";
-
-        const auto result = cmd.handleResponse(execute_time, payload);
-
-        BOOST_REQUIRE_EQUAL(result.size(), 1);
-
-        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
-        BOOST_CHECK(result[0].points.empty());
-        BOOST_CHECK_EQUAL(result[0].description, exp);
-
-        BOOST_REQUIRE(cmd.disconnect);
-        BOOST_REQUIRE(cmd.disconnect->connectDelay);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.value(), 5);
-        BOOST_REQUIRE(cmd.disconnect->demandInterval);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.value(), 23);
-        BOOST_REQUIRE(cmd.disconnect->demandThreshold);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.value(), 15.100000000000001);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 2);
-        BOOST_REQUIRE(cmd.disconnect->maxDisconnects);
-        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.value(), 9);
-        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 0);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
-    }
-
-    //  Cycling
-    {
-        const std::vector<uint8_t> payload{
-            0x1e,
-            0x00, 0x01,
-            //  TLV 7
-            0x00, 0x07,  //  Disconnect
-            0x00, 0x06,
-            0x03, //  disconnect mode
-            0x13, //  reconnect mode
-            0x02, 0x77, //  disconnect time
-            0x01, 0x38, //  connect time
-        };
-
-        RfnConfigNotificationCommand cmd;
-
-        std::string exp = "Device Configuration Request:"
-            "\nDisconnect configuration:"
-            "\n    Disconnect mode  : cycling"
-            "\n    Reconnect method : 19"
-            "\n    Disconnect time  : 631 minutes"
-            "\n    Connect time     : 312 minutes";
-
-        const auto result = cmd.handleResponse(execute_time, payload);
-
-        BOOST_REQUIRE_EQUAL(result.size(), 1);
-
-        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
-        BOOST_CHECK(result[0].points.empty());
-        BOOST_CHECK_EQUAL(result[0].description, exp);
-    
-        BOOST_REQUIRE(cmd.disconnect);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 3);
-        BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.is_initialized(), false);
-        BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
-        BOOST_REQUIRE(cmd.disconnect->disconnectTime);
-        BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.value(),631);
-        BOOST_REQUIRE(cmd.disconnect->connectTime);
-        BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.value(), 312);
-    }
-}
-
 BOOST_AUTO_TEST_CASE(test_channel_configuration)
 {
     const std::vector<uint8_t> payload{
@@ -657,63 +514,9 @@ BOOST_AUTO_TEST_CASE(test_temperature)
     BOOST_CHECK_EQUAL(cmd.temperature->alarmRepeatInterval, 119);
 }
 
-BOOST_AUTO_TEST_CASE(test_metrology)
-{
-    {
-        const std::vector<uint8_t> payload{
-            0x1e,
-            0x00, 0x01,
-            0x00, 0x10,
-            0x00, 0x01,
-            0x00
-        };
-
-        RfnConfigNotificationCommand cmd;
-
-        const auto result = cmd.handleResponse(execute_time, payload);
-
-        BOOST_REQUIRE_EQUAL(result.size(), 1);
-
-        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
-        BOOST_CHECK(result[0].points.empty());
-        BOOST_CHECK_EQUAL(result[0].description,
-            "Device Configuration Request:"
-            "\nMetrology:"
-            "\n    Metrology enabled");
-
-        BOOST_REQUIRE(cmd.metrologyState);
-        BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Enable);
-    }
-    {
-        const std::vector<uint8_t> payload{
-            0x1e,
-            0x00, 0x01,
-            0x00, 0x10,
-            0x00, 0x01,
-            0x01
-        };
-
-        RfnConfigNotificationCommand cmd;
-
-        const auto result = cmd.handleResponse(execute_time, payload);
-
-        BOOST_REQUIRE_EQUAL(result.size(), 1);
-
-        BOOST_CHECK_EQUAL(result[0].status, ClientErrors::None);
-        BOOST_CHECK(result[0].points.empty());
-        BOOST_CHECK_EQUAL(result[0].description,
-            "Device Configuration Request:"
-            "\nMetrology:"
-            "\n    Metrology disabled");
-
-        BOOST_REQUIRE(cmd.metrologyState);
-        BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Disable);
-    }
-}
-
 BOOST_AUTO_TEST_CASE(test_all_tlvs)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     const std::string expected = 
         "Device Configuration Request:"
@@ -731,9 +534,9 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Schedule 4 rates        : A, D, C, B, A, D"
         "\n    Default rate            : B"
         "\nTOU holiday configuration:"
-        "\n     Date 1 - 2018-03-14"
-        "\n     Date 2 - 2018-06-27"
-        "\n     Date 3 - not-a-date-time"
+        "\n     Date 1 - 2018-Mar-14"
+        "\n     Date 2 - 2018-Jun-27"
+        "\n     Date 3 - 2018-Feb-07"
         "\nDemand freeze configuration:"
         "\n    Demand freeze day: 32"
         "\nInterval recording configuration:"
@@ -809,9 +612,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
         "\n    Demand Interval : 6 minutes"
         "\nVoltage profile status:"
         "\n    Mode          : Temporarily enabled"
-        "\n    Temporary end : 02/19/2013 03:27:03"
-        "\nMetrology:"
-        "\n    Metrology disabled";
+        "\n    Temporary end : 02/19/2013 03:27:03";
 
     RfnConfigNotificationCommand cmd;
 
@@ -839,18 +640,12 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_CHECK_EQUAL(cmd.demandFreezeDay.value(), 32);
 
     BOOST_REQUIRE(cmd.disconnect);
-    BOOST_REQUIRE(cmd.disconnect->connectDelay);
-    BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay.value(), 17);
-    BOOST_REQUIRE(cmd.disconnect->demandInterval);
-    BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval.value(), 24);
-    BOOST_REQUIRE(cmd.disconnect->demandThreshold);
-    BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold.value(), 3.1);
+    BOOST_CHECK_EQUAL(cmd.disconnect->connectDelay, 17);
+    BOOST_CHECK_EQUAL(cmd.disconnect->demandInterval, 24);
+    BOOST_CHECK_EQUAL(cmd.disconnect->demandThreshold, 3.1);
     BOOST_CHECK_EQUAL(cmd.disconnect->disconnectMode, 2);
-    BOOST_REQUIRE(cmd.disconnect->maxDisconnects);
-    BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects.value(), 7);
+    BOOST_CHECK_EQUAL(cmd.disconnect->maxDisconnects, 7);
     BOOST_CHECK_EQUAL(cmd.disconnect->reconnect, 1);
-    BOOST_CHECK_EQUAL(cmd.disconnect->disconnectTime.is_initialized(), false);
-    BOOST_CHECK_EQUAL(cmd.disconnect->connectTime.is_initialized(), false);
 
     BOOST_REQUIRE(cmd.focusDisplay);
     BOOST_CHECK_EQUAL(cmd.focusDisplay->displayItemDuration, 6);
@@ -883,7 +678,7 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_REQUIRE(cmd.touHolidays);
     BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](0), CtiDate(14, 3, 2018));
     BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](1), CtiDate(27, 6, 2018));
-    BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](2), CtiDate(CtiDate::not_a_date));
+    BOOST_CHECK_EQUAL(cmd.touHolidays->operator[](2), CtiDate( 7, 2, 2018));
 
     BOOST_REQUIRE(cmd.voltageProfile);
     BOOST_CHECK_EQUAL(cmd.voltageProfile->voltageDemandInterval, 105);
@@ -893,9 +688,6 @@ BOOST_AUTO_TEST_CASE(test_all_tlvs)
     BOOST_CHECK_EQUAL(cmd.voltageProfileStatus->enabled, false);
     BOOST_REQUIRE(cmd.voltageProfileStatus->temporaryEnd);
     BOOST_CHECK_EQUAL(cmd.voltageProfileStatus->temporaryEnd.value(), CtiTime(CtiDate(19, 2, 2013), 3, 27, 3));
-
-    BOOST_REQUIRE(cmd.metrologyState);
-    BOOST_CHECK(cmd.metrologyState.value() == Cti::Devices::Commands::RfnMetrologyCommand::MetrologyState::Disable);
 
     BOOST_REQUIRE(cmd.touSchedule);
 

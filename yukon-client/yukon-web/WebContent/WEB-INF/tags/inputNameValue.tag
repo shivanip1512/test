@@ -16,7 +16,6 @@
 <%@ attribute name="size" %>
 <%@ attribute name="property" %>
 <%@ attribute name="minPermissionLevel" %>
-<%@ attribute name="title" description="Text to display in tooltip on hover."%>
 
 <tags:nameValue2 nameKey="${nameKey}" labelForId="${path}" rowClass="${rowClass}" nameClass="${nameClass}" 
         valueClass="${valueClass}">
@@ -32,5 +31,5 @@
     </c:if>
 
     <tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${disable}" 
-            inputClass="${pageScope.inputClass}" readonly="${readonly}" title="${title}"/>
+            inputClass="${pageScope.inputClass}" readonly="${readonly}"/>
 </tags:nameValue2>

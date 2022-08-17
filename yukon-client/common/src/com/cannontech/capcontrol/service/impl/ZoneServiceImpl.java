@@ -153,12 +153,11 @@ public class ZoneServiceImpl implements ZoneService {
         for (ZoneAssignmentPointRow pointRow : abstractZone.getPointAssignments()) {
         	int  pointId = pointRow.getId();
         	int zoneId = abstractZone.getZoneId();
-        	Integer feederId = pointRow.getFeederId();
         	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
         	Phase phase = pointRow.getPhase();
         	boolean ignore = pointRow.isIgnore();
-        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, feederId, position, dist, phase, ignore);
+        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist, phase, ignore);
         	points.add(point);
         }
         return points;

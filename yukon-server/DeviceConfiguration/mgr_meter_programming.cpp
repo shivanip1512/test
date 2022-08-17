@@ -10,7 +10,6 @@
 #include "encryption.h"
 #include "checksums.h"
 #include "std_helper.h"
-#include "error.h"
 
 #include <meterProgramConverter/exports.h>
 #include <io.h>
@@ -24,26 +23,7 @@ namespace {
     MeterProgrammingManager::Bytes globalBuffer;
 }
 
-YukonError_t MeterProgrammingManager::isProgramValid(const std::string guid)
-{
-    CTILOG_DEBUG(dout, guid);
-
-    if( std::lock_guard lg(programMux);
-        auto existingProgram = mapFindRef(_programs, guid) )
-    {
-        CTILOG_DEBUG(dout, "Program found, is valid" << FormattedList::of(
-            "GUID", guid,
-            "Program size", existingProgram->size()));
-
-        return ClientErrors::None;
-    }
-
-    CTILOG_DEBUG(dout, "Program not found, loading: " << guid);
-
-    return loadProgram(guid).error();  //  return any errors, or ClientErrors::None if the load went fine
-}
-
-auto MeterProgrammingManager::getProgram(const std::string guid) -> ErrorOr<Bytes>
+auto MeterProgrammingManager::getProgram(const std::string guid) -> Bytes
 {
     CTILOG_DEBUG(dout, guid);
 
@@ -62,7 +42,7 @@ auto MeterProgrammingManager::getProgram(const std::string guid) -> ErrorOr<Byte
     return loadProgram(guid);
 }
 
-ErrorOr<size_t> MeterProgrammingManager::getProgramSize(const std::string guid)
+size_t MeterProgrammingManager::getProgramSize(const std::string guid)
 {
     CTILOG_DEBUG(dout, guid);
 
@@ -73,19 +53,15 @@ ErrorOr<size_t> MeterProgrammingManager::getProgramSize(const std::string guid)
             "GUID", guid,
             "Program size", existingProgram->size()));
 
-        //  Avoid allocating a copy of the entire meter program
         return existingProgram->size();
     }
 
     CTILOG_DEBUG(dout, "Program not found, loading: " << guid);
 
-    return loadProgram(guid)
-            .map([](const Bytes& program) {
-                return program.size();
-            });
+    return loadProgram(guid).size();
 }
 
-auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> ErrorOr<RawProgram>
+auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> RawProgram
 {
     CTILOG_DEBUG(dout, guid);
 
@@ -102,7 +78,7 @@ auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> ErrorOr<
     {
         CTILOG_ERROR(dout, "Could not retrieve MeterProgram entry for guid " << guid);
         
-        return ClientErrors::MeterProgramNotFound;
+        return {};
     }
 
     const auto program = rdr["program"].as<Bytes>();
@@ -119,34 +95,38 @@ auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> ErrorOr<
         "Encrypted password length", encryptedPassword.size(),
         "Decrypted password length", password.size()));
 
-    return RawProgram { program, password };
+    return { program, password };
 }
 
 
-auto MeterProgrammingManager::loadProgram(const std::string guid) -> ErrorOr<Bytes>
+auto MeterProgrammingManager::loadProgram(const std::string guid) -> Bytes
 {
     CTILOG_DEBUG(dout, guid);
 
-    return loadRawProgram(guid)
-        .flatMap<Bytes>([this, guid](const RawProgram& raw) -> ErrorOr<Bytes> {
-            std::lock_guard lg(programMux);
+    auto raw = loadRawProgram(guid);
 
-            auto convertedBuffer = convertRawProgram(raw, guid);
+    if( raw.program.empty() )
+    {
+        CTILOG_ERROR(dout, "No raw program for guid " << guid);
 
-            if( convertedBuffer.empty() )
-            {
-                CTILOG_ERROR(dout, "Raw program conversion failed for guid " << guid);
+        return {};
+    }
 
-                return ClientErrors::InvalidMeterProgram;
-            }
+    std::lock_guard lg(programMux);
 
-            CTILOG_DEBUG(dout, "Converted meter program" << FormattedList::of(
-                "GUID", guid,
-                "MD5", arrayToRange(calculateMd5Digest(globalBuffer)),
-                "Converted size", globalBuffer.size()));
+    auto convertedBuffer = convertRawProgram(raw, guid);
 
-            return _programs[guid] = convertedBuffer;
-        });
+    if( convertedBuffer.empty() )
+    {
+        return {};
+    }
+
+    CTILOG_DEBUG(dout, "Converted meter program" << FormattedList::of(
+        "GUID", guid,
+        "MD5", arrayToRange(calculateMd5Digest(globalBuffer)),
+        "Converted size", globalBuffer.size()));
+
+    return _programs[guid] = convertedBuffer;
 }
 
 namespace {
@@ -227,8 +207,6 @@ auto MeterProgrammingManager::convertRawProgram(const RawProgram &raw, const std
     FILEINFO_t fileInfo{ charProgram.data(), static_cast<uint16_t>(charProgram.size()),
                             charPassword.data(), static_cast<uint8_t>(charPassword.size()) };
 
-    globalBuffer.clear();
-
     auto captureToBuffer = [](void *buf, size_t len) {
         CTILOG_DEBUG(dout, "Conversion callback " << buf << ":" << len);
         auto ucBuf = reinterpret_cast<unsigned char*>(buf);
@@ -256,7 +234,7 @@ auto MeterProgrammingManager::convertRawProgram(const RawProgram &raw, const std
     return globalBuffer;
 }
 
-std::string MeterProgrammingManager::getAssignedGuid(const RfnIdentifier rfnIdentifier)
+std::optional<ProgramDescriptor> MeterProgrammingManager::describeAssignedProgram(const RfnIdentifier rfnIdentifier)
 {
     CTILOG_DEBUG(dout, rfnIdentifier);
 
@@ -282,14 +260,23 @@ std::string MeterProgrammingManager::getAssignedGuid(const RfnIdentifier rfnIden
     if( ! rdr() )
     {
         CTILOG_WARN(dout, "Could not retrieve Meter Program Assignment for " << rfnIdentifier);
-
-        return {};
+        return std::nullopt;
     }
 
-    return rdr.as<std::string>();
+    auto guid = rdr.as<std::string>();
+
+    auto programSize = getProgramSize(guid);
+
+    if( ! programSize )
+    {
+        CTILOG_WARN(dout, "No program returned for GUID " << guid << " assigned to " << rfnIdentifier);
+        return std::nullopt;
+    }
+
+    return ProgramDescriptor { guid, programSize };
 }
 
-bool MeterProgrammingManager::isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid)
+bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, const std::string guid)
 {
     CTILOG_DEBUG(dout, rfnIdentifier << ": " << guid);
 
@@ -319,20 +306,12 @@ bool MeterProgrammingManager::isAssigned(const RfnIdentifier rfnIdentifier, cons
 
 double MeterProgrammingManager::calculateMeterProgrammingProgress(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
 {
-    if( isAssigned(rfnIdentifier, guid) )
+    if( isUploading(rfnIdentifier, guid) )
     {
-        if( const auto totalSize = getProgramSize(guid) )
-        {
-            const double percentage = 100.0 * size / *totalSize;
+        const size_t totalSize  = getProgram(guid).size();
+        const double percentage = 100.0 * size / totalSize;
 
-            return percentage;
-        }
-        else
-        {
-            CTILOG_ERROR(dout, CtiError::GetErrorString(totalSize.error()) << FormattedList::of(
-                "GUID", guid,
-                "RfnIdentifier", rfnIdentifier));
-        }
+        return percentage;
     }
     return 0.0;
 }

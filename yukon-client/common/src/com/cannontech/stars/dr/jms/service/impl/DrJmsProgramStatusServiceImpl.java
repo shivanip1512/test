@@ -76,7 +76,7 @@ public class DrJmsProgramStatusServiceImpl implements DrJmsProgramStatusService 
 
         DrProgramStatusJmsMessage message = new DrProgramStatusJmsMessage();
         // correlationId
-        message.setProgramHistId(programHistory.getProgramHistoryId());
+        message.setProgramGearHistId(programHistory.getProgramGearHistoryId());
         message.setProgramName(programHistory.getProgramName());
         message.setGearName(programHistory.getGearName());
         message.setMessageType(DrJmsMessageType.PROGRAMSTATUS);

@@ -24,7 +24,7 @@
                 <c:if test="${attribute == previousReadingsAttribute}">
                     <tags:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"
-                                id="${widgetParameters.widgetId}_prevSelect" style="font-size:13px">
+                                id="${widgetParameters.widgetId}_prevSelect">
                            <jsp:include page="/WEB-INF/pages/point/previousReadingsOptions.jsp"/>
                         </select>
                     </tags:nameValue2>

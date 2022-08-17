@@ -15,7 +15,6 @@ import com.cannontech.msp.beans.v5.dr_server.GetMethods;
 import com.cannontech.msp.beans.v5.dr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.dr_server.PingURL;
 import com.cannontech.msp.beans.v5.dr_server.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
@@ -46,7 +45,7 @@ public class DRClient implements IDRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -62,7 +61,7 @@ public class DRClient implements IDRClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();
                 if (arrayOfString != null) {

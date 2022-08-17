@@ -214,9 +214,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                         programStatus =
                             stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    if (programStatus != null) {
-                        CTILogger.info("Control Status: " + programStatus.toString());
-                    }
+                    CTILogger.info("Control Status: " + programStatus.toString());
                 } else if (liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
                     String scenarioName = liteYukonPAObject.getPaoName();
                     ScenarioStatus scenarioStatus = null;
@@ -228,9 +226,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                         scenarioStatus =
                             stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    if (scenarioStatus != null) {
-                        CTILogger.info("Control Status: " + scenarioStatus.toString());
-                    }
+                    CTILogger.info("Control Status: " + scenarioStatus.toString());
                 }
             } catch (TimeoutException e) {
                 errorObject =

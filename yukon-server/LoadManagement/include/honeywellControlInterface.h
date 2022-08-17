@@ -10,7 +10,6 @@ struct HoneywellControlInterface
     virtual bool sendCycleControl( const long programID,
                                    const long dutyCycle,
                                    const long controlDurationSeconds,
-                                   const bool mandatory,
                                    const bool rampInOutOption ) = 0;
 
     virtual bool sendSetpointControl( const long programID,

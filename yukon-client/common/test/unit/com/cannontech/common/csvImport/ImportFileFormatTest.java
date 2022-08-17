@@ -1,14 +1,10 @@
 package com.cannontech.common.csvImport;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Collection;
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -54,7 +50,7 @@ public class ImportFileFormatTest {
         testColumns(name1, name2, class1, class2, format, ImportGroupedColumnDefinition.class);
         
         Multimap<String, ImportColumnDefinition> retrievedGrouped = format.getGroupedColumns();
-        assertTrue(retrievedGrouped.size() == 2);
+        Assert.assertTrue(retrievedGrouped.size() == 2);
         
         Collection<ImportColumnDefinition> columnsInGroup = retrievedGrouped.get(groupName);
         
@@ -62,7 +58,7 @@ public class ImportFileFormatTest {
         comparison.add(format.getColumnByName(name1));
         comparison.add(format.getColumnByName(name2));
         
-        assertTrue(columnsInGroup.containsAll(comparison) && comparison.containsAll(columnsInGroup));
+        Assert.assertTrue(columnsInGroup.containsAll(comparison) && comparison.containsAll(columnsInGroup));
     }
     
     @Test
@@ -83,7 +79,7 @@ public class ImportFileFormatTest {
         Multimap<ImportColumnDefinition, ImportValueDependentColumnDefinition> mmap = format.getValueDependentColumns();
         ImportColumnDefinition dependedUponColumn = format.getColumnByName(depName);
         Collection<ImportValueDependentColumnDefinition> vDepCols = mmap.get(dependedUponColumn);
-        assertEquals(2, vDepCols.size());
+        Assert.assertEquals(2, vDepCols.size());
         
     }
     
@@ -110,41 +106,41 @@ public class ImportFileFormatTest {
         ImportFileFormat clonedFormat = format.clone();
         
         ImportColumnDefinition requiredColumn = clonedFormat.getColumnByName(requiredName);
-        assertNotNull(requiredColumn);
+        Assert.assertNotNull(requiredColumn);
         
         ImportColumnDefinition optionalColumn = clonedFormat.getColumnByName(optionalName);
-        assertNotNull(optionalColumn);
+        Assert.assertNotNull(optionalColumn);
         
         ImportColumnDefinition groupedColumn = clonedFormat.getColumnByName(groupedName);
-        assertNotNull(groupedColumn);
+        Assert.assertNotNull(groupedColumn);
         
         ImportColumnDefinition valDepColumn = clonedFormat.getColumnByName(valDepName);
-        assertNotNull(valDepColumn);
+        Assert.assertNotNull(valDepColumn);
         
         //Check that getColumns() returns everything
         Set<ImportColumnDefinition> allColumns = clonedFormat.getColumns();
-        assertEquals(allColumns.size(), 4);
-        assertTrue(allColumns.contains(requiredColumn));
-        assertTrue(allColumns.contains(optionalColumn));
-        assertTrue(allColumns.contains(groupedColumn));
-        assertTrue(allColumns.contains(valDepColumn));
+        Assert.assertEquals(allColumns.size(), 4);
+        Assert.assertTrue(allColumns.contains(requiredColumn));
+        Assert.assertTrue(allColumns.contains(optionalColumn));
+        Assert.assertTrue(allColumns.contains(groupedColumn));
+        Assert.assertTrue(allColumns.contains(valDepColumn));
         
         //Check that the get__Columns() methods return exact duplicates
         Set<ImportColumnDefinition> requiredColumns = clonedFormat.getRequiredColumns();
-        assertEquals(requiredColumns.size(), 1);
-        assertTrue(requiredColumns.contains(requiredColumn));
+        Assert.assertEquals(requiredColumns.size(), 1);
+        Assert.assertTrue(requiredColumns.contains(requiredColumn));
         
         Set<ImportColumnDefinition> optionalColumns = clonedFormat.getOptionalColumns();
-        assertEquals(optionalColumns.size(), 1);
-        assertTrue(optionalColumns.contains(optionalColumn));
+        Assert.assertEquals(optionalColumns.size(), 1);
+        Assert.assertTrue(optionalColumns.contains(optionalColumn));
         
         Multimap<String, ImportColumnDefinition> groupedColumns = clonedFormat.getGroupedColumns();
-        assertEquals(groupedColumns.size(), 1);
-        assertTrue(groupedColumns.containsEntry(groupName, groupedColumn));
+        Assert.assertEquals(groupedColumns.size(), 1);
+        Assert.assertTrue(groupedColumns.containsEntry(groupName, groupedColumn));
         
         Multimap<ImportColumnDefinition, ImportValueDependentColumnDefinition> valDepColumns = clonedFormat.getValueDependentColumns();
-        assertEquals(valDepColumns.size(), 1);
-        assertTrue(valDepColumns.containsEntry(requiredColumn, valDepColumn));
+        Assert.assertEquals(valDepColumns.size(), 1);
+        Assert.assertTrue(valDepColumns.containsEntry(requiredColumn, valDepColumn));
         
         //Add new columns to the copy and ensure that they don't get added to the original
         //due to accidental data sharing
@@ -153,24 +149,24 @@ public class ImportFileFormatTest {
         clonedFormat.addGroupedColumn(groupedName2, class2, groupName);
         clonedFormat.addValueDependentColumn(valDepName2, class2, requiredName, "ASDF");
         
-        assertNull(format.getColumnByName(requiredName2));
-        assertNull(format.getColumnByName(optionalName2));
-        assertNull(format.getColumnByName(groupedName2));
-        assertNull(format.getColumnByName(valDepName2));
+        Assert.assertNull(format.getColumnByName(requiredName2));
+        Assert.assertNull(format.getColumnByName(optionalName2));
+        Assert.assertNull(format.getColumnByName(groupedName2));
+        Assert.assertNull(format.getColumnByName(valDepName2));
     }
     
     private void testColumns(String name1, String name2, Class<?> class1, Class<?> class2, ImportFileFormat format, Class<? extends ImportColumnDefinition> columnClass){
         
         ImportColumnDefinition column1 = format.getColumnByName(name1);
-        assertNotNull(column1);
-        assertEquals(columnClass, column1.getClass());
-        assertTrue(column1.getName().equalsIgnoreCase(name1));
-        assertEquals(class1, column1.getType());
+        Assert.assertNotNull(column1);
+        Assert.assertEquals(columnClass, column1.getClass());
+        Assert.assertTrue(column1.getName().equalsIgnoreCase(name1));
+        Assert.assertEquals(class1, column1.getType());
         
         ImportColumnDefinition column2 = format.getColumnByName(name2);
-        assertNotNull(column2);
-        assertEquals(columnClass, column2.getClass());
-        assertTrue(column2.getName().equalsIgnoreCase(name2));
-        assertEquals(class2, column2.getType());
+        Assert.assertNotNull(column2);
+        Assert.assertEquals(columnClass, column2.getClass());
+        Assert.assertTrue(column2.getName().equalsIgnoreCase(name2));
+        Assert.assertEquals(class2, column2.getType());
     }
 }

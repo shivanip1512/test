@@ -115,18 +115,18 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         bool checkForCommandRefusal(CtiCCFeeder* feeder);
         void syncCbcAndCapBankStates(long bankId);
 
-        void queueCapBankTimeSyncPilMessages(Cti::CapControl::PorterRequests& pilMessages, CapBankList capBanks);
+        void queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks);
 
         // Local Control Command Funtions
         void sendLocalControl();
-        void enableOvUv        (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void disableOvUv       (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void enableTempControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void disableTempControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void enableVarControl  (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void disableVarControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void enableTimeControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
-        void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, Cti::CapControl::PorterRequests& requests);
+        void enableOvUv        (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableOvUv       (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableTempControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableTempControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableVarControl  (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableVarControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableTimeControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
 
         void sendVoltageRegulatorCommands(const long command, const std::string & user);
 

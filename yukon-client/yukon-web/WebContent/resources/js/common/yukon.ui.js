@@ -138,31 +138,11 @@ yukon.ui = (function () {
     };
 
     var addEventListeners = function () {
-        
-        $(document).on('click', '.js-dialog-help-text', function () {
-            var dialog = $(this).closest('.ui-dialog').find(".ui-dialog-content");
-            dialog.addMessage({
-                message: dialog.data("helpText"),
-                messageClass: 'help'
-            });
-            /* Reposition the dialog to the center of the screen after the help text is displayed. */
-            dialog.dialog({
-                position:{
-                    my: 'center',
-                    at: 'center',
-                    of: window
-                }
-            });
-        });
 
         /** Follow clicks on top level nav menus when not using a touch screen. */
         $(document).on('click', '.yukon-header .menu-title', function (ev) {
-            if ($(this).is('[data-url]')) {
-                //check for touch device
-                var touchDevice = "ontouchstart" in window || navigator.msMaxTouchPoints;
-                if (!touchDevice) {
-                    window.location.href = $(this).data('url');
-                }
+            if ($(this).is('[data-url]') && !Modernizr.touch) {
+                window.location.href = $(this).data('url');
             }
         });
 
@@ -255,16 +235,60 @@ yukon.ui = (function () {
             }
             
         });
-        
-        /** Paging Handler: Changes the items per page size. */
-        $(document).on('change', yg.selectors.pageSize, function (ev) {
-            $(this).data('pageSize', $(this).val());
-            mod.changePaging($(this));
-        });
 
-        /** Paging Handler: Get the next or previous page */
+        /** Paging Handler: Get the next or previous page, or change page size. */
         $(document).on('click', yg.selectors.paging, function (ev) {
-            mod.changePaging($(this));
+
+            var
+            target = $(this),
+            container = target.closest('[data-url]'),
+            loadEvent = container.data('loadEvent'),
+            sortables = container.find('.sortable'),
+            url = container.data('url'),
+            pagingArea = container.find('.paging-area'),
+            page = pagingArea.data('currentPage'),
+            pageSize = pagingArea.data('pageSize'),
+            changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
+            params = {},
+            sort;
+
+            if (changePage) {
+                // they clicked the next or previous page buttons
+                params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
+                params.itemsPerPage = pageSize;
+            } else {
+                // they clicked one of the page size links
+                params.page = 1;
+                params.itemsPerPage = target.data('pageSize');
+            }
+
+            // add sorting parameters if necessary
+            if (sortables.length) {
+                sort = sortables.filter('.desc');
+                if (sort.length) {
+                    params.dir = 'desc';
+                    params.sort = sort.data('sort');
+                } else {
+                    sort = sortables.filter('.asc');
+                    if (sort.length) {
+                        params.dir = 'asc';
+                        params.sort = sort.data('sort');
+                    }
+                }
+            }
+
+            if (container.is('[data-static]')) {
+                var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                window.location.href = url + joiner + $.param(params);
+            } else {
+                $.get(url, params).done(function (data) {
+                    container.html(data);
+                    container.trigger(yg.events.pagingend);
+                    if (loadEvent) container.trigger(loadEvent);
+                });
+            }
+
+            return false; // return false to stop form submissions
         });
 
         /** Show or hide an element when something is clicked. */
@@ -612,57 +636,6 @@ yukon.ui = (function () {
             return btn;
         },
         
-        changePaging: function (target) {
-            var container = target.closest('[data-url]'),
-                loadEvent = container.data('loadEvent'),
-                sortables = container.find('.sortable'),
-                url = container.data('url'),
-                pagingArea = container.find('.paging-area'),
-                page = pagingArea.data('currentPage'),
-                pageSize = pagingArea.data('pageSize'),
-                changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
-                params = {},
-                sort;
-
-            if (changePage) {
-                // they clicked the next or previous page buttons
-                params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
-                params.itemsPerPage = pageSize;
-            } else {
-                // they clicked one of the page size links
-                params.page = 1;
-                params.itemsPerPage = target.data('pageSize');
-            }
-
-            // add sorting parameters if necessary
-            if (sortables.length) {
-                sort = sortables.filter('.desc');
-                if (sort.length) {
-                    params.dir = 'desc';
-                    params.sort = sort.data('sort');
-                } else {
-                    sort = sortables.filter('.asc');
-                    if (sort.length) {
-                        params.dir = 'asc';
-                        params.sort = sort.data('sort');
-                    }
-                }
-            }
-
-            if (container.is('[data-static]')) {
-                var joiner = url.indexOf('?') === -1 ? '?' : '&';
-                window.location.href = url + joiner + $.param(params);
-            } else {
-                $.get(url, params).done(function (data) {
-                    container.html(data);
-                    container.trigger(yg.events.pagingend);
-                    if (loadEvent) container.trigger(loadEvent);
-                });
-            }
-
-            return false; // return false to stop form submissions  
-        },
-        
         /** 
          * Returns button array for jquery ui dialogs that contain a 'Cancel' and 'OK' buttons and an
          * optional 'Delete' button.
@@ -745,10 +718,6 @@ yukon.ui = (function () {
                     },
                     'class' : 'delete'
                 });
-            }
-            
-            if (options.okText === yg.text.deleteButton) {
-                options.okClass += ' delete';
             }
             
             // OK Button
@@ -841,11 +810,6 @@ yukon.ui = (function () {
                         if (bigContent) {
                             popup.append(content);
                         }
-                        if (popup.is('[data-help-text]') && !$(this).parent().children(".ui-dialog-titlebar").find(".icon-help").exists()) {
-                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">' + yg.iconSvg.iconHelp);
-                            $(this).parent().children(".ui-dialog-titlebar").find('.icon-help').css('margin-right', '20px');
-                            $(this).parent().find(".ui-dialog-title").width("80%");
-                        }
                         // Check for a focus element
                         mod.autofocus(popup);
                     },
@@ -861,10 +825,6 @@ yukon.ui = (function () {
                     at: 'center',
                     of: window
                 };
-            
-            if (popup.is('[data-max-height]')) {
-                options.maxHeight = popup.data('maxHeight');
-            }
             
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');
@@ -1064,7 +1024,7 @@ yukon.ui = (function () {
                    'class': 'js-secondary-action '
                 };
             var confirmSpan = $('<span>')
-                .attr('class', 'fr js-simple-dialog-confirm-msg')
+                .attr('class', 'fr')
                 .css({'line-height': '36px'})
                 .text(confirmText)
                 .flash({
@@ -1275,9 +1235,6 @@ yukon.ui = (function () {
             if (action === 'hide') {
                 inputs.each(function (idx, input) {
                     $(input).toggleClass('dn', !enable);
-                    if ($(input).next("span.js-units").exists()) {
-                        $(input).next("span.js-units").toggleClass('dn', !enable);
-                    }
                 });
             } else if (action === 'invisible') {
                 inputs.each(function (idx, input) {

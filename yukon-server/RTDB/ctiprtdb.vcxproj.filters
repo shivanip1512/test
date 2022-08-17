@@ -557,6 +557,9 @@
     <ClInclude Include="include\pt_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\rtdb_test_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\rte_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>

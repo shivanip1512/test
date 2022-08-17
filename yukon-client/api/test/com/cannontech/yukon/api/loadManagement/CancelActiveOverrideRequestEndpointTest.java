@@ -6,8 +6,9 @@ import java.util.List;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -76,7 +77,7 @@ public class CancelActiveOverrideRequestEndpointTest {
         }
     }
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         impl = new CancelActiveOverrideRequestEndpoint();
         

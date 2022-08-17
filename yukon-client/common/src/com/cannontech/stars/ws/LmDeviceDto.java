@@ -24,7 +24,6 @@ public class LmDeviceDto {
     private String inventoryRoute;
     private Date fieldRemoveDate;
     private GPS gps;
-    private String guid;
     private Throwable throwable;    
 
     public String getAccountNumber() {
@@ -115,14 +114,6 @@ public class LmDeviceDto {
         this.gps = gps;
     }
 
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("accountNumber", getAccountNumber());
@@ -136,7 +127,6 @@ public class LmDeviceDto {
         tsc.append("deviceVendorUserId", getDeviceVendorUserId());
         tsc.append("latitude", (getGps() != null ? getGps().getLatitude() : null));
         tsc.append("longitude", (getGps() != null ? getGps().getLongitude() : null));
-        tsc.append("guid", getGuid());
         return tsc.toString();
     }
 

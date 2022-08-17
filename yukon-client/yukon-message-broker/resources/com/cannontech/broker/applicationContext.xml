@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
     
-    <tx:annotation-driven transaction-manager="transactionManager"/>
     <bean id="yukonDataSource" class="com.cannontech.database.PoolManager" factory-method="getYukonDataSource"/>
     
     <bean class="com.cannontech.database.YukonJdbcTemplate">
@@ -19,36 +16,11 @@
             </bean>
         </constructor-arg>
     </bean>
-
-    <bean id="transactionManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="yukonDataSource" />
-    </bean>
-
-    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
-        <qualifier value="main"/>
-        <constructor-arg value="globalScheduledExecutor"/>
-    </bean>
-
-    <bean id="eventLogDao" class="com.cannontech.common.events.dao.impl.EventLogDaoImpl"/>
-    <bean id="eventLogService" class="com.cannontech.common.events.service.impl.EventLogServiceImpl"/>
-    <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />
-    <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer">
-        <property name="dataSource" ref="yukonDataSource" />
-        <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml" />
-    </bean>
-    <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
-        <property name="sequenceNameLookup" ref="sequenceNameLookup" />
-    </bean>
-
+    
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
-    <bean id="systemEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.events.loggers.SystemEventLogService"/>
-    </bean>
-    <bean id="eventLogHelper" class="com.cannontech.common.events.helper.EventLogHelper"/>
     <bean id="globalSettingDao" class="com.cannontech.system.dao.impl.GlobalSettingDaoImpl"/>
     <bean class="com.cannontech.broker.logging.YukonBrokerLoggingReloader"/>
-
+    
     <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true" autowire-candidate="false"/>
         
     <bean id="connectionFactory" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -60,20 +32,11 @@
     </bean>
     
     <bean class="com.cannontech.message.service.BrokerService"/>
-    <bean class="com.cannontech.common.util.jms.YukonJmsTemplateFactory"/>
-    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean id="brokerSystemMetrics" class="com.cannontech.broker.systemMetrics.BrokerSystemMetricsImpl"
            init-method="init"  destroy-method="destroy">
         <property name="loadAverageAttribute" value="MESSAGE_BROKER_CPU_UTILIZATION" />
         <property name="memoryAttribute" value="MESSAGE_BROKER_MEMORY_UTILIZATION" />
     </bean>
-
-    <bean id="dbChangeListener" class="com.cannontech.broker.database.event.listener.DatabaseChangeListener"/>
-    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="destinationName" value="com.eaton.eas.yukon.dbchange.event" />
-        <property name="connectionFactory" ref="connectionFactory" />
-        <property name="messageListener" ref="dbChangeListener"/>
-    </bean>
-     <bean class="com.cannontech.clientutils.logger.dao.impl.YukonLoggerDaoImpl"/>
+     
 </beans>

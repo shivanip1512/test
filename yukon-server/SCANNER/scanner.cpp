@@ -748,7 +748,7 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
             while( !ScannerQuit && !pendingInQueue.empty() )
             {
                 boost::ptr_deque<INMESS>::auto_type pInMessage = pendingInQueue.pop_front();
-                const INMESS& InMessage = *pInMessage;
+                INMESS &InMessage = *pInMessage;
 
                 LastPorterInTime = LastPorterInTime.now();
 
@@ -794,7 +794,7 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
                     list< CtiMessage* > vgList;
 
                     // Do some device dependent work on this Inbound message!
-                    pSingle->ProcessInMessageResult(InMessage, TimeNow, vgList, retList, outList);
+                    pSingle->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                     // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && ! outList.empty())
@@ -1087,24 +1087,17 @@ void LoadScannableDevices(void *ptr)
         ReloadStateNames();
     }
 
-    // We DON'T have a DBChange message -OR- we DO and its for a DEVICE, ROUTE or PORT
-    if ( pChg == NULL
-         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE)
-         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE)
-         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT) )
+    if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {
         try
         {
             start = start.now();
 
-            // We DO have a DBChange for either a DEVICE or ROUTE
-            if ( pChg
-                 && (  (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE)
-                    || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) ) )
+            if(pChg)
             {
                 ScannerDeviceManager.refreshDeviceByID(pChg->getId(), pChg->getCategory(), pChg->getObjectType());
             }
-            else    // we DON'T have a DBChange -OR- we DO and its for a PORT
+            else
             {
                 ScannerDeviceManager.refreshAllDevices();
             }
@@ -1234,7 +1227,7 @@ void DispatchMsgHandlerThread(void *Arg)
                     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
                     if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
-                        Cti::GlobalSettings::reload();
+                        GlobalSettings::reload();
 
                         doutManager.reloadSettings();
                     }

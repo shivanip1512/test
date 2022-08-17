@@ -32,8 +32,6 @@ DECLARE_COLLECTABLE( CtiLMGroupPoint );
 
     CtiLMGroupPoint& operator=(const CtiLMGroupPoint& right);
 
-    std::size_t getFixedSize() const override   { return sizeof( *this ); }
-
     /* Static Members */
 
 private:

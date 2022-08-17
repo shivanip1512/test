@@ -32,7 +32,7 @@ public class DeviceCollectionMenuAction extends DeviceMenuAction {
 
     public DeviceCollectionMenuAction(String baseUrl, String inputParamName, YukonRole requiredRole,
                                      YukonRoleProperty... requiredRoleProperties) {
-        super(baseUrl, true, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
+        super(baseUrl, defaultDeviceIdParamName, defaultDeviceIdParamName, requiredRole, requiredRoleProperties);
     }
 
     /**

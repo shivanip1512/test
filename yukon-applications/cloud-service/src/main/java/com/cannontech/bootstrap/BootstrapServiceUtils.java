@@ -89,9 +89,10 @@ public class BootstrapServiceUtils {
         }
 
         // Next try to use the environment variable that is now available (thanks Sun)
-        String basePath = getBasePath();
-        if (basePath != null) {
-            return basePath;
+        String envYukonBase = System.getenv("YUKON_BASE");
+        if (envYukonBase != null) {
+            envYukonBase = StringUtils.remove(envYukonBase, "\"");
+            return envYukonBase;
         }
 
         // That failed, so...
@@ -126,17 +127,5 @@ public class BootstrapServiceUtils {
 
         // total failure, doh!
         return fs + "yukon";
-    }
-    
-    /**
-     * Returns YUKON_BASE env variable value.
-     */
-    public final static String getBasePath() {
-        String envYukonBase = System.getenv("YUKON_BASE");
-        if (envYukonBase != null) {
-            envYukonBase = StringUtils.remove(envYukonBase, "\"");
-            return envYukonBase;
-        }
-        return null;
     }
 }

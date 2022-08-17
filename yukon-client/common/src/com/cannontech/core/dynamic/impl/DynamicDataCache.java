@@ -81,16 +81,18 @@ import com.cannontech.yukon.IServerConnection;
     }
 
     /**
-     * Add pd to pointData if it is not already in cache OR is after or equals the already cached entry's time stamp
+     * Add pd to pointData if it is not already in cache OR is _after_ the already cached entry
      */
     private void handlePointData(PointData pd) {
         LitePointData cachedPointData = getPointData(pd.getId());
-        if (cachedPointData != null
-            && cachedPointData.getPointQuality() != PointQuality.Uninitialized
-            && cachedPointData.getPointDataTimeStamp().after(pd.getPointDataTimeStamp())) {
-            return;
+        if (cachedPointData == null) {
+            pointData.put(pd.getId(), LitePointData.of(pd));
+        } else { 
+            if (cachedPointData.getPointQuality() == PointQuality.Uninitialized
+                || pd.getPointDataTimeStamp().after(cachedPointData.getPointDataTimeStamp())) {
+                pointData.put(pd.getId(), LitePointData.of(pd));
+            }
         }
-        pointData.put(pd.getId(), LitePointData.of(pd));
     }
 
     public void handleSignals(Set<Signal> signals, int pointId) {

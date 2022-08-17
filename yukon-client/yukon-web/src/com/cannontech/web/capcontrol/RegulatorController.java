@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.dao.RegulatorEventsDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
+import com.cannontech.capcontrol.export.RegulatorPointMappingExportService;
 import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
@@ -33,12 +35,9 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeRange;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.model.UserPreferenceName;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.regulator.setup.FileExporter;
@@ -55,14 +54,15 @@ import com.cannontech.yukon.IDatabaseCache;
 public class RegulatorController {
     
     @Autowired private DeviceConfigurationDao deviceConfigDao;
+    @Autowired private RegulatorPointMappingExportService exportService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RegulatorValidator validator;
+    @Autowired private RegulatorEventsDao eventsDao;
     @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private RegulatorMappingService mappingService;
     @Autowired private ZoneDao zoneDao;
     @Autowired private FileExporter fileExporter;
     @Autowired private UserPreferenceService userPreferenceService;
-    @Autowired private PointDao pointDao;
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String view(HttpServletRequest req, ModelMap model, @PathVariable int id, YukonUserContext userContext) 
@@ -132,21 +132,7 @@ public class RegulatorController {
         }
         
         model.addAttribute("paoTypeMap", RegulatorPointMapping.getMappingsByPaoType());
-        model.addAttribute("regulatorControlModeMapping", RegulatorPointMapping.CONTROL_MODE);
-
-        if (regulator.getMappings().get(RegulatorPointMapping.CONTROL_MODE) != null) {
-            String regulatorControlModeFormat = "{rawValue|eatonRegulatorControlMode}";
-            String regulatorControlModeColorFormat = "{rawValue|eatonRegulatorControlModeColor}";
-            int controlModePointId = regulator.getMappings().get(RegulatorPointMapping.CONTROL_MODE).intValue();
-            LitePoint controlModePoint = pointDao.getLitePoint(controlModePointId);
-            if (controlModePoint.getStateGroupID() == StateGroupUtils.STATEGROUP_BECKWITH_REGULATOR_CONTROL_MODE) {
-                regulatorControlModeFormat = "{rawValue|beckwithRegulatorControlMode}";
-                regulatorControlModeColorFormat = "{rawValue|beckwithRegulatorControlModeColor}";
-            }
-            model.addAttribute("regulatorControlModeFormat", regulatorControlModeFormat);
-            model.addAttribute("regulatorControlModeColorFormat", regulatorControlModeColorFormat);
-        }
-       
+        
         return "regulator/regulator.jsp";
     }
     

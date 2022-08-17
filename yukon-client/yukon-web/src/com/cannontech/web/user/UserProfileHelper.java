@@ -36,6 +36,7 @@ public class UserProfileHelper {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ContactDao contactDao;
+    @Autowired private EventLogDao eventLogDao;
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private PasswordResetService passwordResetService;
@@ -52,6 +53,12 @@ public class UserProfileHelper {
         if (user.getUserID() != userId) {
             throw new NotAuthorizedException("User "+ user.getUsername() +" is not authorized to edit user with id ["+ userId +"]");
         }
+    }
+
+    public void setupActivityStream(ModelMap model, LiteYukonUser user, int firstRowIndex, int rowsToReturn) {
+        SearchResults<EventLog> searchResults =
+                eventLogDao.findEventsByStringAndPaginate(user.getUsername(), firstRowIndex, rowsToReturn);
+        model.addAttribute("userEvents", searchResults);
     }
 
     public void setupPasswordData(ModelMap model, LiteYukonUser user) {

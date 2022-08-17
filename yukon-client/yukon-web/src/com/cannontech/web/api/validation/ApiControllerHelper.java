@@ -1,6 +1,6 @@
 package com.cannontech.web.api.validation;
 
-import static com.cannontech.web.api.ApiRequestHelper.isSSLConfigInitialized;
+import static com.cannontech.web.SSLSettingsInitializer.isHttpsSettingInitialized;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +23,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.SSLSettingsInitializer;
 import com.cannontech.web.api.ApiRequestHelper;
 
 /**
@@ -39,26 +36,11 @@ import com.cannontech.web.api.ApiRequestHelper;
 public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
-
-    @PostConstruct
-    public void initialize() {
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, (event) -> {
-            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.YUKON_INTERNAL_URL)) {
-                clearWebUrl();
-            }
-        });
-    }
-
-    private void clearWebUrl() {
-        setWebServerUrl(StringUtils.EMPTY);
-        log.info("Yukon Internal URL changed to {}, API connection URL will be reloaded.", getYukonInternalUrl());
-    }
-
+    
     /**
-     * Populate and return binding error from the error object received from rest call.
+     * Populate and return binding error from the error object received from rest call. 
      */
     public BindingResult populateBindingError(BindingResult result, BindException error,
             ResponseEntity<? extends Object> errorResponse) {
@@ -94,48 +76,6 @@ public class ApiControllerHelper {
         return result;
     }
 
-    
-    /**
-     * Populate and return binding error from the AppErrorModel object received from rest call.
-     */
-    public BindingResult populateBindingErrorForApiErrorModel(BindingResult result, BindException error,
-            ResponseEntity<? extends Object> errorResponse, String keyBase) {
-
-        LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
-        ArrayList<?> errors = (ArrayList<?>) errorObject.get("errors");
-
-        if (CollectionUtils.isNotEmpty(errors)) {
-
-            for (Object e : errors) {
-                LinkedHashMap<?, ?> errorMap = (LinkedHashMap<?, ?>) e;
-                ArrayList paramList = ((ArrayList) ((LinkedHashMap<?, ?>) e).get("parameters"));
-
-                String field = errorMap.get("field").toString();
-                String codePostfix = errorMap.get("code").toString();
-                String errorCode = keyBase + codePostfix;
-                if (CollectionUtils.isNotEmpty(paramList)) {
-                    error.rejectValue(field, errorCode, paramList.toArray(), StringUtils.EMPTY);
-                } else {
-                    error.rejectValue(field, errorCode);
-                }
-            }
-            result.addAllErrors(error);
-
-            for (ObjectError objectError : error.getAllErrors()) {
-                FieldError mvcError = (FieldError) objectError;
-                String fieldName = mvcError.getField();
-                if (result.getFieldError(fieldName) == null) {
-                    result.rejectValue(fieldName, mvcError.getCode());
-                } else if (!fieldName.equals(result.getFieldError(fieldName).getField())) {
-                    result.rejectValue(fieldName, mvcError.getCode());
-                }
-            }
-        } else {
-                result.reject(errorObject.get("detail").toString());
-        }
-        return result;
-    }
-
     /**
      * Set the WebServer Url
      */
@@ -155,15 +95,14 @@ public class ApiControllerHelper {
      * @throws ApiCommunicationException
      */
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
-
-        String webServerApiUrl = webServerUrl;
-        if (StringUtils.isEmpty(webServerApiUrl)) {
-            HttpStatus httpStatus = apiConnection(request, userContext);
-            if (httpStatus != HttpStatus.OK) {
-                apiRequestHelper.setProxyAndSslConfig();
-                httpStatus = apiConnection(request, userContext);
+        HttpStatus responseCode = null;
+        if (StringUtils.isEmpty(webServerUrl)) {
+            responseCode = apiConnection(request, userContext);
+            if (responseCode != HttpStatus.OK) {
+                apiRequestHelper.setProxy();
+                responseCode = apiConnection(request, userContext);
             }
-            if (httpStatus != HttpStatus.OK) {
+            if (responseCode != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
             log.info("Connection with Api successful with URL: " + webServerUrl);
@@ -194,8 +133,8 @@ public class ApiControllerHelper {
             if (!getYukonInternalUrl().isEmpty()) {
                 webUrl = getYukonInternalUrl();
                 boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
-                if (isHttps && !isSSLConfigInitialized) {
-                    apiRequestHelper.setSslConfig();
+                if (isHttps && !isHttpsSettingInitialized) {
+                    SSLSettingsInitializer.initializeHttpsSetting();
                 }
                 responseCode = checkUrl(userContext, request, webUrl);
             }
@@ -211,8 +150,8 @@ public class ApiControllerHelper {
                     webUrl = webUrl + request.getContextPath();
                 }
 
-                if (request.isSecure() && !isSSLConfigInitialized) {
-                    apiRequestHelper.setSslConfig();
+                if (request.isSecure() && !isHttpsSettingInitialized) {
+                    SSLSettingsInitializer.initializeHttpsSetting();
                 }
                 responseCode = checkUrl(userContext, request, webUrl);
             }
@@ -230,8 +169,8 @@ public class ApiControllerHelper {
                         webUrl = webUrl + request.getContextPath();
                     }
 
-                    if (request.isSecure() && !isSSLConfigInitialized) {
-                        apiRequestHelper.setSslConfig();
+                    if (request.isSecure() && !isHttpsSettingInitialized) {
+                        SSLSettingsInitializer.initializeHttpsSetting();
                     }
 
                     responseCode = checkUrl(userContext, request, webUrl);

@@ -1,12 +1,10 @@
 package com.cannontech.web.taglib;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 import com.google.common.collect.ImmutableList;
@@ -17,7 +15,7 @@ public class MessageScopeHelperTest {
     private void assertContainsInOrder(List<String> expected,
             List<String> actual) {
         if (expected.equals(actual)) return;
-        if (expected.size() > actual.size()) fail("actual smaller than expected");
+        if (expected.size() > actual.size()) Assert.fail("actual smaller than expected");
 
         Iterator<String> expectedIter = expected.iterator();
         Iterator<String> actualIter = actual.iterator();
@@ -25,7 +23,7 @@ public class MessageScopeHelperTest {
         while (expectedIter.hasNext()) {
             String thisExpected = expectedIter.next();
             if (!Iterators.contains(actualIter, thisExpected)) {
-                fail("doesn't contain: " + thisExpected);
+                Assert.fail("doesn't contain: " + thisExpected);
             }
         }
     }
@@ -97,7 +95,7 @@ public class MessageScopeHelperTest {
 
         ImmutableList<String> expected = ImmutableList.of("yukon.common.suffix");
 
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
@@ -113,7 +111,7 @@ public class MessageScopeHelperTest {
                                                           "yukon.web.components.someTag.instance.suffix",
                                                           "yukon.web.components.someTag.suffix");
 
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
@@ -131,7 +129,7 @@ public class MessageScopeHelperTest {
                                                           "yukon.web.components.someTag2.instance.suffix",
         "yukon.web.components.someTag2.suffix");
 
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
@@ -149,7 +147,7 @@ public class MessageScopeHelperTest {
                                                           "yukon.web.components.someTag.instance.suffix",
                                                           "yukon.web.components.someTag.suffix");
 
-        assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
 }

@@ -10,6 +10,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.device.programming.model.MeterProgramInfo;
 import com.cannontech.web.tools.device.programming.model.MeterProgramStatistics;
 import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
+import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 
 public interface MeterProgrammingSummaryDao {
@@ -38,9 +39,9 @@ public interface MeterProgrammingSummaryDao {
     }
 	
     /**
-     * Returns meter program summary detail for a single device
+     * Returns meter program configuration to be displayed on a widget
      */
-	MeterProgramSummaryDetail getProgramConfigurationByDeviceId(int deviceId, YukonUserContext context);
+    MeterProgramWidgetDisplay getProgramConfigurationByDeviceId(int deviceId, YukonUserContext context);
 
     /**
      * Returns total and in progress counts for each program

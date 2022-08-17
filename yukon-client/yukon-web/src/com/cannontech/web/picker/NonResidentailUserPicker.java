@@ -20,7 +20,7 @@ public class NonResidentailUserPicker extends UserPicker {
     @Override
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria criteria, YukonUserContext userContext,
             String extraArgs) {
-        final BooleanQuery.Builder query = new BooleanQuery.Builder();
+        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
 
         if (criteria != null) {
             query.add(criteria.getCriteria(), Occur.MUST);

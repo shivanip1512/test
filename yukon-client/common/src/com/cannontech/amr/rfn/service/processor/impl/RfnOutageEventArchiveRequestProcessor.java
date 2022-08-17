@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
@@ -14,7 +13,6 @@ import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.InvalidEventMessageException;
@@ -27,17 +25,13 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
     
     private final static Logger log = YukonLogManager.getLogger(RfnOutageEventArchiveRequestProcessor.class);
 
-    @Autowired private RfnDataValidator rfnDataValidator;
-    @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
-    
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
 
-        boolean isUnsolicited = event instanceof RfnAlarm;
         Instant eventInstant = instantOf(event);
         PointQuality quality = PointQuality.Normal;
         
-        if(!rfnDataValidator.isTimestampValid(eventInstant, now)) {
+        if(!RfnDataValidator.isTimestampValid(eventInstant, now)) {
             //  Bad timestamp - but since this is an alarm (likely occurring now), try sending current time with an Estimated quality
             if(event instanceof RfnAlarm) {
                 log.warn(device + " invalid timestamp " + eventInstant + " for alarm " + event.toString() + ", sending current time as estimate");
@@ -46,9 +40,7 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
             }
         }
         
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now, isUnsolicited);
-        rfnDeviceEventLogService.outageEventReceived(device.getRfnIdentifier().getSensorSerialNumber(), 
-                                                     event.getClass().getSimpleName(), getRfnConditionType().name(), eventInstant, null);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now);
 
         try {
             rfnMeterEventService.processAttributePointData(device, 
@@ -57,11 +49,11 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
                                                            eventInstant, 
                                                            getLongEventData(event, RfnConditionDataType.COUNT), 
                                                            quality, 
-                                                           now,
-                                                           isUnsolicited);
+                                                           now);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
-                log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update", device);
+                log.warn("Invalid Event Message device:" + device + " event:" + event + " pointDatas:" + pointDatas
+                    + ". Outage alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update", ex);
             } else {
                 log.error("Invalid Event Message device:" + device + " event:" + event + " pointDatas:" + pointDatas,
                     ex);

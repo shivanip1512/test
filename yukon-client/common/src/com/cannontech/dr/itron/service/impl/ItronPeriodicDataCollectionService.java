@@ -1,11 +1,9 @@
 package com.cannontech.dr.itron.service.impl;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 
@@ -48,7 +46,6 @@ public class ItronPeriodicDataCollectionService {
     private ScheduledFuture<?> scheduledTask;
     private boolean itronDevicesFound;
     public static final int maxRows = 1000;
-    private static final ReentrantLock lock = new ReentrantLock(true);
 
     @PostConstruct
     public void init() {
@@ -127,23 +124,17 @@ public class ItronPeriodicDataCollectionService {
      * Start the data collection, so long as there are Itron devices present in the system.
      */
     private void collectData() {
-        if (!itronDevicesExist()) {
+        if(!itronDevicesExist()) {
             log.debug("Skipping Itron periodic data collection - no devices present that communicate over Itron network.");
             return;
         }
-        if (lock.tryLock()) {
-            try {
-                log.info("Checking for devices with no secondary mac address.");
-                updateSecondaryMacAddresses();
-                log.info("Starting Itron data collection");
-                itronDataReadService.collectData();
-                log.info("Itron data collection complete");
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            log.info("Skipping scheduled data collection task because a previous collection task is still running.");
-        }
+        
+        log.info("Checking for devices with no secondary mac address.");
+        updateSecondaryMacAddresses();
+        
+        log.info("Starting Itron data collection");
+        itronDataReadService.collectData();
+        log.info("Itron data collection complete");
     }
     
     /**
@@ -164,10 +155,18 @@ public class ItronPeriodicDataCollectionService {
     }
     
     /**
-     * Get the data collection interval from the global setting.
+     * Get the data collection interval from the global setting and make sure it is valid.
      */
     private Duration getDataCollectionInterval() {
-        return Duration.ofMinutes(settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_MINUTES));
+        int hours = settingsDao.getInteger(GlobalSettingType.ITRON_HCM_DATA_COLLECTION_HOURS);
+        
+        if (hours > 0) {
+            return Duration.ofHours(hours);
+        } else if (hours < 0) {
+            log.warn("Invalid data collection interval: " + hours + ", setting to zero");
+        }
+
+        return Duration.ZERO;
     }
     
     /**
@@ -177,17 +176,12 @@ public class ItronPeriodicDataCollectionService {
     private void updateSecondaryMacAddresses() {
         List<PaoMacAddress> devicesWithNoSecondaryMac = deviceDao.findAllDevicesWithNoSecondaryMacAddress();
         log.info("{} devices with no secondary mac.", devicesWithNoSecondaryMac.size());
-        List<String> macsWithNoSecondary = new ArrayList<>();
         for (PaoMacAddress paoMacAddress : devicesWithNoSecondaryMac) {
             log.debug("Requesting secondary mac for device ID {}", paoMacAddress.getPaoId());
-            boolean secondaryMacFound = itronCommunicationService.findAndSaveSecondaryMacAddress(
-                    paoMacAddress.getPaoType(), paoMacAddress.getPaoId(), paoMacAddress.getMacAddress());
-            if (!secondaryMacFound) {
-                macsWithNoSecondary.add(paoMacAddress.getMacAddress());
-            }
+            itronCommunicationService.saveSecondaryMacAddress(paoMacAddress.getPaoType(), 
+                                                              paoMacAddress.getPaoId(), 
+                                                              paoMacAddress.getMacAddress());
         }
-        log.info(() -> "A secondary mac could not be retrieved for " + macsWithNoSecondary.size() + 
-                " devices: [" + String.join(",", macsWithNoSecondary) + "]");
     }
     
     private static String format(Duration d) {

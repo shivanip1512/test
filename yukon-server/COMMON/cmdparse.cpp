@@ -507,10 +507,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_USAGE;
         }
-        else if( containsString(CmdStr, " meter_read") )
-        {
-            _cmd["meter_read"] = true;
-        }
         else if(containsString(CmdStr, " lp "))
         {
             if(!(token = matchRegex(CmdStr, re_lp)).empty())
@@ -1161,11 +1157,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_CONNECT;
             _snprintf(tbuf, sizeof(tbuf), "CONNECT");
-
-            if( containsString(CmdStr, " arm") )
-            {
-                _cmd["arm"] = true;
-            }
         }
         else if(containsString(CmdStr, " restore"))    // Sourcing from CmdStr, which is the entire command string.
         {
@@ -1954,10 +1945,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 _cmd["voltage_profile_state"] = true;
             }
         }
-        if( containsString(CmdStr, " availablechannels") )
-        {
-            _cmd["available_channels"] = CtiParseValue("TRUE");
-        }
 
         setFlags(flag);
     }
@@ -2172,19 +2159,6 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 duration *= 60;                 // convert minutes to seconds
 
                 _cmd["read_interval_duration_seconds"] = CtiParseValue(duration);
-            }
-        }
-
-        if(containsString(CmdStr, " der "))
-        {
-            // putconfig der {hex-string-payload}
-
-            if( token = matchRegex(CmdStr, "der +[0-9a-fA-F]*"); ! token.empty() )
-            {
-                CtiTokenizer cmdtok(token);
-                cmdtok();  //  go past "der"
-
-                _cmd["der"] = CtiParseValue(cmdtok());
             }
         }
 

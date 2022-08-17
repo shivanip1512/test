@@ -9,7 +9,7 @@
 <entry key="yukon.common.paging.nextIcon.alt">Next Page</entry>
 
 <entry key="yukon.common.paging.viewing">{0} - {1} of {2}</entry>
-<entry key="yukon.common.paging.itemsPerPage">Rows per page:</entry>
+<entry key="yukon.common.paging.itemsPerPage">Page Size:</entry>
 
 <entry key="yukon.common.paging.showAll">Show All</entry>
 

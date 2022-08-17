@@ -15,13 +15,18 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -41,6 +46,7 @@ import com.cannontech.user.YukonUserContext;
  */
 public class ClientSession {
     private static ClientSession instance;
+    private static RemoteLoginSession remoteLoginSession;
 
     private LiteYukonUser user;
 
@@ -101,12 +107,23 @@ public class ClientSession {
 
         boolean success = false;
 
+        boolean isJws = BootstrapUtils.isWebStartClient();
+        CTILogger.info("Java Web Start property found: " + isJws);
         // "getBoolean" has to be the oddest Java method ever, but it is exactly what I want
-        boolean useLocalConfig = MasterConfigHelper.isLocalConfigAvailable();
-        if (useLocalConfig) {
+        boolean forceRemoteLogin = Boolean.getBoolean("com.cannontech.yukon.forceRemoteLogin");
+        boolean useLocalConfig = MasterConfigHelper.isLocalConfigAvailable() && !forceRemoteLogin;
+        if (!isJws && useLocalConfig) {
             CTILogger.info("Attempting local load of database properties...");
             success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
-        } 
+        } else {
+            if (isJws && !forceRemoteLogin) {
+                CTILogger.info("Attempting JWS load of database properties...");
+                success = doJwsLogin(parent);
+            } else {
+                CTILogger.info("Attempting remote load of database properties...");
+                success = doRemoteLogin(parent);
+            }
+        }
         if (success) {
             CTILogger.debug("Login was successful for " + getUser());
         } else {
@@ -161,6 +178,63 @@ public class ClientSession {
         }
 
         // They gave up trying to login
+        return false;
+    }
+
+    private boolean doJwsLogin(Frame p) {
+        String jwsHost = System.getProperty("jnlp.yukon.host");
+        String jwsUser = System.getProperty("jnlp.yukon.user");
+        LoginPanel lp = makeJwsLoginPanel(jwsHost, jwsUser);
+
+        return doRemoteLoginLoop(p, lp);
+    }
+
+    private boolean doRemoteLogin(Frame p) {
+        LoginPanel lp = makeRemoteLoginPanel();
+
+        boolean success = doRemoteLoginLoop(p, lp);
+
+        if (success) {
+            LoginPrefs prefs = LoginPrefs.getInstance();
+            prefs.setCurrentYukonHost(lp.getYukonHost());
+        }
+        return success;
+    }
+
+    private boolean doRemoteLoginLoop(Frame p, LoginPanel lp) {
+        CTILogger.debug("Starting login dialog loop");
+        while (collectInfo(p, lp)) {
+            try {
+                remoteLoginSession = new RemoteLoginSession(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                if (remoteLoginSession.login()) {
+                    // setup remote logging
+                    YukonLogManager.initialize(remoteLoginSession);
+                    LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(lp.getUsername());
+                    CTILogger.debug("user: " + u);
+
+                    // test host
+                    ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
+                    // test the config by getting something that should always exist
+                    // (if we don't do this here, it will fail deep inside the context startup)
+                    configuration.getRequiredString(MasterConfigString.DB_USERNAME);
+
+                    PoolManager.setConfigurationSource(configuration);
+                    // force load of the application context
+                    YukonSpringHook.getContext();
+
+                    setSessionInfo(u);
+                    ClientApplicationRememberMe rememberMeSetting = LoginPrefs.getInstance().getRememberMeSetting();
+                    setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
+
+                    return true;
+                } else {
+                    displayMessage(p, remoteLoginSession.getErrorMsg(), "Error");
+                    YukonSpringHook.shutdownContext();
+                }
+            } catch (RuntimeException e) {
+                handleOtherExceptions(p, e);
+            }
+        }
         return false;
     }
 
@@ -270,4 +344,14 @@ public class ClientSession {
         JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE);
     }
 
+    public static RemoteLoginSession getRemoteLoginSession() {
+        return remoteLoginSession;
+    }
+
+    public static boolean isRemoteSession() {
+        if (getRemoteLoginSession() == null) {
+            return false;
+        }
+        return true;
+    }
 }

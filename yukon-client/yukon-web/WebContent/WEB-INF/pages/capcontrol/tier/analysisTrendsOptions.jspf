@@ -17,19 +17,12 @@ function showTrends(title, url, id) {
     url += '&targets=' + encodeURIComponent(targets.join(','));
     
     $("#trend-popup").load(url, function() {
-        $("#trend-popup").dialog({
-            'title': title,
-            width: 600,
-            height: 580,
-            resizeStop: function(event, ui) {
-                yukon.highChart.redrawTrendChart($(this), ui);
-            }
-        });
+        $("#trend-popup").dialog({'title': title, width: 600, height: 580});
     });
 }
 </script>
 
-<div id="trend-popup" class="dn dialog-no-buttons MB0"></div>
+<div id="trend-popup" class="dn dialog-no-buttons"></div>
 
 <c:if test="${!empty viewableArea}">
     <c:set var="subBusList" value="${viewableArea.subBusList}"/>

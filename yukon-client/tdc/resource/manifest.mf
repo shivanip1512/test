@@ -10,7 +10,7 @@ Class-Path: ./
  macs.jar 
  jcfield401K.jar 
  jcpagelayout450K.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  sqljdbc42.jar 
  servlet-api.jar 
  ../log/ 

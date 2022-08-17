@@ -79,11 +79,10 @@
             &nbsp;${pageScope.units}
         </c:if>
         <c:if test="${status.error}">
-            <c:set var="errorClass" value="${displayValidationToRight ? 'fn' : ''}"/>
             <c:if test="${!displayValidationToRight}">
                 <br>
             </c:if>
-            <form:errors path="${path}" cssClass="error ${errorClass}"/>
+            <form:errors path="${path}" cssClass="error"/>
         </c:if>
 
         <c:choose>

@@ -7,9 +7,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.jms.ConnectionFactory;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -49,7 +52,8 @@ public class IvvcSimulatorController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-
+    
+    private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorController.class);
     private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false, 3000.0, true, 1200, 1200);
     
@@ -173,5 +177,12 @@ public class IvvcSimulatorController {
         PropertyEditor instantEditor = datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, 
                 userContext, BlankMode.ERROR);
         binder.registerCustomEditor(Instant.class, instantEditor);
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }

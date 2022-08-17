@@ -13,7 +13,6 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
-import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -44,7 +43,6 @@ import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
-import com.cannontech.stars.dr.eatonCloud.EatonCloudLcrBuilder;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
@@ -59,7 +57,6 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
-import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -77,7 +74,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private ApplianceDao applianceDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private EatonCloudLcrBuilder eatonCloudLcrBuilder;
     @Autowired private EnrollmentHelperService enrollmentService;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
@@ -87,7 +83,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private LMHardwareEventDao hardwareEventDao;
     @Autowired private LmHardwareBaseDao hardwareBaseDao;
-    @Autowired private HardwareUiService hardwareUiService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -329,14 +324,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                     if (!existingMacAddress.equalsIgnoreCase(dto.getMacAddress())) {
                         throw new DeviceMacAddressNotUpdatableException();
                     }
-                } else if (inventoryIdentifier.getHardwareType().isEatonCloud()) {
-                    String guid = dto.getGuid();
-                    if (StringUtils.isBlank(guid) || !Validator.isValidGuid(guid)) {
-                        throw new StarsInvalidArgumentException("Valid MAC Address is required");
-                    }
-                    Hardware hardware = hardwareUiService.getHardware(inventoryIdentifier.getInventoryId());
-                    hardware.setGuid(guid);
-                    eatonCloudLcrBuilder.updateDevice(hardware);
                 }
             }
             // update install event

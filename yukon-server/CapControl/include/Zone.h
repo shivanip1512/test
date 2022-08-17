@@ -11,31 +11,16 @@
 namespace Cti           {
 namespace CapControl    {
 
-
-struct LoggingHelperCacheEntry  // Cache for Voltage Monitoring Points
-{
-    long
-        pointId,
-        deviceId;
-
-    std::string
-        pointName,
-        pointType,
-        deviceName,
-        deviceType;
-};
-
 class Zone : private boost::noncopyable
 {
 
 public:
-    
+
     static const std::string GangOperated;
 
     typedef std::set<long>              IdSet;
     typedef std::map<Phase, long>       PhaseIdMap;
     typedef std::multimap<Phase, long>  PhaseToVoltagePointIds;
-    typedef std::map<long, LoggingHelperCacheEntry> LoggingHelperCache;
 
     Zone( const long Id,
           const long parentId,
@@ -70,9 +55,6 @@ public:
     void addRegulatorId( const Phase phase, const long Id );
     PhaseIdMap getRegulatorIds() const;
 
-    void addCacheEntry(const long Id, const LoggingHelperCacheEntry entry);
-    boost::optional<LoggingHelperCacheEntry> getCacheEntry(const long Id);
-
 private:
 
     long _Id;
@@ -86,8 +68,6 @@ private:
 
     PhaseIdMap _regulatorIds;
     PhaseToVoltagePointIds _voltagePoints;
-    LoggingHelperCache loggingHelperCache;
-    
 };
 
 }

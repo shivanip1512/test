@@ -16,20 +16,10 @@ BOOST_AUTO_TEST_CASE(test_unknownAttributes)
 {
     const auto unknowns = Cti::DeviceAttributeLookup::GetUnknownDeviceAttributes();
 
-    for( const auto& [ deviceType, attr ] : unknowns )
+    for( const auto& deviceAttributes : unknowns )
     {
-        BOOST_ERROR( "Device type " + desolveDeviceType(deviceType) + " has unknown attribute " + attr + 
+        BOOST_ERROR( "Device type " + desolveDeviceType(deviceAttributes.first) + " has unknown attribute " + deviceAttributes.second + 
                      " - attributes may have been added to BuiltInAttributes.java without being added to Attribute.cpp and Attribute.h" );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_unknownDeviceTypes)
-{
-    const auto unknowns = Cti::DeviceAttributeLookup::GetUnknownDeviceTypes();
-
-    for( const auto& deviceType : unknowns )
-    {
-        BOOST_ERROR("XML device type string \"" + deviceType + "\" did not map to a known DeviceType string in resource_helper.cpp");
     }
 }
 
@@ -88,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_Lookup_success)
 
         BOOST_REQUIRE(point);
 
-        BOOST_CHECK_EQUAL(point->offset, 105);
+        BOOST_CHECK_EQUAL(point->offset, 265);
         BOOST_CHECK_EQUAL(point->type, 1);
     }
     {

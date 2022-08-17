@@ -48,9 +48,6 @@
                                      <c:when test="${event.getPaoIdentifier().getPaoType().isRfRelay()}">
                                         <tags:paoType yukonPao="${event}" showLink="false" />
                                      </c:when>
-                                     <c:when test="${event.getPaoIdentifier().getPaoType().isRfGateway()}">
-                                        <tags:paoType yukonPao="${event}" showLink="false" />
-                                     </c:when>
                                      <c:otherwise>
                                         <tags:paoType yukonPao="${event}" />
                                      </c:otherwise>
@@ -67,10 +64,6 @@
                                     <c:when test="${event.getPaoIdentifier().getPaoType().isRfRelay()}">
                                         <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="relayMenuSingleDevice"/>
                                     </c:when>
-                                    <c:when test="${event.getPaoIdentifier().getPaoType().isRfGateway()}">
-                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="gatewayMenuSingleDevice"/>
-                                    </c:when>
-                                    
                                     <c:otherwise>
                                         <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="meterMenuSingleDevice"/>
                                     </c:otherwise>

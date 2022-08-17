@@ -3,25 +3,13 @@ package com.cannontech.dbtools.updater;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.attribute.AclEntry;
-import java.nio.file.attribute.AclFileAttributeView;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.ApplicationId;
@@ -105,7 +93,6 @@ public class DBUpdater extends MessageFrameAdaptor {
     public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose", "nightly"};
     private static final String oracleDBPath = "/Client/DBScripts/oracle";
     private static final String sqlServerDBPath = "/Client/DBScripts/sqlserver";
-    private static final String LOCAL_SERVICE = "NT AUTHORITY\\LOCAL SERVICE";
     
     public DBUpdater() {
         super();
@@ -194,7 +181,6 @@ public class DBUpdater extends MessageFrameAdaptor {
      */
     public static void main(String[] args) {
         CtiUtilities.setClientAppName(ApplicationId.DB_UPDATER);
-        YukonLogManager.initialize();
         DBUpdater updater = new DBUpdater();
 
         if (args.length < 1) // the user did not enter any params
@@ -358,18 +344,7 @@ public class DBUpdater extends MessageFrameAdaptor {
                 getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
             }
 
-        } else if (line_.isWarning()) {
-            String commandName = line_.getCommandName();
-            String warningMessage = line_.getWarningMessage();
-            try {
-                Method method = DBUpdater.class.getDeclaredMethod(commandName, Statement.class, String.class, String.class);
-                method.invoke(this, stat, cmd, warningMessage);
-            } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException e) {
-                throw new RuntimeException(e.getCause());
-            }
-        }
-        else {
+        } else {
             stat.execute(cmd);
             line_.setSuccess(true);
             getIMessageFrame().addOutput("   SUCCESS : " + cmd);
@@ -383,71 +358,6 @@ public class DBUpdater extends MessageFrameAdaptor {
     
     }
 
-    /**
-     * Method to display warning message for invalid Import / Export directories while upgrading DB.
-     */
-    private void checkDirectoryAccess(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
-        List<String> invalidDirectories = new ArrayList<String>();
-        ResultSet resultSet = stat.executeQuery(cmd);
-        while (resultSet.next()) {
-            String value = resultSet.getString("value");
-            String[] directoryPaths = Arrays.stream(value.split(",")).map(String::trim).toArray(String[]::new);
-            for (String directoryPath : directoryPaths) {
-                File file = new File(directoryPath);
-                AclFileAttributeView attributeView = Files.getFileAttributeView(file.toPath(), AclFileAttributeView.class);
-                List<AclEntry> entry = attributeView.getAcl();
-                if (entry.stream()
-                         .map(e -> !e.principal().getName().equals(LOCAL_SERVICE))
-                         .findAny().get()) {
-                    invalidDirectories.add(directoryPath);
-                }
-            }
-        }
-        if (CollectionUtils.isNotEmpty(invalidDirectories)) {
-            getIMessageFrame().addOutput("");
-            getIMessageFrame().addOutput(
-                    " ************************************************************************** ");
-            getIMessageFrame().addOutput("   Warning Message:");
-            getIMessageFrame().addOutput("   " + warningMessage);
-            getIMessageFrame().addOutput("   " + StringUtils.join(invalidDirectories, ','));
-            getIMessageFrame().addOutput("");
-            getIMessageFrame().addOutput(
-                    " ************************************************************************** ");
-            throw new RuntimeException("Invalid Import/Export directories.");
-        }
-    }
-
-    /**
-     * Method to display warning message for control priority.
-     */
-    private void checkControlPriority(Statement stat, String cmd, String warningMessage) throws SQLException, IOException {
-        List<String> loadGroupNames = new ArrayList<String>();
-        ResultSet resultSet = stat.executeQuery(cmd);
-        while (resultSet.next()) {
-            String value = resultSet.getString("PAOName");
-            loadGroupNames.add(value);
-        }
-        if (CollectionUtils.isNotEmpty(loadGroupNames)) {
-            getIMessageFrame().addOutput("");
-            getIMessageFrame().addOutput(
-                    " ************************************************************************** ");
-            getIMessageFrame().addOutput("   Warning Message:");
-            getIMessageFrame().addOutput("   " + warningMessage);
-            getIMessageFrame().addOutput("   " + "The control priority of load group(s) " + StringUtils.join(loadGroupNames, ',')
-                    + " may not be correct as they were edited via the web interface which had set priorities incorrectly.\n"
-                    + "   " + "You should examine your expresscom load group priorities to ensure they are set appropriately. You can manually check them on the UI which is now fixed,\n"
-                    + "   " + "or if you have a significant number you can run the below query to find the priorities of all of your expresscom groups, and note that in the database,\n"
-                    + "   " + "Default = 3, Medium = 2, High = 1, and Highest = 0.");
-            getIMessageFrame().addOutput("\n    "
-                    + "SELECT ypo.PAOName AS GroupName,lmGroup.LMGroupID, lmGroup.ProtocolPriority AS CommandProperty FROM \n"
-                    + "    YukonPAObject ypo JOIN LMGroupExpressCom lmGroup ON lmGroup.LMGroupID = ypo.PAObjectID; ");
-            getIMessageFrame().addOutput("");
-            getIMessageFrame().addOutput(
-                    " ************************************************************************** ");
-        }
-    }
-
-    
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {
         if (line_ == null || conn == null)
             return;

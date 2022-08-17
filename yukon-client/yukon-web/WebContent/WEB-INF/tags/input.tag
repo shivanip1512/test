@@ -24,7 +24,6 @@
 <%@ attribute name="units" type="java.lang.String" description="The units to display to the right of the field (ex: Volts)." %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 <%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
-<%@ attribute name="title" type="java.lang.String" description="Text to display in tooltip on hover."%>
 
 <cti:default var="password" value="${false}"/>
 <cti:default var="autocomplete" value="on"/>
@@ -65,8 +64,7 @@
             tabindex="${pageScope.tabindex}"
             autofocus="${pageScope.autofocus}"
             data-toggle-group="${pageScope.toggleGroup}"
-            placeholder="${pageScope.placeholder}"
-            title="${title}"/>
+            placeholder="${pageScope.placeholder}"/>
     </c:when>
     <c:otherwise>
         <form:input path="${path}"
@@ -83,19 +81,17 @@
             tabindex="${pageScope.tabindex}"
             autofocus="${pageScope.autofocus}"
             data-toggle-group="${pageScope.toggleGroup}"
-            placeholder="${pageScope.placeholder}"
-            title="${title}"/>
+            placeholder="${pageScope.placeholder}"/>
     </c:otherwise>
 </c:choose>
 <c:if test="${pageScope.units != null}">
-    <span class="js-units">&nbsp;${pageScope.units}</span>
+&nbsp;${pageScope.units}
 </c:if>
 <c:if test="${status.error}">
-    <c:set var="errorClass" value="${displayValidationToRight ? 'fn' : ''}"/>
     <c:if test="${!displayValidationToRight}">
         <br>
     </c:if>
-    <form:errors path="${path}" cssClass="error ${errorClass}" data-toggle-group="${pageScope.toggleGroup}"/>
+    <form:errors path="${path}" cssClass="error"/>
 </c:if>
 
 </cti:displayForPageEditModes>

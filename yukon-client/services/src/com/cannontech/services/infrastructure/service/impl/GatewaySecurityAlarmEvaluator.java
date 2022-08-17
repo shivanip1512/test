@@ -28,7 +28,7 @@ public class GatewaySecurityAlarmEvaluator extends InfrastructureStatusWarningEv
 
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return PaoType.getRfGatewayTypes();
+        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
     }
     
 }

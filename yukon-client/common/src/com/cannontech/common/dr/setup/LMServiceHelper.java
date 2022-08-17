@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.LMGearDao;
@@ -12,21 +11,19 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class LMServiceHelper {
 
-    @Autowired private IDatabaseCache dbCache;
     @Autowired private LMGearDao lmGearDao;
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired private ProgramConstraintService programConstraintService;
 
-    public List<LMGearDto> getGearsforModel(Integer programId, List<LMGearDto> gears) {
+    public List<LMDto> getGearsforModel(Integer programId, List<LMDto> gears) {
         List<LiteGear> allGears = Lists.newArrayList();
         allGears.addAll(lmGearDao.getAllLiteGears(programId));
         
-        Integer gearNumber = (gears != null && gears.size() == 1) ? gears.get(0).getGearNumber() : null;
+        Integer gearNumber = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
         if(gearNumber != null) {
             return allGears.stream()
                            .filter(liteGear -> liteGear.getGearNumber() == gearNumber.intValue())
@@ -40,8 +37,8 @@ public class LMServiceHelper {
         }
     }
 
-    private LMGearDto buildGear(LiteGear liteGear) {
-        return new LMGearDto(liteGear.getGearNumber(), liteGear.getGearName());
+    private LMDto buildGear(LiteGear liteGear) {
+        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
     
     public void validateProgramsAndGear(ControlScenario controlScenario) {
@@ -53,9 +50,9 @@ public class LMServiceHelper {
                                                          .orElseThrow(() -> new NotFoundException("Program Id not found"));
 
             programDetails.getGears().stream()
-                                     .filter(gear -> gear.getGearNumber().compareTo(program.getGears().get(0).getGearNumber()) == 0)
+                                     .filter(gr -> gr.getId().compareTo(program.getGears().get(0).getId()) == 0)
                                      .findFirst()
-                                     .orElseThrow(() -> new NotFoundException("Gear Number not found"));
+                                     .orElseThrow(() -> new NotFoundException("Gear Id not found"));
         });
     }
 
@@ -75,16 +72,5 @@ public class LMServiceHelper {
         return programConstraintService.getHolidaySchedules().stream()
                                                              .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
                                                              .findFirst();
-    }
-
-    /**
-     * Return a list of abbreviated PAO names corresponding to paoId
-     */
-    public String getAbbreviatedPaoNames(List<Integer> paoIds) {
-
-        List<String> paoNameList = paoIds.stream()
-                                         .map(id -> dbCache.getAllPaosMap().get(id).getPaoName())
-                                         .collect(Collectors.toList());
-        return StringUtils.abbreviate(String.join(", ", paoNameList), 2000);
     }
 }

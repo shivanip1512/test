@@ -27,9 +27,4 @@ public class SimulatorStartupSettingsStatusRequest implements SimulatorRequest {
     public SimulatorType getAffectedSimulator() {
         return affectedSimulator;
     }
-
-    @Override
-    public String toString() {
-        return String.format("SimulatorStartupSettingsStatusRequest [affectedSimulator=%s]", affectedSimulator);
-    }
 }

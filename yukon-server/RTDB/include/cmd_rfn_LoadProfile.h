@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cmd_rfn_Individual.h"
-#include "rfn_uom.h"
 #include "ctidate.h"
 
 
@@ -264,9 +263,9 @@ private:
     const CtiTime _begin;
     const CtiTime _end;
 
-    Rfn::UomModifier1 _uomModifier1;
-    Rfn::UomModifier2 _uomModifier2;
-    unsigned _profileInterval;
+    UomModifier1  _uomModifier1;
+    UomModifier2  _uomModifier2;
+    unsigned      _profileInterval;
 
     unsigned decodePointsReportHeader( RfnCommandResult & result,
                                        const Bytes & lpPointDescriptor,

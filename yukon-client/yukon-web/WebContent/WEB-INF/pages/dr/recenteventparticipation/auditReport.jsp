@@ -14,7 +14,7 @@
     </c:if>
     <c:if test="${!empty recentEventParticipationSummary}">
         <div class="scroll-lg">
-            <table class="compact-results-table row-highlighting dashed">
+            <table class="compact-results-table row-highlighting has-actions dashed">
                 <thead>
                     <tr>
                         <th><i:inline key=".name" /></th>
@@ -26,9 +26,7 @@
                 <tbody>
                     <c:forEach items="${recentEventParticipationSummary}" var="recentEventParticipationSummary">
                         <c:set var="successWidth" value="${recentEventParticipationSummary.eventStats.percentConfirmed * 100}" />
-                        <c:set var="successAfterRetryWidth" value="${recentEventParticipationSummary.eventStats.percentSuccessAfterRetry * 100}" />
-                        <c:set var="failedWidth" value="${recentEventParticipationSummary.eventStats.percentFailed * 100}" />
-                        <c:set var="unknownWidth" value="${recentEventParticipationSummary.eventStats.percentUnknown * 100}" />
+                        <c:set var="failedWidth" value="${recentEventParticipationSummary.eventStats.percentUnknown * 100}" />
                         <tr>
                             <td><span>${recentEventParticipationSummary.programName}</span></td>
                             <td><cti:formatDate type="FULL" value="${recentEventParticipationSummary.startTime}" /></td>
@@ -38,18 +36,10 @@
                                         aria-valuenow="${recentEventParticipationSummary.eventStats.percentConfirmed}%"
                                         title="<i:inline key=".confirmed" arguments="${recentEventParticipationSummary.numConfirmed}"/>"
                                         aria-valuemin="0" aria-valuemax="100" style="width: ${successWidth}%"></div>
-                                    <div class="progress-bar progress-bar-info" role="progressbar"
-                                        aria-valuenow="${recentEventParticipationSummary.eventStats.percentSuccessAfterRetry}%"
-                                        title="<i:inline key=".confirmedAfterRetry" arguments="${recentEventParticipationSummary.numConfirmedAfterRetry}"/>"
-                                        aria-valuemin="0" aria-valuemax="100" style="width: ${successAfterRetryWidth}%"></div>
                                     <div class="progress-bar progress-bar-warning" role="progressbar"
-                                        aria-valuenow="${recentEventParticipationSummary.eventStats.percentFailed}%"
-                                        title="<i:inline key=".failed" arguments="${recentEventParticipationSummary.numFailed}" />"
-                                        aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%"></div>
-                                    <div class="progress-bar progress-bar-unknown" role="progressbar"
                                         aria-valuenow="${recentEventParticipationSummary.eventStats.percentUnknown}%"
                                         title="<i:inline key=".unreported" arguments="${recentEventParticipationSummary.numUnknowns}" />"
-                                        aria-valuemin="0" aria-valuemax="100" style="width: ${unknownWidth}%">
+                                        aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%">
                                     </div>
                                 </div>
                             </td>

@@ -3,11 +3,9 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.ThermostatRampRateValues;
 import com.cannontech.dr.itron.model.ItronCycleType;
-import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
@@ -119,15 +117,4 @@ public interface LMGearDao {
      */
 
     public LMThermostatGear getLMThermostatGear(Integer gearId);
-
-    /**
-     * Retrieves EatonCloudCycleType by GearId
-     */
-    
-    public EatonCloudCycleType getEatonCloudCycleType(Integer gearId);
-    
-    /**
-     * Retrieves Heating Event by GearId
-     */
-    HeatCool getHeatingEvent(Integer gearId);
 }

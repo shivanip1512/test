@@ -25,10 +25,8 @@ import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
-import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
-import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
@@ -57,7 +55,6 @@ import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.PeakLoadShape;
 import com.cannontech.dr.nest.model.v3.PostLoadShape;
@@ -122,7 +119,7 @@ public class LoadProgramSetupControllerHelper {
     private void retrieveProgramConstraints(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
 
         List<LMDto> constraints = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drAllProgramConstraintUrl);
         ResponseEntity<List<? extends Object>> response =
             apiRequestHelper.callAPIForList(userContext, request, url, LMDto.class, HttpMethod.GET, LMDto.class);
 
@@ -249,10 +246,6 @@ public class LoadProgramSetupControllerHelper {
             EcobeeSetpointGearFields ecobeeSetpointGearFields = (EcobeeSetpointGearFields) programGear.getFields();
             setEcobeeSetpointGearFieldsDefaultValues(ecobeeSetpointGearFields);
             break;
-        case EcobeePlus:
-            EcobeePlusGearFields ecobeePlusGearFields = (EcobeePlusGearFields) programGear.getFields();
-            setEcobeePlusFieldsDefaultValues(ecobeePlusGearFields);
-            break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             setHoneywellCycleGearFieldsDefaultValues(honeywellCycleGearFields);
@@ -288,10 +281,6 @@ public class LoadProgramSetupControllerHelper {
         case Latching:
             LatchingGearFields latchingGearFields = (LatchingGearFields) programGear.getFields();
             latchingGearFields.setCapacityReduction(100);
-            break;
-        case EatonCloudCycle:
-            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
-            setEatonCloudCycleGearFieldsDefaultValues(eatonCloudCycleGearFields);
             break;
         }
     }
@@ -355,7 +344,8 @@ public class LoadProgramSetupControllerHelper {
 
     private void setEcobeeCycleGearFieldsDefaultValues(EcobeeCycleGearFields ecobeeCycleGearFields) {
         ecobeeCycleGearFields.setMandatory(false);
-        ecobeeCycleGearFields.setRampInOut(true);
+        ecobeeCycleGearFields.setRampIn(true);
+        ecobeeCycleGearFields.setRampOut(true);
         ecobeeCycleGearFields.setControlPercent(50);
         ecobeeCycleGearFields.setCapacityReduction(100);
     }
@@ -366,15 +356,8 @@ public class LoadProgramSetupControllerHelper {
         ecobeeSetpointGearFields.setMode(Mode.COOL);
         ecobeeSetpointGearFields.setCapacityReduction(100);
     }
-    
-    private void setEcobeePlusFieldsDefaultValues(EcobeePlusGearFields ecobeePlusGearFields) {
-        ecobeePlusGearFields.setRampInOut(true);
-        ecobeePlusGearFields.setHeatingEvent(false);
-        ecobeePlusGearFields.setCapacityReduction(100);
-    }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
-        honeywellCycleGearFields.setMandatory(false);
         honeywellCycleGearFields.setRampInOut(true);
         honeywellCycleGearFields.setControlPercent(50);
         honeywellCycleGearFields.setCapacityReduction(100);
@@ -470,14 +453,6 @@ public class LoadProgramSetupControllerHelper {
         sepTemperatureOffsetGearFields.setCapacityReduction(100);
     }
     
-    private void setEatonCloudCycleGearFieldsDefaultValues(EatonCloudCycleGearFields eatonCloudCycleGearFields) {
-        eatonCloudCycleGearFields.setRampIn(true);
-        eatonCloudCycleGearFields.setRampOut(true);
-        eatonCloudCycleGearFields.setCapacityReduction(100);
-        eatonCloudCycleGearFields.setDutyCyclePercent(50);
-        eatonCloudCycleGearFields.setCriticality(100);
-    }
-    
     public void populateDefaultValuesForDependentFields(ProgramGear programGear) {
         switch (programGear.getControlMethod()) {
         case MagnitudeCycle:
@@ -521,12 +496,6 @@ public class LoadProgramSetupControllerHelper {
             ecobeeSetpointGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(ecobeeSetpointGearFields.getWhenToChangeFields()));
             break;
-            
-        case EcobeePlus:
-            EcobeePlusGearFields ecobeePlusFields = (EcobeePlusGearFields) programGear.getFields();
-            ecobeePlusFields.setWhenToChangeFields(
-                setWhenToChangeDefaultValues(ecobeePlusFields.getWhenToChangeFields()));
-            break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             honeywellCycleGearFields.setWhenToChangeFields(
@@ -569,11 +538,6 @@ public class LoadProgramSetupControllerHelper {
             BeatThePeakGearFields beatThePeakGearFields = (BeatThePeakGearFields) programGear.getFields();
             beatThePeakGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(beatThePeakGearFields.getWhenToChangeFields()));
-            break;
-        case EatonCloudCycle:
-            EatonCloudCycleGearFields eatonCloudCycleGearFields = (EatonCloudCycleGearFields) programGear.getFields();
-            eatonCloudCycleGearFields.setWhenToChangeFields(
-                setWhenToChangeDefaultValues(eatonCloudCycleGearFields.getWhenToChangeFields()));
             break;
         case NoControl:
             NoControlGearFields noControlGearFields = (NoControlGearFields) programGear.getFields();
@@ -658,11 +622,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case EcobeeSetpoint:
-            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
-            model.addAttribute("whenToChangeFields", WhenToChange.values());
-            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
-            break;
-        case EcobeePlus:
+            model.addAttribute("temperatureModes", Mode.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
@@ -672,7 +632,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("cyclePeriod", List.of(30));
             break;
         case HoneywellSetpoint:
-            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
+            model.addAttribute("temperatureModes", Mode.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
@@ -688,19 +648,19 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("postPeakLoadShaping", PostLoadShape.values());
             break;
         case ThermostatRamping:
-            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
-            model.addAttribute("setpoints", Lists.newArrayList(Setpoint.values()));
+            model.addAttribute("units", TemperatureMeasureUnit.values());
+            model.addAttribute("setpoints", Setpoint.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SimpleThermostatRamping:
-            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
+            model.addAttribute("temperatureModes", Mode.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SepTemperatureOffset:
-            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
-            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
+            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("units", TemperatureMeasureUnit.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;
@@ -726,12 +686,6 @@ public class LoadProgramSetupControllerHelper {
         case Latching:
             model.addAttribute("controlStartState", ControlStartState.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
-            break;
-        case EatonCloudCycle:
-            model.addAttribute("whenToChangeFields", WhenToChange.values());
-            model.addAttribute("cycleType", EatonCloudCycleType.values());
-            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
-            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         }
     }

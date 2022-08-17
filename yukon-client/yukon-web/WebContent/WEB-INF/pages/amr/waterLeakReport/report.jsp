@@ -61,13 +61,11 @@
                     </label>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".filter.dateRange" valueClass="dif">
-                    <div>
-                        <dt:dateTime path="fromInstant" value="${filter.fromInstant}" stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
-                    </div>
-                    <div>
-                        <dt:dateTime path="toInstant" value="${filter.toInstant}" stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
-                    </div>
+                <tags:nameValue2 nameKey=".filter.dateRange">
+                    <dt:dateTime path="fromInstant" value="${filter.fromInstant}"
+                        stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
+                    <dt:dateTime path="toInstant" value="${filter.toInstant}"
+                        stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
                 </tags:nameValue2>
 
                 <tags:nameValue2 nameKey=".filter.threshold">

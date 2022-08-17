@@ -15,7 +15,6 @@
         <tag name="OUTAGE"/>
         <tag name="PORTER_COMMAND_REQUESTS"/>
         <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>

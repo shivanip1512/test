@@ -5,7 +5,6 @@ import com.cannontech.common.model.Phase;
 public class PointToZoneMapping {
 	private int pointId;
 	private int zoneId;
-	private Integer feederId;
 	private double graphPositionOffset;
 	private double distance;
 	private Phase phase;
@@ -15,10 +14,9 @@ public class PointToZoneMapping {
 		
 	}
 	
-	public PointToZoneMapping(int pointId, int zoneId, Integer feederId, double graphPositionOffset, double distance, Phase phase, boolean ignore) {
+	public PointToZoneMapping(int pointId, int zoneId, double graphPositionOffset, double distance, Phase phase, boolean ignore) {
 		this.pointId = pointId;
 		this.zoneId = zoneId;
-		this.setFeederId(feederId);
 		this.graphPositionOffset = graphPositionOffset;
 		this.distance = distance;
 		this.phase = phase;
@@ -71,13 +69,5 @@ public class PointToZoneMapping {
 
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
-    }
-
-    public Integer getFeederId() {
-        return feederId;
-    }
-
-    public void setFeederId(Integer feederId) {
-        this.feederId = feederId;
     }
 }

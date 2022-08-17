@@ -41,16 +41,8 @@ public class InfrastructureWarning implements Displayable, Serializable {
                                  Object... arguments) {
         this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, Instant.now(), arguments);
     }
-
-    /**
-     * Create a new InfrastructureWarning with the specified pao identifier, warning type, timestamp, arguments and default
-     * severity.
-     */
-    public InfrastructureWarning(PaoIdentifier paoIdentifier, InfrastructureWarningType warningType, Instant timestamp,
-            Object... arguments) {
-        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, timestamp, arguments);
-    }
-
+    
+    
     /**
      * Create a new InfrastructureWarning with the specified severity and arguments.
      */

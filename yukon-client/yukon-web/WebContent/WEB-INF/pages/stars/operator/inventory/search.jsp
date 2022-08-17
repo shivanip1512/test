@@ -21,9 +21,6 @@
             <tags:nameValue2 nameKey=".lastName">
                 <form:input path="lastName" class="full-width"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".macAddress">
-                <form:input path="macAddress" class="full-width"/>
-            </tags:nameValue2>
             <tags:nameValue2 nameKey=".workOrderNumber">
                 <form:input path="workOrderNumber" class="full-width"/>
             </tags:nameValue2>

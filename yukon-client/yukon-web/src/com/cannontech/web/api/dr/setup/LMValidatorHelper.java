@@ -6,15 +6,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.dr.setup.LMCopy;
-import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtilsCommon;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -26,8 +26,10 @@ public class LMValidatorHelper {
     private final static String key = "yukon.web.modules.dr.setup.error.";
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private PointDao pointdao;
+
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
+        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
@@ -78,14 +80,23 @@ public class LMValidatorHelper {
             errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
         }
     }
-
+    
     public void validateRoute(Errors errors, Integer routeId) {
+
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
-            if (liteRoute == null) {
+            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
+            if (!routeIds.contains(routeId)) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
+        }
+    }
+
+    public void validatePointId(Errors errors, String field, Integer pointId) {
+        try {
+            pointdao.getLitePoint(pointId);
+        } catch (NotFoundException ex) {
+            errors.rejectValue(field, key + "pointId.doesNotExist", new Object[] { field }, "");
         }
     }
 
@@ -95,21 +106,4 @@ public class LMValidatorHelper {
     public Set<Integer> findDuplicates(List<Integer> list) {
         return list.stream().filter(e -> Collections.frequency(list, e) >1).collect(Collectors.toSet());
     }
-
-    /**
-     * Validates route id if load group supports route id
-     */
-    public void validateRouteId(LMCopy lmCopy, Errors errors, String field) {
-        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
-        if (paoId != null) {
-            PaoType type = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
-            if (lmCopy instanceof LoadGroupCopy && type.isLoadGroupSupportRoute()) {
-                Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
-                if (routeId != null) {
-                    validateRoute(errors, routeId);
-                }
-            }
-        }
-    }
-
 }

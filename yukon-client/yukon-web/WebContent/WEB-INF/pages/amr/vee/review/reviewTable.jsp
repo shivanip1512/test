@@ -11,7 +11,7 @@
         <c:when test="${totalTagCount > 0}">
             <div class="action-area">
                 <cti:button id="accept-all" icon="icon-tick" classes="middle" nameKey="acceptAll"/>
-                <cti:button id="delete-all" icon="icon-delete" classes="left" nameKey="deleteAll"/>
+                <cti:button id="delete-all" icon="icon-cross" classes="left" nameKey="deleteAll"/>
             </div>
             <table class="compact-results-table row-highlighting stacked has-alerts">
                 <thead>
@@ -71,7 +71,7 @@
 
                                 <td class="ACTION_TD pointer">
                                     <div class="fr">
-                                        <cti:button id="ACTION_DELETE_${changeId}" icon="icon-delete" renderMode="buttonImage" classes=" ACTION_BTN left"/>
+                                        <cti:button id="ACTION_DELETE_${changeId}" icon="icon-cross" renderMode="buttonImage" classes=" ACTION_BTN left"/>
                                         <cti:button id="ACTION_ACCEPT_${changeId}" icon="icon-tick" renderMode="buttonImage" classes="ACTION_BTN middle"/>
                                         <input id="ACTION_${changeId}" name="ACTION_${changeId}" type="hidden" value="">
                                     </div>

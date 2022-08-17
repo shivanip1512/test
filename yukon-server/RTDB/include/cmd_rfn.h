@@ -3,7 +3,6 @@
 #include "cmd_device.h"
 
 #include "rfn_asid.h"
-#include "rfn_priority.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
@@ -32,11 +31,9 @@ class RfnTouScheduleGetConfigurationCommand;
 class RfnTouScheduleSetConfigurationCommand;
 class RfnTouStateConfigurationCommand;
 class RfnTouHolidayConfigurationCommand;
-class RfnMeterDisconnectCommand;
 class RfnMeterProgrammingGetConfigurationCommand;
 class RfnMeterProgrammingSetConfigurationCommand;
 class RfnMeterProgrammingGetFileCommand;
-class RfnMeterReadCommand;
 class RfnGetOvUvAlarmConfigurationCommand;
 class RfnSetOvUvAlarmProcessingStateCommand;
 class RfnSetOvUvAlarmRepeatCountCommand;
@@ -46,19 +43,13 @@ class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
 class RfnRemoteDisconnectGetConfigurationCommand;
 class RfnRemoteDisconnectSetConfigurationCommand;
-class RfnSetChannelSelectionCommand;
-class RfnGetChannelSelectionCommand;
-class RfnGetChannelSelectionFullDescriptionCommand;
-class RfnGetChannelSelectionAllAvailableCommand;
+class RfnChannelSelectionCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
 class SetConfigurationCommand;
 }
 class RfnTemperatureAlarmCommand;
-class RfnMetrologyGetConfigurationCommand;
-class RfnMetrologySetConfigurationCommand;
-class RfnDerPayloadDeliveryCommand;
 
 struct RfnCommandResult
 {
@@ -103,11 +94,9 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)               {}
         virtual void handleCommandResult(const RfnTouStateConfigurationCommand &)                     {}
         virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)                   {}
-        virtual void handleCommandResult(const RfnMeterDisconnectCommand &)                           {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingSetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnMeterProgrammingGetFileCommand &)                   {}
-        virtual void handleCommandResult(const RfnMeterReadCommand &)                                 {}
         virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)                   {}
@@ -117,17 +106,11 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
         virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
         virtual void handleCommandResult(const RfnRemoteDisconnectSetConfigurationCommand &)          {}
-        virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
-        virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
-        virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
-        virtual void handleCommandResult(const RfnGetChannelSelectionAllAvailableCommand &)           {}
+        virtual void handleCommandResult(const RfnChannelSelectionCommand &)                          {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}
         virtual void handleCommandResult(const RfnTemperatureAlarmCommand &)                          {}
-        virtual void handleCommandResult(const RfnMetrologyGetConfigurationCommand &)                 {}
-        virtual void handleCommandResult(const RfnMetrologySetConfigurationCommand &)                 {}
-        virtual void handleCommandResult(const RfnDerPayloadDeliveryCommand &)                        {}
     };
 
     //  to be overridden by children that require a result handler
@@ -168,13 +151,11 @@ public:
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 
     virtual ASID getApplicationServiceId() const;
-    virtual auto getPriorityClass() const -> Messaging::Rfn::PriorityClass;
 
     virtual std::string getCommandName() const = 0;
 
     virtual bool isPost() const;
     virtual bool isOneWay() const;
-    virtual bool isOscoreEncrypted() const;
 
 protected:
 

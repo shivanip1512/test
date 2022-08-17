@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +16,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -34,12 +32,9 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
@@ -61,7 +56,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -70,9 +64,8 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -100,115 +93,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private AttributeDao attributeDao;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    
-    private Set<DbChangeType> addType = EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE);
-    private Set<DbChangeType> deleteType = EnumSet.of(DbChangeType.DELETE);
-    
-    @PostConstruct
-    public void init() {   
-        cacheCustomAttributes();
-        createDatabaseChangeListeners();
-    }
-    
-    @Override
-    public boolean isValidAttributeId(Integer attributeId) {
-        return attributeId == null ? false : customAttributes.getIfPresent(attributeId) != null;
-    }
-    
-    @Override
-    public boolean isValidAssignmentId(Integer assignmentId) {
-        return assignmentId == null ? false : customAttributeAssignments.getIfPresent(assignmentId) != null;
-    }
-    
-    private void createDatabaseChangeListeners() {
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, addType, e -> {
-            try {
-                CustomAttribute attribute = attributeDao.getCustomAttribute(e.getPrimaryKey());
-                customAttributes.put(attribute.getCustomAttributeId(), attribute);
-            } catch (NotFoundException ex) {
-                log.warn(e);
-            }
-        });
-        
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, addType, e -> {
-            try {
-                AttributeAssignment assignemnt = attributeDao.getAssignmentById(e.getPrimaryKey());
-                customAttributeAssignments.put(assignemnt.getAttributeAssignmentId(), assignemnt);
-            } catch (NotFoundException ex) {
-                log.warn(e);
-            }
-        });
-        
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE, deleteType, e -> {
-            List<Integer> assignmentsToDelete = customAttributeAssignments.asMap().values().stream()
-                    .filter(assignment -> assignment.getAttributeId() == e.getPrimaryKey())
-                    .map(assignment -> assignment.getAttributeAssignmentId())
-                    .collect(Collectors.toList());
-            customAttributeAssignments.invalidateAll(assignmentsToDelete);
-            customAttributes.invalidate(e.getPrimaryKey());
-        });
-        
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ATTRIBUTE_ASSIGNMENT, deleteType, e -> {
-            customAttributeAssignments.invalidate(e.getPrimaryKey());
-        });
-    }
-        
-    private void cacheCustomAttributes() {
-        attributeDao.getCustomAttributes()
-                .forEach(attribute -> customAttributes.put(attribute.getCustomAttributeId(), attribute));
-        attributeDao.getAssignments()
-                .forEach(assignment -> customAttributeAssignments.put(assignment.getAttributeAssignmentId(), assignment));
-    }
-    
-    @Override
-    public CustomAttribute getCustomAttribute(int attributeId) {
-        if (! isValidAttributeId(attributeId)) {
-            throw new NotFoundException("Attribute id:" + attributeId + " is not in the database.");
-        }
-        return customAttributes.getIfPresent(attributeId);
-    }
 
-    private PaoType getPaoTypeByAttributeId(int attributeId) {
-        return customAttributeAssignments.asMap().values().stream()
-                .filter(assignment -> assignment.getAttributeId() == attributeId)
-                .findFirst()
-                .orElse(null)
-                .getPaoType();
-    }
-
-    @Override
-    public List<CustomAttribute> getCustomAttributes() {
-        return customAttributes.asMap().values().stream()
-                .sorted((a1, a2) -> a1.getName().compareTo(a2.getName()))
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public List<CustomAttribute> findCustomAttributesForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
-        return customAttributeAssignments.asMap().values().stream()
-                .filter(assignment -> assignment.isAssignedTo(paoTypePointIdentifier))
-                .map(assignment -> assignment.getCustomAttribute())
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public CustomAttribute findCustomAttribute(int attributeId) {
-        return customAttributes.getIfPresent(attributeId);
-    }
-    
-    @Override
-    public Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context){
-        Map<AttributeGroup, Set<Attribute>> groupedAttributes = new HashMap<>();
-        BuiltInAttribute.getAllGroupedAttributes().forEach((k,v) -> groupedAttributes.put(k, Sets.newHashSet(v)));
-        Set<Attribute> customAttributes = Sets.newHashSet(getCustomAttributes());
-        if(!customAttributes.isEmpty()) {
-            groupedAttributes.put(AttributeGroup.CUSTOM, customAttributes);
-        }
-        return objectFormattingService.sortDisplayableValues(groupedAttributes, context);
-    }
-    
     @Override
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         try {
@@ -237,23 +122,10 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute)
             throws IllegalUseOfAttribute {
-        if (attribute instanceof BuiltInAttribute) {
-            BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-            AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(),
-                    builtInAttribute);
-            return attributeDefinition.getPaoPointIdentifier(pao);
-        } else {
-            CustomAttribute customAttribute = (CustomAttribute) attribute;
-            //TODO: test
-            AttributeAssignment attributeAssignment = customAttributeAssignments.asMap().values().stream()
-                    .filter(assignment -> assignment.getAttributeId().equals(customAttribute.getCustomAttributeId()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalUseOfAttribute(
-                            "Attribute id:" + customAttribute.getCustomAttributeId() + " doesn't exits (not in cache)"));
-
-            return new PaoPointIdentifier(pao.getPaoIdentifier(),
-                    new PointIdentifier(attributeAssignment.getPointType(), attributeAssignment.getOffset()));
-        }
+        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+        AttributeDefinition attributeDefinition =
+            paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
+        return attributeDefinition.getPaoPointIdentifier(pao);
     }
 
     @Override
@@ -332,11 +204,8 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public Attribute resolveAttributeName(String name) {
-        try {
-            return BuiltInAttribute.valueOf(name);
-        } catch (IllegalArgumentException e) {
-            return findCustomAttribute(Integer.valueOf(name));
-        }
+        // some day this should also "lookup" user defined attributes
+        return BuiltInAttribute.valueOf(StringEscapeUtils.escapeXml11(name));
     }
 
     @Override
@@ -356,6 +225,28 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         return pointService.pointExistsForPao(paoPointIdentifier);
+    }
+
+    @Override
+    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
+        Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+        Multimap<Attribute, PaoType> dest = HashMultimap.create();
+        Multimaps.invertFrom(allDefinedAttributes, dest);
+        Collection<PaoType> collection = dest.get(attribute);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YPO.paobjectid, YPO.type");
+        sql.append("FROM Device d");
+        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
+        sql.append("WHERE YPO.type").in(collection);
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
+        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
+
+        return devices;
     }
 
     @Override
@@ -750,46 +641,6 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
-        List<PaoType> paoTypes = new ArrayList<>();
-        //TODO move to a different method
-        if (attribute instanceof BuiltInAttribute) {
-            Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
-            Multimap<Attribute, PaoType> dest = HashMultimap.create();
-            Multimaps.invertFrom(allDefinedAttributes, dest);
-            paoTypes.addAll(dest.get(attribute));
-        } else if (attribute instanceof CustomAttribute) {
-            CustomAttribute customAttribute  = (CustomAttribute) attribute;
-            
-            //TODO Test
-            PaoType type = getPaoTypeByAttributeId(customAttribute.getCustomAttributeId());
-            if(type != null) {
-                paoTypes.add(type);
-            }
-        }
-        
-        if(paoTypes.isEmpty()) {
-            return new ArrayList<>();
-        }
-        
-        //TODO remove sql
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT YPO.paobjectid, YPO.type");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject YPO ON (d.deviceid = YPO.paobjectid)");
-        sql.append("WHERE YPO.type").in_k(paoTypes);
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                "YPO.paObjectId");
-        sql.append("AND").appendFragment(groupSqlWhereClause);
-
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
-        List<SimpleDevice> devices = jdbcTemplate.query(sql, mapper);
-
-        return devices;
-    }
-    
-    //TODO remove sql
-    @Override
     public Multimap<BuiltInAttribute, SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group,
             List<BuiltInAttribute> attributes, List<Integer> deviceIds) {
 
@@ -799,7 +650,7 @@ public class AttributeServiceImpl implements AttributeService {
                 attributeToPaoType.put((BuiltInAttribute) entry.getValue(), entry.getKey());
             }
         }
-        //TODO remove sql
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.paobjectid, YPO.type");
         sql.append("FROM Device d");
@@ -832,17 +683,5 @@ public class AttributeServiceImpl implements AttributeService {
     public LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute) {
         createPointForAttribute(pao, attribute);
         return findPointForAttribute(pao, attribute);
-    }
-    
-    @Override
-    public Attribute parseAttribute(String attribute) {
-        if(attribute == null) { 
-            return null;
-        }
-        try {
-            return BuiltInAttribute.valueOf(attribute);
-        } catch (IllegalArgumentException e) {
-            return findCustomAttribute(Integer.valueOf(attribute));
-        }
     }
 }

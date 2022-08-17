@@ -56,7 +56,7 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
         if (getUrl() == null) { // this crumb is static text
             
             // the link display name will be the title attribute and/or any body content
-            out.write("<li class='breadcrumb-item'>");
+            out.write("<li>");
             writeTitleIfAvailable();
             writeBodyContentIfAvailable();
             out.write("</li>");
@@ -77,7 +77,7 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
                 url += "?" + queryString;
             }
             
-            out.write("<li class='breadcrumb-item'><a href=\"" + url + "\">");
+            out.write("<li><a href=\"" + url + "\">");
             
             // the link display name will be the title attribute and/or any body content
             writeTitleIfAvailable();

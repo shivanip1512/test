@@ -12,7 +12,6 @@ import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingCommunicationSe
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.ScheduledExecutor;
 
@@ -26,7 +25,7 @@ public class DataStreamingStatisticsCollectionService {
 
     @PostConstruct
     public void init() {
-        if (!configSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED)) {
+        if (!configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false)) {
             log.debug("Not scheduling gateway statistics collection");
             return;
         }

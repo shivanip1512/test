@@ -28,8 +28,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -118,6 +116,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.microsoft.azure.servicebus.primitives.StringUtil;
 
 public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageListener {
 
@@ -132,16 +131,13 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DrAttributeDataJmsService drAttributeDataJmsService;
-    @Autowired private ConfigurationSource configurationSource;
 
     private static final Logger log = YukonLogManager.getLogger(DrJmsMessageServiceImpl.class);
     private AtomicLong atomicLong = new AtomicLong();
     private Executor executor = Executors.newCachedThreadPool();
 
-    private ImmutableList<MultispeakVendor> vendorsToSendOptInMsg = ImmutableList.of();
-    private ImmutableList<MultispeakVendor> vendorsToSendOptOutMsg = ImmutableList.of();
-    private ImmutableList<MultispeakVendor> vendorsToSendEnrollmentMsg = ImmutableList.of();
-    private ImmutableList<MultispeakVendor> vendorsToSendUnEnrollmentMsg = ImmutableList.of();
+    private ImmutableList<MultispeakVendor> vendorsToSendEnrollmentOrOptInMsg = ImmutableList.of();
+    private ImmutableList<MultispeakVendor> vendorsToSendUnEnrollmentOrOptOutMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendIntervalDataMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendVoltageDataMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendAlarmAndEventDataMsg = ImmutableList.of();
@@ -158,7 +154,6 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     private static final String LCR_INDENTIFIER_LABEL = "LCR Serial";
     private static final String PROGRAM_INDENTIFIER_NAME = "programName";
     private static final String PROGRAM_INDENTIFIER_LABEL = "Program Name";
-    private boolean isMspEnrollmentEnabled;
     final String END_DEVICE_EVENT_TYPE_REF = UUID.randomUUID().toString();
 
     private static final QName QNAME_BEGIN_TEMPORARY_OPTOUT = new QName("beginTemporaryOptOut");
@@ -166,7 +161,6 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
 
     @PostConstruct
     public void initialize() {
-        isMspEnrollmentEnabled = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_ENROLLMENT, false);
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.MULTISPEAK, (event) -> {
             loadDrSupportedVendors();
             drAttributeDataJmsService.registerOrDestroySimpleMessageListenerContainer();
@@ -186,10 +180,8 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     private void loadDrSupportedVendors() {
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(true);
 
-        ImmutableList.Builder<MultispeakVendor> supportsOptIn = ImmutableList.builder();
-        ImmutableList.Builder<MultispeakVendor> supportsOptOut = ImmutableList.builder();
-        ImmutableList.Builder<MultispeakVendor> supportsEnrollment = ImmutableList.builder();
-        ImmutableList.Builder<MultispeakVendor> supportsUnEnrollment = ImmutableList.builder();
+        ImmutableList.Builder<MultispeakVendor> supportsEnrollmentOrOptIn = ImmutableList.builder();
+        ImmutableList.Builder<MultispeakVendor> supportsUnEnrollmentOrOptOut = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsIntervalData = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsVoltageData = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsAlarmAndEventData = ImmutableList.builder();
@@ -200,14 +192,10 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
                 try {
-                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR);
+                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
 
-                    if (isMspEnrollmentEnabled) {
-                        addSupportedVendors(mspMethodNames, ENROLLMENT_METHOD, mspVendor, supportsEnrollment);
-                        addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsUnEnrollment);
-                    }
-                    addSupportedVendors(mspMethodNames, ENROLLMENT_METHOD, mspVendor, supportsOptIn);
-                    addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsOptOut);
+                    addSupportedVendors(mspMethodNames, ENROLLMENT_METHOD, mspVendor, supportsEnrollmentOrOptIn);
+                    addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsUnEnrollmentOrOptOut);
                     addSupportedVendors(mspMethodNames, INTERVALDATA_METHOD, mspVendor, supportsIntervalData);
                     addSupportedVendors(mspMethodNames, VOLTAGEREADINGS_METHOD, mspVendor, supportsVoltageData);
                     addSupportedVendors(mspMethodNames, ALARMANDEVENTDATA_METHOD, mspVendor, supportsAlarmAndEventData);
@@ -219,10 +207,8 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             }
         }
 
-        vendorsToSendOptOutMsg = supportsOptOut.build();
-        vendorsToSendOptInMsg = supportsOptIn.build();
-        vendorsToSendEnrollmentMsg = supportsEnrollment.build();
-        vendorsToSendUnEnrollmentMsg = supportsUnEnrollment.build();
+        vendorsToSendUnEnrollmentOrOptOutMsg = supportsEnrollmentOrOptIn.build();
+        vendorsToSendEnrollmentOrOptInMsg = supportsUnEnrollmentOrOptOut.build();
         vendorsToSendIntervalDataMsg = supportsIntervalData.build();
         vendorsToSendVoltageDataMsg = supportsVoltageData.build();
         vendorsToSendAlarmAndEventDataMsg = supportsAlarmAndEventData.build();
@@ -314,11 +300,11 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     @Override
     public void enrollmentNotification(EnrollmentJmsMessage enrollmentJmsMessage) {
 
-        if (!isVendorsConfigured(vendorsToSendEnrollmentMsg)) {
+        if (!isVendorsConfigured(vendorsToSendEnrollmentOrOptInMsg)) {
             return;
         }
 
-        vendorsToSendEnrollmentMsg.forEach(mspVendor -> {
+        vendorsToSendEnrollmentOrOptInMsg.forEach(mspVendor -> {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(enrollmentJmsMessage.getInventoryId());
 
@@ -330,7 +316,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
             try {
-                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramEnrollmentsNotification);
+                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
 
                 logEvent(serialNumber, enrollmentJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
             } catch (MultispeakWebServiceClientException e) {
@@ -345,11 +331,11 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     @Override
     public void unenrollmentNotification(EnrollmentJmsMessage unEnrollmentMessage) {
 
-        if (!isVendorsConfigured(vendorsToSendUnEnrollmentMsg)) {
+        if (!isVendorsConfigured(vendorsToSendUnEnrollmentOrOptOutMsg)) {
             return;
         }
 
-        vendorsToSendUnEnrollmentMsg.forEach(mspVendor -> {
+        vendorsToSendUnEnrollmentOrOptOutMsg.forEach(mspVendor -> {
 
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(unEnrollmentMessage.getInventoryId());
@@ -364,7 +350,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramUnenrollmentsNotification.setTransactionID(transactionId);
 
             try {
-                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramUnenrollmentsNotification);
+                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnenrollmentsNotification);
 
                 logEvent(serialNumber, unEnrollmentMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
@@ -380,10 +366,10 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     @Override
     public void optOutNotification(OptOutOptInJmsMessage optOutOptInJmsMessage) {
 
-        if (!isVendorsConfigured(vendorsToSendOptOutMsg)) {
+        if (!isVendorsConfigured(vendorsToSendUnEnrollmentOrOptOutMsg)) {
             return;
         }
-        vendorsToSendOptOutMsg.forEach(mspVendor -> {
+        vendorsToSendUnEnrollmentOrOptOutMsg.forEach(mspVendor -> {
 
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutOptInJmsMessage.getInventoryId());
@@ -396,7 +382,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramUnEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramUnEnrollmentsNotification.setTransactionID(transactionId);
             try {
-                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramUnEnrollmentsNotification);
+                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnEnrollmentsNotification);
 
                 logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
@@ -410,11 +396,11 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
 
     @Override
     public void optInNotification(OptOutOptInJmsMessage optOutOptInJmsMessage) {
-        if (!isVendorsConfigured(vendorsToSendOptInMsg)) {
+        if (!isVendorsConfigured(vendorsToSendEnrollmentOrOptInMsg)) {
             return;
         }
 
-        vendorsToSendOptInMsg.forEach(mspVendor -> {
+        vendorsToSendEnrollmentOrOptInMsg.forEach(mspVendor -> {
 
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutOptInJmsMessage.getInventoryId());
@@ -429,7 +415,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
 
             try {
-                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramEnrollmentsNotification);
+                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
 
 
                 logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
@@ -466,7 +452,11 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             log.info("Sending " + INTERVALDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
                     + DrJmsMessageType.RELAYDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.intervalDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, intervalDataNotification);
+                notClient.intervalDataNotification(mspVendor, endpointUrl, intervalDataNotification);
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                    logEvent(serialNo, DrJmsMessageType.RELAYDATA.toString(), INTERVALDATA_METHOD, mspVendor, transactionId,
+                            endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, INTERVALDATA_METHOD,
                         DrJmsMessageType.RELAYDATA, mspVendor.getCompanyName());
@@ -498,7 +488,12 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
                     + DrJmsMessageType.VOLTAGEDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.meterReadingsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, meterReadingsNotification);
+                notClient.meterReadingsNotification(mspVendor, endpointUrl, meterReadingsNotification);
+
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                    logEvent(serialNo, DrJmsMessageType.VOLTAGEDATA.toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId,
+                            endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, VOLTAGEREADINGS_METHOD,
                         DrJmsMessageType.VOLTAGEDATA, mspVendor.getCompanyName());
@@ -532,7 +527,10 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             String serialNumbers = StringUtils.toStringList(serialNumberAttributeDataMapping.keySet());
             log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : " + DrJmsMessageType.ALARMANDEVENT + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, endDeviceEventsNotification);
+                notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, endDeviceEventsNotification);
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                logEvent(serialNo, DrJmsMessageType.ALARMANDEVENT.toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
                 log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ALARMANDEVENTDATA_METHOD, DrJmsMessageType.ALARMANDEVENT, mspVendor.getCompanyName());
                 log.error("Error sending alarmAndEventDataNotification.", e);
@@ -547,7 +545,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
         Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
         for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
-            String serialNumber = org.apache.commons.lang3.StringUtils.EMPTY;
+            String serialNumber = StringUtil.EMPTY;
             PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
             serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
             serialNumberAttributeDataMapping.put(serialNumber, message);
@@ -574,7 +572,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             formattedBlockNotification.setArrayOfFormattedBlock(arrayOfFormattedBlock);
 
             try {
-                notClient.formattedBlockNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, formattedBlockNotification);
+                notClient.formattedBlockNotification(mspVendor, endpointUrl, formattedBlockNotification);
 
                 List<ErrorObject> errObjects = new ArrayList<>();
                 errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -584,7 +582,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
                                                                 programName,
                                                                 transactionId,
                                                                 drProgramStatusJmsMessage.getMessageType().toString(),
-                                                                drProgramStatusJmsMessage.getProgramHistId(),
+                                                                drProgramStatusJmsMessage.getProgramGearHistId(),
                                                                 CollectionUtils.size(errObjects),
                                                                 endpointUrl);
                 if (CollectionUtils.isNotEmpty(errObjects)) {
@@ -968,7 +966,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock();
         List<FormattedBlock> formattedBlockList = arrayOfFormattedBlock.getFormattedBlock();
 
-        ProgramStatusBlock block = new ProgramStatusBlock(statusMessage.getProgramHistId(),
+        ProgramStatusBlock block = new ProgramStatusBlock(statusMessage.getProgramGearHistId(),
                                                           statusMessage.getProgramName(),
                                                           statusMessage.getGearName(),
                                                           statusMessage.getProgramStatusType().name(),

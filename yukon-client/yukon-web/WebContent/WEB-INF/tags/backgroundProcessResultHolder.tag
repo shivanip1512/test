@@ -50,7 +50,7 @@
 <%-- FAILURE COUNT --%>
 <div class="fwb stacked">
     <i:inline key=".${resultsTypeMsgKey}Results.processingExceptionLabel"/>:&nbsp;
-    <span class="error fn">
+    <span class="error">
         <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
     </span>
 </div>

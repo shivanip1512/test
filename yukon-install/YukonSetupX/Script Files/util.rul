@@ -463,38 +463,6 @@ begin
 	endwhile;
 end;
 
-//------------------------------------------------------------
-// Helper function that searches the specified file for a
-// cparm "sKey" string and updates the value "sValue" for all instances with the 
-// "sReplace" string.
-//------------------------------------------------------------
-export prototype UpdateCparmValueInFile(string, string, string, string);
-function UpdateCparmValueInFile(sFile, sKey, sValue, sReplace)
-number nGrepResult, nGrepLineNumber, commentLocation, keyLocation, colonLocation, valueLocation;
-string sGrepReturnLine;
-begin
-    nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
-    while (nGrepResult >= 0)
-        if (nGrepResult >= 0) then
-            commentLocation = StrFindEx(sGrepReturnLine, "#", 0);
-            keyLocation = StrFindEx(sGrepReturnLine, sKey, 0);
-            if (keyLocation < commentLocation || commentLocation < 0) then
-                colonLocation = StrFindEx(sGrepReturnLine, ":", keyLocation);
-                if (colonLocation > keyLocation) then
-                    valueLocation = StrFindEx(sGrepReturnLine, sValue, colonLocation);
-                    if (valueLocation > colonLocation) then
-                        if (valueLocation < commentLocation || commentLocation < 0) then
-                            StrReplace(sGrepReturnLine, sValue, sReplace, 0);
-                            FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
-                        endif;
-                    endif;
-                endif;
-            endif;
-        endif;
-        nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, CONTINUE);
-    endwhile;
-end;
-
 export prototype void SetBlankValueInJvmParams();
 function void SetBlankValueInJvmParams()
 begin
@@ -972,20 +940,47 @@ begin
 end;
 
 //--------------------------------------------------------------------------------
-// Rename old encryptedSystemPublisherMetadataFile.yaml (based on passed suffix) 
-// if available and take backup in Yukon\\Server\\Config\\Backup\\. Also remove old 
-// files from Yukon\\Server\\config directory
+// Check if backup files for yukonlogging.xml and remoteLogging.xml
+// are present inside Yukon\\Server\\Config\\Backup\\ directory.
+// Return true only if both files are present.
 //--------------------------------------------------------------------------------
-export prototype BackupEncryptedSystemPublisherMetadataFile(string);
-function BackupEncryptedSystemPublisherMetadataFile(suffix)
-string szFile, svResult;
+export prototype BOOL CheckForBackUpFiles();
+function BOOL CheckForBackUpFiles()
+string svResult;
+BOOL bResult1, bResult2;
 begin
-    if(FindFile (TARGETDIR + "\\Server\\Config\\", "encryptedSystemPublisherMetadata.yaml", svResult ) == 0) then 
-        CopyFile (TARGETDIR + "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml", TARGETDIR + "\\Server\\Config\\Backup\\encryptedSystemPublisherMetadata_" + suffix + ".yaml");
-        // Delete old encryptedSystemPublisherMetadata.yaml file.
-        szFile = TARGETDIR ^ "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml";
-        DeleteFile ( szFile );
-    endif;
+// Go to the backup location and check for the config files
+if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "yukonLogging_" + "*.*", svResult ) < 0) then 
+    bResult1 = FALSE;
+else 
+   bResult1 = TRUE;
+endif;
+if (FindFile (TARGETDIR + "\\Server\\Config\\Backup\\", "remoteLogging_" + "*.*", svResult ) < 0) then 
+   bResult2 = FALSE;
+else 
+   bResult2 = TRUE;
+endif;
+return bResult1 & bResult2;
+end;
+
+//--------------------------------------------------------------------------------
+// Rename old yukonlogging.xml and remoteLogging.xml files (based on passed suffix)
+// and take backup in Yukon\\Server\\Config\\Backup\\. 
+// Also remove old files from Yukon\\Server\\config directory
+//--------------------------------------------------------------------------------
+export prototype BackupLoggingConfigFiles(string);
+function BackupLoggingConfigFiles(suffix)
+string szFile;
+begin
+    Disable(LOGGING);
+    CopyFile(TARGETDIR + "\\Server\\Config\\yukonLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\yukonLogging_" + suffix + ".xml");
+    CopyFile(TARGETDIR + "\\Server\\Config\\remoteLogging.xml", TARGETDIR + "\\Server\\Config\\Backup\\remoteLogging_" + suffix + ".xml");
+    Enable(LOGGING);
+    // Delete old yukonLogging and remoteLogging files.
+    szFile = TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml";
+    DeleteFile ( szFile );
+    szFile = TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml";
+    DeleteFile ( szFile );
 end;
 
 //--------------------------------------------------------------------------------
@@ -1099,60 +1094,4 @@ begin
     sProg = "cmd.exe";
     sCMD = "/c " + "icacls " + sDir + " /grant LocalService:(OI)(CI)F /T";
     LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
-end;
-
-//-----------------------------------------------------------------------
-// Helper function to delete unused shortcuts
-//-----------------------------------------------------------------------
-export prototype removeShortcut();
-function removeShortcut()
-number nResult;
-string shortcutDir;
-begin
-    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Commander.lnk";
-    nResult = Is (FILE_EXISTS, shortcutDir);
-    if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
-    endif;
-    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Trending.lnk";
-    nResult = Is (FILE_EXISTS, shortcutDir);
-    if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
-    endif;
-    shortcutDir = FOLDER_PROGRAMS ^ "\\Yukon Clients\\Tabular Data Console.lnk";
-    nResult = Is (FILE_EXISTS, shortcutDir);
-    if (nResult = TRUE) then
-        DeleteFile (shortcutDir);
-    endif;
-
-end;
-
-//----------------------------------------------------------
-// Remove Old RF Network data scripts. 
-//----------------------------------------------------------
-export prototype void RemoveOldRfnNetworkDataScripts();
-function void RemoveOldRfnNetworkDataScripts()
-number nResult;
-string szDir;
-begin
-    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\historicData.bat";
-    nResult = Is (FILE_EXISTS, szDir);
-    if (nResult = TRUE) then
-        DeleteFile (szDir);
-    endif;
-    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\locationData.bat";
-    nResult = Is (FILE_EXISTS, szDir);
-    if (nResult = TRUE) then
-        DeleteFile (szDir);
-    endif;
-    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\networkSnapshot.bat";
-    nResult = Is (FILE_EXISTS, szDir);
-    if (nResult = TRUE) then
-        DeleteFile (szDir);
-    endif;
-    szDir = TARGETDIR ^ "\\Tools\\RfNetworkData\\ReadMe.txt";
-    nResult = Is (FILE_EXISTS, szDir);
-    if (nResult = TRUE) then
-        DeleteFile (szDir);
-    endif;
 end;

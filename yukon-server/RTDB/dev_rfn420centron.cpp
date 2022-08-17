@@ -2,7 +2,7 @@
 
 #include "dev_rfn420centron.h"
 #include "cmd_rfn_ConfigNotification.h"
-#include "cmd_rfn_CommStatus.h"
+#include "cmd_rfn_Wifi.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
 #include "std_helper.h"
@@ -108,7 +108,7 @@ YukonError_t Rfn420CentronDevice::executeGetStatusWifi(CtiRequestMsg *pReq, CtiC
         case TYPE_WRL420CD:
         case TYPE_WRL420CL:
         {
-            rfnRequests.emplace_back(std::make_unique<Commands::RfnGetCommunicationStatusUpdateCommand>());
+            rfnRequests.emplace_back(std::make_unique<Commands::RfnWifiGetCommunicationStatusUpdateCommand>());
 
             return ClientErrors::None;
         }

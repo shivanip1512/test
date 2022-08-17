@@ -6,7 +6,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
-import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -46,11 +45,6 @@ public interface DefinitionLoaderService {
     SetMultimap<PaoType, CommandDefinition> getPaoCommandMap();
 
     Map<PaoType, ImmutableBiMap<PaoTag, PaoTagDefinition>> getSupportedTagsByType();
-
-    /**
-     * Get all the point defined for system device(i.e in SYSTEM.xml file).
-     */
-    Map<String, Point> getSystemDevicePoints();
 
     /**
      * Clears loaded jaxb objects from memory

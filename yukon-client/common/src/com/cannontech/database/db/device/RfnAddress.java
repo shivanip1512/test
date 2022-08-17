@@ -3,8 +3,6 @@ package com.cannontech.database.db.device;
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.db.DBPersistent;
@@ -100,15 +98,5 @@ public class RfnAddress extends DBPersistent  {
         return StringUtils.isBlank(manufacturer) 
             && StringUtils.isBlank(model)
             && StringUtils.isBlank(serialNumber);
-    }
-    
-    @Override
-    public String toString() {
-        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE);
-        tsb.append("deviceId", getDeviceID());
-        tsb.append("serialNumber", getSerialNumber());
-        tsb.append("manufacturer", getManufacturer());
-        tsb.append("model", getModel());
-        return tsb.toString();
     }
 }

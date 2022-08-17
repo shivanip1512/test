@@ -1,14 +1,14 @@
 package com.cannontech.dr.meterDisconnect;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.jms.JMSException;
 import javax.jms.StreamMessage;
 
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.Assert;
 
 public class MeterDisconnectMessageListenerTest {
     
@@ -35,9 +35,9 @@ public class MeterDisconnectMessageListenerTest {
                 .withConstructor(message)
                 .createMock();
         
-        assertEquals(meterDisconnectControlMessage.getGroupId(), groupId);
-        assertEquals(meterDisconnectControlMessage.getStartTime(), new Instant(startTime * 1000));
-        assertEquals(meterDisconnectControlMessage.getEndTime(), new Instant(endTime * 1000));
+        Assert.assertEquals(meterDisconnectControlMessage.getGroupId(), groupId);
+        Assert.assertEquals(meterDisconnectControlMessage.getStartTime(), new Instant(startTime * 1000));
+        Assert.assertEquals(meterDisconnectControlMessage.getEndTime(), new Instant(endTime * 1000));
 
     }
 
@@ -61,7 +61,7 @@ public class MeterDisconnectMessageListenerTest {
                 .withConstructor(message)
                 .createMock();
         
-        assertEquals(meterDisconnectRestoreMessage.getGroupId(), groupId);
-        assertEquals(meterDisconnectRestoreMessage.getRestoreTime(), new Instant(restoreTime * 1000));
+        Assert.assertEquals(meterDisconnectRestoreMessage.getGroupId(), groupId);
+         Assert.assertEquals(meterDisconnectRestoreMessage.getRestoreTime(), new Instant(restoreTime * 1000));
     }
 }

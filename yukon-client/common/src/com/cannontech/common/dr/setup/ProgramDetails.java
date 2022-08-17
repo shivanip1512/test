@@ -9,7 +9,7 @@ public class ProgramDetails {
     private Integer startOffsetInMinutes;
     private Integer stopOffsetInMinutes;
     private String category;
-    @Valid private List<LMGearDto> gears;
+    @Valid private List<LMDto> gears;
 
     public ProgramDetails() {
     }
@@ -46,11 +46,11 @@ public class ProgramDetails {
         this.category = category;
     }
 
-    public List<LMGearDto> getGears() {
+    public List<LMDto> getGears() {
         return gears;
     }
 
-    public void setGears(List<LMGearDto> gears) {
+    public void setGears(List<LMDto> gears) {
         this.gears = gears;
     }
 

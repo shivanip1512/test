@@ -1,7 +1,8 @@
 package com.cannontech.services.mock;
 
-import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
 import static com.cannontech.services.mock.MockMeterDaoImpl.*;
+import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
+import static com.cannontech.services.mock.MockUnitMeasureDaoImpl.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,14 +14,13 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class MockAttributeServiceImpl extends AttributeServiceImpl {
-    public static final LitePoint USAGE_POINT_ONE = new LitePoint(0, "kWh", 0, 0, 0, 0, 0, UnitOfMeasure.KWH.getId());
-    public static final LitePoint PEAK_DEMAND_POINT_ONE = new LitePoint(0, "Peak kW", 0, 0, 0, 0, 0, UnitOfMeasure.KW.getId());
-    public static final LitePoint PEAK_KVAR_POINT_ONE = new LitePoint(0, "Peak kVAr", 0, 0, 0, 0, 0, UnitOfMeasure.KVAR.getId());
+    public static final LitePoint USAGE_POINT_ONE = new LitePoint(0, "kWh", 0, 0, 0, 0, 0, kWH.getUomID());
+    public static final LitePoint PEAK_DEMAND_POINT_ONE = new LitePoint(0, "Peak kW", 0, 0, 0, 0, 0, kW.getUomID());
+    public static final LitePoint PEAK_KVAR_POINT_ONE = new LitePoint(0, "Peak kVAr", 0, 0, 0, 0, 0, kVAr.getUomID());
     
     private static final Map<YukonPao, Map<Attribute, LitePoint>> paoToAttributeToPoints = new HashMap<>();
     static {

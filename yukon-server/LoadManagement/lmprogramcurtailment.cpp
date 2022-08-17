@@ -1031,35 +1031,6 @@ void CtiLMProgramCurtailment::restoreDynamicData()
     }
 }
 
-std::size_t CtiLMProgramCurtailment::getMemoryConsumption() const
-{
-    // the fixed memeory amount
-    std::size_t sz = sizeof( *this );
-
-    // the base class allocated amount
-    sz +=   CtiLMProgramBase::getMemoryConsumption();
-
-    // this class allocations
-    sz +=   dynamic_sizeof( _heading )
-        +   dynamic_sizeof( _messageheader )
-        +   dynamic_sizeof( _messagefooter )
-        +   dynamic_sizeof( _canceledmsg )
-        +   dynamic_sizeof( _stoppedearlymsg )
-        +   dynamic_sizeof( _runstatus )
-        +   dynamic_sizeof( _additionalinfo );
-
-    // the vector<CtiLMCurtailCustomer*>
-    sz += _lmprogramcurtailmentcustomers.capacity() * sizeof( CtiLMCurtailCustomer* );
-
-    // the actual customer objects
-    for ( const auto & customer : _lmprogramcurtailmentcustomers )
-    {
-        sz += customer->getMemoryConsumption();
-    }
-
-    return sz;
-}
-
 // Static Members
 
 // Possible run statuses

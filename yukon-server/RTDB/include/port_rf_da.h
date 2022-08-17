@@ -2,14 +2,13 @@
 
 #include "port_base.h"
 #include "rfn_identifier.h"
-#include "tbl_port_timing.h"
 
-namespace Cti::Ports {
+namespace Cti   {
+namespace Ports {
 
 class IM_EX_PRTDB RfDaPort : public CtiPort
 {
    RfnIdentifier _rfnId;
-   CtiTablePortTimings _portTimings;
 
 public:
 
@@ -43,12 +42,12 @@ public:
     virtual void incQueueSubmittal();
     virtual void incQueueProcessed();
     unsigned concurrentRequests() const;
-
-    ULONG getDelay(int Offset) const override;
-    CtiPort& setDelay(int Offset, int D) override;
 };
 
 typedef boost::shared_ptr< RfDaPort > RfDaPortSPtr;
 
 }
+}
+
+
 

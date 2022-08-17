@@ -53,10 +53,6 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/group-pickers"/>">Group Pickers</a></li>
             <c:set var="clazz" value="${page == 'device-collections' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/device-collections"/>">Device Collections</a></li>
-            <c:set var="clazz" value="${page == 'charts' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/charts"/>">Charts & Graphs</a></li>
-            <c:set var="clazz" value="${page == 'drop-down' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/drop-down"/>">Dropdowns</a></li>
         </ul>
     </div>
     <div class="column two nogutter"><jsp:doBody/></div>

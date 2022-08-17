@@ -49,7 +49,7 @@ $(document).ready(function() {
 <tags:sectionContainer2 nameKey="entries" id="selectionListEntries">
     <tags:dynamicTable id="entryTable" items="${list.entries}" nameKey="entries"
         addItemParameters="{'listId': ${list.listId}}">
-        <table class="compact-results-table no-stripes">
+        <table class="compact-results-table row-highlighting no-stripes">
             <thead>
                 <tr>
                     <th><i:inline key=".entryText"/></th>

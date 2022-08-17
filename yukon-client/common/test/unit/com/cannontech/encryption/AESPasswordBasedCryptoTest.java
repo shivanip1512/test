@@ -1,8 +1,8 @@
 package com.cannontech.encryption;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.DecoderException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
@@ -84,12 +83,10 @@ public class AESPasswordBasedCryptoTest  {
     /**
      * Tests the isAuthentic method against cipherText4 (test to fail)
      */
-    @Test
+    @Test(expected=CryptoException.class)
     public void test_validityToFail() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        Assertions.assertThrows(CryptoException.class, () -> {
-            aes.verifyAuthenticity(badCipherText4);
-        });
+        aes.verifyAuthenticity(badCipherText4);
     }
 
     /**

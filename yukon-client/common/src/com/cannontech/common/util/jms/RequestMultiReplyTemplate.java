@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -14,8 +15,9 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -30,43 +32,48 @@ import com.cannontech.common.util.jms.api.JmsQueue;
  */
 public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMultiResponse> {
     private static final Logger log = YukonLogManager.getLogger(RequestMultiReplyTemplate.class);
+    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     private static final Duration defaultTimeout = Duration.standardSeconds(30);
-    private static final boolean pubSubDomain = false;
+    private static final boolean pubSubDomain = false; 
     
-    private final YukonJmsTemplate jmsTemplate;
+    private final ConnectionFactory connection;
     private final JmsApi<R,?,Q> api;
     private final Duration timeout;
+    private final boolean isInternal;
     private final ExecutorService executor;
-    private final Logger commsLogger;
     
     /**
      * Create a new template, automatically using the default timeout and assuming external messaging 
      * (logged to rfn comms logs).
-     * @param jmsTemplate The JmsTemplate to use for messaging.
+     * @param connection The ConnectionFactory to use for messaging.
      * @param api The JmsApi that describes the communications via this template.
      */
-    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, JmsApi<R, ?, Q> api) {
-        this(jmsTemplate, null, api, defaultTimeout);
+    public RequestMultiReplyTemplate(ConnectionFactory connection, JmsApi<R,?,Q> api) {
+        this(connection, null, api, defaultTimeout, false);
     }
     
     /**
      * Create a new template.
-     * @param jmsTemplate The JmsTemplate to use for messaging.
+     * @param connection The ConnectionFactory to use for messaging.
      * @param workerQueueSize Size of the worker queue. If null, the default will be used.
      * @param api The JmsApi that describes the communications via this template.
      * @param timeout The maximum length of time to wait for responses after the request is sent.
+     * @param isInternal Whether the communications are internal to Yukon or external between Yukon and NM. External
+     * comms are logged to the RFN Comms logs.
      */
-    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, Integer workerQueueSize, JmsApi<R, ?, Q> api, Duration timeout) {
+    public RequestMultiReplyTemplate(ConnectionFactory connection, Integer workerQueueSize, 
+                                     JmsApi<R,?,Q> api, Duration timeout, boolean isInternal) {
         
         if (api.getPattern() != JmsCommunicationPattern.REQUEST_MULTI_RESPONSE) {
             throw new IllegalArgumentException("Specified API: " + api.getName() + 
                                                " does not support Request-Multi-Response communication");
         }
         
-        this.jmsTemplate = jmsTemplate;
+        this.connection = connection;
         this.api = api;
         this.timeout = timeout;
-        this.commsLogger = api.getCommsLogger();
+        this.isInternal = isInternal;
+        
         // Default to 50 if worker queue size is not specified
         int queueSize = workerQueueSize == null ? 50 : workerQueueSize;
         
@@ -109,8 +116,9 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param replyHandler The callback that will handle results.
      */
     private void jmsExecute(R request, JmsMultiResponseHandler<Q> replyHandler) throws JMSException {
-        logRequest(request.toString());
-
+        logBeforeSend(request);
+        
+        JmsTemplate jmsTemplate = new JmsTemplate(connection);
         jmsTemplate.execute(session -> {
             sendAndReceive(session, request, replyHandler);
             return null;
@@ -138,7 +146,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             ObjectMessage requestMessage = session.createObjectMessage(request);
             requestMessage.setJMSReplyTo(replyQueue);
             producer.send(requestMessage);
-            handleRepliesAndOrTimeouts(replyHandler, replyConsumer, request.toString());
+            handleRepliesAndOrTimeouts(replyHandler, replyConsumer);
         } catch (Exception e) {
             log.error("Error sending request.", e);
         } finally {
@@ -152,7 +160,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param replyHandler The callback that will handle the responses.
      * @param replyConsumer The MessageConsumer that is receiving response messages from the JMS queue.
      */
-    private void handleRepliesAndOrTimeouts(JmsMultiResponseHandler<Q> replyHandler, MessageConsumer replyConsumer, String request) 
+    private void handleRepliesAndOrTimeouts(JmsMultiResponseHandler<Q> replyHandler, MessageConsumer replyConsumer) 
             throws JMSException {
         
         int expectedMessages = 0; //segmentNumber is 1-indexed
@@ -164,7 +172,6 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             
             // If we've timed out, give up and exit. No more messages will be received.
             if (replyMessage == null) {
-                logReply(request, "NULL", expectedMessages, messagesReceived);
                 replyHandler.handleTimeout();
                 return;
             }
@@ -174,7 +181,6 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
-            logReply(request, reply.loggingString(commsLogger.getLevel()), expectedMessages, messagesReceived);
         }
     }
     
@@ -193,31 +199,21 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         }
         return replyQueue;
     }
-        
+    
     /**
-     * Adds an entry in rfnLogger
+     * Log the request content before sending
      */
-    private void log(String text) {
-        if(commsLogger == null) {
-            return;
+    private void logBeforeSend(R request) {
+        if (!isInternal && rfnLogger.isInfoEnabled()) {
+            rfnLogger.info("<<< " + request.toString());
+        } else if (isInternal && rfnLogger.isDebugEnabled()) {
+            rfnLogger.debug("<<< " + request.toString());
         }
-        if (commsLogger.isInfoEnabled()) {
-            commsLogger.info(text);
-        } else if (commsLogger.isDebugEnabled()) {
-            commsLogger.debug(text);
+        if (log.isTraceEnabled()) {
+            log.trace("RequestMultiReplyTemplate execute Start " + request.toString());
         }
     }
     
-    protected void logRequest(String request){
-        log.trace("RequestMultiReplyTemplate execute start: {}", request);
-        log("<<< Sent " + request);
-    }
-    
-    protected void logReply(String request, String reply, int expectedMessages, int messagesReceived) {
-        log.trace("RequestMultiReplyTemplate reply: {} [{} out of {}] {}", request, messagesReceived, expectedMessages, reply);
-        log(">>> Received " + reply + " [" + messagesReceived + " out of " + expectedMessages + "] for " + request);
-    }
-  
     /**
      * @return The request queue name string.
      */

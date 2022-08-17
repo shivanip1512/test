@@ -1,12 +1,12 @@
 package com.cannontech.common.alert.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.Date;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
@@ -32,7 +32,7 @@ public class AlertServiceImplTest {
         }
     }
     
-    @BeforeEach
+    @Before
     public void setup() {
         alertService = new AlertServiceImpl();
         alertService.setTimeSource(new TimeSourceImpl());

@@ -75,7 +75,7 @@
                     <tags:nameValueContainer2 >
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
-                            <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
+                            <dt:dateRange startPath="startDate" endPath="stopDate" />
                         </tags:nameValue2>
         
                         <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
@@ -114,38 +114,37 @@
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
    
     <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
-        <div id="events-container" data-static>
-            <table class="compact-results-table">
-                <thead>
-                    <tr>
-                        <th><i:inline key=".dateAndTime"/></th>
-                        <c:forEach items="${columnNames}" var="column">
-                            <th title="${column.argumentColumn.columnName}"><i:inline key="${column.label}"/></th>
-                        </c:forEach>
-                    </tr>
-                </thead>
-                <c:choose>
-                    <c:when test="${fn:length(searchResult.resultList) == 0}">
-                        <table>
+        <c:choose>
+            <c:when test="${fn:length(searchResult.resultList) == 0}">
+                <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
+            </c:when>
+            <c:otherwise>
+                <div id="events-container" data-static>
+                    <table class="compact-results-table">
+                        <thead>
                             <tr>
-                                <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
-                            </tr>
-                        </table>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach items="${searchResult.resultList}" var="row">
-                            <tr>
-                                <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
-                                <c:forEach items="${row.parameters}" var="parameter">
-                                    <td class="wbba">${fn:escapeXml(parameter)}</td>
+                                <th><i:inline key=".dateAndTime"/></th>
+                                <c:forEach items="${columnNames}" var="column">
+                                    <th title="${column.argumentColumn.columnName}"><i:inline key="${column.label}"/></th>
                                 </c:forEach>
                             </tr>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </table>
-            <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
-        </div>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${searchResult.resultList}" var="row">
+                                <tr>
+                                <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
+                                    <c:forEach items="${row.parameters}" var="parameter">
+                                        <td>${fn:escapeXml(parameter)}</td>
+                                    </c:forEach>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </tags:sectionContainer>
 
 </cti:standardPage>

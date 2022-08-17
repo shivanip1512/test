@@ -155,7 +155,7 @@
                 <c:if test="${not empty deviceCollection}">
                     <span class="b-label fl"><i:inline key="${deviceCollection.description}"/></span>
                 </c:if>
-                <cti:icon icon="icon-folder-edit"/>
+                <i class="icon icon-folder-edit"></i>
             </a>
         </tags:sectionContainer2>
     </c:if>

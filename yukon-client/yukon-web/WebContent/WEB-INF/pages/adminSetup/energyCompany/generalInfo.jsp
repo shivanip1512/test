@@ -139,11 +139,11 @@ $(function() {
                     
                     <div class="action-area">
                         <c:if test="${canCreateDeleteMembers}">
-                            <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create" classes="ML10"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create"/>
                         </c:if>
                         <c:if test="${canManageMembers && !empty memberCandidates}">
-                            <cti:button nameKey="add" type="submit" name="add" icon="icon-add"/>
-                            <select name="newMemberId" class="left" style="max-width: 130px;">
+                            <cti:button nameKey="add" type="submit" name="add" classes="right" icon="icon-add"/>
+                            <select name="newMemberId" class="left" style="max-width: 215px;">
                                 <c:forEach items="${memberCandidates}" var="member">
                                     <option value="${member.energyCompanyId}">${fn:escapeXml(member.name)}</option>
                                 </c:forEach>

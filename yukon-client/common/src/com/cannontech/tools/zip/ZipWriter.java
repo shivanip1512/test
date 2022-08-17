@@ -62,7 +62,7 @@ public class ZipWriter {
             out.putNextEntry(zipEntry);
             FileUtil.copyNoFlush(inputStream, out);
         } catch (IOException e) {
-            log.error("Error while writing from a raw input stream", e);
+            log.error("Error while writing from a raw intput stream", e);
         }
     }
 

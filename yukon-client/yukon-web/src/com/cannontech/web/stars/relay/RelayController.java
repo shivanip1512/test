@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.relay;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -9,14 +8,13 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -25,14 +23,12 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnRelayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -40,11 +36,10 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 public class RelayController {
     
     @Autowired private DeviceDao deviceDao;
@@ -57,21 +52,14 @@ public class RelayController {
     
     @RequestMapping(value = { "/relay", "/relay/" }, method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext, @DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, 
-                       PagingParameters paging, @ModelAttribute("criteria") RfnDeviceSearchCriteria criteria, String type) throws ServletException {
+                       PagingParameters paging, @RequestParam(value = "selectedName", required = false) String name, 
+                       @RequestParam(value = "selectedSerialNumber", required = false) String serialNumber) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
+        RfnDeviceSearchCriteria criteria = new RfnDeviceSearchCriteria(name, serialNumber);
         model.addAttribute("criteria", criteria);
-        
-        List<PaoType> relayTypes = new ArrayList<PaoType>(PaoType.getRfRelayTypes());
-        if (Strings.isNotBlank(type)) {
-            PaoType relayType = PaoType.valueOf(type);
-            if (relayType != null) {
-                relayTypes = Collections.singletonList(relayType);
-                model.addAttribute("selectedRelayType", relayType);
-            }
-        }
 
-        Set<RfnRelay> relays = rfnRelayService.searchRelays(criteria, relayTypes);
+        Set<RfnRelay> relays = rfnRelayService.searchRelays(criteria);
         
         SearchResults<RfnRelay> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -86,8 +74,6 @@ public class RelayController {
         Comparator<RfnRelay> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         if (sortBy == RelaySortBy.serialNumber) {
             comparator = (o1, o2) -> o1.getSerialNumber().compareTo(o2.getSerialNumber());
-        } else if (sortBy == RelaySortBy.type) {
-            comparator = (o1, o2) -> o1.getType().compareTo(o2.getType());
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
@@ -110,7 +96,6 @@ public class RelayController {
                                                                             .map(relay -> relay.getDeviceId())
                                                                             .collect(Collectors.toList()));
         model.addAttribute("notesIds", notesIds);
-        model.addAttribute("relayTypes", PaoType.getRfRelayTypes());
         
         return "/relay/list.jsp";
     }
@@ -121,12 +106,11 @@ public class RelayController {
         
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        model.addAttribute("showCellularConnection", device.getDeviceType().isCellularDevice());
 
         return "/relay/relayHome.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
     @RequestMapping(value="/relay/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
         boolean success = rfnRelayService.deleteRelay(id);
@@ -143,12 +127,11 @@ public class RelayController {
     public enum RelaySortBy implements DisplayableEnum {
 
         name,
-        serialNumber,
-        type;
+        serialNumber;
 
         @Override
         public String getFormatKey() {
-            return "yukon.common." + name();
+            return "yukon.web.modules.operator.relays.list." + name();
         }
     }
 

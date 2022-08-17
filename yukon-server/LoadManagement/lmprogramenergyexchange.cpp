@@ -718,41 +718,6 @@ void CtiLMProgramEnergyExchange::dumpDynamicData(CtiTime& currentDateTime)
     }
 }
 
-std::size_t CtiLMProgramEnergyExchange::getMemoryConsumption() const
-{
-    // the fixed memeory amount
-    std::size_t sz = sizeof( *this );
-
-    // the base class allocated amount
-    sz +=   CtiLMProgramBase::getMemoryConsumption();
-
-    // this class allocations
-    sz +=   dynamic_sizeof( _heading )
-        +   dynamic_sizeof( _messageheader )
-        +   dynamic_sizeof( _messagefooter )
-        +   dynamic_sizeof( _canceledmsg )
-        +   dynamic_sizeof( _stoppedearlymsg );
-
-    // the vectors
-    sz += _lmenergyexchangeoffers.capacity() * sizeof( CtiLMEnergyExchangeOffer* );
-    sz += _lmenergyexchangecustomers.capacity() * sizeof( CtiLMEnergyExchangeCustomer* );
-
-    // the actual vector contents
-
-    for ( const auto & offer : _lmenergyexchangeoffers )
-    {
-        sz += offer->getMemoryConsumption();
-    }
-
-    for ( const auto & customer : _lmenergyexchangecustomers )
-    {
-        sz += customer->getMemoryConsumption();
-    }
-
-    return sz;
-}
-
-
 // Static Members
 
 // Possible

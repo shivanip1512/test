@@ -114,8 +114,6 @@ public class CalcStatusPoint extends StatusPoint {
         calcComponents = CalcComponent.getCalcComponents(getPoint().getPointID());
 
         calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
-        
-        setBaselineAssigned(calcBaselinePoint != null);
     }
 
     public void setCalcBase(CalcBase newValue) {

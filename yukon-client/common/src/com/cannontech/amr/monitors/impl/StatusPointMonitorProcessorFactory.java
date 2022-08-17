@@ -1,16 +1,17 @@
 package com.cannontech.amr.monitors.impl;
 
-import static org.joda.time.DateTime.*;
+import static org.joda.time.DateTime.now;
 
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.monitors.message.OutageJmsMessage;
 import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
@@ -25,14 +26,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.database.data.lite.LitePoint;
@@ -52,18 +49,11 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private PointDao pointDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    private YukonJmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
+    private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
                        .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
-
-    @PostConstruct
-    public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.STATUS_POINT_MONITOR_OUTAGE);
-    }
-
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
@@ -121,7 +111,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
 
     @Override
     protected RichPointDataListener createPointListener(final StatusPointMonitor statusPointMonitor) {
-        var trackingLogger = new PointDataTrackingLogger(statusPointMonitor.getName(), log); 
+        
         return richPointData -> {
             if (!isMonitoredData(statusPointMonitor, richPointData)) {
                 trackingLogger.rejectId(richPointData);
@@ -130,7 +120,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             
             trackingLogger.acceptId(richPointData);
 
-            PointValueQualityTagHolder nextValue = richPointData.getPointValue();
+            PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
             
             if (log.isDebugEnabled()) {
@@ -147,22 +137,14 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
                 if (shouldSendMessage) {                  
-                    
-                    // If processor is "notify on alarms only," only process point data marked "unsolicited"
-                    if (statusPointMonitorProcessor.isNotifyOnAlarmOnly() && !nextValue.isTagsUnsolicited()) {
-                        log.debug("Ignoring point data from event. Processor is set to notify on alarms only. Processor={}", 
-                                statusPointMonitorProcessor);
-                        break;
-                    }
-                    
                     OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
                     outageJmsMessage.setSource(statusPointMonitor.getName());
                     outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());
                     outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
                     outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
                     
-                    log.debug("Outage message pushed to jms queue: {}", outageJmsMessage);
-                    jmsTemplate.convertAndSend(outageJmsMessage);
+                    log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
+                    jmsTemplate.convertAndSend("yukon.notif.obj.amr.OutageJmsMessage", outageJmsMessage);
                     break; // once we've found a match, stop evaluating processors
                 }
             }
@@ -283,5 +265,11 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         }
         
         return returnValue;
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(true);
     }
 }

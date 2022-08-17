@@ -10,14 +10,14 @@
 <cti:standardPage page="bulk.archivedValueExporter.selectDevices" module="tools">
     <tags:sectionContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="dataExportPicker"/>
+        <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="devicePicker"/>
     </tags:sectionContainer2>
 
     <div id="copyForm" style="display:none">
         <input type="hidden" name="formatId" value="${archivedValuesExporter.formatId}"/>
         <input type="hidden" name="archivedValuesExportFormatType" value="${archivedValuesExporter.archivedValuesExportFormatType}"/>
         <c:forEach var="attribute" items="${archivedValuesExporter.attributes}">
-                <input type="hidden" name="attributes" value="${attribute.key}"/>
+                <input type="hidden" name="attributes" value="${attribute}"/>
         </c:forEach>
     </div>
 

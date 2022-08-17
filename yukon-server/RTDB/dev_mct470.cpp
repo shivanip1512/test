@@ -3058,17 +3058,17 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
     OUTMESS *touOutMessage = CTIDBG_new OUTMESS(*OutMessage);
     touOutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
     touOutMessage->Sequence = EmetconProtocol::GetConfig_TOU;
-    strncpy(touOutMessage->Request.CommandStr, "getconfig install tou schedule 1", COMMAND_STR_SIZE );
+    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 1", COMMAND_STR_SIZE );
     outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
     touOutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
     touOutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-    strncpy(touOutMessage->Request.CommandStr, "getconfig install tou schedule 3", COMMAND_STR_SIZE );
+    strncpy(touOutMessage->Request.CommandStr, "getconfig tou schedule 3", COMMAND_STR_SIZE );
     outList.push_back( CTIDBG_new OUTMESS(*touOutMessage) );
 
     touOutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
     touOutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-    strncpy(touOutMessage->Request.CommandStr, "getconfig install tou", COMMAND_STR_SIZE );
+    strncpy(touOutMessage->Request.CommandStr, "getconfig tou", COMMAND_STR_SIZE );
     outList.push_back( touOutMessage );
     touOutMessage = 0;
 
@@ -5399,7 +5399,7 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
     ReturnMsg->setResultString( sspec + options );
 
     decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
-    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
+    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
 
     return ClientErrors::None;
 }

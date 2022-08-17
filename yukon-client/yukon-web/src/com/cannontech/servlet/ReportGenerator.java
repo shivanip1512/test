@@ -37,8 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.modules.output.csv.CSVQuoter;
+import org.jfree.report.JFreeReport;
+import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.util.WebUtils;
 
@@ -83,7 +83,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
 
         YukonSpringHook.getBean(RolePropertyDao.class).verifyRole(YukonRole.REPORTING,  yukonUserContext.getYukonUser());
 
-        // Default energy company properties in case we can't find one?
+        // Default energycompany properties in case we can't find one?
         LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
         Integer energyCompanyID =
             YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser).getId();
@@ -147,7 +147,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
             }
 
             // A filename for downloading the report to.
-            String fileName = reportBean.getModel().getTitleString();
+            String fileName = "Report";
             param = req.getParameter("fileName");
             if (param != null) {
                 fileName = param.toString();
@@ -205,7 +205,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
             if (action.equalsIgnoreCase("DownloadReport") || action.equalsIgnoreCase("PagedReport")) {
 
                 // Create the report
-                MasterReport report = null;
+                JFreeReport report = null;
                 /* Set Model specific parameters */
                 if (reportBean.getReportType() == ReportTypes.EC_WORK_ORDER) {
                     ((WorkOrderModel) reportBean.getModel()).setOrderID(orderID);
@@ -215,7 +215,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
                 }
 
                 report = reportBean.createReport();
-                ReportFuncs.outputYukonReport(report, ext, bufferedTemp, reportBean.getModel());
+                ReportFuncs.outputYukonReport(report, ext, bufferedTemp);
                 bufferedTemp.close();
 
                 if (!ext.equalsIgnoreCase("png")) {
@@ -230,16 +230,17 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
 
             } else if (action.equalsIgnoreCase("GenerateMissedMeterList")) {
                 // Create the report
-                MasterReport report = null;
+                JFreeReport report = null;
                 // Force a MISSED MeterRead report
                 ((MeterReadModel) reportBean.getModel()).setMeterReadType(MeterReadModel.MISSED_METER_READ_TYPE);
                 report = reportBean.createReport();
 
                 resp.setContentType("text/plain");
                 CSVQuoter quoter = new CSVQuoter(",");
+
                 // Write data
-                for (int r = 0; r < reportBean.getModel().getRowCount(); r++) {
-                    String rawValue = String.valueOf(reportBean.getModel().getValueAt(r, MeterReadModel.DEVICE_NAME_COLUMN));
+                for (int r = 0; r < report.getData().getRowCount(); r++) {
+                    String rawValue = String.valueOf(report.getData().getValueAt(r, MeterReadModel.DEVICE_NAME_COLUMN));
                     bufferedTemp.write(quoter.doQuoting(rawValue).getBytes());
                     bufferedTemp.write("\r\n".getBytes());
                 }

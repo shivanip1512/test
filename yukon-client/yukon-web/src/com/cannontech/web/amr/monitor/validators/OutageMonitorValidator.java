@@ -22,12 +22,12 @@ public class OutageMonitorValidator extends PointMonitorValidator<OutageMonitor>
     public void doValidation(OutageMonitor outageMonitor, Errors errors) {
         super.doValidation(outageMonitor, errors);
         
-        YukonValidationUtils.checkIsNumberPositiveIntOrDouble(errors, "numberOfOutages", outageMonitor.getNumberOfOutages());
+        YukonValidationUtils.checkIsValidNumber(errors, "numberOfOutages", outageMonitor.getNumberOfOutages());
         if (!errors.hasFieldErrors("numberOfOutages") && outageMonitor.getNumberOfOutages() < 1) {
             errors.rejectValue("numberOfOutages", "yukon.web.modules.amr.outageMonitorConfig.invalidNumberOfOutages");
         }
 
-        YukonValidationUtils.checkIsNumberPositiveIntOrDouble(errors, "timePeriodDays", outageMonitor.getTimePeriodDays());
+        YukonValidationUtils.checkIsValidNumber(errors, "timePeriodDays", outageMonitor.getTimePeriodDays());
         if (!errors.hasFieldErrors("timePeriodDays") && outageMonitor.getTimePeriodDays() < 0) {
             errors.rejectValue("timePeriodDays", "yukon.web.modules.amr.outageMonitorConfig.invalidTimePeriod");
         }

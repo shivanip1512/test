@@ -527,6 +527,7 @@ public class UpdateDB
                     cparmToken = cparmMatcher.group(1);
                     continue;
                 }
+
                 if (startIfState) {
                     startIfState = !endMatcher.find();
                     if (!startIfState) {

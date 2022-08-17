@@ -69,8 +69,6 @@ CtiListenerConnection::~CtiListenerConnection()
  */
 void CtiListenerConnection::start()
 {
-    using Cti::GlobalSettings;
-
     if( _valid || _closed )
     {
         return;

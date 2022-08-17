@@ -1,15 +1,14 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.jdom2.Element;
 import org.joda.time.Duration;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -60,7 +59,7 @@ public class ProgramStartRequestEndpointTest {
     private static final int PROG_NOT_FOUND_ID = 6;
     private static final int PROG_NOT_AUTH_ID = 7;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
         mockService = new MockProgramService();
@@ -164,9 +163,9 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(PROG1_ID, mockService.getProgramId(), "Incorrect program.");
-        assertEquals(null, mockService.getStartTime(), "Incorrect startDateTime - should be null.");
-        assertEquals(null, mockService.getStopTime(), "Incorrect stopDateTime - should null.");
+        Assert.assertEquals("Incorrect program.", PROG1_ID, mockService.getProgramId());
+        Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStartTime());
+        Assert.assertEquals("Incorrect stopDateTime - should null.", null, mockService.getStopTime());
         
         TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         
@@ -179,9 +178,9 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(PROG2_ID, mockService.getProgramId(), "Incorrect program.");
-        assertEquals("2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(null, mockService.getStopTime(), "Incorrect startDateTime - should be null.");
+        Assert.assertEquals("Incorrect program.", PROG2_ID, mockService.getProgramId());
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStopTime());
         
         TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         
@@ -195,9 +194,9 @@ public class ProgramStartRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(PROG3_ID, mockService.getProgramId(), "Incorrect program.");
-        assertEquals("2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals("2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect program.", PROG3_ID, mockService.getProgramId());
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", Iso8601DateUtil.formatIso8601Date(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
         TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         

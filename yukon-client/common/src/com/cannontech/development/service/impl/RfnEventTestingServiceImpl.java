@@ -1,23 +1,19 @@
 package com.cannontech.development.service.impl;
 
 import static com.cannontech.common.stream.StreamUtils.not;
-import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PostConstruct;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -28,7 +24,6 @@ import javax.jms.Session;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -37,9 +32,9 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.FileCopyUtils;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
@@ -54,24 +49,15 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.location.LocationResponse;
-import com.cannontech.common.rfn.message.node.RelayCellularComm;
-import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest;
-import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
-import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -90,24 +76,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    private YukonJmsTemplate rfAlarmArchiveJmsTemplate;
-    private YukonJmsTemplate rfEventArchiveJmsTemplate;
-    private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
-    private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
-    private YukonJmsTemplate locationJmsTemplate;
-    private YukonJmsTemplate rfnCellularCommArchiveJmsTemplate;
-    @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-
+        
+    private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
+    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
+    private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
+    private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
+    private static final String locationResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponse";
     private static final String dataIndicationQueueName = "com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
 
     private static final Map<String, String> modifierPaths;
     private static final Map<String, List<RfnManufacturerModel>> groupedMeterTypes;
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     static {
         modifierPaths = ImmutableMap.<String, String>builder()
@@ -150,7 +130,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.WRL_420CL,
             RfnManufacturerModel.WRL_420CD));
 
-        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 single phase", ImmutableList.of(
+        groupedMeterTypesBuilder.put("Landis & Gyr single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_410FL,
             RfnManufacturerModel.RFN_410FX_D, 
             RfnManufacturerModel.RFN_410FX_R, 
@@ -174,63 +154,21 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FRXD_SD,
             RfnManufacturerModel.RFN_520FRXT_SD,
             RfnManufacturerModel.RFN_520FRXR_SD));
-        
-        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 single phase", ImmutableList.of(
-            RfnManufacturerModel.RFN_520FAXDE,
-            RfnManufacturerModel.RFN_520FAXDE,
-            RfnManufacturerModel.RFN_520FAXTE,
-            RfnManufacturerModel.RFN_520FAXRE,
-            RfnManufacturerModel.RFN_520FRXDE,
-            RfnManufacturerModel.RFN_520FRXTE,
-            RfnManufacturerModel.RFN_520FRXRE,
-            RfnManufacturerModel.RFN_520FAXDE_SD,
-            RfnManufacturerModel.RFN_520FAXTE_SD,
-            RfnManufacturerModel.RFN_520FAXRE_SD,
-            RfnManufacturerModel.RFN_520FRXDE_SD,
-            RfnManufacturerModel.RFN_520FRXTE_SD,
-            RfnManufacturerModel.RFN_520FRXRE_SD,
-            RfnManufacturerModel.CRL_520FAXE,
-            RfnManufacturerModel.CRL_520FAXED,
-            RfnManufacturerModel.CRL_520FRXE,
-            RfnManufacturerModel.CRL_520FRXED));
 
-        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 polyphase", ImmutableList.of(
+        groupedMeterTypesBuilder.put("Landis & Gyr polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530FAXD,
             RfnManufacturerModel.RFN_530FAXT,
             RfnManufacturerModel.RFN_530FAXR,
             RfnManufacturerModel.RFN_530FRXD,
             RfnManufacturerModel.RFN_530FRXT,
             RfnManufacturerModel.RFN_530FRXR,
-            RfnManufacturerModel.RFN_530FAXD_SD,
-            RfnManufacturerModel.RFN_530FAXT_SD,
-            RfnManufacturerModel.RFN_530FAXR_SD,
-            RfnManufacturerModel.RFN_530FRXD_SD,
-            RfnManufacturerModel.RFN_530FRXT_SD,
-            RfnManufacturerModel.RFN_530FRXR_SD));
-            
-        groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 polyphase", ImmutableList.of(
-            RfnManufacturerModel.RFN_530FAXDE,
-            RfnManufacturerModel.RFN_530FAXTE,
-            RfnManufacturerModel.RFN_530FAXRE,
-            RfnManufacturerModel.RFN_530FRXDE,
-            RfnManufacturerModel.RFN_530FRXTE,
-            RfnManufacturerModel.RFN_530FRXRE,
-            RfnManufacturerModel.RFN_530FAXDE_SD,
-            RfnManufacturerModel.RFN_530FAXTE_SD,
-            RfnManufacturerModel.RFN_530FAXRE_SD,
-            RfnManufacturerModel.RFN_530FRXDE_SD,
-            RfnManufacturerModel.RFN_530FRXTE_SD,
-            RfnManufacturerModel.RFN_530FRXRE_SD));
-                
-        groupedMeterTypesBuilder.put("Landis & Gyr S4 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530S4X,
             RfnManufacturerModel.RFN_530S4AD,
             RfnManufacturerModel.RFN_530S4AT,
             RfnManufacturerModel.RFN_530S4AR,
             RfnManufacturerModel.RFN_530S4RD,
             RfnManufacturerModel.RFN_530S4RT,
-            RfnManufacturerModel.RFN_530S4RR,
-            RfnManufacturerModel.CRL_530S4X));
+            RfnManufacturerModel.RFN_530S4RR));
 
         groupedMeterTypesBuilder.put("Elster A3", ImmutableList.of(
             RfnManufacturerModel.RFN_430A3D,
@@ -264,31 +202,14 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFG201_PULSE));
         
         groupedMeterTypesBuilder.put("Eaton Integrated Gas", ImmutableList.of(
-            RfnManufacturerModel.RFG301A,
-            RfnManufacturerModel.RFG301R));
+            RfnManufacturerModel.RFG301_PULSE));
         
         groupedMeterTypesBuilder.put("Relays", ImmutableList.of(
-            RfnManufacturerModel.RFN_RELAY,
-            RfnManufacturerModel.CRLY_856));
+            RfnManufacturerModel.RFN_RELAY));
         
-        groupedMeterTypesBuilder.put("DR Edge Connector", ImmutableList.of(
-                RfnManufacturerModel.RFN_530S4X_DER));
-
-        groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
-          
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
-
-    @PostConstruct
-    public void init() {
-        rfAlarmArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_ALARM_ARCHIVE);
-        rfEventArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_EVENT_ARCHIVE);
-        rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
-        rfnLcrReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
-        locationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LOCATION);
-        rfnCellularCommArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_RELAY_CELL_COMM_ARCHIVE);
-    }
-
+    
     @Override
     public Map<String, List<RfnManufacturerModel>> getGroupedRfnTypes() {
         return groupedMeterTypes;
@@ -304,66 +225,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             IntStream.range(0, event.getNumAlarmPerMeter()).forEach(unused -> buildAndSendAlarm(event, serial));
         }
         return serials.length * (event.getNumEventPerMeter() + event.getNumAlarmPerMeter());
-    }
-    
-    @Override
-    public int sendOutageAndRestoreEvents(RfnTestOutageRestoreEvent event) {
-        Set<? extends DeviceGroup> deviceGroups = null;
-        try {
-            deviceGroups = deviceGroupService.resolveGroupNames(List.of(event.getDeviceGroup()));
-        } catch (Exception e) {
-            log.error(e);
-            return 0;
-        }
-        Set<SimpleDevice> devices = deviceGroupService.getDevices(deviceGroups);
-        Random random = new Random();
-        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(devices.stream()
-                .map(SimpleDevice::getDeviceId)
-                .collect(toList()));
-        DateTime firstEventTime = DateTime.now().minusMinutes(2);
-        DateTime secondEventTime = DateTime.now().minusMinutes(1);
-        rfnDevices.forEach(device -> {
-            RfnConditionType first = event.getFirstEvent();
-            if (event.getFirstEventRandom() != null && event.getFirstEventRandom().booleanValue()) {
-                first = random.nextBoolean() ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
-            }
-            RfnConditionType second = first == RfnConditionType.RESTORE ? RfnConditionType.OUTAGE : RfnConditionType.RESTORE;
-            sendOutageOrRestoreEvents(device, first, second, firstEventTime, secondEventTime, event.getMilliseconds());
-        });
-        return rfnDevices.size() * 2;
-    }
-
-    private void sendOutageOrRestoreEvents(RfnDevice device, RfnConditionType first, RfnConditionType second,
-            DateTime firstEventTime, DateTime secondEventTime, int sleep) {
-        sendOutageOrRestoreEvent(device, 1, first, firstEventTime.getMillis());
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            log.error(e);
-        }
-        sendOutageOrRestoreEvent(device, 2, second, secondEventTime.getMillis());
-    }
-
-    private void sendOutageOrRestoreEvent(RfnDevice device, int dataPointId,
-            RfnConditionType type, long timeStamp) {
-        RfnEvent rfnEvent = new RfnEvent();
-        rfnEvent.setRfnIdentifier(device.getRfnIdentifier());
-        rfnEvent.setType(type);
-        rfnEvent.setTimeStamp(timeStamp);
-        Map<RfnConditionDataType, Object> rfnEventMap = new HashMap<>();
-        rfnEventMap.put(RfnConditionDataType.CLEARED, false);
-        rfnEventMap.put(RfnConditionDataType.COUNT, (long) 1);
-        /*
-         * EVENT_START_TIME on RESTORE is OUTAGE start time
-         * OUTAGE doesn't have this value
-         */
-        //rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, timeStamp);
-        rfnEvent.setEventData(rfnEventMap);
-        RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
-        archiveRequest.setEvent(rfnEvent);
-        archiveRequest.setDataPointId(dataPointId);
-        log.info("Sending {} {} {}", device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier(), type);
-        sendArchiveRequest(rfEventArchiveJmsTemplate, archiveRequest);
     }
     
     @Override
@@ -415,7 +276,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         Collections.shuffle(messages);
         
         for (RfnMeterReadingArchiveRequest message : messages) {
-            sendArchiveRequest(rfnMeterReadArchiveJmsTemplate, message);
+            sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
         }
     }
     
@@ -485,7 +346,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             }
             channelData.setUnitOfMeasureModifiers(modifiers);
             
-            sendArchiveRequest(rfnMeterReadArchiveJmsTemplate, message);
+            sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
         }
         return serials.length;
     }
@@ -523,7 +384,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
                 
                 // Put request on queue
-                sendArchiveRequest(rfnLcrReadArchiveJmsTemplate, readArchiveRequest);
+                sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
                 numRequests++;
             }
         }
@@ -531,39 +392,37 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
         
     @Override
-    public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, LocationResponse locationResponse) {
+    public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude, double longitude) {
      
         for (int i = serialFrom; i <= serialTo; i++) {
+            LocationResponse locationResponse = new LocationResponse();
             RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
             locationResponse.setRfnIdentifier(rfnIdentifier);
+            locationResponse.setLatitude(latitude);
+            locationResponse.setLongitude(longitude);
             locationResponse.setLocationId(99L + i);
+            locationResponse.setOrigin(Origin.RF_NODE);
             locationResponse.setLastChangedDate(new Instant().getMillis());
-            sendArchiveRequest(locationJmsTemplate, locationResponse);
+            sendArchiveRequest(locationResponseQueueName, locationResponse);
         }
     }
     
-    @Override
-    public void sendGatewayLocationResponse(LocationResponse locationResponse) {
-        sendArchiveRequest(locationJmsTemplate, locationResponse);
-    }
-
     private void buildAndSendEvent(RfnTestEvent event, int serialNum) {
         RfnEvent rfnEvent = buildEvent(event, new RfnEvent(), serialNum);
         
         RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
         archiveRequest.setEvent(rfnEvent);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest(rfEventArchiveJmsTemplate, archiveRequest);
+        sendArchiveRequest(eventArchiveRequestQueueName, archiveRequest);
     }
     
     private void buildAndSendAlarm(RfnTestEvent event, int serialNum) {
         RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm(), serialNum);
-        rfnAlarm.setEventData(null); // Alarms from meters and relays do not include event data
         
         RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
         archiveRequest.setAlarm(rfnAlarm);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest(rfAlarmArchiveJmsTemplate, archiveRequest);
+        sendArchiveRequest(alarmArchiveRequestQueueName, archiveRequest);
     }
 
     private <T extends RfnEvent> T buildEvent(RfnTestEvent testEvent, T rfnEvent, int serialNum) {
@@ -599,10 +458,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
         
         rfnEvent.setEventData(testEventMap);
-        if(testEvent.getRfnConditionType() == RfnConditionType.CELLULAR_APN_CHANGED) {
-            String generatedString = RandomStringUtils.random(5, true, false).toUpperCase();
-            rfnEvent.getEventData().put(RfnConditionDataType.APN, generatedString);
-        }
         return rfnEvent;
     }
     
@@ -619,10 +474,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_ID, testEvent.getMeterConfigurationId());
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_STATUS, testEvent.getMeterConfigurationStatus());
         }
-        if (RfnConditionType.DNP3_ADDRESS_CHANGED.equals(testEvent.getRfnConditionType())) {
-            rfnEventMap.put(RfnConditionDataType.OLD_DNP3_ADDRESS, testEvent.getOldDnp3Address());
-            rfnEventMap.put(RfnConditionDataType.NEW_DNP3_ADDRESS, testEvent.getNewDnp3Address());
-        }
         if (testEvent.getUomModifiers() != null) {
             Set<String> stringSet = Sets.newHashSet(StringUtils.split(testEvent.getUomModifiers(), ","));
             RfnUomModifierSet rfnUomModifierSet = new RfnUomModifierSet();
@@ -630,12 +481,15 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             rfnEventMap.put(RfnConditionDataType.UOM_MODIFIERS, rfnUomModifierSet);
         }
     }
-
-    private <R extends RfnIdentifyingMessage> void sendArchiveRequest(YukonJmsTemplate jmsTemplate, R archiveRequest) {
-        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue "
-                + jmsTemplate.getDefaultDestinationName());
-        rfnLogger.info("<<< Sent" + archiveRequest);
-        jmsTemplate.convertAndSend(archiveRequest);
+    
+    private <R extends RfnIdentifyingMessage> void sendArchiveRequest(String queueName, R archiveRequest) {
+        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue " + queueName);
+        JmsTemplate jmsTemplate;
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(false);
+        jmsTemplate.setDeliveryPersistent(false);
+        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate.convertAndSend(queueName, archiveRequest);
     }
 
     @Override
@@ -742,14 +596,4 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         return messagesSent;
     }
 
-    @Override
-    public void sendCellularCommArchiveRequest(RelayCellularComm cellularComm) {
-        RfnRelayCellularCommArchiveRequest rfnCellularCommArchiveRequest = new RfnRelayCellularCommArchiveRequest();
-        Map<Long, RelayCellularComm> commMap = new HashMap<Long, RelayCellularComm>();
-        commMap.put(Long.valueOf(1l) ,cellularComm);
-        rfnCellularCommArchiveRequest.setRelayCellularComms(commMap);
-        log.debug("Sending archive request: {} on queue {}", cellularComm.getDeviceRfnIdentifier().getCombinedIdentifier(), rfnCellularCommArchiveJmsTemplate.getDefaultDestinationName());
-        rfnLogger.info("<<< Sent" + rfnCellularCommArchiveRequest);
-        rfnCellularCommArchiveJmsTemplate.convertAndSend(rfnCellularCommArchiveRequest);
-    }
 }

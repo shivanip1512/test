@@ -13,7 +13,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
-import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -78,14 +77,6 @@ import com.google.common.collect.SetMultimap;
     boolean isDnpConfigurationType(PaoType paoType);
     boolean isAttributeMappingConfigurationType(PaoType paoType);
 
-    /**
-     * Method to check if a given pao type supports Advanced Metrology
-     * 
-     * @param paoType - pao type to get point templates for
-     * @return true if the pao type contains the rfnMetrologyConfiguration category type, false if not
-     */
-    boolean isAdvancedMetrologyConfigurationType(PaoType paoType);
-    
     // POINTS
     // ============================================
 
@@ -242,9 +233,4 @@ import com.google.common.collect.SetMultimap;
     boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType);
 
     List<CategoryType> getRequiredCategoriesByPaoType(PaoType paoType);
-
-    /**
-     * Get all the point defined for system device(i.e in SYSTEM.xml file).
-     */
-    Map<String, Point> getSystemDevicePoints();
 }

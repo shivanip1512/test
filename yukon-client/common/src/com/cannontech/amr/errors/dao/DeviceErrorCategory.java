@@ -15,7 +15,6 @@ public enum DeviceErrorCategory implements DisplayableEnum {
     YUKON_SYSTEM("Yukon System"),
     TRANSMITTER("Transmitter"),
     NETWORK_MANAGER("Network Manager"),
-    EATON_CLOUD("Eaton Cloud"),
     NA("N/A"), 
     ;
     

@@ -9,7 +9,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.model.Program;
-import com.google.common.collect.Multimap;
 
 public interface ProgramDao {
 
@@ -74,9 +73,4 @@ public interface ProgramDao {
      * @return string label associate to the gear id record.
      * */
     public int getGearId( int programId, int gearNumber);
-
-    /**
-     * Returns the of controlAreaId to groupIds
-     */
-    Multimap<Integer, Integer> getGroupIdsByProgramIds(Set<Integer> programIds);
 }

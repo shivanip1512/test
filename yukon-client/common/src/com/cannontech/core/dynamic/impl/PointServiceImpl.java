@@ -14,8 +14,6 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -92,15 +90,13 @@ public class PointServiceImpl implements PointService {
 
     @Transactional
     @Override
-    public void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
-        checkPointDataDuplication(pointId, timestamp);
-
+    public void addPointData(int pointId, double value, YukonUserContext context) {
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
         data.setId(pointId);
         data.setTags(pd.getTags());
-        data.setTimeStamp(timestamp.toDate());
-        data.setTime(timestamp.toDate());
+        data.setTimeStamp(new java.util.Date());
+        data.setTime(new java.util.Date());
         data.setType(pd.getType());
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
@@ -117,21 +113,6 @@ public class PointServiceImpl implements PointService {
         
         eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), formattedValue, data.getTimeStamp(),
             context.getYukonUser());
-    }
-
-    /**
-     * This method is used to check if there is existing point data at a specific timestamp to prevent duplicate data
-     * @throws DuplicateException - If point data already exists for timestamp
-     */
-    public void checkPointDataDuplication(int pointId, Instant timestamp) {
-        try {
-            PointValueHolder pointValueHolder = rawPointHistoryDao.getSpecificValue(pointId, timestamp.getMillis());
-            String errorMessage = "RawPointHistory data for pointid " + pointId + " and timestamp " + timestamp.toDate() + " already exists.";
-            log.error("RawPointHistory data for pointid {} and timestamp {} already exists.", pointId, timestamp.toDate());
-            throw new DuplicateException(errorMessage);
-        } catch (NotFoundException e) {
-            log.debug("RawPointHistory data for pointid {} and timestamp {} not found.", pointId, timestamp.toDate(), e);
-        }
     }
 
     @Transactional

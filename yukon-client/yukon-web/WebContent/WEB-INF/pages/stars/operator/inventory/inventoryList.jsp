@@ -34,10 +34,6 @@
                         <div class="name"><i:inline key=".lastName"/></div>
                         <form:input path="lastName"/>
                     </div>
-                    <div class="stacked">
-                        <div class="name"><i:inline key=".macAddress"/></div>
-                        <form:input path="macAddress"/>
-                    </div>
                 </div>
                 <div class="column three nogutter">
                     <div class="stacked">

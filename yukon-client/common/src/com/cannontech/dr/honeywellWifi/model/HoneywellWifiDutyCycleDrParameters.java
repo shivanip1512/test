@@ -11,19 +11,17 @@ public class HoneywellWifiDutyCycleDrParameters {
     private final int eventId;
     private final Instant startTime;
     private final Instant endTime;
-    private final boolean optional;
     private final int dutyCyclePercent;
     private final int randomizationInterval;
     private final int groupId;
     private final int durationSeconds;
 
-    public HoneywellWifiDutyCycleDrParameters(int programId, int eventId, Instant startTime, Instant endTime, boolean optional,
+    public HoneywellWifiDutyCycleDrParameters(int programId, int eventId, Instant startTime, Instant endTime,
             int dutyCyclePercent, int randomizationInterval, int groupId, int durationSeconds) {
         this.programId = programId;
         this.eventId = eventId;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.optional = optional;
         this.dutyCyclePercent = dutyCyclePercent;
         this.randomizationInterval = randomizationInterval;
         this.groupId = groupId;
@@ -40,10 +38,6 @@ public class HoneywellWifiDutyCycleDrParameters {
 
     public Instant getEndTime() {
         return endTime;
-    }
-
-    public boolean isOptional() {
-        return optional;
     }
 
     public int getDutyCyclePercent() {
@@ -65,13 +59,4 @@ public class HoneywellWifiDutyCycleDrParameters {
     public int getProgramId() {
         return programId;
     }
-
-    @Override
-    public String toString() {
-        return "HoneywellWifiDutyCycleDrParameters [programId=" + programId + ", eventId=" + eventId + ", startTime=" + startTime
-                + ", endTime=" + endTime + ", optional=" + optional + ", dutyCyclePercent=" + dutyCyclePercent
-                + ", randomizationInterval=" + randomizationInterval + ", groupId=" + groupId + ", durationSeconds="
-                + durationSeconds + "]";
-    }
-
 }

@@ -18,7 +18,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.capcontrol.CapControlCbcFormatConverters;
-import com.cannontech.capcontrol.CapControlRegulatorFormatConverters;
 import com.cannontech.clientutils.CTILogger;
 import com.google.common.collect.ImmutableMap;
 
@@ -80,30 +79,6 @@ public class SimpleTemplateProcessor {
             @Override
             public String apply(Double value) {
                 return CapControlCbcFormatConverters.convertIgnoredControlReasonColor(value);
-            }
-        });
-        builder.put("eatonRegulatorControlMode", new Function<Double, String>() {
-            @Override
-            public String apply(Double value) {
-                return CapControlRegulatorFormatConverters.convertEatonRegulatorControlMode(value);
-            }
-        });
-        builder.put("eatonRegulatorControlModeColor", new Function<Double, String>() {
-            @Override
-            public String apply(Double value) {
-                return CapControlRegulatorFormatConverters.convertEatonRegulatorControlModeColor(value);
-            }
-        });
-        builder.put("beckwithRegulatorControlMode", new Function<Double, String>() {
-            @Override
-            public String apply(Double value) {
-                return CapControlRegulatorFormatConverters.convertBeckwithRegulatorControlMode(value);
-            }
-        });
-        builder.put("beckwithRegulatorControlModeColor", new Function<Double, String>() {
-            @Override
-            public String apply(Double value) {
-                return CapControlRegulatorFormatConverters.convertBeckwithRegulatorControlModeColor(value);
             }
         });
         specialConverters = builder.build();

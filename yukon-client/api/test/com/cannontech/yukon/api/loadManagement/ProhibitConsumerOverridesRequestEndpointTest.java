@@ -1,10 +1,9 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.jdom2.Element;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -33,7 +32,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     
     private static final String RESP_ELEMENT_NAME = "prohibitConsumerOverridesResponse";
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
@@ -78,7 +77,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
-        assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
 
         
         // test with program name - 1.1 backwards compatibility
@@ -89,7 +88,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
         
         // test with program name - comms enabled
         //==========================================================================================
@@ -99,7 +98,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITH_COMM, mockOptOutService.getLastValueCalled());
         
         // test with program name - opts + comms disabled
         //==========================================================================================
@@ -109,7 +108,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        assertEquals(OptOutEnabled.DISABLED_WITHOUT_COMM, mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.DISABLED_WITHOUT_COMM, mockOptOutService.getLastValueCalled());
         
         // test with program name - opts + comms enabled
         //==========================================================================================
@@ -120,13 +119,13 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        assertEquals(OptOutEnabled.ENABLED, mockOptOutService.getLastValueCalled());
+        Assert.assertEquals(OptOutEnabled.ENABLED, mockOptOutService.getLastValueCalled());
 
         // create template and parse response data
         template = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
-        assertEquals("Program1", mockOptOutService.getProgramName(), "Wrong program name");
+        Assert.assertEquals("Wrong program name", "Program1", mockOptOutService.getProgramName());
 
     }
     

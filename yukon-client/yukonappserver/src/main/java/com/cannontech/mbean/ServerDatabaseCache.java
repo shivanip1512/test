@@ -66,6 +66,7 @@ import com.cannontech.yukon.server.cache.CICustomerLoader;
 import com.cannontech.yukon.server.cache.ConfigLoader;
 import com.cannontech.yukon.server.cache.ContactLoader;
 import com.cannontech.yukon.server.cache.ContactNotificationGroupLoader;
+import com.cannontech.yukon.server.cache.DeviceCommPortLoader;
 import com.cannontech.yukon.server.cache.GraphDefinitionLoader;
 import com.cannontech.yukon.server.cache.HolidayScheduleLoader;
 import com.cannontech.yukon.server.cache.LMConstraintLoader;
@@ -1810,5 +1811,18 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         return;
+    }
+
+    @Override
+    public synchronized List<Integer> getDevicesByCommPort(int portId) {
+
+        return DeviceCommPortLoader.getDevicesByCommPort(portId);
+
+    }
+
+    @Override
+    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+        return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
+
     }
 }

@@ -169,32 +169,33 @@
     <!-- deviceConfigs.jsp -->
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.header">Device Configuration</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteText">Select whether you want to Change, Upload, Validate or Remove a Device Configuration for the selected devices.</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.noteText">Select whether you want to Assign, Unassign, Send, Read or Verify a Device Configuration for the selected devices.</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.helpText">
         <![CDATA[
             Select which Device Configuration action to perform on the selected devices (options available depend upon permissions):
             <ul>
-                <li><b>Change</b> - Select the Device Configuration you wish to change the selected devices to.</li>
-                <li><b>Upload</b> - Select the method you wish to use when uploading configurations to devices. This action will transmit configuration settings out to devices.
-                The standard method will compare the settings of the device with the settings of the configuration and send only the unmatching fields to the device.  The force method (only applicable for PLC)
+                <li><b>Assign</b> - Select the Device Configuration you wish to assign the selected devices to.</li>
+                <li><b>Unassign</b> - The devices in the selected device group will have their device configurations unassigned.
+                <li><b>Send</b> - Select the method you wish to use when sending configurations to devices. This action will transmit configuration settings out to devices.
+                The standard method will compare the settings of the device with the settings of the configuration and send only the unmatching fields to the device.  The force method
                 will send the entire configuration to the device</li>
-                <li><b>Validate</b> - Validates the configuration settings from the device and updates the database information for that device.</li>
-                <li><b>Remove</b> - The devices in the selected device group will have their device configurations removed.
+                <li><b>Read</b> - Reads the configuration settings from the device and updates the database information for that device.</li>
+                <li><b>Verify</b> - Compares the settings of the device to the settings of the configuration.
+                This action compares database information and does not read from the device.</li>
             </ul>
         ]]>
     </entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.action">Action</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.assign.label">Change</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.unassign.label">Remove</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.send.label">Upload</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.read.label">Validate</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.assign.label">Assign</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.unassign.label">Unassign</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.send.label">Send</entry>
+    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.read.label">Read</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.verify.label">Verify</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.assignConfig.label">Device Config</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.selectLabel">Send Method</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.standard">Standard</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.force">Force</entry>
     <entry key="yukon.web.modules.tools.bulk.deviceConfigs.sendConfig.rfnWarning">One or more devices selected are identified as RF. These devices cannot currently use the Force operation. All devices in group will only be run on the standard command.</entry>
-    <entry key="yukon.web.modules.tools.bulk.deviceConfigs.uploadConfig.plcWarning">One or more devices selected are identified as PLC. These devices will need to be Validated after the Upload is complete.</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.failureResult">Some attributes did not match:</entry>
     <entry key="yukon.common.device.bulk.verifyConfigResults.notSupported">Verification is not supported</entry>
     
@@ -203,12 +204,7 @@
     <!-- programmingInputs.jsp -->
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.header">C&amp;I Meter Programming</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteText">
-    <![CDATA[
-        Select an existing meter program to assign to the selected devices or upload a new meter program. 
-        This command instructs the device(s) to begin requesting the full C&I meter program from Yukon.  This “instruct” command will complete quickly, but the program upload will take minutes or hours.
-        To view the progress of the upload, please see the <a href="{0}" target="_blank">Meter Programming Summary</a> page.
-    ]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteText">Select an existing meter program to assign to the selected devices or upload a new meter program.</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.meterProgramType">Meter Program Type</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.meterProgram">Meter Program</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.existingMeterProgram">Existing</entry>
@@ -220,8 +216,6 @@
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidFileSelected">There was a problem reading the meter program file.</entry>    
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.duplicateName">There is already a program with the entered name. Please enter a unique name.</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidFileSize">The meter programming file must be not be blank and must be no larger than 1 MiB (1048576 bytes).</entry>
-    <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidProgram">The meter program file was invalid.  Please verify the file is of the proper format and try again.</entry>
-    <entry key="yukon.web.modules.tools.bulk.meterProgramming.validationFailed">The meter program file could not be validated due to an internal system error.</entry>
     
     <!-- DATA STREAMING CONFIGURATION-->
     <!-- ******************************************************************************************************************** -->
@@ -636,7 +630,10 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.LONGITUDE"></entry>
     
     <!-- importUpload.jsp: errors -->
-    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields">File must contain all of the required fields. Check that the file is CSV formatted.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields"><![CDATA[File must contain all of the required fields.
+    <br>
+    ]]>Check that the file is CSV formatted.</entry>
+    
     <entry key="yukon.common.device.bulk.columnHeader.import.error.firstColumnTemplate">The first </entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.duplicateColumn">Duplicate column found: {0}</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.badIdentifier">Column can not be used as identifier: {0}</entry>

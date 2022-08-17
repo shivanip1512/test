@@ -69,8 +69,9 @@ public class TierController {
     }
 
     private final void setUpAreas(ModelMap model, LiteYukonUser user) {
+        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
-        model.addAttribute("showAnalysis", !hideGraphs);
+        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
 
         model.addAttribute("systemStatusCommandId", CommandType.SYSTEM_STATUS.getCommandId());
         model.addAttribute("resetOpCountCommandId", CommandType.RESET_SYSTEM_OP_COUNTS.getCommandId());

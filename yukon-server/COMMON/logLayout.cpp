@@ -5,65 +5,12 @@
 
 #include "log4cxx/helpers/transcoder.h"
 
-#include <pdh.h>
-#include <gsl/gsl_util>
-
-namespace Cti::Logging {
-
-namespace {
+namespace Cti {
+namespace Logging {
 
 const CtiTime gRunningSince;
 
-const auto gSystemBoot = []() -> std::string {
-    if( PDH_HQUERY query;
-        ! PdhOpenQuery(nullptr, NULL, &query) )
-    {
-        auto closeQuery = gsl::finally([query] {
-            PdhCloseQuery(query);
-        });
-        
-        if( PDH_HCOUNTER uptimeCounter;
-            ! PdhAddCounter(query, "\\System\\System Up Time", NULL, &uptimeCounter) && 
-            ! PdhCollectQueryData(query) )
-        {
-            if( PDH_RAW_COUNTER uptimeValue;
-                ! PdhGetRawCounterValue(uptimeCounter, nullptr, &uptimeValue) &&
-                ! uptimeValue.CStatus )
-            {
-                using namespace std::chrono;
-
-                constexpr seconds filetimeTo1970Epoch { 11'644'473'600 };
-                const system_clock::duration boot_duration { uptimeValue.FirstValue };
-                const system_clock::time_point boot_time_point { boot_duration - filetimeTo1970Epoch };
-
-                const auto boot_time_t = system_clock::to_time_t(boot_time_point);
-                const auto boot_micros = duration_cast<microseconds>(boot_duration % seconds(1));
-
-                if( tm boot_tm;
-                    ! localtime_s(&boot_tm, &boot_time_t) )
-                {
-                    if( std::array<char, 32> boot_str; // "0000-00-00 00:00:00.000000+0000"
-                        strftime(boot_str.data(), boot_str.size(), "%F %T.000000%z", &boot_tm) )
-                    {
-                        constexpr size_t micros_offset = 20;
-                        constexpr size_t micros_max = 6;
-
-                        const auto micros_str = std::to_string(boot_micros.count());
-
-                        if( micros_str.size() <= micros_max )
-                        {
-                            //  Overwrite the micros characters
-                            std::copy(micros_str.rbegin(), micros_str.rend(), boot_str.rend() - micros_offset - micros_max);
-                        }
-
-                        return boot_str.data();
-                    }
-                }
-            }
-        }
-    }
-    return {};
-}();
+namespace {
 
 log4cxx::LogString toLogStr(const std::string &str)
 {
@@ -170,16 +117,6 @@ void LogLayout::appendHeader(log4cxx::LogString& output, log4cxx::helpers::Pool&
         oss <<"--------  LOG CONTINUES (Running since "<< gRunningSince <<")  --------\r\n";
     }
 
-    if( ! gSystemBoot.empty() )
-    {
-        oss << "--------  OS boot time: " << gSystemBoot << "  --------\r\n";
-
-    }
-    else
-    {
-        oss << "--------  OS boot time unavailable  --------\r\n";
-    }
-
     output.append(toLogStr(oss.str()));
 }
 
@@ -205,3 +142,4 @@ CommsLogLayout::CommsLogLayout(const OwnerInfo &ownerInfo) :
 }
 
 }
+} // namespace Cti::Logging

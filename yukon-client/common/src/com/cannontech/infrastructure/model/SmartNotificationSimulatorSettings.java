@@ -2,24 +2,17 @@ package com.cannontech.infrastructure.model;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
-
 public class SmartNotificationSimulatorSettings implements Serializable {
     
-    private int dailyDigestHour, eventsPerType, eventsPerMessage, waitTimeSec;
-    private boolean allTypes;
-    private SmartNotificationEventType type;
-    private String parameter;
+    private int dailyDigestHour, userGroupId, eventsPerType, eventsPerMessage, waitTimeSec;
+    private boolean generateTestEmail;
     
-    public SmartNotificationSimulatorSettings(int dailyDigestHour, boolean allTypes, SmartNotificationEventType type, String parameter, 
-                                              int eventsPerType, int eventsPerMessage, int waitTimeSec) {
+    public SmartNotificationSimulatorSettings(int dailyDigestHour, int userGroupId,
+                                              boolean generateTestEmail, int eventsPerType,
+                                              int eventsPerMessage, int waitTimeSec) {
         this.dailyDigestHour = dailyDigestHour;
-        this.setAllTypes(allTypes);
-        this.setType(type);
-        this.setParameter(parameter);
+        this.userGroupId = userGroupId;
+        this.generateTestEmail = generateTestEmail;
         this.eventsPerType = eventsPerType;
         this.eventsPerMessage = eventsPerMessage;
         this.waitTimeSec = waitTimeSec;
@@ -30,6 +23,12 @@ public class SmartNotificationSimulatorSettings implements Serializable {
     }
     public void setDailyDigestHour(int dailyDigestHour) {
         this.dailyDigestHour = dailyDigestHour;
+    }
+    public int getUserGroupId() {
+        return userGroupId;
+    }
+    public void setUserGroupId(int userGroupId) {
+        this.userGroupId = userGroupId;
     }
     public int getEventsPerType() {
         return eventsPerType;
@@ -49,34 +48,11 @@ public class SmartNotificationSimulatorSettings implements Serializable {
     public void setWaitTimeSec(int waitTimeSec) {
         this.waitTimeSec = waitTimeSec;
     }
-
-    public SmartNotificationEventType getType() {
-        return type;
+    public boolean isGenerateTestEmail() {
+        return generateTestEmail;
     }
-
-    public void setType(SmartNotificationEventType type) {
-        this.type = type;
-    }
-
-    public String getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
-
-    public boolean isAllTypes() {
-        return allTypes;
-    }
-
-    public void setAllTypes(boolean allTypes) {
-        this.allTypes = allTypes;
-    }
-    
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            + System.getProperty("line.separator");
+    public void setGenerateTestEmail(boolean generateTestEmail) {
+        this.generateTestEmail = generateTestEmail;
     }
  
 }

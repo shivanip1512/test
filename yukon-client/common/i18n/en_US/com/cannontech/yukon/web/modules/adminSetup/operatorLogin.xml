@@ -32,7 +32,7 @@
     <entry key="yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled">The user is now disabled.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.incorrectGroupEdit">Operator Group is set incorrectly, please edit.</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.incorrectGroup">Operator Group is invalid.</entry>
-    <entry key ="yukon.web.modules.adminSetup.operatorLogin.operatorDeleteFailure">Delete operation failed for user. The user may be associated with a job.</entry>
+    
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageName">Operator Users</entry>
     <entry key="yukon.web.modules.adminSetup.operatorLogin.home.pageDescription">{0}</entry>

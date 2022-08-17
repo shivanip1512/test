@@ -31,7 +31,7 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
                 }
                 if (p.getPhone() != null) {
                     fullPhone.append(phoneNumberFormattingService.formatPhone(p.getPhone().getAreaCode(),
-                            p.getPhone().getLocalNumber()));
+                        p.getPhone().getLocalNumber()));
                 }
                 if (!StringUtils.isBlank(fullPhone)) {
                     phoneNumbersList.add(fullPhone.toString());

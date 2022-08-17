@@ -31,11 +31,6 @@ using Cti::Logging::Range::Hex::operator<<;
 
 namespace {
 std::unique_ptr<DnpSlave> dnpSlaveInterface;
-constexpr unsigned DefaultPriority_AnalogOutput = 14;
-constexpr unsigned DefaultPriority_DnpTimesync  = 12;
-constexpr unsigned DefaultPriority_Operate      = 14;
-constexpr unsigned DefaultPriority_Other        = 14;
-constexpr unsigned DefaultPriority_Scan         = 11;
 }
 
 extern "C" {
@@ -60,7 +55,8 @@ DLLEXPORT int StopInterface( void )
 
 }
 
-namespace Cti::Fdr {
+namespace Cti {
+namespace Fdr {
 
 const std::string DNPInMessageString  = "DNP InMessage";
 const std::string DNPOutMessageString = "DNP OutMessage";
@@ -73,13 +69,7 @@ DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
     _staleDataTimeout(0),
     _porterTimeout(30),
-    _porterPriorities {
-        DefaultPriority_AnalogOutput,
-        DefaultPriority_DnpTimesync,
-        DefaultPriority_Operate,
-        DefaultPriority_Other,
-        DefaultPriority_Scan,
-    },
+    _porterPriority(14),
     _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
 {
     _porterConnection.setName("FDR DNP Slave to Porter");
@@ -134,19 +124,15 @@ std::unique_ptr<CtiPointRegistrationMsg> DnpSlave::buildRegistrationPointList()
 */
 bool DnpSlave::readConfig()
 {
-    constexpr char* KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
-    constexpr char* KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
-    constexpr char* KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
-    constexpr char* KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
-    constexpr char* KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
-    constexpr char* KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
-    constexpr char* KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
-    constexpr char* KEY_PORTER_PRIORITY_ANALOG_OUTPUT   = "FDR_DNPSLAVE_PORTER_PRIORITY_ANALOG_OUTPUT";
-    constexpr char* KEY_PORTER_PRIORITY_DNP_TIMESYNC    = "FDR_DNPSLAVE_PORTER_PRIORITY_DNP_TIMESYNC";
-    constexpr char* KEY_PORTER_PRIORITY_OPERATE         = "FDR_DNPSLAVE_PORTER_PRIORITY_OPERATE";
-    constexpr char* KEY_PORTER_PRIORITY_SCAN            = "FDR_DNPSLAVE_PORTER_PRIORITY_SCAN";
+    const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
+    const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
+    const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
+    const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
+    const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
+    const char *KEY_PORTER_TIMEOUT              = "FDR_DNPSLAVE_PORTER_TIMEOUT";
+    const char *KEY_PORTER_PRIORITY             = "FDR_DNPSLAVE_PORTER_PRIORITY";
 
-    constexpr int DNPSLAVE_PORTNUMBER = 2085;
+    const int DNPSLAVE_PORTNUMBER = 2085;
 
     // load up the base class
     CtiFDRSocketServer::readConfig();
@@ -166,23 +152,8 @@ bool DnpSlave::readConfig()
     _porterTimeout =
             gConfigParms.getValueAsInt(KEY_PORTER_TIMEOUT, 30);
 
-    _porterPriorities = {
-            gConfigParms.getValueAsUnsigned(
-                    KEY_PORTER_PRIORITY_ANALOG_OUTPUT, 
-                    DefaultPriority_AnalogOutput),
-            gConfigParms.getValueAsUnsigned(
-                    KEY_PORTER_PRIORITY_DNP_TIMESYNC, 
-                    DefaultPriority_DnpTimesync),
-            gConfigParms.getValueAsUnsigned(
-                    KEY_PORTER_PRIORITY_OPERATE,
-                    DefaultPriority_Operate),
-            gConfigParms.getValueAsUnsigned(
-                    KEY_PORTER_PRIORITY,
-                    DefaultPriority_Other),
-            gConfigParms.getValueAsUnsigned(
-                    KEY_PORTER_PRIORITY_SCAN,
-                    DefaultPriority_Scan),
-    };
+    _porterPriority =
+            gConfigParms.getValueAsInt(KEY_PORTER_PRIORITY, 14);
 
     const std::string serverNames =
             gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
@@ -218,15 +189,8 @@ bool DnpSlave::readConfig()
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
         loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
 
-        loglist.add(KEY_PORTER_PRIORITY_ANALOG_OUTPUT) << _porterPriorities.analogOutput;
-        loglist.add(KEY_PORTER_PRIORITY_DNP_TIMESYNC)  << _porterPriorities.dnpTimesync;
-        loglist.add(KEY_PORTER_PRIORITY_OPERATE)       << _porterPriorities.operate;
-        loglist.add(KEY_PORTER_PRIORITY)               << _porterPriorities.other;
-        loglist.add(KEY_PORTER_PRIORITY_SCAN)          << _porterPriorities.scan;
-
-        CTILOG_INFO(dout, "FDRDnpSlave Configs : "
-            << loglist);
-
+        CTILOG_INFO(dout, "FDRDnpSlave Configs"
+                << loglist);
     }
 
     return true;
@@ -521,13 +485,13 @@ int DnpSlave::doComms(ConnectionProtocol cp, const std::string& messageType)
                 }
                 cp.connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
             }
+
+            cp.dnpSlave.decode(xfer);
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" was not able to generate " << messageType << " response.");
         }
-
-        cp.dnpSlave.decode(xfer);
     }
 
     return 0;
@@ -805,7 +769,7 @@ std::string logPoints(const Protocols::DnpSlave::control_request &control, const
     l.add("Offset")         << control.offset;
     l.add("On time (ms)")   << control.on_time;
     l.add("Queue")          << control.queue;
-    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(as_underlying(control.status));
+    l.add("Status")         << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(control.status));
     l.add("Trip/close")     << control.trip_close;
 
     l.add("Yukon point");
@@ -836,246 +800,197 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         return ControlStatus::NotSupported;
     }
 
-    std::string commandString;
-
-    bool isPassthroughControl = true;
-
-    {   // find out if it is a binary pass-through control....
-        switch ( point.getControlType() )
+    //  Confirm SBO vs direct
+    switch( control.action )
+    {
+        case Protocols::DnpSlave::ControlAction::Select:
+        case Protocols::DnpSlave::ControlAction::Operate:
         {
-            case ControlType_Normal:
-            case ControlType_SBOPulse:
+            switch( point.getControlType() )
             {
-                if( control.control == BinaryOutputControl::PulseOn )
+                case ControlType_SBOPulse:
+                case ControlType_SBOLatch:
+                    break;
+
+                default:
                 {
-                    commandString =
-                        ( control.trip_close == BinaryOutputControl::Trip )
-                            ? point.getStateZeroControl()
-                            : point.getStateOneControl();
-                }
-                break;
-            }
-            case ControlType_Latch:
-            case ControlType_SBOLatch:
-            {
-                if ( control.control == BinaryOutputControl::LatchOff )
-                {
-                    commandString = point.getStateZeroControl();
-                }
-                else if ( control.control == BinaryOutputControl::LatchOn )
-                {
-                    commandString = point.getStateOneControl();
+                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                    return ControlStatus::NotSupported;
                 }
             }
+            break;
         }
-
-        if ( ! commandString.empty() )
+        case Protocols::DnpSlave::ControlAction::Direct:
         {
-            static const std::regex regularControlCommand
-            { 
-                "^control *(?:open|close)",
-                std::regex_constants::ECMAScript
-                    | std::regex_constants::icase
-            };
+            switch( point.getControlType() )
+            {
+                case ControlType_Normal:
+                case ControlType_Latch:
+                    break;
 
-            std::smatch results;
-
-            isPassthroughControl = std::regex_search( commandString, results, regularControlCommand );
+                default:
+                {
+                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                    return ControlStatus::NotSupported;
+                }
+            }
+            break;
+        }
+        default:
+        {
+            CTILOG_WARN(dout, logNow() <<" unsupported action" << logPoints(control, point));
+            return ControlStatus::NotSupported;
         }
     }
 
-    if ( isPassthroughControl )   // a normal control operation
+    //  Confirm queue, clear, count all match the hardcoded values in dev_dnp
+    if( control.queue || control.clear || control.count != 1 )
     {
-        //  Confirm SBO vs direct
-        switch( control.action )
+        CTILOG_WARN(dout, logNow() <<" unsupported queue/clear/count parameters" << logPoints(control, point));
+        return ControlStatus::NotSupported;
+    }
+
+    std::string commandString;
+
+    switch( point.getControlType() )
+    {
+        case ControlType_Normal:
+        case ControlType_SBOPulse:
         {
-            case Protocols::DnpSlave::ControlAction::Select:
-            case Protocols::DnpSlave::ControlAction::Operate:
+            if( control.control != BinaryOutputControl::PulseOn )
             {
-                switch( point.getControlType() )
-                {
-                    case ControlType_SBOPulse:
-                    case ControlType_SBOLatch:
-                        break;
-
-                    default:
-                    {
-                        CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
-                    }
-                }
-                break;
-            }
-            case Protocols::DnpSlave::ControlAction::Direct:
-            {
-                switch( point.getControlType() )
-                {
-                    case ControlType_Normal:
-                    case ControlType_Latch:
-                        break;
-
-                    default:
-                    {
-                        CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
-                        return ControlStatus::NotSupported;
-                    }
-                }
-                break;
-            }
-            default:
-            {
-                CTILOG_WARN(dout, logNow() <<" unsupported action" << logPoints(control, point));
-                return ControlStatus::NotSupported;
-            }
-        }
-
-        //  Confirm queue, clear, count all match the hardcoded values in dev_dnp
-        if( control.queue || control.clear || control.count != 1 )
-        {
-            CTILOG_WARN(dout, logNow() <<" unsupported queue/clear/count parameters" << logPoints(control, point));
-            return ControlStatus::NotSupported;
-        }
-
-        switch( point.getControlType() )
-        {
-            case ControlType_Normal:
-            case ControlType_SBOPulse:
-            {
-                if( control.control != BinaryOutputControl::PulseOn )
-                {
-                    CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
-                    return ControlStatus::FormatError;
-                }
-
-                switch( control.trip_close )
-                {
-                    case BinaryOutputControl::Trip:
-                    {
-                        commandString = point.getStateZeroControl();
-
-                        if( ! icontainsString(commandString, " open") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( point.getCloseTime1() != control.on_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( control.off_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        break;
-                    }
-                    case BinaryOutputControl::Close:
-                    {
-                        commandString = point.getStateOneControl();
-
-                        if( ! icontainsString(commandString, " close") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( point.getCloseTime2() != control.on_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( control.off_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        break;
-                    }
-                    case BinaryOutputControl::NUL:
-                    {
-                        commandString = point.getStateOneControl();  //  always send state one control
-
-                        if( ! icontainsString(commandString, " close") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( ! icontainsString(commandString, " direct") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( point.getCloseTime2() != control.on_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        if( control.off_time )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        break;
-                    }
-                }
-                break;
-            }
-            case ControlType_Latch:
-            case ControlType_SBOLatch:
-            {
-                switch( control.control )
-                {
-                    case BinaryOutputControl::LatchOff:
-                    {
-                        commandString = point.getStateZeroControl();
-
-                        if( ! icontainsString(commandString, " open") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        break;
-                    }
-                    case BinaryOutputControl::LatchOn:
-                    {
-                        commandString = point.getStateOneControl();
-
-                        if( ! icontainsString(commandString, " close") )
-                        {
-                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                            return ControlStatus::FormatError;
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        CTILOG_WARN(dout, logNow() <<" incorrect control type" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                }
-                break;
-            }
-            default:
-            {
-                CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
+                CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
                 return ControlStatus::FormatError;
             }
+
+            switch( control.trip_close )
+            {
+                case BinaryOutputControl::Trip:
+                {
+                    commandString = point.getStateZeroControl();
+
+                    if( ! icontainsString(commandString, " open") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( point.getCloseTime1() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    break;
+                }
+                case BinaryOutputControl::Close:
+                {
+                    commandString = point.getStateOneControl();
+
+                    if( ! icontainsString(commandString, " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( point.getCloseTime2() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    break;
+                }
+                case BinaryOutputControl::NUL:
+                {
+                    commandString = point.getStateOneControl();  //  always send state one control
+
+                    if( ! icontainsString(commandString, " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( ! icontainsString(commandString, " direct") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( point.getCloseTime2() != control.on_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    if( control.off_time )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    break;
+                }
+            }
+            break;
         }
-
-        commandString += " offset " + std::to_string(point.getControlOffset());
-
-        switch( control.action )
+        case ControlType_Latch:
+        case ControlType_SBOLatch:
         {
-            case Protocols::DnpSlave::ControlAction::Select:
+            switch( control.control )
             {
-                commandString += " sbo_selectonly";
-                break;
+                case BinaryOutputControl::LatchOff:
+                {
+                    commandString = point.getStateZeroControl();
+
+                    if( ! icontainsString(commandString, " open") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    break;
+                }
+                case BinaryOutputControl::LatchOn:
+                {
+                    commandString = point.getStateOneControl();
+
+                    if( ! icontainsString(commandString, " close") )
+                    {
+                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                    break;
+                }
+                default:
+                {
+                    CTILOG_WARN(dout, logNow() <<" incorrect control type" << logPoints(control, point));
+                    return ControlStatus::FormatError;
+                }
             }
-            case Protocols::DnpSlave::ControlAction::Operate:
-            {
-                commandString += " sbo_operate";
-                break;
-            }
+            break;
+        }
+        default:
+        {
+            CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
+            return ControlStatus::FormatError;
+        }
+    }
+
+    commandString += " offset " + std::to_string(point.getControlOffset());
+
+    switch( control.action )
+    {
+        case Protocols::DnpSlave::ControlAction::Select:
+        {
+            commandString += " sbo_selectonly";
+            break;
+        }
+        case Protocols::DnpSlave::ControlAction::Operate:
+        {
+            commandString += " sbo_operate";
+            break;
         }
     }
 
@@ -1087,23 +1002,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
                 commandString,
                 userMessageId);
 
-    if( boost::istarts_with(commandString, "putconfig ")
-        && boost::icontains(commandString, " timesync") )
-    {
-        requestMsg->setMessagePriority(_porterPriorities.dnpTimesync);
-    }
-    else if( boost::istarts_with(commandString, "scan ") )
-    {
-        requestMsg->setMessagePriority(_porterPriorities.scan);
-    }
-    else if( boost::istarts_with(commandString, "control ") )
-    {
-        requestMsg->setMessagePriority(_porterPriorities.operate);
-    }
-    else
-    {
-        requestMsg->setMessagePriority(_porterPriorities.other);
-    }
+    requestMsg->setMessagePriority(_porterPriority);
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
@@ -1112,7 +1011,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         return ControlStatus::Undefined;
     }
 
-    return waitForResponse(userMessageId, isPassthroughControl);
+    return waitForResponse(userMessageId);
 }
 
 
@@ -1180,134 +1079,113 @@ bool DnpSlave::tryDispatchControl(const Protocols::DnpSlave::control_request &co
 
 int DnpSlave::processAnalogOutputRequest (ConnectionProtocol cp, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
-    using Protocols::DnpSlave::analog_output_request;
-
-    static const std::map<int, AnalogOutput::Variation> Variation
-    {
-        { AnalogOutput::AO_16Bit,       AnalogOutput::AO_16Bit },
-        { AnalogOutput::AO_32Bit,       AnalogOutput::AO_32Bit },
-        { AnalogOutput::AO_SingleFloat, AnalogOutput::AO_SingleFloat },
-        { AnalogOutput::AO_DoubleFloat, AnalogOutput::AO_DoubleFloat }
-    };
-
     if( ob.getGroup() != AnalogOutput::Group ||
         ob.empty() )
     {
         return -1;
     }
 
-    const bool isLongIndexed =
-        ( ob.getIndexLength()    == 2 &&
-          ob.getQuantityLength() == 2 );
+    const auto &objectDescriptor = ob[0];
 
-    std::vector<analog_output_request>  requests;
-    CtiMultiMsg_vec                     pointUpdates;
-
-    for ( std::size_t idx = 0; idx < ob.size(); ++idx )
+    if( ! objectDescriptor.object )
     {
-        const auto & objectDescriptor = ob[ idx ];
+        return -1;
+    }
 
-        if( ! objectDescriptor.object )
+    const auto aoc = dynamic_cast<const AnalogOutput *>(objectDescriptor.object);
+
+    if( ! aoc )
+    {
+        return -1;
+    }
+
+    using Protocols::DnpSlave::analog_output_request;
+
+    analog_output_request analog;
+
+    static const std::map<int, AnalogOutput::Variation> Variation {
+        { AnalogOutput::AO_16Bit, AnalogOutput::AO_16Bit },
+        { AnalogOutput::AO_32Bit, AnalogOutput::AO_32Bit },
+        { AnalogOutput::AO_SingleFloat, AnalogOutput::AO_SingleFloat },
+        { AnalogOutput::AO_DoubleFloat, AnalogOutput::AO_DoubleFloat },
+    };
+
+    //  create the point so we can echo it back in the DNP response
+    analog.offset = objectDescriptor.index;
+    analog.value  = aoc->getValue();
+    analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
+    analog.action = action;
+    analog.isLongIndexed =
+        (ob.getIndexLength()    == 2 &&
+         ob.getQuantityLength() == 2);
+
+    analog.status = ControlStatus::NotSupported;
+
+    // This guard must happen before the _receiveMux or a deadlock can occur.
+    CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
+    // Protect _receiveMap while we use it.
+    CTILOCKGUARD( CtiMutex, guard, _receiveMux );
+
+    //  look for the point with the correct control offset
+    for( const auto &kv : _receiveMap )
+    {
+        const DnpId &dnpId = kv.second;
+
+        if( dnpId.SlaveId      == cp.dnpSlave.getSrcAddr()
+            && dnpId.MasterId  == cp.dnpSlave.getDstAddr()
+            && dnpId.PointType == AnalogPointType
+            && dnpId.Offset    == (analog.offset + 1) )
         {
-            continue;
-        }
-
-        const auto aoc = dynamic_cast<const AnalogOutput *>(objectDescriptor.object);
-
-        if( ! aoc )
-        {
-            continue;
-        }
-
-        analog_output_request analog;
-
-        //  create the point so we can echo it back in the DNP response
-        analog.offset = objectDescriptor.index;
-        analog.value  = aoc->getValue();
-        analog.type   = mapFindOrDefault(Variation, aoc->getVariation(), AnalogOutput::AO_32Bit);
-        analog.action = action;
-        analog.isLongIndexed = isLongIndexed;
-
-        analog.status = ControlStatus::NotSupported;
-
-        // This guard must happen before the _receiveMux or a deadlock can occur.
-        CTILOCKGUARD( CtiMutex, recvGuard, getReceiveFromList().getMutex() );
-        // Protect _receiveMap while we use it.
-        CTILOCKGUARD( CtiMutex, guard, _receiveMux );
-
-        for ( const auto & [ fdrdest, dnpId ] : _receiveMap )
-        {
-            if( dnpId.SlaveId      == cp.dnpSlave.getSrcAddr()
-                && dnpId.MasterId  == cp.dnpSlave.getDstAddr()
-                && dnpId.PointType == AnalogPointType
-                && dnpId.Offset    == (analog.offset + 1) )
+            const CtiFDRDestination &fdrdest = kv.first;
+            long fdrPointId = fdrdest.getParentPointId();
+            CtiFDRPoint fdrPoint;
+            if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
             {
-                long fdrPointId = fdrdest.getParentPointId();
-                CtiFDRPoint fdrPoint;
-                if( !findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
+                continue;
+            }
+
+            if( fdrPoint.isControllable() )
+            {
+                if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
                 {
-                    continue;
+                    analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
                 }
-
-                if( fdrPoint.isControllable() )
+                else if( tryDispatchAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier) )
                 {
-                    if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
-                    {
-                        analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
-                    }
-                    else if( tryDispatchAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier) )
-                    {
-                        analog.status = ControlStatus::Success;
-                    }
-                }
-                else
-                {
-                    auto pData = 
-                        std::make_unique<CtiPointDataMsg>(
-                            fdrPoint.getPointID(),
-                            analog.value * dnpId.Multiplier,
-                            NormalQuality,
-                            fdrPoint.getPointType());
-
-                    pointUpdates.push_back( pData.release() );
-
                     analog.status = ControlStatus::Success;
-
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        FormattedList l;
-
-                        l.add("Point ID") << fdrPoint.getPointID();
-                        l.add("Pao ID") << fdrPoint.getPaoID();
-                        l.add("Incoming value") << analog.value;
-                        l.add("FDR multiplier") << dnpId.Multiplier;
-                        l.add("Resulting value") << analog.value * dnpId.Multiplier;
-
-                        CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
-                    }
                 }
+            }
+            else
+            {
+                auto pData = 
+                    std::make_unique<CtiPointDataMsg>(
+                        fdrPoint.getPointID(),
+                        analog.value * dnpId.Multiplier,
+                        NormalQuality,
+                        fdrPoint.getPointType());
 
-                requests.push_back( analog );
+                // consumes a delete memory
+                queueMessageToDispatch(pData.release());
+
+                analog.status = ControlStatus::Success;
+
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    FormattedList l;
+
+                    l.add("Point ID") << fdrPoint.getPointID();
+                    l.add("Pao ID") << fdrPoint.getPaoID();
+                    l.add("Incoming value") << analog.value;
+                    l.add("FDR multiplier") << dnpId.Multiplier;
+                    l.add("Resulting value") << analog.value * dnpId.Multiplier;
+
+                    CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
+                }
             }
         }
     }
 
-    if ( requests.empty() )
-    {
-        cp.dnpSlave.setUnsupportedCommand();
-    }
-    else
-    {
-        if ( ! pointUpdates.empty() )
-        {
-            auto multiMsg = std::make_unique<CtiMultiMsg>( pointUpdates );
-
-            // consumes a delete memory
-            queueMessageToDispatch( multiMsg.release() );
-        }
-
-        cp.dnpSlave.setAnalogOutputCommand( requests );
-    }
+    cp.dnpSlave.setAnalogOutputCommand(analog);
 
     return doComms(cp, "analog output");
 }
@@ -1321,7 +1199,7 @@ std::string describeAnalogOutputRequest(const Protocols::DnpSlave::analog_output
     l.add("Action") << log(analog.action);
     l.add("Long index") << analog.isLongIndexed;
     l.add("Offset") << analog.offset;
-    l.add("Status") << Protocols::DnpProtocol::getControlResultString(as_underlying(analog.status));
+    l.add("Status") << Protocols::DnpProtocol::getControlResultString(static_cast<unsigned char>(analog.status));
     l.add("Type") << analog.type;
     l.add("Value") << analog.value;
 
@@ -1377,7 +1255,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
                 commandString,
                 userMessageId);
 
-    requestMsg->setMessagePriority(_porterPriorities.analogOutput);
+    requestMsg->setMessagePriority(_porterPriority);
 
     if( const auto error = writePorterConnection(requestMsg.release(), Timing::Chrono::seconds(5)) )
     {
@@ -1386,7 +1264,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         return ControlStatus::Undefined;
     }
 
-    return waitForResponse(userMessageId, true);
+    return waitForResponse(userMessageId);
 }
 
 
@@ -1423,26 +1301,26 @@ bool DnpSlave::shouldIgnoreOldData() const
 }
 
 
-ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isPassthroughControl)
+ControlStatus DnpSlave::waitForResponse(const long userMessageId)
 {
     static const std::map<unsigned char, ControlStatus> controlStatuses {
-        { as_underlying(ControlStatus::Success),           ControlStatus::Success           },
-        { as_underlying(ControlStatus::Timeout),           ControlStatus::Timeout           },
-        { as_underlying(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
-        { as_underlying(ControlStatus::FormatError),       ControlStatus::FormatError       },
-        { as_underlying(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
-        { as_underlying(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
-        { as_underlying(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
-        { as_underlying(ControlStatus::Local),             ControlStatus::Local             },
-        { as_underlying(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
-        { as_underlying(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
-        { as_underlying(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
-        { as_underlying(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
-        { as_underlying(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
-        { as_underlying(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
-        { as_underlying(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
-        { as_underlying(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
-        { as_underlying(ControlStatus::Undefined),         ControlStatus::Undefined         }};
+        { static_cast<unsigned char>(ControlStatus::Success),           ControlStatus::Success           },
+        { static_cast<unsigned char>(ControlStatus::Timeout),           ControlStatus::Timeout           },
+        { static_cast<unsigned char>(ControlStatus::NoSelect),          ControlStatus::NoSelect          },
+        { static_cast<unsigned char>(ControlStatus::FormatError),       ControlStatus::FormatError       },
+        { static_cast<unsigned char>(ControlStatus::NotSupported),      ControlStatus::NotSupported      },
+        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     ControlStatus::AlreadyActive     },
+        { static_cast<unsigned char>(ControlStatus::HardwareError),     ControlStatus::HardwareError     },
+        { static_cast<unsigned char>(ControlStatus::Local),             ControlStatus::Local             },
+        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       ControlStatus::TooManyObjs       },
+        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     ControlStatus::NotAuthorized     },
+        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), ControlStatus::AutomationInhibit },
+        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), ControlStatus::ProcessingLimited },
+        { static_cast<unsigned char>(ControlStatus::OutOfRange),        ControlStatus::OutOfRange        },
+        { static_cast<unsigned char>(ControlStatus::ReservedMin),       ControlStatus::ReservedMin       },
+        { static_cast<unsigned char>(ControlStatus::ReservedMax),       ControlStatus::ReservedMax       },
+        { static_cast<unsigned char>(ControlStatus::NonParticipating),  ControlStatus::NonParticipating  },
+        { static_cast<unsigned char>(ControlStatus::Undefined),         ControlStatus::Undefined         }};
 
     Cti::Timing::MillisecondTimer t;
 
@@ -1452,37 +1330,27 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
         {
             if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
             {
-                if ( isPassthroughControl )
+                std::regex re { "Control result \\(([0-9]+)\\)" };
+
+                std::smatch results;
+
+                if( std::regex_search(msg->ResultString(), results, re) )
                 {
-                    std::regex re { "Control result \\(([0-9]+)\\)" };
-
-                    std::smatch results;
-
-                    if( std::regex_search(msg->ResultString(), results, re) )
+                    try
                     {
-                        try
-                        {
-                            int error = std::stoi(results[1].str());
+                        int error = std::stoi(results[1].str());
 
-                            return mapFindOrDefault(controlStatuses, error, ControlStatus::Undefined);
-                        }
-                        catch( std::invalid_argument & )
-                        {
-                        }
-                        catch( std::out_of_range & )
-                        {
-                        }
+                        return mapFindOrDefault(controlStatuses, error, ControlStatus::Undefined);
                     }
-                }
-                else
-                {
-                    if ( ! msg->Status() )
+                    catch( std::invalid_argument & )
                     {
-                        return ControlStatus::Success;
+                    }
+                    catch( std::out_of_range & )
+                    {
                     }
                 }
 
-                return ControlStatus::Undefined;
+                return Protocols::DNP::ControlStatus::Undefined;
             }
         }
 
@@ -1491,16 +1359,11 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
     return ControlStatus::Undefined;
 }
 
-void DnpSlave::requireValidRange(int low, int high, int x)
-{
-    if (x < low)  throw std::invalid_argument(std::to_string(x) + " is lower than " + std::to_string(low));
-    if (x > high) throw std::invalid_argument(std::to_string(x) + " is higher than " + std::to_string(high));
-}
 
 DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 {
     DnpId dnpId;
-    
+
     static const std::string dnpMasterId                     = "MasterId";
     static const std::string dnpSlaveId                      = "SlaveId";
     static const std::string dnpPointType                    = "POINTTYPE";
@@ -1526,28 +1389,9 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
         dnpId.valid = false;
         return dnpId;
     }
-    
-    try
-    {
-        const auto masterid = std::stoi(masterId);
-        const auto slaveid = std::stoi(slaveId);
-        const auto offset = std::stoi(dnpOffset);
-        
-        requireValidRange(0, 65519, masterid);
-        dnpId.MasterId = masterid;
 
-        requireValidRange(0, 65519, slaveid);
-        dnpId.SlaveId = slaveid;
-
-        requireValidRange(0, 65535, offset);
-        dnpId.Offset = offset;
-    }
-    catch(std::invalid_argument& e)
-    {
-        CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
-        dnpId.valid = false;
-        return dnpId;
-    }
+    dnpId.MasterId  = std::stoi(masterId);
+    dnpId.SlaveId   = std::stoi(slaveId);
 
     using boost::algorithm::to_lower_copy;
 
@@ -1561,6 +1405,8 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     };
 
     dnpId.PointType = mapFindOrDefault(PointTypeNames, to_lower_copy(pointType), InvalidPointType);
+
+    dnpId.Offset = std::stoi(dnpOffset);
     dnpId.MasterServerName = pointDestination.getDestination();
 
     if (dnpMultiplier.empty())
@@ -1569,17 +1415,7 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     }
     else
     {
-        try
-        {
-            dnpId.Multiplier = std::stod(dnpMultiplier);
-        }
-        catch(std::invalid_argument& e)
-        {
-            CTILOG_ERROR(dout, "Error: " << e.what() << " occured on the point with id: " << pointDestination.getParentPointId() << " and translation: " << pointDestination.getTranslation());
-            dnpId.valid = false;
-            return dnpId;
-        }
-        
+        dnpId.Multiplier = std::stod(dnpMultiplier);
     }
     dnpId.valid = true;
 
@@ -1630,19 +1466,7 @@ unsigned int DnpSlave::getHeaderLength()
 }
 
 
-bool DnpSlave::hasRegistrationPoints()
-{
-    std::size_t
-        sendCount    = getSendToList().getPointList()->entries(),
-        receiveCount = getReceiveFromList().getPointList()->entries();
-
-    return ( sendCount || receiveCount );
+}
 }
 
-std::optional<std::set<long>> DnpSlave::loadOutboundPoints()
-{
-    return {};
-}
-
-}
 

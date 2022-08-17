@@ -128,7 +128,7 @@
                 <div id="js-update-status"></div>
                 <div id="js-injection-status"></div>
                 <div id="js-progress" class="progress">
-                    <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                    <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
                 </div>
                 <div id="js-device-group" class="js-status"></div>
                 <div id="js-device-count" class="js-status"></div>

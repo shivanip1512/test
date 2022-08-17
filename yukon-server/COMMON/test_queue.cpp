@@ -4,6 +4,7 @@
 #include "dbaccess.h"
 #include "boostutil.h"
 
+#include <boost/bind.hpp>
 #include <iostream>
 #include <set>
 #include <thread>

@@ -17,7 +17,7 @@ public class PaoNoteValidator extends SimpleValidator<PaoNote> {
 
     @Override
     protected void doValidation(PaoNote paoNote, Errors errors) {
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "noteText", paoNote.getNoteText(), false,
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "noteText", paoNote.getNoteText(), false,
             MAX_CHARACTERS_IN_NOTE);
     }
 

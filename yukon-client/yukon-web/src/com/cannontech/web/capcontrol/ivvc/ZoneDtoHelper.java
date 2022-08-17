@@ -1,8 +1,6 @@
 package com.cannontech.web.capcontrol.ivvc;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,7 +11,6 @@ import com.cannontech.capcontrol.model.AbstractZoneNotThreePhase;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
-import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -25,9 +22,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.common.model.Phase;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.web.capcontrol.models.ViewableFeeder;
-import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.google.common.collect.Lists;
 
 public class ZoneDtoHelper {
@@ -36,8 +30,6 @@ public class ZoneDtoHelper {
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
     @Autowired private FilterCacheFactory filterCacheFactory;
-    @Autowired private CapControlCache ccCache;
-    @Autowired private CapControlWebUtilsService ccWebUtilsService;
     
     public AbstractZone getAbstractZoneFromZoneId(int zoneId, LiteYukonUser user) {
         
@@ -81,64 +73,6 @@ public class ZoneDtoHelper {
         }
         
         return availableZoneTypes;
-    }
-    
-    public List<Zone> getAvailableParentZonesForZone(AbstractZone zoneDto) {
-        List<Zone> parentZones = zoneService.getZonesBySubBusId(zoneDto.getSubstationBusId());
-        ZoneType type = zoneDto.getZoneType();
-        final List<ZoneType> possibleParentZoneTypes = new ArrayList<ZoneType>();
-        if (type == ZoneType.GANG_OPERATED) {
-            //A Gang Operated Zone can only have a Gang Operated Parent
-            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
-        } else if (type == ZoneType.THREE_PHASE) {
-            //A 3 Phase Zone can only have a Gang Operated or 3 Phase Parent
-            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
-            possibleParentZoneTypes.add(ZoneType.THREE_PHASE);
-        } else if (type == ZoneType.SINGLE_PHASE) {
-            //Single Phase Zones can have all parent zone types
-            possibleParentZoneTypes.add(ZoneType.GANG_OPERATED);
-            possibleParentZoneTypes.add(ZoneType.THREE_PHASE);
-            possibleParentZoneTypes.add(ZoneType.SINGLE_PHASE);
-        }
-        
-        ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(zoneDto.getSubstationBusId());
-        //find the current zone
-        ZoneHierarchy foundZone = searchForNode(hierarchy, zoneDto.getZoneId(), false);
-        //remove all children from the list
-        ArrayList<Integer> childZoneIds = new ArrayList<Integer>();
-        if (foundZone != null) {
-            getAllChildZones(foundZone, childZoneIds);
-        }
-     
-        List<Zone> possibleParentZones = parentZones.stream()
-                .filter(parent -> possibleParentZoneTypes.contains(parent.getZoneType()) 
-                        && parent.getId().intValue() != zoneDto.getZoneId().intValue()
-                        && !childZoneIds.contains(parent.getId()))
-                .collect(Collectors.toList());
-
-        return possibleParentZones;
-    }
-    
-    private ZoneHierarchy searchForNode(ZoneHierarchy zone, Integer zoneId, Boolean foundNode) {
-        for (ZoneHierarchy child : zone.getChildren()) {
-            if (child.getZone().getZoneId().intValue() == zoneId.intValue()) {
-                foundNode = true;
-                return child;
-            }
-            
-            ZoneHierarchy foundZone = searchForNode(child, zoneId, foundNode);
-            if (foundZone != null) {
-                return foundZone;
-            }
-        }
-        return null;
-    }
-    
-    private void getAllChildZones(ZoneHierarchy zone, ArrayList<Integer> childZones) {
-        for (ZoneHierarchy child : zone.getChildren()) {
-            childZones.add(child.getZone().getZoneId());
-            getAllChildZones(child, childZones);
-        }
     }
     
     public List<Phase> getAvailableChildPhasesFromParentZone(AbstractZone parentZone) {
@@ -206,44 +140,12 @@ public class ZoneDtoHelper {
         row.setId(pointId);        
         row.setName(point.getPointName());
         row.setDevice(pao.getPaoName());
-        row.setFeederId(pointToZone.getFeederId());
         row.setGraphPositionOffset(pointToZone.getGraphPositionOffset());
         row.setDistance(pointToZone.getDistance());
         row.setPhase(pointToZone.getPhase());
         row.setIgnore(pointToZone.isIgnore());
         
         return row;
-    }
-    
-    public List<ViewableFeeder> getFeedersAssociatedWithZone(AbstractZone zone) {
-
-        List<ViewableFeeder> viewableFeeders = new ArrayList<ViewableFeeder>();
-        List<Feeder> feedersForZone = new ArrayList<Feeder>();
-        List<Integer> feederIds = new ArrayList<Integer>();
-        
-        zone.getRegulatorsList().forEach(regulator -> {
-            if (regulator.getFeederId() != null && !feederIds.contains(regulator.getFeederId())) {
-                feederIds.add(regulator.getFeederId());
-            }
-        });
-        zone.getBankAssignments().forEach(bankAssignment -> {
-            CapBankDevice capBank = ccCache.getCapBankDevice(bankAssignment.getId());
-            if (!feederIds.contains(capBank.getParentID())) {
-                feederIds.add(capBank.getParentID());
-            }
-        });
-        zone.getPointAssignments().forEach(pointAssignment -> {
-            if (pointAssignment.getFeederId() != null && !feederIds.contains(pointAssignment.getFeederId())) {
-                feederIds.add(pointAssignment.getFeederId());
-            }
-        });
-        
-        feederIds.forEach(feederId -> {
-            feedersForZone.add(ccCache.getFeeder(feederId));
-        });
-        viewableFeeders = ccWebUtilsService.createViewableFeeder(feedersForZone);
-
-        return viewableFeeders;
     }
     
 }

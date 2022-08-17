@@ -5,7 +5,6 @@
     </pointFiles>
     <tags>
         <tag name="LM_GROUP"/>
-        <tag name="SUPPORTS_PING"/>
     </tags>
     <pointInfos>
         <pointInfo name="Control Status" attributes="LM_GROUP_STATUS"/>

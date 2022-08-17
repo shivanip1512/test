@@ -9,15 +9,12 @@
 
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="disabled" type="java.lang.Boolean" %>
-<%@ attribute name="readonly" type="java.lang.Boolean" description="If true, the field will look disabled but still submit the value." %>
 <%@ attribute name="size" %>
 <%@ attribute name="maxlength" %>
 <%@ attribute name="autocomplete" 
         description="HTML input autocomplete attribute. Possible values: 'on|off'. Default: 'off'." %>
 <%@ attribute name="cssClass" %>
 <%@ attribute name="includeShowHideButton" type="java.lang.Boolean" %>
-<%@ attribute name="includeClearButton" type="java.lang.Boolean" description="If true, display a clear button next to the field to clear the value"%>
-<%@ attribute name="maskValue" type="java.lang.Boolean" description="If true, mask the password value so it is not visible in the DOM."%>
 <%@ attribute name="showPassword" type="java.lang.Boolean" %>
 <%@ attribute name="tabindex" %>
 <%@ attribute name="placeholder" %>
@@ -30,24 +27,6 @@
         var sensitiveField = document.getElementsByName(path)[0];
         sensitiveField.type = isSelected ? 'text' : 'password';
     }
-    
-    $(document).on('click', '.js-clear-data', function (ev) {
-    	var path = $(this).data('fieldPath'),
-    		input = $('input[name=' + $.escapeSelector(path) + ']');
-    	input.val("");
-    	input.prop('readonly', false);
-    	input.prop('disabled', false);
-    });
-    
-    $(document).ready(function() {
-	    <c:if test="${maskValue}">
-			var sensitiveField = $('input[name=' + $.escapeSelector('${path}') + ']');
-	    	if (sensitiveField.val() != '') {
-	    		var maskedValue = sensitiveField.val().replace(/./g, '*');
-	    		sensitiveField.attr("value", maskedValue);
-	    	}
-	    </c:if>
-    });
 </script>
 
 <spring:bind path="${path}">
@@ -66,17 +45,12 @@
 </c:if>
 
 <div class="dib M0">
-    <form:password path="${path}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
+    <form:password path="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
         autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}" showPassword="${showPassword}" tabindex="${tabindex}" placeholder="${placeholder}"/>
-			<c:if test="${includeShowHideButton}">
-				<cti:msg2 var="showHideDataMsg" key="yukon.web.modules.adminSetup.config.showHideData" />
-				<tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
-             	<cti:icon icon="icon-eye" title="${showHideDataMsg}"/>
+    <c:if test="${includeShowHideButton}">
+         <tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
+             <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye"></i>
          </tags:check>
-    </c:if>
-    <c:if test="${includeClearButton}">
-    	<cti:msg2 var="clearButtonText" key="yukon.web.modules.adminSetup.config.clearData"/>
-    	<cti:button renderMode="buttonImage" icon="icon-cross" classes="fr M0 js-clear-data" title="${clearButtonText}" data-field-path="${path}"/>
     </c:if>
 </div>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/><br/></c:if>

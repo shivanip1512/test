@@ -216,10 +216,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     
     @Transactional
     @Override
-    public void saveExecutionRequest(int executionId, Set<Integer> deviceIds) {
-        if(deviceIds.isEmpty()) {
-            return;
-        }
+    public void saveExecutionRequest(int executionId, List<Integer> deviceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         List<List<Object>> values = deviceIds.stream().map(deviceId -> {
             List<Object> row =

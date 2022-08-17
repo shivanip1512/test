@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -49,7 +48,6 @@ public class SiteSearchServiceImpl implements SiteSearchService {
     
     private final Logger log = YukonLogManager.getLogger(SiteSearchServiceImpl.class);
     private final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
-    private final static String macAddressPatternRegex = "^[a-zA-Z0-9:]*$";
 
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
@@ -58,15 +56,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Override
     public String sanitizeQuery(String query) {
-        if (query == null) {
-            return StringUtils.EMPTY;
-            // If matching regex(multiple set of 2 alphanumeric and :), the update query to support MAC address search.
-            //Valid Strings example: AA:, 11:, 1A:, 1A:2B . Invalid String example: AAA:,111:, 1:, A:
-        } else if (query.matches(macAddressPatternRegex)) {
-            return query.replace(":", "\\:").trim();
-        } else {
-            return query.replaceAll("[^\\p{Alnum}]+", " ").trim();
-        }
+        return query == null ? "" : query.replaceAll("[^\\p{Alnum}]+", " ").trim();
     }
 
     /**
@@ -106,10 +96,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
         @Override
         public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
-            // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type long.
-            // We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
-            int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
-            int stop = Math.min(numToQuery, totalHitsInInt);
+            int stop = Math.min(numToQuery, topDocs.totalHits);
             for (; numFoundCurrentPage < numWanted && index < stop; ++index) {
                 int docId = topDocs.scoreDocs[index].doc;
                 Document document = indexSearcher.doc(docId);
@@ -128,11 +115,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
                 }
             }
             
-            totalHits = totalHitsInInt - numDisallowed;
+            totalHits = topDocs.totalHits - numDisallowed;
             
             // We know we've exhausted the search if we got fewer hits than we asked for.  We're assuming here
             // that we will never get 2,147,483,647 or more results.
-            searchExhausted = totalHitsInInt < numToQuery;
+            searchExhausted = topDocs.totalHits < numToQuery;
             iteration++;
             // The first time we tried startIndex + numWanted + 300
             // second we will try (startIndex + numWanted) * 3 + 300
@@ -261,14 +248,11 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             @Override
             public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
                 boolean foundOne = false;
-                // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value field of type
-                // long. We're assuming here that we will never get 2,147,483,647 or more hit counts so converted it to int.
-                int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
                 if (log.isTraceEnabled()) {
-                    log.trace("found " + totalHitsInInt);
+                    log.trace("found " + topDocs.totalHits);
                 }
 
-                int stop = Math.min(maxResults, totalHitsInInt);
+                int stop = Math.min(maxResults, topDocs.totalHits);
                 for (int index = 0; index < stop && intoResults.size() < maxResults; ++index) {
                     
                     int docId = topDocs.scoreDocs[index].doc;

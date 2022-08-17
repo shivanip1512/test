@@ -5,21 +5,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -31,12 +25,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -45,7 +37,6 @@ import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -54,12 +45,11 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -74,7 +64,6 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
@@ -82,7 +71,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.dataExporter.model.ArchivedValuesExporter;
 import com.cannontech.web.tools.dataExporter.validator.DataRangeValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
@@ -96,15 +84,12 @@ public class DataExporterHomeController {
     @Autowired private DeviceCollectionService deviceCollectionService;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private JobManager jobManager;
+    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private AttributeService attributeService;
-    @Autowired private AttributeType attributeTypeEditor;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
-    private Logger log = YukonLogManager.getLogger(DataExporterHomeController.class);
     
     private static DataRangeType[] FIXED_RUN_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
     private static DataRangeType[] FIXED_SCHEDULE_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
@@ -124,7 +109,8 @@ public class DataExporterHomeController {
         archivedValuesExporter.setArchivedValuesExportFormatType(format.getFormatType());
         model.addAttribute("archivedValuesExporter", archivedValuesExporter);
 
-        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
+        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
+                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         
         model.addAttribute("allFormats", allFormats);
@@ -132,8 +118,6 @@ public class DataExporterHomeController {
         model.addAttribute("dynamicAttribute", ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE);
         model.addAttribute("preview", preview);
         model.addAttribute("searchExportType", FileExportType.ARCHIVED_DATA_EXPORT);
-        //TODO: change to exclude midnight interval, since "Include Interval Times Only" already handles it?
-        model.addAttribute("intervals", TimeIntervals.getDataReportAggregateIntervals()); 
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
@@ -171,7 +155,7 @@ public class DataExporterHomeController {
         
         return "data-exporter/home.jsp";
     }
-
+    
     @RequestMapping("/data-exporter/scheduledJobsTable")
     public String scheduledJobsTable(ModelMap model) {
         List<ScheduledFileExportJobData> jobs
@@ -238,7 +222,7 @@ public class DataExporterHomeController {
                                  YukonUserContext userContext)
     throws IOException, ServletRequestBindingException, DeviceCollectionCreationException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        archivedValuesExporter.setDeviceCollection(deviceCollection);
+        archivedValuesExporter.setDeviceCollection(deviceCollection); // TODO It would be awesome if we could just bind this, but we don't have a way just yet.
 
         bindingResult.pushNestedPath("runDataRange");
         dataRangeValidator.validate(archivedValuesExporter.getRunDataRange(), bindingResult);
@@ -260,29 +244,14 @@ public class DataExporterHomeController {
         
         response.setDateHeader("Expires", 0); // prevents caching at the proxy server
         response.setContentType("text/x-comma-separated-values");
-        response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+        response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName.toString() + "\"");
         
         OutputStream outputStream = response.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        
         exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
-            archivedValuesExporter.getAttributesArray(), writer, archivedValuesExporter.isOnInterval(), 
-            archivedValuesExporter.getInterval());
+            archivedValuesExporter.getAttributesArray(), writer);
         
         return null;
-    }
-    
-    @GetMapping("/data-export/getAvaliableFormatTemplates")
-    public @ResponseBody Map<String, Object> getAvaliableFormatTemplates(YukonUserContext userContext) {
-        Map<String, Object> json = Maps.newHashMap();
-        try {
-            List<String> templateFileNames = getAvailableFormatTemplates();
-            json.put("templateFileNames", templateFileNames);
-        } catch (Exception exception) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            json.put("errorMessage", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.parseAvailableTemplates.error"));
-        }
-        return json;
     }
     
     private ExportFormat getExportFormat(int selectedFormatId, List<ExportFormat> allFormats) {
@@ -298,7 +267,6 @@ public class DataExporterHomeController {
         }
     }
     
-
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         
@@ -307,9 +275,8 @@ public class DataExporterHomeController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
-        binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
+        binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
-        binder.registerCustomEditor(TimeIntervals.class, new EnumPropertyEditor<>(TimeIntervals.class));
         
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
         PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);
@@ -326,21 +293,5 @@ public class DataExporterHomeController {
         binder.registerCustomEditor(LocalTime.class, "runDataRange.time", localTimeEditor);
 
     }
-
-    /**
-     * Returns available templates in the Data Export Templates Directory.
-     */
-    private List<String> getAvailableFormatTemplates() {
-        List<String> templateFileNames = new ArrayList<String>();
-        try {
-            templateFileNames = Files.list(Paths.get(CtiUtilities.getDataExportTemplatesDirPath()))
-                                     .filter(path -> path.toString().endsWith(".yaml") || path.toString().endsWith(".yml"))
-                                     .map(Path::getFileName)
-                                     .map(Path::toString)
-                                     .collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error("Error occurred while loading template file names ", e);
-        }
-        return templateFileNames;
-    }
+    
 }

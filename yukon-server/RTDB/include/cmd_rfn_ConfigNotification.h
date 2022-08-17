@@ -10,11 +10,12 @@
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
-#include "cmd_rfn_Metrology.h"
 
 #include <boost/variant.hpp>
 
-namespace Cti::Devices::Commands {
+namespace Cti        {
+namespace Devices    {
+namespace Commands   {
 
 /**
  * Channel Configuration Command
@@ -72,7 +73,6 @@ protected:
     std::string decodeDataStreaming       (Bytes payload);
     std::string decodeDemandInterval      (Bytes payload);
     std::string decodeVoltageProfileStatus(Bytes payload);
-    std::string decodeMetrology           (Bytes payload);
 
 public:
 
@@ -112,10 +112,10 @@ public:
         RDCC::DisconnectMode disconnectMode;
         RDCC::Reconnect      reconnect;
 
-        boost::optional<unsigned> demandInterval;
-        boost::optional<double>   demandThreshold;
-        boost::optional<unsigned> connectDelay;
-        boost::optional<unsigned> maxDisconnects;
+        unsigned demandInterval;
+        double   demandThreshold;
+        unsigned connectDelay;
+        unsigned maxDisconnects;
 
         boost::optional<unsigned> disconnectTime;
         boost::optional<unsigned> connectTime;
@@ -172,8 +172,8 @@ public:
     };
 
     std::optional<VoltageProfileStatus> voltageProfileStatus;
-
-    std::optional<RfnMetrologyCommand::MetrologyState> metrologyState;
 };
 
+}
+}
 }

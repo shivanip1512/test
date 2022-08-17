@@ -18,19 +18,11 @@
                         <option value="js-rfn-lcr">Rfn LCR</option>
                         <option value="js-meter">Meter</option>
                         <option value="js-relay">Relay</option>
-                        <option value="js-rfn-1200">RFN-1200</option>
                     </select>
                 </tags:nameValue>
                 <input type="hidden" id="manufacturer" name="manufacturer"/>
                 <input type="hidden" id="model" name="model"/>
                 <!-- RF DA Manufacturer and Model -->
-                <tags:nameValue name="Model" nameClass="js-rfn-1200 dn" valueClass="js-rfn-1200 dn">
-                    <select id="js-rfn-mm-1200">
-                        <c:forEach var="port" items="${rfn1200}">
-                             <option data-model="${port.model}" data-manufacturer="${port.manufacturer}" value="${port}"><cti:msg2 key="${port.type}" /> (${port.manufacturer} ${port.model})</option>
-                        </c:forEach>
-                    </select>
-                </tags:nameValue>
                 <tags:nameValue name="Manufacturer" nameClass="js-rf-da" valueClass="js-rf-da">
                     <select id="js-rf-da-manufacturer">
                         <option value="CPS">CPS</option>

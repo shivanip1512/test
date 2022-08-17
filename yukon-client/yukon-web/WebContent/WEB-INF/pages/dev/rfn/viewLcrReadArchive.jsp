@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest.lcrReadArchiveRequest">
+<cti:standardPage module="dev" page="rfnTest">
 
 <tags:sectionContainer title="RFN LCR Read Archive Request Test">
     <form action="sendLcrReadArchiveRequest" method="post">

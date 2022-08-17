@@ -4,11 +4,9 @@ import java.util.List;
 
 import com.cannontech.common.util.LazyList;
 import com.cannontech.common.util.TimeZoneFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ExportFormat {
     
-    @JsonIgnore
     private int formatId;
     private ArchivedValuesExportFormatType formatType;
     private String formatName;

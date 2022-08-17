@@ -17,7 +17,7 @@ import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.YukonColorPalette;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -53,10 +53,10 @@ public class Display2WayDataAdapter extends AbstractTableModel implements com.ca
 
 	private boolean exceededMaxMsg = true;
 
-	public static final int DEFAULT_FOREGROUNDCOLOR = YukonColorPalette.WHITE.getColorId(); // white as of 3-23-2000
-	public static final int DEFAULT_BACKGROUNDCOLOR = YukonColorPalette.BLACK.getColorId();  // black as of 3-23-2000
-	public static final int DEFAULT_DISABLEDCOLOR = YukonColorPalette.GRAY.getColorId();  // gray as of 8-31-2000
-	public static final int DEFAULT_ALARMCOLOR = YukonColorPalette.RED.getColorId();  // red as of 1-12-2001
+	public static final int DEFAULT_FOREGROUNDCOLOR = Colors.WHITE_ID; // white as of 3-23-2000
+	public static final int DEFAULT_BACKGROUNDCOLOR = Colors.BLACK_ID;  // black as of 3-23-2000
+	public static final int DEFAULT_DISABLEDCOLOR = Colors.GRAY_ID;  // gray as of 8-31-2000
+	public static final int DEFAULT_ALARMCOLOR = Colors.RED_ID;  // red as of 1-12-2001
 	
 	private static final PointValues DUMMY_POINT_VALUES =
 						new PointValues(
@@ -121,48 +121,42 @@ public Display2WayDataAdapter()
 // ONLY ADDS ROWS INTO EXISTING ROW SPOTS
 public void addBlankRow( int location ) 
 {
-	if( location < 0 ) {
-        return;
-    }
+	if( location < 0 )
+		return;
 
 	checkRowExceedance();
 		
 	Vector newRow = new Vector( getColumnCount() );
 	
-	for( int i = 0; i < getColumnCount(); i++ ) {
-        newRow.addElement("");
-    }
+	for( int i = 0; i < getColumnCount(); i++ )
+		newRow.addElement("");
 
-	if( location >= getRowCount() ) {
-        getRows().addElement( newRow );
-    } else {
-        getRows().insertElementAt( newRow, location );
-    }
+	if( location >= getRowCount() )
+		getRows().addElement( newRow );
+	else
+		getRows().insertElementAt( newRow, location );
 
 	createDummyPointValue( location );
 }
 
 protected Vector getColumnNames()
 {
-	if( columnNames == null ) {
-        columnNames = new Vector(16);
-    }	
+	if( columnNames == null )
+		columnNames = new Vector(16);	
 	return columnNames;
 }
 
 protected Vector getColumnTypeName()
 {
-	if( columnTypeName == null ) {
-        columnTypeName = new Vector(16);
-    }	
+	if( columnTypeName == null )
+		columnTypeName = new Vector(16);	
 	return columnTypeName;
 }
 
 protected Vector<Object> getRows()
 {
-	if( rows == null ) {
-        rows = new Vector<>(64);
-    }	
+	if( rows == null )
+		rows = new Vector<Object>(64);	
 	return rows;
 }
 
@@ -177,9 +171,9 @@ protected boolean addBlankRowIfNeeded()
 	{
 		addBlankRow( 0 );
 		return true;
-	} else {
-        return false;
-    }
+	}
+	else
+		return false;
 }
 /**
  * Insert the method's description here.
@@ -203,9 +197,8 @@ private int addColumnDefinedRow( Signal signal )
 			
 			rowsAdded++;
 				
-			if( addBlankRowIfNeeded() ) {
-                rowsAdded++;
-            }
+			if( addBlankRowIfNeeded() )
+				rowsAdded++;
 
 		}
 
@@ -240,9 +233,8 @@ private int addColumnDefinedRow( Signal signal, int pageNumber )
 			
 			rowsAdded++;
 				
-			if( addBlankRowIfNeeded() ) {
-                rowsAdded++;
-            }
+			if( addBlankRowIfNeeded() )
+				rowsAdded++;
 
 		}
 
@@ -269,7 +261,7 @@ private boolean buildRowQuery()
 		 "order by y.ordering");
 		 		
 	Object[] objs = new Object[1];
-	objs[0] = Integer.valueOf( getCurrentDisplay().getDisplayNumber() );
+	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
 
 
 	Object[][] pointData = DataBaseInteraction.queryResults( query, objs );
@@ -285,9 +277,8 @@ private boolean buildRowQuery()
 
 			if( ptID == TDCDefines.ROW_BREAK_ID )
 			{
-				if( blankPoints == null ) {
-                    blankPoints = new Vector(32);
-                }
+				if( blankPoints == null )		
+					blankPoints = new Vector(32);
 
 				blankPoints.addElement( new BlankLine(i) );
 			}
@@ -302,9 +293,8 @@ private boolean buildRowQuery()
 				
 				//assign the decimal places for each point id here if one is present
 				String decPlaces = pointData[i][5].toString();
-				if( decPlaces.length() > 0 ) {
-                    pv.setDecimalPlaces( Integer.valueOf(decPlaces) );
-                }
+				if( decPlaces.length() > 0 )
+					pv.setDecimalPlaces( new Integer(decPlaces) );
 				
 				pointValues.addElement( pv );
 			}
@@ -333,7 +323,7 @@ private void checkForLimboPoints(Vector existingPoints)
 {
 	String query = "select pointid from display2waydata where displaynum = ? order by pointid";
 	Object[] objs = new Object[1];
-	objs[0] = Integer.valueOf( getCurrentDisplay().getDisplayNumber() );
+	objs[0] = new Integer( getCurrentDisplay().getDisplayNumber() );
 	Object[][] displayPoints = DataBaseInteraction.queryResults( query, objs );
 
 	for( int i = 0; i < displayPoints.length; i++ )
@@ -354,9 +344,8 @@ private void checkForLimboPoints(Vector existingPoints)
 
 		if( pointFound == false )
 		{
-			if( !getPointLimbo().contains( displayPoints[i][0].toString() ) ) {
-                getPointLimbo().addElement( displayPoints[i][0].toString() );
-            }
+			if( !getPointLimbo().contains( displayPoints[i][0].toString() ) )
+				getPointLimbo().addElement( displayPoints[i][0].toString() );
 		}
 		
 	}
@@ -410,9 +399,8 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
 			getRows().removeAllElements();
 		}	
 
-		if( forceRepaint ) {
-            fireTableDataChanged();
-        }
+		if( forceRepaint )
+			fireTableDataChanged();
 	}
 }
 /**
@@ -423,11 +411,10 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
  */
 protected void createDummyPointValue( int location ) 
 {
-	if( location >= getRowCount() ) {
-        pointValues.addElement( DUMMY_POINT_VALUES );
-    } else {
-        pointValues.insertElementAt( DUMMY_POINT_VALUES, location );
-    }
+	if( location >= getRowCount() ) //Add the new value
+		pointValues.addElement( DUMMY_POINT_VALUES );
+	else
+		pointValues.insertElementAt( DUMMY_POINT_VALUES, location );
 }
 
 /**
@@ -439,9 +426,7 @@ protected void createDummyPointValue( int location )
 private void createPsuedoPointValue( int location, Signal signal ) 
 {
 	if( location >= getRowCount() )
-     {
-        return;  // cant add it off the chart
-    }
+		return;  // cant add it off the chart
 
 	PointValues psuedoValue =
 		new PointValues(
@@ -449,11 +434,10 @@ private void createPsuedoPointValue( int location, Signal signal )
 			PointTypes.INVALID_POINT,
 			"", "", "" );	
 
-	if( location >= getRowCount() ) {
-        pointValues.addElement( psuedoValue );
-    } else {
-        pointValues.insertElementAt( psuedoValue, location );
-    }
+	if( location >= getRowCount() ) //Add the new value
+		pointValues.addElement( psuedoValue );
+	else
+		pointValues.insertElementAt( psuedoValue, location );
 }
 
 
@@ -505,9 +489,9 @@ private void createRowForEventViewer( Signal signal )
 	Vector newRow = setRowForEventViewer( signal );
 
 	// add the new row to the top of the table	
-	if( getRowCount() == 0 ) {
-        getRows().addElement( newRow );
-    } else
+	if( getRowCount() == 0 )
+		getRows().addElement( newRow );			
+	else
 	{
 		checkRowExceedance();
 		getRows().insertElementAt( newRow, 0 );
@@ -540,10 +524,9 @@ private void decrementAlarmedRowsPosition(int decValue, int rowNumber)
 		{
 			for( int i = 0; i < getAlarmingRowVector().size(); i++ )
 			{
-				AlarmingRow alRow = (getAlarmingRowVector().elementAt(i));
-				if( alRow.getRowNumber() > rowNumber ) {
-                    alRow.subtractOffset( decValue );
-                }
+				AlarmingRow alRow = ((AlarmingRow)getAlarmingRowVector().elementAt(i));
+				if( alRow.getRowNumber() > rowNumber )
+					alRow.subtractOffset( decValue );
 			}		
 		}
 	}	
@@ -563,8 +546,8 @@ private void deleteRowFromDataBase( long pointid )
 
 
 	Object[] objs = new Object[2];
-	objs[0] = Integer.valueOf(getCurrentDisplay().getDisplayNumber());
-	objs[1] = Long.valueOf(pointid);
+	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
+	objs[1] = new Long(pointid);
 	DataBaseInteraction.updateDataBase( query, objs );	
 }
 
@@ -574,7 +557,6 @@ private void deleteRowFromDataBase( long pointid )
  * Version: <version>
  * @param value boolean
  */
-@Override
 public void forcePaintTableRowUpdated( int minLocation, int maxLocation )
 {
 	fireTableRowsUpdated( minLocation, maxLocation );
@@ -588,11 +570,10 @@ public void forcePaintTableRowUpdated( int minLocation, int maxLocation )
  */
 public int getAlarmColor(int colorIndex) 
 {
-	if( colorIndex < 0 || colorIndex >= alarmColors.length ) {
-        return DEFAULT_ALARMCOLOR;  // use this for the default alarm color
-    } else {
-        return alarmColors[colorIndex];
-    }
+	if( colorIndex < 0 || colorIndex >= alarmColors.length )
+		return DEFAULT_ALARMCOLOR;  // use this for the default alarm color
+	else
+		return alarmColors[colorIndex];
 }
 /**
  * Insert the method's description here.
@@ -620,9 +601,9 @@ public Set<Integer> getAllPointIDs()
 	            .map(pv -> pv.getPointID())
 	            .filter(x -> x != TDCDefines.ROW_BREAK_ID)  // only add real point IDs
 	            .collect(Collectors.toSet());
-	} else {
-        return null;
-    }
+	}
+	else
+		return null;
 }
 // Data methods
 
@@ -632,9 +613,8 @@ public int getBlankRowCount()
 	
 	for( int i = 0; i < getRowCount(); i++ )
 	{
-		if( ((Vector)getRows().elementAt( i )).elementAt( 0 ).equals("") ) {
-            count++;
-        }
+		if( ((Vector)getRows().elementAt( i )).elementAt( 0 ).equals("") )
+			count++;
 	}
 	
 	return count;
@@ -649,9 +629,8 @@ public Object[] getBlankRows()
 	
 	for( int i = 0; i < getRowCount(); i++ )
 	{
-		if( ((Vector)getRows().elementAt( i )).elementAt( 0 ).equals("") ) {
-            blank.addElement( Integer.valueOf( i ) );
-        }
+		if( ((Vector)getRows().elementAt( i )).elementAt( 0 ).equals("") )
+			blank.addElement( new Integer( i ) );
 	}
 
 	Object[] realBlanks = new Object[ blank.size() ];
@@ -667,21 +646,25 @@ public Object[] getBlankRows()
  * @param row int
  * @param col int
  */
-@Override
-public java.awt.Color getCellBackgroundColor(int row, int col) {
+public java.awt.Color getCellBackgroundColor(int row, int col) 
+{
 
-    java.awt.Color color = YukonColorPalette.getColor(DEFAULT_BACKGROUNDCOLOR).getAwtColor();
+	java.awt.Color color = Colors.getColor( DEFAULT_BACKGROUNDCOLOR );
 
-    if (row < 0 || row >= getRowCount()) {
-        return color;
-    }
-    try {
-        color = YukonColorPalette.getColor(pointValues.elementAt(row).getCurrentBackgroundColor()).getAwtColor();
-    } catch (ArrayIndexOutOfBoundsException e) {
-        // do nothing here
-    }
-
-    return color;
+	if( row < 0 || row >= getRowCount() )
+		return color;
+		
+	try
+	{
+		color = Colors.getColor( pointValues.elementAt( row ).getCurrentBackgroundColor() );
+	}
+	catch( ArrayIndexOutOfBoundsException e )
+	{
+		//do nothing here
+	}
+	
+	
+	return color;
 }
 	/**
  * Insert the method's description here.
@@ -695,9 +678,9 @@ public String getCellData( int rowPosition, int colPosition )
 	{
 		CTILogger.info(this.getClass().toString() + ".getCellData( int, int ) received a bad position");
 		return "";
-	} else {
-        return ((Vector)getRows().elementAt( rowPosition )).elementAt( colPosition ).toString();
-    }
+	}
+	else
+ 		return ((Vector)getRows().elementAt( rowPosition )).elementAt( colPosition ).toString();
 }
 /**
  * This method was created in VisualAge.
@@ -705,22 +688,24 @@ public String getCellData( int rowPosition, int colPosition )
  * @param row int
  * @param col int
  */
-    @Override
-    public java.awt.Color getCellForegroundColor(int rowNumber, int col) {
-        if (pointValues == null || rowNumber < 0 || rowNumber >= getRowCount()) {
-            return YukonColorPalette.getColor(DEFAULT_FOREGROUNDCOLOR).getAwtColor();
-        }
-        int colorINT = 0;
+public java.awt.Color getCellForegroundColor(int rowNumber, int col) 
+{
+	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
+		return Colors.getColor( DEFAULT_FOREGROUNDCOLOR );
 
-        try {
-            colorINT = pointValues.elementAt(rowNumber).getCurrentForegroundColor();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            // no defined color, use default
-            colorINT = DEFAULT_FOREGROUNDCOLOR;
-        }
-
-        return YukonColorPalette.getColor(colorINT).getAwtColor();
-    }
+	int colorINT = 0;
+	
+	try
+	{		
+		colorINT = pointValues.elementAt( rowNumber ).getCurrentForegroundColor();
+	}
+	catch( ArrayIndexOutOfBoundsException e )  // no defined color, use default
+	{
+		colorINT = DEFAULT_FOREGROUNDCOLOR;
+	}
+		
+	return Colors.getColor( colorINT );
+}
 /**
  * Insert the method's description here.
  * Creation date: (2/3/00 3:15:32 PM)
@@ -751,12 +736,12 @@ private Object getCellValueObject( PointValues point, int loc )
 		{
 			if( point.getValue() % 1 == 0 )  // make sure we have a whole number
 			{
-				int value = Integer.valueOf( doubleToLong.format(point.getValue()) ).intValue();
+				int value = new Integer( doubleToLong.format(point.getValue()) ).intValue();
 				buffer = pt.getText( value );
 				pt.setCurrentRowColor( value );
-			} else {
-                return "INVALID FLOAT FOR A STATUS : " + point.getValue();
-            }
+			}
+			else
+				return "INVALID FLOAT FOR A STATUS : " + point.getValue();
 			
 			return buffer;
 		}
@@ -791,18 +776,15 @@ private Object getCellValueObject( PointValues point, int loc )
 	}
 	
 }
-@Override
 public Class getColumnClass(int column)
 {
 	return String.class;
 
 }
-@Override
 public int getColumnCount() {
 	return getColumnNames().size();
 }
 
-@Override
 public String getColumnName(int column) 
 {
 	if( getColumnNames().elementAt(column) != null ) 
@@ -822,9 +804,8 @@ public String getColumnName(int column)
  */
 public String getColumnTypeName( int index ) 
 {
-	if( index < 0 || index >= getColumnTypeName().size() ) {
-        return null;
-    }
+	if( index < 0 || index >= getColumnTypeName().size() )
+		return null;
 		
 	return getColumnTypeName().elementAt( index ).toString();
 }
@@ -842,9 +823,9 @@ public Object getPointDynamicValue(int location)
 		Vector rowData = (Vector)getRows().elementAt( location );
 			
 		return rowData.elementAt( getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTVALUE) );
-	} else {
-        return null;
-    }
+	}
+	else
+		return null;
 
 }
 /**
@@ -858,10 +839,10 @@ public long getPointID( int rowNumber )
 	if( pointValues != null && pointValues.size() > 0 && rowNumber < pointValues.size() && 
 		 rowNumber >= 0 && rowNumber < getRowCount() )
 	{
-		return Long.valueOf( pointValues.elementAt( rowNumber ).getPointID()).longValue();
-	} else {
-        return -1;
-    }
+		return new Long( pointValues.elementAt( rowNumber ).getPointID()).longValue();
+	}
+	else
+		return -1;
 }
 /**
  * Insert the method's description here.
@@ -870,9 +851,8 @@ public long getPointID( int rowNumber )
  */
 private java.util.Vector getPointLimbo() 
 {
-	if( pointLimbo == null ) {
-        pointLimbo = new Vector();
-    }
+	if( pointLimbo == null )
+		pointLimbo = new Vector();
 		
 	return pointLimbo;
 }
@@ -886,9 +866,9 @@ public Object[] getPointsInLimbo()
 	if( pointLimbo != null )
 	{
 		return pointLimbo.toArray();
-	} else {
-        return null;
-    }
+	}
+	else
+		return null;
 }
 /**
  * Insert the method's description here.
@@ -898,11 +878,10 @@ public Object[] getPointsInLimbo()
  */
 public String getPointType( int loc ) 
 {
-	if( pointValues != null && pointValues.size() > 0 && loc >= 0 && loc < getRowCount() ) {
-        return PointTypes.getType( pointValues.elementAt( loc ).getPointType());
-    } else {
-        return "";
-    }
+	if( pointValues != null && pointValues.size() > 0 && loc >= 0 && loc < getRowCount() )
+		return PointTypes.getType( pointValues.elementAt( loc ).getPointType());
+	else
+		return "";
 }
 /**
  * Insert the method's description here.
@@ -912,11 +891,10 @@ public String getPointType( int loc )
  */
 public PointValues getPointValue( int loc ) 
 {
-	if( pointValues != null && pointValues.size() > 0 && loc >= 0 && loc < getRowCount() ) {
-        return pointValues.elementAt( loc );
-    } else {
-        return null;
-    }
+	if( pointValues != null && pointValues.size() > 0 && loc >= 0 && loc < getRowCount() )
+		return pointValues.elementAt( loc );
+	else
+		return null;
 }
 /**
  * Insert the method's description here.
@@ -928,9 +906,8 @@ public int getRowBackgroundColor( int rowNumber )
 {
 	int colorINT = -1;
 
-	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() ) {
-        return DEFAULT_BACKGROUNDCOLOR;
-    }
+	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
+		return DEFAULT_BACKGROUNDCOLOR;
 		
 	try
 	{
@@ -945,7 +922,6 @@ public int getRowBackgroundColor( int rowNumber )
 	return colorINT;
 }
 
-@Override
 public int getRowCount() {
 	return getRows().size();
 }
@@ -960,9 +936,8 @@ public int getRowForegroundColor( int rowNumber )
 {
 	int colorINT = -1;
 
-	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() ) {
-        return DEFAULT_FOREGROUNDCOLOR;
-    }
+	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
+		return DEFAULT_FOREGROUNDCOLOR;
 
 	try
 	{		
@@ -1005,9 +980,8 @@ private boolean signalInTable( Signal signal_ )
 	{
 		for ( int i = 0; i < pointValues.size(); i++ )
 		{
-			if( pointValues.elementAt( i ).containsSignal(signal_) ) {
-                return true;
-            }
+			if( pointValues.elementAt( i ).containsSignal(signal_) )
+				return true;
 		}
 	}
 	
@@ -1038,7 +1012,6 @@ public int getRowNumber( final Signal signal_ )
 }
 
 // DO NOT CALL THIS METHOD DIRECTLY
-@Override
 public Object getValueAt(int aRow, int aColumn)
 {
 	try
@@ -1067,16 +1040,15 @@ private void handleAlarm(Signal signal)
 		//find out what type of alarm signal this is  (0100)
 		if( TagUtils.isAlarmUnacked(signal.getTags()) )// we need to flash
 		{
-			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) ) {
-                insertAlarmDisplayAlarmedRow( signal );
-            } else if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) ) {
-                addColumnDefinedRow( signal );
-            } else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
+			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
+				insertAlarmDisplayAlarmedRow( signal );
+			else if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )
+				addColumnDefinedRow( signal );
+			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 			{
 				int rNum = getRowNumber(signal.getPointID());
-				if( rNum >= 0 ) {
-                    getPointValue(rNum).updateSignal( signal );
-                }
+				if( rNum >= 0 )
+					getPointValue(rNum).updateSignal( signal );
 				
 				setRowAlarmed( signal );
 			}
@@ -1085,11 +1057,10 @@ private void handleAlarm(Signal signal)
 		else if( TagUtils.isAlarmActive(signal.getTags()) )		
 		{	// we need to only show the row (1000),
 			// check if we need to stop the flashing of the alarm
-			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) ) {
-                insertAlarmDisplayAlarmedRow( signal );
-            } else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) ) {
-                setRowUnalarmed( signal, null );
-            }
+			if( Display.isAlarmDisplay(getCurrentDisplay().getDisplayNumber()) )
+				insertAlarmDisplayAlarmedRow( signal );
+			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
+				setRowUnalarmed( signal, null );
 		}
 			
 	}
@@ -1102,16 +1073,13 @@ private void handleAlarm(Signal signal)
 				int rNum = setRowUnalarmed( signal, null );
 				
 				//every row in an alarm display must have at least one signal if we got this far
-				if( getPointValue(rNum).getAllSignals().length <= 0 ) {
-                    removeRow(rNum);
-                }
+				if( getPointValue(rNum).getAllSignals().length <= 0 )
+					removeRow(rNum);
 			}
 
 		}
 		else if( getCurrentDisplay().getDisplayNumber() >= Display.PRECANNED_USER_DISPLAY_NUMBER )
-         {
-            setRowUnalarmed( signal, null ); // if we have a user display, just make sure the row is not flashing
-        }
+			setRowUnalarmed( signal, null ); // if we have a user display, just make sure the row is not flashing
 
 	}
 	
@@ -1178,7 +1146,7 @@ private void incrementAlarmedRowsPosition(int inc)
 			for( int i = 0; i < getAlarmingRowVector().size(); i++ )
 			{
 				//if( !isRowSelectedBlank( ((AlarmingRow)alarmedRows.elementAt(i)).getRowNumber() + inc ) )
-					getAlarmingRowVector().elementAt(i).addOffset( inc );
+					((AlarmingRow)getAlarmingRowVector().elementAt(i)).addOffset( inc );
 			}
 		}
 	}			
@@ -1195,7 +1163,7 @@ private void initAlarmColors()
 				   " order by rawstate";
 
 	Object[] objs = new Object[1];
-	objs[0] = Integer.valueOf( com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM );
+	objs[0] = new Integer( com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ALARM );
 	Object[][] alarmStates = DataBaseInteraction.queryResults( query, objs );
 
 	alarmColors = new int[ alarmStates.length + 1 ];
@@ -1211,9 +1179,8 @@ private void initAlarmColors()
  */
 private void initColumns() 
 {	
-	if ( getCurrentDisplay().getDisplayNumber() <= Display.UNKNOWN_DISPLAY_NUMBER ) {
-        return;
-    }
+	if ( getCurrentDisplay().getDisplayNumber() <= Display.UNKNOWN_DISPLAY_NUMBER )
+	 	return;
 
 	synchronized( getAlarmingRowVector() )
 	{
@@ -1226,13 +1193,11 @@ private void initColumns()
 	getColumnTypeName().removeAllElements();
 
 	
-	if( pointValues != null ) {
-        pointValues.removeAllElements();
-    }
+	if( pointValues != null )
+		pointValues.removeAllElements();
 
-	if( blankPoints != null ) {
-        blankPoints.removeAllElements();
-    }
+	if( blankPoints != null )
+		blankPoints.removeAllElements();
 		
 	String query = new String
 		("select displaycolumns.title, columntype.name, displaycolumns.width " +
@@ -1241,7 +1206,7 @@ private void initColumns()
 		 " and columntype.typenum = displaycolumns.typenum "+
 		 " order by displaycolumns.ordering");
 	Object[] objs = new Object[1];
-	objs[0] = Integer.valueOf(getCurrentDisplay().getDisplayNumber());
+	objs[0] = new Integer(getCurrentDisplay().getDisplayNumber());
 	Object[][] values = DataBaseInteraction.queryResults( query, objs );
 
 	
@@ -1252,7 +1217,7 @@ private void initColumns()
 	{
 		getColumnNames().addElement( values[column][0] );
 		getColumnTypeName().addElement( values[column][1] );
-		//columnWidth[ column ] = Integer.valueOf( values[column][2].toString() );
+		//columnWidth[ column ] = new Integer( values[column][2].toString() );
 	}
 
 
@@ -1264,13 +1229,11 @@ private void initColumns()
  */
 private void initDataStructures() 
 {
-	if ( pointValues == null ) {
-        pointValues = new Vector<>( 60 );
-    }
+	if ( pointValues == null )
+		pointValues = new Vector<>( 60 );
 
-	if ( blankPoints == null ) {
-        blankPoints = new Vector( 15 );
-    }
+	if ( blankPoints == null )
+		blankPoints = new Vector( 15 );
 }
 
 private boolean isDateInCurrentDay( Date date_ )
@@ -1302,16 +1265,14 @@ private boolean isDateInCurrentDay( Date date_ )
  */
 protected void insertAlarmDisplayAlarmedRow( Signal signal )
 {
-	if( signal.getPointID() < 0 || signal.getCategoryID() < Signal.EVENT_SIGNAL ) {
-        return;
-    }
+	if( signal.getPointID() < 0 || signal.getCategoryID() < Signal.EVENT_SIGNAL )
+		return;
 
 	long alarmPage = 0;
-	if( signal.getCategoryID() > Signal.EVENT_SIGNAL && signal.getCategoryID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL ) {
-        alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryID() - Signal.EVENT_SIGNAL);
-    } else if( signal.getCategoryID() == Signal.EVENT_SIGNAL ) {
-        alarmPage = getCurrentDisplay().getDisplayNumber();
-    }
+	if( signal.getCategoryID() > Signal.EVENT_SIGNAL && signal.getCategoryID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL )
+		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryID() - Signal.EVENT_SIGNAL);
+	else if( signal.getCategoryID() == Signal.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
+		alarmPage = getCurrentDisplay().getDisplayNumber();
 
 	// all alarms display	
 	if( (getCurrentDisplay().getDisplayNumber() == Display.GLOBAL_ALARM_DISPLAY 
@@ -1381,9 +1342,8 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
  */
 private void insertBlankLines() 
 {
-	for( int i = 0; i < blankPoints.size(); i++ ) {
-        addBlankRow( ((BlankLine)blankPoints.elementAt(i)).getLocation() );
-    }
+	for( int i = 0; i < blankPoints.size(); i++ )
+		addBlankRow( ((BlankLine)blankPoints.elementAt(i)).getLocation() );
 }
 
 /**
@@ -1392,7 +1352,6 @@ private void insertBlankLines()
  * @return boolean
  * @param signal com.cannontech.message.dispatch.message.Signal
  */
-@Override
 public boolean isCellEditable(int row, int column) 
 {
 	// make every cell non-editable
@@ -1406,19 +1365,16 @@ public boolean isCellEditable(int row, int column)
  * @return boolean
  * @param ptID java.lang.String
  */
-@Override
 public boolean isMuted() 
 {
 	return muted;
 }
 
-@Override
 public void setMuted( boolean muted_ )
 {
 	muted = muted_;
 }
 
-@Override
 public void silenceAlarms() 
 {
 	synchronized( getAlarmingRowVector() )
@@ -1448,25 +1404,23 @@ public boolean isSignalAlarmed( Signal signal_ )
  */
 public boolean isRowInAlarmVector( int rowNumber )
 {
-	return getAlarmingRowVector().contains( Integer.valueOf( rowNumber ) );
+	return getAlarmingRowVector().contains( new Integer( rowNumber ) );
 }
 /**
  * This method add a Blank row to the table
  */
  
-@Override
 public boolean isRowSelectedBlank( int location )
 {
 	if( location < getRows().size() && location >= 0 )
 	{
-		if( getPointValue(location) == DUMMY_POINT_VALUES ) {
-            return true;
-        } else {
-            return false;
-        }			
-	} else {
-        return false;
-    }
+		if( getPointValue(location) == DUMMY_POINT_VALUES )
+			return true;
+		else
+			return false;			
+	}
+	else
+		return false;
 }
 /**
  * Insert the method's description here.
@@ -1488,12 +1442,13 @@ public synchronized void makeTable ( )
 	initColumns();
 	initAlarmColors();
 
+	String query = new String();
+
 	if ( buildRowQuery() )
 	{
 		String[] columns = new String[getColumnCount()];
-		for( int j = 0; j < columns.length; j++ ) {
-            columns[j] = getColumnTypeName(j).toString();
-        }
+		for( int j = 0; j < columns.length; j++ )
+			columns[j] = getColumnTypeName(j).toString();
 
 
 		for( int i = 0; i < pointValues.size(); i++ ) 
@@ -1502,17 +1457,16 @@ public synchronized void makeTable ( )
 
 			String[] row = CustomDisplay.getValue( 
 						columns, 
-						(pointValues.get(i)).getPointID() );
+						(int)(pointValues.get(i)).getPointID() );
 
 			for (int j = 0; j < getColumnCount(); j++) 
 			{
-				if ( row[j] == null ) {
-                    newRow.addElement("");
-                } else if ( row[j].toString().equals(CustomDisplay.DYNAMIC_ROW) ) {
-                    newRow.addElement("   -----");
-                } else {
-                    newRow.addElement( row[j] );
-                }   					
+				if ( row[j] == null )
+					newRow.addElement("");
+				else if ( row[j].toString().equals(CustomDisplay.DYNAMIC_ROW) )
+					newRow.addElement("   -----");					
+				else
+  					newRow.addElement( row[j] );   					
 			}
 				
 			getRows().addElement(newRow);
@@ -1521,9 +1475,8 @@ public synchronized void makeTable ( )
 	}
 		
 	// insert blanklines here
-	if( blankPoints != null && blankPoints.size() > 0 ) {
-        insertBlankLines();
-    }
+	if( blankPoints != null && blankPoints.size() > 0 )
+		insertBlankLines();
 
 	fireTableDataChanged(); // refresh the table model
 	
@@ -1552,7 +1505,7 @@ public boolean pointExists(String ptID)
 	
 	try
 	{
-		value = Long.valueOf(ptID);
+		value = new Long(ptID);
 	}
 	catch( Exception e ) // NumberFormatException of NullPointerException will be the most common caught
 	{
@@ -1570,7 +1523,7 @@ public synchronized void processPointDataReceived( PointData point )
 	// make sure we have a PointData and the display is a user defined one
 	if ( point == null || pointValues == null || pointValues.size() < 1 
 		|| getCurrentDisplay().getDisplayNumber() < Display.PRECANNED_USER_DISPLAY_NUMBER 
-		|| point.isTagsOldTimestamp() )
+		|| point.getTagsOldTimestamp() )
 	{
 		return;
 	}
@@ -1599,23 +1552,20 @@ public synchronized void processPointDataReceived( PointData point )
 	}
 	
 	//refresh the the changed row
-	if( rowLocation >= 0 ) {
-        fireTableRowsUpdated( 
+	if( rowLocation >= 0 )
+		fireTableRowsUpdated( 
 			rowLocation,
-			rowLocation + 1 );
-    }	
+			rowLocation + 1 );	
 }
 
 private boolean checkFilter( Signal signal )
 {	
-	if( signal == null ) {
-        return false;
-    }
+	if( signal == null ) 
+		return false;
 
 	//if we don't care about filters OR we already have added the signal to the table
-	if( getCurrentDisplay().getTdcFilter().getConditions().isEmpty() ) {
-        return true;
-    }
+	if( getCurrentDisplay().getTdcFilter().getConditions().isEmpty() )
+		return true;
 
 
 
@@ -1681,7 +1631,7 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
             if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ) {
                 String quality = PointQuality.InitDefault.getAbbreviation();
                 if (pv.getPointQuality() != null ) {
-                    quality = pv.getPointQuality().getAbbreviation();
+                    quality = (String) pv.getPointQuality().getAbbreviation();
                 }
                 quality += TagUtils.isAlarmActive(signal.getTags()) ? "-(ALM)" : "";
                 int index = getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY);
@@ -1720,16 +1670,14 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 	}
 
 
-	if( !checkFilter(signal) ) {
-        removeRow( getRowNumber(signal) );
-    }
+	if( !checkFilter(signal) )
+		removeRow( getRowNumber(signal) );
 
 	//refresh the the changed row
-	if( rNum >= 0 ) {
-        fireTableRowsUpdated( 
+	if( rNum >= 0 )
+		fireTableRowsUpdated( 
 			rNum,
 			rNum + 1 );
-    }
 }
 
 /**
@@ -1752,16 +1700,14 @@ public void removeAllRows()
  */
 private void removeRow( int rowNumber ) 
 {
-	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() ) {
-        return;
-    }
+	if( pointValues == null || rowNumber < 0 || rowNumber >= getRowCount() )
+		return;
 
-	setRowUnalarmed( null, Integer.valueOf(rowNumber) );
+	setRowUnalarmed( null, new Integer(rowNumber) );
 
 	// just in case the rows below this one are alarming
-	if( getAlarmingRowVector().areRowNumbersGreaterAlarming( rowNumber ) ) {
-        decrementAlarmedRowsPosition( 1, rowNumber );
-    }
+	if( getAlarmingRowVector().areRowNumbersGreaterAlarming( rowNumber ) )
+		decrementAlarmedRowsPosition( 1, rowNumber );
 
 	
 	pointValues.removeElementAt( rowNumber );
@@ -1794,21 +1740,18 @@ public void reset()
 
 	getColumnTypeName().removeAllElements();
 	
-	if ( pointValues != null ) {
-        pointValues.removeAllElements();
-    }
+	if ( pointValues != null )
+		pointValues.removeAllElements();
 
-	if ( blankPoints != null ) {
-        blankPoints.removeAllElements();
-    }
+	if ( blankPoints != null )
+		blankPoints.removeAllElements();
 			
 	getRows().removeAllElements();
 
 	getColumnNames().removeAllElements();
 
-	if ( pointLimbo != null ) {
-        pointLimbo.removeAllElements();
-    }
+	if ( pointLimbo != null )
+		pointLimbo.removeAllElements();
 		
 	getAlarmingRowVector().removeAllElements();
 
@@ -1822,7 +1765,6 @@ public void reset()
  * Version: <version>
  * @param shouldPlay boolean
  */
-@Override
 public void rowDataSwap( int i, int j )
 {
 	Object tmp = null;
@@ -1848,8 +1790,8 @@ public void rowDataSwap( int i, int j )
 				
 				
 				//keep our alarm vector elements consistent
-				getAlarmingRowVector().elementAt(iRow).setRowNumber( i );
-				getAlarmingRowVector().elementAt(jRow).setRowNumber( j );
+				((AlarmingRow)getAlarmingRowVector().elementAt(iRow)).setRowNumber( i );
+				((AlarmingRow)getAlarmingRowVector().elementAt(jRow)).setRowNumber( j );
 			}
 			else if( isRowInAlarmVector(i) )
 			{
@@ -1886,7 +1828,6 @@ public void rowDataSwap( int i, int j )
  * @param rowNumber int
  * @param color int
  */
-@Override
 public boolean setBGRowColor(int rowNumber, int color) 
 {
 	synchronized( pointValues )
@@ -1910,7 +1851,7 @@ public boolean setBGRowColor(int rowNumber, int color)
 private Integer getCellQualityCount( PointValues point_, int loc_, final Integer lastValue_ )
 {
 	PointValues pt = null;
-	Integer retValue = Integer.valueOf(0);
+	Integer retValue = new Integer(0);
 
 	try
 	{
@@ -1919,7 +1860,7 @@ private Integer getCellQualityCount( PointValues point_, int loc_, final Integer
 		if( pt != null 
 			 && (pt.getPointQuality() == point_.getPointQuality()) )
 		{
-			retValue = Integer.valueOf( lastValue_.intValue() + 1 );
+			retValue = new Integer( lastValue_.intValue() + 1 );
 		}
 	}
 	catch(ArrayIndexOutOfBoundsException ex )
@@ -1946,9 +1887,8 @@ private void setCorrectRowValue( PointValues point, int location )
 		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_QUALITYCNT) )
 		{
 			Object currentCnt = dataRow.get( getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_QUALITYCNT) );
-			if( !(currentCnt instanceof Integer) ) {
-                currentCnt = Integer.valueOf(0);
-            }
+			if( !(currentCnt instanceof Integer) )
+				currentCnt = new Integer(0);
 			
 			dataRow.setElementAt(
 					getCellQualityCount( point, location, (Integer)currentCnt ),
@@ -1972,22 +1912,20 @@ private void setCorrectRowValue( PointValues point, int location )
 			{
 				imgID = getPointValue(location).getYukonImageID( (int)point.getValue() );
 
-				if( imgID > YukonImage.NONE_IMAGE_ID ) {
-                    img = java.awt.Toolkit.getDefaultToolkit().createImage(
+				if( imgID > YukonImage.NONE_IMAGE_ID )
+					img = java.awt.Toolkit.getDefaultToolkit().createImage(
 						YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage( imgID ).getImageValue() );
-                }
 			}
 			catch( Exception e ) {}
 			
 			
 			
-			if( img == null ) {
-                dataRow.setElementAt( CtiUtilities.STRING_NONE, 
-					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) );
-            } else {
-                dataRow.setElementAt( img, 
-					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) );
-            } 
+			if( img == null )
+				dataRow.setElementAt( CtiUtilities.STRING_NONE, 
+					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) ); 
+			else
+				dataRow.setElementAt( img, 
+					getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTIMAGE) ); 
 		}
 
 
@@ -1996,7 +1934,7 @@ private void setCorrectRowValue( PointValues point, int location )
 			try {
 			    String quality = "";
                 if (point.getPointQuality() != null ) {
-                    quality = point.getPointQuality().getAbbreviation();
+                    quality = (String) point.getPointQuality().getAbbreviation();
                 }
 	 			dataRow.setElementAt(
 	 					quality	+ (TagUtils.isAlarmActive((int)point.getTags()) ? "-(ALM)" : ""),
@@ -2048,9 +1986,8 @@ private void setRowTimeStamp( PointValues point, Date timeStamp, int location )
 		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
 		{				
 			Object tempDate = new String();
-			if( timeStamp.after(CtiUtilities.get1990GregCalendar().getTime()) ) {
-                tempDate = new ModifiedDate( timeStamp.getTime() );
-            }
+			if( timeStamp.after(CtiUtilities.get1990GregCalendar().getTime()) )
+				tempDate = new ModifiedDate( timeStamp.getTime() );
 
 			dataRow.setElementAt( 
 					tempDate, 
@@ -2106,9 +2043,8 @@ public void setLimboPointsValue(Object[] points)
 		{
 			pointLimbo.removeAllElements();
 			
-			for( int i = 0; i < points.length; i++ ) {
-                pointLimbo.addElement( points[i] );
-            }
+			for( int i = 0; i < points.length; i++ )
+				pointLimbo.addElement( points[i] );
 		}
 		
 	}
@@ -2122,16 +2058,14 @@ public void setLimboPointsValue(Object[] points)
 public void setRowAlarmed( Signal signal ) 
 {
 	//do not process EVENT_SIGNAL messages
-	if( signal.getCategoryID() <= Signal.EVENT_SIGNAL ) {
-        return;
-    }
+	if( signal.getCategoryID() <= Signal.EVENT_SIGNAL )
+		return;
 
 	
 	//first try to find the alarm by the signal object, then by the pointID
 	int rowLoc = getRowNumber(signal);
-	if( rowLoc < 0 ) {
-        rowLoc = getRowNumber(signal.getPointID());
-    }
+	if( rowLoc < 0 )
+		rowLoc = getRowNumber(signal.getPointID());
 
 
 	// see if the point is in our display
@@ -2139,7 +2073,7 @@ public void setRowAlarmed( Signal signal )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
-			if( !getAlarmingRowVector().contains( Integer.valueOf(rowLoc) ) )
+			if( !getAlarmingRowVector().contains( new Integer(rowLoc) ) )
 			{
 				AlarmingRow alRow = new AlarmingRow( 
 										rowLoc,
@@ -2180,9 +2114,8 @@ public void setRowAlarmed( Signal signal )
  */
 private Vector setRowForEventViewer( Signal signal )
 {
-	if( signal == null ) {
-        return new Vector();
-    }
+	if( signal == null )
+		return new Vector();
 
 
 	// how many columns need to be filled in below
@@ -2190,9 +2123,7 @@ private Vector setRowForEventViewer( Signal signal )
 	Vector aRow = new Vector( COLUMN_COUNT );
 
 	for( int i = 0; i < COLUMN_COUNT; i++ )
-     {
-        aRow.addElement( "" );  // put these into the vector just as dummy values
-    }
+		aRow.addElement( "" );  // put these into the vector just as dummy values
 
 	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( signal.getPointID() );
 	LiteYukonPAObject lDevice = null;
@@ -2211,34 +2142,28 @@ private Vector setRowForEventViewer( Signal signal )
 
 
 	// set DeviceName
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) ) {
-        aRow.setElementAt( CommonUtils.createString( lDevice.getPaoName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICENAME) )
+		aRow.setElementAt( CommonUtils.createString( lDevice.getPaoName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICENAME) );
 
 	// set PointName		
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTNAME) ) {
-        aRow.setElementAt( CommonUtils.createString( lPoint.getPointName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTNAME) )
+		aRow.setElementAt( CommonUtils.createString( lPoint.getPointName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTNAME) );
 
 	// set Message/Description
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_UOFM) ) {
-        aRow.setElementAt( CommonUtils.createString( signal.getDescription() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_UOFM) );
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_UOFM) )
+		aRow.setElementAt( CommonUtils.createString( signal.getDescription() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_UOFM) );
 
 	// set Action
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_TXT_MSG) ) {
-        aRow.setElementAt( CommonUtils.createString( signal.getAction() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_TXT_MSG));
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_TXT_MSG) )
+		aRow.setElementAt( CommonUtils.createString( signal.getAction() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_TXT_MSG));
 
 	// set TimeStamp
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) ) {
-        aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().getTime() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
+		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().getTime() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 
 	// set Username
-	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICEID) ) {
-        aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
-    }
+	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
+		aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
 
 
 
@@ -2257,17 +2182,15 @@ private int setRowUnalarmed( Signal signal_, Integer rowNum_ )
 	if( rowNum_ == null )
 	{
 		int rNum = getRowNumber(signal_);	
-		if( rNum < 0 && signal_ != null ) {
-            rNum = getRowNumber( signal_.getPointID() );
-        }
+		if( rNum < 0 && signal_ != null )
+			rNum = getRowNumber( signal_.getPointID() );
 		
-		rowNum_ = Integer.valueOf(rNum);
+		rowNum_ = new Integer(rNum);
 	}
 
 	//strange, we are unable to find the row at this time
-	if( rowNum_.intValue() < 0 ) {
-        return rowNum_.intValue();
-    }
+	if( rowNum_.intValue() < 0 )
+		return rowNum_.intValue();
 
 	getPointValue( rowNum_.intValue() ).removeSignal( signal_ );
 	
@@ -2282,9 +2205,8 @@ private int setRowUnalarmed( Signal signal_, Integer rowNum_ )
 			{
 				getAlarmingRowVector().removeElement(rowNum_);
 
-				if( getAlarmingRowVector().size() == 0 ) {
-                    killRowBlinker();
-                }
+				if( getAlarmingRowVector().size() == 0 )
+					killRowBlinker();
 			}
 		}
 	}

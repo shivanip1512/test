@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import jakarta.mail.MessagingException;
+import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,11 @@ import com.google.common.collect.ImmutableMap;
  * Handler for emails. Builds an email and sends it via the notification service.
  */
 public class SmartNotificationEmailMessageParametersHandler implements SmartNotificationMessageParametersHandler {
+    private static final Logger log = YukonLogManager.getLogger(SmartNotificationEmailMessageParametersHandler.class);
     private Map<SmartNotificationEventType, SmartNotificationEmailBuilder> emailBuilders;
     private INotifConnection notifClientConnection;
     private MessageSourceAccessor messageSourceAccessor;
     private GlobalSettingDao globalSettingDao;
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationEmailMessageParametersHandler.class);
     
     @Autowired
     public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList,
@@ -63,7 +63,8 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                                 .buildEmail(parameters, intervalMinutes);
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
-            snLogger.error("Unable to send Smart Notification email.", e);
+            log.debug(parameters);
+            log.error("Unable to send Smart Notification email.", e);
         }
     }
     
@@ -78,7 +79,8 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                                  return emailBuilders.get(parameters.getType())
                                                                      .buildEmail(parameters, intervalMinutes);
                                              } catch (MessagingException e) {
-                                                 snLogger.error("Error building message for notification parameters:{}", parameters, e);
+                                                 log.error("Error building message for notification parameters: " 
+                                                           + parameters, e);
                                                  return null;
                                              }
                                          })
@@ -96,7 +98,8 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
 
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
-            snLogger.error("Unable to send Smart Notification email.", e);
+            log.debug(parametersMulti);
+            log.error("Unable to send Smart Notification email.", e);
         }
     }
 }

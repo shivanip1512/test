@@ -9,6 +9,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum WidgetCategory implements DisplayableEnum {
     AMI,
     DR,
+    IVVC,
     OTHER
     ;
     

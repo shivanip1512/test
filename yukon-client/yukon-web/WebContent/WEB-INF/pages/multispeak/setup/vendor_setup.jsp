@@ -1,13 +1,12 @@
 <%@ page import="com.cannontech.multispeak.client.*"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
@@ -17,10 +16,6 @@
         <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.multispeak.home.tab.title">
             <c:url value="/multispeak/setup/home" />
         </cti:linkTab>
-
-        <cti:msg2 key=".warningMessage" var="vendorWarningMessage"/>
-        <input type="hidden" class="js-vendor-warning-message" value="${vendorWarningMessage}"/>
-        <div id="vendor-js-warning" class="MT10"></div>
 
         <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.vendor.tab.title"
             initiallySelected="${true}">
@@ -53,7 +48,6 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
-        <input type="hidden" class="js-vendor-id" value="${mspVendor.vendorID}"/>
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -100,23 +94,6 @@
                             <tags:nameValue2 nameKey=".template">
                                 <tags:input path="mspVendor.templateNameDefault" maxlength="32" />
                             </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey="yukon.common.attributes" requiredField="true">
-                                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <cti:msg2 key="yukon.common.attribute.select.multi" var="selectLbl" />
-                                       <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}" id="attributes"/>
-                                </cti:displayForPageEditModes>
-                                <cti:msg2 var="helpTitle" key="yukon.common.attributes"/>
-                                <cti:msg2 var="helpText" key=".attribute.helpText"/>
-                                <span class="fr cp"><cti:icon icon="icon-help" data-popup="#attribute-help"/></span>
-                                <div id="attribute-help" class="dn" data-width="600" data-title="${helpTitle}">${helpText}</div>
-                                <cti:displayForPageEditModes modes="VIEW">
-                                    <c:forEach var="mspattribute" items="${mspVendor.attributes}" varStatus="loop">
-                                        <i:inline key="${mspattribute}"/>
-                                        <c:if test="${!loop.last}">,</c:if>
-                                    </c:forEach>
-                                </cti:displayForPageEditModes>
-                            </tags:nameValue2>
 
                         </tags:nameValueContainer2>
                     </div>
@@ -151,11 +128,9 @@
                             <tags:nameValue2 nameKey=".validateCertificate">
                                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm"/>
-                                    <input type="hidden" class="js-create-or-edit-mode">
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm" disabled="true"/>
-                                    <input type="hidden" class="js-view-mode">
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
@@ -169,7 +144,7 @@
                     <div class="column-16-8 clearfix">
                         <div class="column one">
                             <!-- Interfaces -->
-                            <table class="compact-results-table no-stripes full-width">
+                            <table class="compact-results-table row-highlighting full-width">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".interface" /></th>
@@ -179,60 +154,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   <c:forEach var="mspPossibleInterfacev3"
-                                      items="${multispeak.mspInterfaceList}" varStatus="status"
-                                        begin="0">
+                                    <c:forEach var="mspPossibleInterfacev3" items="${multispeak.mspInterfaceList}"
+                                        varStatus="status" begin="0">
                                         <c:if
-                                            test="${status.index % 3 == 0 || (mspPossibleInterfacev3.mspInterface=='NOT_Server' && status.index % 3 == 1)}">
+                                            test="${status.index % 2 == 0 || mspPossibleInterfacev3.mspInterface=='NOT_Server'}">
                                             <c:choose>
                                                 <c:when
-                                                    test="${mspPossibleInterfacev3.mspInterface=='CB_CD'}">
-                                                    <c:set var="currentInterface"
-                                                        value="${mspPossibleInterfacev3}" />
+                                                    test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' || mspPossibleInterfacev3.mspInterface=='CB_CD'}">
+                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
                                                     <c:set var="indexValue" value="${status.index}" />
                                                 </c:when>
-                                                <c:when
-                                                    test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' }">
-                                                    <c:set var="currentInterface"
-                                                        value="${mspPossibleInterfacev3}" />
-                                                    <c:set var="indexValue" value="${status.index}" />
-                                                    <c:set var="mspPossibleInterfacev5"
-                                                        value="${multispeak.mspInterfaceList[status.index+1]}" />
-                                                    <c:set var="enabledV5"
-                                                        value="${mspPossibleInterfacev5.interfaceEnabled}" />
-                                                    <c:if test="${enabledV5}">
-                                                        <c:set var="currentInterface"
-                                                            value="${mspPossibleInterfacev5}" />
-                                                       <c:set var="indexValue" value="${status.index + 1}" />
-                                                   </c:if>
-                                                 </c:when>
                                                 <c:otherwise>
-                                                    <c:set var="mspPossibleInterfacev4"
-                                                        value="${multispeak.mspInterfaceList[status.index+1]}" />
                                                     <c:set var="mspPossibleInterfacev5"
-                                                        value="${multispeak.mspInterfaceList[status.index+2]}" />
+                                                        value="${multispeak.mspInterfaceList[status.index+1]}" />
                                                     <c:set var="enabledV3"
                                                         value="${mspPossibleInterfacev3.interfaceEnabled}" />
-                                                    <c:set var="enabledV4"
-                                                        value="${mspPossibleInterfacev4.interfaceEnabled}" />
                                                     <c:set var="enabledV5"
                                                         value="${mspPossibleInterfacev5.interfaceEnabled}" />
-                                                    <c:set var="currentInterface"
-                                                        value="${mspPossibleInterfacev3}" />
+                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
                                                     <c:set var="indexValue" value="${status.index}" />
-                                                    <c:if test="${enabledV4}">
-                                                        <c:set var="currentInterface"
-                                                             value="${mspPossibleInterfacev4}" />
+                                                    <c:if test="${enabledV5}">
+                                                        <c:set var="currentInterface" value="${mspPossibleInterfacev5}" />
                                                         <c:set var="indexValue" value="${status.index + 1}" />
-                                                   </c:if>
-                                                   <c:if test="${enabledV5}">
-                                                       <c:set var="currentInterface"
-                                                           value="${mspPossibleInterfacev5}" />
-                                                       <c:set var="indexValue" value="${status.index + 2}" />
-                                                 </c:if>
-                                               </c:otherwise>
+                                                    </c:if>
+                                                </c:otherwise>
                                             </c:choose>
-                                            <tr data-id="${indexValue}">
+                                            <tr>
                                                 <td class="wsnw">
                                                     <tags:checkbox
                                                         path="mspInterfaceList[${indexValue}].interfaceEnabled"
@@ -252,21 +199,18 @@
                                                 </td>
                                                 <td>
                                                     <c:set var="versionOptions" value="${mspVersionList}" />
-                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server_DR'}">
+                                                    <c:if test="${currentInterface.mspInterface =='NOT_Server' || currentInterface.mspInterface == 'NOT_Server_DR'}">
                                                         <c:set var="versionOptions" value="${mspVersion5}" />
                                                     </c:if>
                                                     <c:if test="${currentInterface.mspInterface=='CB_CD'}">
                                                         <c:set var="versionOptions" value="${mspVersion3}" />
-                                                    </c:if>
-                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server'}">
-                                                        <c:set var="versionOptions" value="${notMspVersionList}" />
                                                     </c:if>
                                                     <tags:selectWithItems id="select${currentInterface.mspInterface}"
                                                         path="mspInterfaceList[${indexValue}].version"
                                                         disabled="${!currentInterface.interfaceEnabled}"
                                                         items="${versionOptions}" inputClass="with-option-hiding" />
                                                 </td>
-                                                <td style="width: 120px;">
+                                                <td style="width: 90px;">
                                                     <div class="button-group fr wsnw oh">
                                                         <cti:button icon="icon-ping"
                                                             id="ping${currentInterface.mspInterface}" name="pingURL"
@@ -279,21 +223,6 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].useVendorAuth" id="js-msp-uservendorauth-${indexValue}"/>
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inUserName" id="js-msp-inusername-${indexValue}"/>
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inPassword" id="js-msp-inpassword-${indexValue}"/>
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outUserName" id="js-msp-outusername-${indexValue}"/>
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outPassword" id="js-msp-outpassword-${indexValue}"/>
-                                                        <tags:hidden path="mspInterfaceList[${indexValue}].validateCertificate" id="js-msp-validatecertificate-${indexValue}"/>
-                                                        <input type="hidden" id="js-page-mode" value="${mode}"/>
-                                                        <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuthPopupTitle" />
-                                                        <cti:button icon="icon-lock" 
-                                                                    renderMode="buttonImage" 
-                                                                    classes="js-endpoint-auth-btn"
-                                                                    name="interfaceAuth" 
-                                                                    data-title="${interfaceAuthTitle}"
-                                                                    disabled="${!currentInterface.interfaceEnabled}"
-                                                                    id="interfaceAuth${currentInterface.mspInterface}"/>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -312,9 +241,9 @@
                                 <tbody>
                                     <tr>
                                         <c:set var="interfaceListLength"
-                                            value="${fn:length(multispeak.mspInterfaceList)/3}" />
+                                            value="${fn:length(multispeak.mspInterfaceList)/2}" />
                                         <td rowspan='${interfaceListLength+3}'><textarea cols="40"
-                                                rows="${interfaceListLength*3+1}" name="Results" id="results" readonly
+                                                rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
                                                 wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                         </td>
                                     </tr>

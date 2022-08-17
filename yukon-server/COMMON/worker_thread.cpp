@@ -15,7 +15,7 @@ ConcurrentSet<boost::thread::id> WorkerThread::_failed_terminations;
  *
  * @param function thread function to run
  */
-WorkerThread::WorkerThread( const FunctionImpl& function ) :
+WorkerThread::WorkerThread( const Function &function ) :
     _function(function)
 {
 }
@@ -59,11 +59,6 @@ bool WorkerThread::isFailedTermination()
     return _failed_terminations.contains(boost::this_thread::get_id());
 }
 
-std::ostringstream printable(boost::thread::id thread_id)
-{
-    return std::ostringstream{} << "[0x" << std::setfill('0') << std::setw(8) << thread_id << "]";
-}
-
 /**
  * start the worker thread if the thread is not currently running
  * thread can be started multiple times
@@ -78,8 +73,6 @@ void WorkerThread::start()
     // create and start the thread (boost:thread uses boost::bind implicitly)
     _thread = boost::thread( &WorkerThread::executeWrapper, this );
 
-    CTILOG_INFO(dout, "Created thread : " << _function._name << " " << printable(_thread.get_id()));
-
     _failed_terminations.erase(_thread.get_id());
 }
 
@@ -88,7 +81,7 @@ void WorkerThread::start()
  */
 void WorkerThread::interrupt()
 {
-    CTILOG_INFO(dout, "Interrupting thread " << _function._name << " " << printable(_thread.get_id()));
+    CTILOG_INFO(dout, "Interrupting thread " << _function._name);
 
     _thread.interrupt();
 }
@@ -107,7 +100,7 @@ void WorkerThread::terminateThread()
         const auto errorCode = GetLastError();
 
         CTILOG_ERROR(dout, "TerminateThread failed to terminate thread " << _function._name <<
-                           " " << printable(_thread.get_id()) << ", error " << errorCode << ": " << getSystemErrorMessage(errorCode));
+                           ", error " << errorCode << ": " << getSystemErrorMessage(errorCode));
     }
 }
 
@@ -118,7 +111,7 @@ void WorkerThread::terminateThread()
  */
 void WorkerThread::join()
 {
-    CTILOG_INFO(dout, "Joining thread " << _function._name << " " << printable(_thread.get_id()));
+    CTILOG_INFO(dout, "Joining thread " << _function._name);
 
     _thread.join();
 }
@@ -141,7 +134,7 @@ bool WorkerThread::tryJoinFor( const Timing::Chrono &duration )
 
     if ( duration.milliseconds() != 0 )     // don't log this when we are checking for isRunning()
     {
-        CTILOG_INFO(dout, "Trying to join thread " << _function._name << " " << printable(_thread.get_id()));
+        CTILOG_INFO(dout, "Trying to join thread " << _function._name);
     }
 
     return _thread.try_join_for( boost::chrono::milliseconds( duration.milliseconds() ));
@@ -157,7 +150,7 @@ void WorkerThread::tryJoinOrTerminateFor( const Timing::Chrono &duration )
 {
     if( ! tryJoinFor( duration ))
     {
-        CTILOG_WARN(dout, "Join did not complete for " << duration << ", terminating thread " << _function._name << " " << printable(_thread.get_id()));
+        CTILOG_WARN(dout, "Join did not complete for " << duration << ", terminating thread " << _function._name);
 
         terminateThread();
     }

@@ -1768,7 +1768,8 @@ void CtiDeviceQuantum::translateQuantumProgrammedRegisters( const QuantumRawScan
 
             CTILOG_TRACE(dout, getName() <<" - register "<< i <<"("<<
                     translated->programTable[i].regNum <<","<<
-                    translated->programTable[i].nonRegNum <<") * "<<
+                    translated->programTable[i].nonRegNum <<","<<
+                    translated->mmPhaseTable[i] <<") * "<<
                     translated->programTable[i].displayMultiplier << ": " <<
                     programmedRegisters[i]
                     );

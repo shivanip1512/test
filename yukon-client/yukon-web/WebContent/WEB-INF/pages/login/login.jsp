@@ -39,18 +39,16 @@
                             <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl js-focus" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
                             <div class="clearfix">
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
+                                <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
+                                    <cti:msg2 key="yukon.web.login.forgot" var="forgot"/>
+                                    <cti:button id="forgot-btn" href="login/forgottenPassword" label="${forgot}"/>
+                                </cti:checkGlobalSetting>
                             </div>
                             <div class="action-area">
                                 <label class="fl remember-me"><input type="checkbox" id="remember_me" name="rememberme"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
-                                <span class="fr">
-                                    <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
-	                                    <cti:msg2 key="yukon.web.login.forgot" var="forgot"/>
-	                                    <cti:button id="forgot-btn" href="login/forgottenPassword" label="${forgot}" classes="fn"/>
-	                                </cti:checkGlobalSetting>
-	                                <cti:msg2 key="yukon.web.login.login" var="login"/>
-	                                <cti:button type="submit" name="login" classes="action primary fr" label="${login}"/>
-	                                <input type="hidden" name="REDIRECTED_FROM" value="${fn:escapeXml(param.REDIRECTED_FROM)}">
-                                </span>
+                                <cti:msg2 key="yukon.web.login.login" var="login"/>
+                                <cti:button type="submit" name="login" classes="action primary" label="${login}"/>
+                                <input type="hidden" name="REDIRECTED_FROM" value="${fn:escapeXml(param.REDIRECTED_FROM)}">
                             </div>
                         </form>
                     </div>

@@ -29,7 +29,6 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
-import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -38,17 +37,14 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.watchdog.model.WatchdogWarningType;
 import com.google.common.base.Functions;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -182,10 +178,6 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM SmartNotificationEvent");
         jdbcTemplate.update(sql);
-        
-        sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM SmartNotifEmailHistory");
-        jdbcTemplate.update(sql);
     }
     
     @Transactional
@@ -226,64 +218,21 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             Arrays.asList(frequency).forEach(f -> chunkingTemplate.update(new ProcessedTimeUpdater(processedTime, f), eventsIds));
         }
     }
-    
-    @Override
-    public Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(
-            SmartNotificationFrequency frequency) {
-        String processTime = SmartNotificationFrequency.COALESCING == frequency ? "GroupProcessTime" : "ImmediateProcessTime";
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime, Type");
-        sql.append("FROM  SmartNotificationEvent sne");
-        sql.append("WHERE").append(processTime).append("IS NULL");
 
-        Multimap<SmartNotificationEventType, SmartNotificationEvent> events = HashMultimap.create();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                SmartNotificationEventType type = rs.getEnum("Type", SmartNotificationEventType.class);
-                SmartNotificationEvent event = eventMapper.mapRow(rs);
-                events.put(type, event);
-            }
-        });
-
-        if (!events.isEmpty()) {
-            addParameters(new ArrayList<>(events.values()));
-        }
-        return events;
-    }
-    
     @Override
-    public List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT sne.EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
-        sql.append("FROM  SmartNotificationEvent sne JOIN SmartNotificationEventParam p ON sne.EventId = p.EventId");
-        sql.append("WHERE GroupProcessTime IS NULL");
-        sql.append("AND sne.Type").eq_k(type);
-        sql.append("AND p.Name").eq(name);
-        sql.append("AND p.Value").eq(value);
-
-        List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
-        if (!events.isEmpty()) {
-            addParameters(events);
-        }
-        return events;
-    }
-    
-    @Override
-    public List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type) {
+    public List<SmartNotificationEvent> getUnprocessedEvents(SmartNotificationEventType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
-        sql.append("FROM SmartNotificationEvent");
-        sql.append("WHERE GroupProcessTime IS NULL");
-        sql.append("AND Type").eq_k(type);
-
+        sql.append("FROM  SmartNotificationEvent sne");
+        sql.append("WHERE Type").eq_k(type);
+        sql.append("AND (GroupProcessTime IS NULL OR ImmediateProcessTime IS NULL)");
         List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
         if (!events.isEmpty()) {
             addParameters(events);
         }
         return events;
     }
-    
+
     private void addParameters(List<SmartNotificationEvent> events) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
@@ -477,24 +426,6 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         }
         return events;
     }
-    
-    @Override
-    public List<SmartNotificationEvent> getEventsByMonitorIdAndDate(Integer monitorId, Range<Instant> range) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT sne.EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
-        sql.append("FROM  SmartNotificationEvent sne");
-        sql.append("JOIN SmartNotificationEventParam snep ON sne.EventId = snep.EventId");
-        sql.append("WHERE Type").eq_k(SmartNotificationEventType.DEVICE_DATA_MONITOR);
-        sql.append("AND sne.Timestamp").gte(range.getMin());
-        sql.append("AND sne.Timestamp").lt(range.getMax());
-        sql.append("AND snep.name = 'monitorId'");
-        sql.append("AND snep.value").eq(monitorId.toString());
-        List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
-        if (!events.isEmpty()) {
-            addParameters(events);
-        }
-        return events;
-    }
 
     @Override
     public SearchResults<SmartNotificationEventData> getWatchdogWarningEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange) {
@@ -672,69 +603,5 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
                                         .collect(Collectors.toList());
         }
         return filteredList.size();
-    }
-
-    @Override
-    @Transactional
-    public void createHistory(SmartNotificationMessageParameters parameters, int intervalMinutes) {
-        Integer historyId = createEmailHistory(parameters, intervalMinutes);
-        createRecipientHistory(parameters, historyId);
-        Map<Integer, Map<String, Object>> eventParams = createEventHistory(parameters, historyId);
-        createEventParamsHistory(eventParams);
-    }
-
-    private void createRecipientHistory(SmartNotificationMessageParameters parameters, Integer historyId) {
-        List<List<Object>> recipientValues = parameters.getRecipients().stream().map(email -> {
-            List<Object> row = Lists.newArrayList(historyId, email);
-            return row;
-        }).collect(Collectors.toList());
-        
-        SqlStatementBuilder recipientSql = new SqlStatementBuilder();
-        recipientSql.batchInsertInto("SmartNotifRecipientHistory").columns("HistoryId", "Recipient").values(recipientValues);
-        jdbcTemplate.yukonBatchUpdate(recipientSql);
-    }
-
-    private void createEventParamsHistory(Map<Integer, Map<String, Object>> eventParams) {
-        List<List<Object>> values = new ArrayList<>();
-        eventParams.forEach((id, param) -> {
-            param.forEach((k, v) -> {
-                values.add(Lists.newArrayList(id, k, v));
-            });
-        });
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.batchInsertInto("SmartNotifEventParamHistory").columns("EventHistoryId", "Name", "Value").values(values);
-        jdbcTemplate.yukonBatchUpdate(sql);
-    }
-
-    private Map<Integer, Map<String, Object>> createEventHistory(SmartNotificationMessageParameters parameters, Integer historyId) {
-        SqlStatementBuilder createSql = new SqlStatementBuilder();
-        Map<Integer, Map<String, Object>> params = new HashMap<>();
-        List<List<Object>> values = parameters.getEvents().stream().map(event -> {
-            Integer eventHistoryId = nextValueHelper.getNextValue("SmartNotifEventHistory");
-            params.put(eventHistoryId, event.getParameters());
-            List<Object> row = Lists.newArrayList(eventHistoryId, historyId);
-            return row;
-        }).collect(Collectors.toList());
-        createSql.batchInsertInto("SmartNotifEventHistory")
-                .columns("EventHistoryId", "HistoryId")
-                .values(values);
-        jdbcTemplate.yukonBatchUpdate(createSql);
-        return params;
-    }
-
-    private Integer createEmailHistory(SmartNotificationMessageParameters parameters, int intervalMinutes) {
-        Integer historyId = nextValueHelper.getNextValue("SmartNotifEmailHistory");
-        SqlStatementBuilder createSql = new SqlStatementBuilder();
-        SqlParameterSink params = createSql.insertInto("SmartNotifEmailHistory");
-        params.addValue("HistoryId", historyId);
-        params.addValue("EventType", parameters.getType());
-        params.addValue("Verbosity", parameters.getVerbosity());
-        params.addValue("Media", parameters.getMedia());
-        params.addValue("TotalEvents", parameters.getEvents().size());
-        params.addValue("IntervalMinutes", intervalMinutes);
-        params.addValue("ProcessingType", parameters.getProcessingType());
-        params.addValue("SendTime", new Instant());
-        jdbcTemplate.update(createSql);
-        return historyId;
     }
 }

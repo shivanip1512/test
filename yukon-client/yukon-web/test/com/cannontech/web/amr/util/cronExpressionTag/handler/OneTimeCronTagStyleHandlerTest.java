@@ -1,8 +1,7 @@
 package com.cannontech.web.amr.util.cronExpressionTag.handler;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
+        
+import org.junit.Assert;
+import org.junit.Test;
 
 public class OneTimeCronTagStyleHandlerTest {
     private OneTimeCronTagStyleHandler handler = new OneTimeCronTagStyleHandler();
@@ -25,7 +24,7 @@ public class OneTimeCronTagStyleHandlerTest {
     }
 
     public void assertCanParse(String cron, boolean canParse) {
-        assertEquals(canParse, handler.canParse(cron.split(" ")),
-                "OneTimeCronTagStyleHandler.canParse(\"" + cron + "\") failed.");
+        Assert.assertEquals("OneTimeCronTagStyleHandler.canParse(\"" + cron + "\") failed.", canParse,
+            handler.canParse(cron.split(" ")));
     }
 }

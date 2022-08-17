@@ -71,7 +71,6 @@ public class ImportFields {
     public static final int IDX_DEVICE_LABEL = inv_idx++;
     public static final int IDX_LATITUDE = inv_idx++;
     public static final int IDX_LONGITUDE = inv_idx++;
-    public static final int IDX_GUID = inv_idx++;
     public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields

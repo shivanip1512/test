@@ -67,21 +67,21 @@ struct phase_operated_voltage_regulator_fixture_core
             CtiCapController::setInstance(this);
         }
 
-        void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
+        virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
             signalMessages.emplace_back( message );
         }
-        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
+        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
         {
-            requestMessages.emplace_back( std::move( pilRequest ) );
+            requestMessages.emplace_back( pilRequest );
         }
-        void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event) override
+        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
         {
             eventMessages.push_back(event);
         }
 
         std::vector< std::unique_ptr<CtiMessage> >      signalMessages;
-        Cti::CapControl::PorterRequests                 requestMessages;
+        std::vector< std::unique_ptr<CtiRequestMsg> >   requestMessages;
         Cti::CapControl::EventLogEntries                eventMessages;
     }
     capController;
@@ -161,7 +161,6 @@ struct phase_operated_voltage_regulator_fixture_core
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::PhaseOperatedVoltageRegulator );
-        regulator->setRegulatorTimeout(std::chrono::seconds{ 100 });
     }
 };
 
@@ -1518,25 +1517,6 @@ BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
         BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
         BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
         BOOST_CHECK_EQUAL( 4,                                                *event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_needsAutoBlockEnable_fail_outdated_point_timestamp)
-{
-    regulator->loadAttributes(&attributes);
-
-    CtiPointDataMsg autoBlockEnable(8100, 0.0, AbnormalQuality, StatusPointType);
-    regulator->handlePointData(autoBlockEnable);
-
-    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
-    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents(events, test_limiter);
-
-        BOOST_CHECK_EQUAL(0, events.size());
     }
 }
 

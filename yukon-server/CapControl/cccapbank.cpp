@@ -2262,7 +2262,7 @@ bool CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & a
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
-        CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
     }
 
     return true;

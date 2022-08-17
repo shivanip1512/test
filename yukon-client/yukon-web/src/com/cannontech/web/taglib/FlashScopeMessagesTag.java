@@ -19,7 +19,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
-import com.cannontech.web.i18n.IconSvg;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -58,8 +57,7 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 			if (flashScopeMessage.getMessages().size() > 0) {
 			
 				out.println("<div class=\"user-message " + flashScopeMessage.getType().getClassName() + "\">");
-                out.println("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\">"
-                		+ IconSvg.getIconForClass("icon-close-x").getSvg() + "</i>");
+                out.println("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\"></i>");
 				
 				if (flashScopeMessage.getMessages().size() == 1) {
 				    MessageSourceResolvable messageSourceResolvable = Iterables.getOnlyElement(flashScopeMessage.getMessages());

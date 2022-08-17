@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lmprogramdirect.h"
 #include "lmprogramthermostatgear.h"
 #include "smartgearbase.h"
 
@@ -21,8 +22,6 @@ struct HoneywellSetpointGear : SmartGearBase,
     unsigned long estimateOffTime( long controlSeconds ) override;
 
     double calculateLoadReduction( double groupCapacity ) const;
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
 
     // Custom Gear settings
 

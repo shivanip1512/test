@@ -1,21 +1,18 @@
 package com.cannontech.stars.energyCompany.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
@@ -30,7 +27,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/com/cannontech/common/daoTestContext.xml")
 @DirtiesContext
 public class EnergyCompanySettingDaoImplTest {
@@ -39,7 +36,7 @@ public class EnergyCompanySettingDaoImplTest {
     private EnergyCompanySettingDaoImpl impl;
     private static int nextValue;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         jdbcTemplate.update(new SqlStatementBuilder("delete from EnergyCompanySetting"));
         impl = new EnergyCompanySettingDaoImpl();

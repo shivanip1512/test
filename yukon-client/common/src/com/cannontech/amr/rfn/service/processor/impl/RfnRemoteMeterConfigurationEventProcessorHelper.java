@@ -3,11 +3,11 @@ package com.cannontech.amr.rfn.service.processor.impl;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
@@ -23,7 +23,6 @@ import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.db.point.stategroup.MeterProgramming;
 import com.cannontech.message.dispatch.message.PointData;
@@ -33,8 +32,6 @@ import com.google.common.collect.ImmutableMap;
 public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
 
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
     private static final Logger log = YukonLogManager
             .getLogger(RfnRemoteMeterConfigurationEventProcessorHelper.class);
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
@@ -42,7 +39,6 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
     private Map<Status, DeviceError> statusCodesToErrors = ImmutableMap.<Status, DeviceError>builder()
 
             // .put(Status.SUCCESS, DeviceError.UNKNOWN)
-            .put(Status.OTHER, DeviceError.REASON_UNKNOWN)
             .put(Status.REASON_UNKNOWN, DeviceError.REASON_UNKNOWN)
             .put(Status.SERVICE_NOT_SUPPORTED, DeviceError.SERVICE_UNSUPPORTED)
             .put(Status.INSUFFICIENT_SECURITY_CLEARANCE, DeviceError.INSUFFICIENT_SECURITY_CLEARANCE)
@@ -62,9 +58,6 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
             .put(Status.VERIFICATION_FAILED, DeviceError.VERIFICATION_FAILED)
             .put(Status.WRITE_KEY_FAILED, DeviceError.WRITE_KEY_FAILED)
             .put(Status.CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED, DeviceError.CATASTROPHIC_FAILURE)
-            .put(Status.PASSWORD_ERROR, DeviceError.METER_PROGRAM_PASSWORD_ERROR)
-            .put(Status.RESPONSE_TIMEOUT, DeviceError.METER_PROGRAM_RESPONSE_TIMEOUT)
-            .put(Status.ERROR_RESPONSE, DeviceError.METER_PROGRAM_ERROR_RESPONSE)
             .build();
 
     @Override
@@ -78,7 +71,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
         log.info("Remote Meter Configuration failed for device={}, meterConfigurationId={}, status={}", device,
                 meterConfigurationId, meterConfigurationStatus);
 
-        archiveProgramStatus(device, meterConfigurationId, meterConfigurationStatus, eventInstant);
+        archiveProgramStatus(device, meterConfigurationId, meterConfigurationStatus);
 
         MeterProgramming attemptStatus = translateDetailStatus(meterConfigurationStatus.getDetailedConfigurationStatusCode());
         
@@ -98,10 +91,9 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
 
     /**
      * Sends status update message to SM to update MeterProgramStatus table
-     * @param eventInstant 
      */
     private void archiveProgramStatus(RfnDevice device, String meterConfigurationId,
-            MeterConfigurationStatus meterConfigurationStatus, Instant eventInstant) {
+            MeterConfigurationStatus meterConfigurationStatus) {
         if (meterConfigurationStatus.getDetailedConfigurationStatusCode() != null
                 && meterConfigurationStatus.getDetailedConfigurationStatusCode().getStatus() != null
                 && meterConfigurationId != null) {
@@ -117,7 +109,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
                 request.setStatus(ProgrammingStatus.FAILED);
                 request.setError(statusCodesToErrors.get(detail));
             }
-            request.setTimestamp(eventInstant);
+            request.setTimestamp(Instant.now());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
             thriftMessenger.send(request);
         } else {
@@ -127,10 +119,10 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
         }
     }
 
-    @PostConstruct
-    public void initialize() {
-        thriftMessenger = new ThriftRequestTemplate<>(
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE),
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory,
+                JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }

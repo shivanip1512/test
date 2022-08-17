@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -79,15 +80,15 @@
     <div id="page-buttons" class="dn">
         <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
             <tags:dynamicChooseOption optionId="MULT_ALARMS">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all ML15" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all" />
             </tags:dynamicChooseOption>
             <tags:dynamicChooseOption optionId="NONE">
-                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all dn ML15" />
+                <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="js-ack-all dn" />
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
    
-        <cti:button id="tdc-mute-btn" nameKey="mute" icon="icon-sound" renderMode="buttonImage" classes="ML15"/>
-        <cti:button id="tdc-unmute-btn" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn ML15"/>
+        <cti:button id="tdc-mute-btn" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
+        <cti:button id="tdc-unmute-btn" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
       
         <cti:dataUpdaterCallback function="yukon.tools.tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
     </div>

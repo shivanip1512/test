@@ -27,6 +27,11 @@ StreamAmqConnection<Outbound, Inbound>::StreamAmqConnection(
 {
     // enable manual reset
     _inboundEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if( _inboundEvent == (HANDLE)NULL )
+    {
+        CTILOG_FATAL(dout, getErrorMessage(GetLastError()));
+        exit(-1);
+    }
 
     Messaging::ActiveMQConnectionManager::registerHandler(
             inbound,
@@ -34,12 +39,6 @@ StreamAmqConnection<Outbound, Inbound>::StreamAmqConnection(
             {
                 onMessage(md.msg);
             });
-}
-
-template <class Outbound, class Inbound>
-StreamAmqConnection<Outbound, Inbound>::~StreamAmqConnection() 
-{
-    CloseHandle(_inboundEvent);
 }
 
 template <class Outbound, class Inbound>

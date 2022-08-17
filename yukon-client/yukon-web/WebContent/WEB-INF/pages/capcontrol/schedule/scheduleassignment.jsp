@@ -18,7 +18,7 @@
         data-event="yukon.vv.schedules.start.all" 
         data-title="<cti:msg2 key=".play.label"/>" 
         data-url="${startAssignmentsUrl}" 
-        data-width="630" 
+        data-width="600" 
         class="dn"></div>
     
     <cti:url value="/capcontrol/schedules/stop-multiple-settings" var="stopAssignmentsUrl">
@@ -30,7 +30,7 @@
         data-event="yukon.vv.schedules.stop.all"
         data-title="<cti:msg2 key=".stop.label"/>" 
         data-url="${stopAssignmentsUrl}" 
-        data-width="630" class="dn"></div>
+        data-width="600" class="dn"></div>
 
     <cti:url value="/capcontrol/schedules/create-settings" var="newAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
@@ -41,7 +41,7 @@
         data-event="yukon.vv.schedules.add"
         data-title="<cti:msg2 key=".add.label"/>" 
         data-url="${newAssignmentsUrl}" 
-        data-width="630" class="dn"></div>
+        data-width="600" class="dn"></div>
     
     <div id="page-buttons" class="dn">
          <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" data-popup="#filter-popup"/>

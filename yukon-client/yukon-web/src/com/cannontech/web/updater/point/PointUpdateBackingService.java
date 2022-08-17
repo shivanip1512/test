@@ -209,13 +209,6 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, Poin
     }
     
     @Override
-    public List<PointValueQualityHolder> getCachedValues(Set<Integer> pointIds) {
-        return getLatestValues(pointIds, 0, true).stream()
-                .map(data -> data.value)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
     public PointValueQualityHolder getCachedValue(int pointId) {
         log.info("PointUpdateBackingService alwaysRegisterForPoints=" + alwaysRegisterForPoints);
         log.info("PointUpdateBackingService Internal cache size=" + cache.size());

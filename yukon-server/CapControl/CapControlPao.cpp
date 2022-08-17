@@ -27,6 +27,11 @@ CapControlPao::CapControlPao(Cti::RowReader& rdr)
     restore(rdr);
 }
 
+CapControlPao::~CapControlPao()
+{
+    _pointIds.clear();
+}
+
 void CapControlPao::restore(Cti::RowReader& rdr)
 {
     long paoID;
@@ -119,44 +124,50 @@ void CapControlPao::setDisableFlag(bool disableFlag, int priority)
     if ( _disableFlag != disableFlag )
     {
         _disableFlag = disableFlag;
-        _disabledStateUpdatedTime = CtiTime();
+        
+        if ( _disabledStatePointId != 0 )
+        {
+            auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
+            pMsg->setMessagePriority( priority );
 
-        syncDisabledPoint( priority );
+            CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
+        }
     }
+}
+
+CapControlPao& CapControlPao::operator=(const CapControlPao& right)
+{
+    if (this != &right)
+    {
+        _paoId = right._paoId;
+        _paoCategory = right._paoCategory;
+        _paoClass = right._paoClass;
+        _paoName = right._paoName;
+        _paoType = right._paoType;
+        _paoDescription = right._paoDescription;
+        _disableFlag = right._disableFlag;
+        _disabledStatePointId = right._disabledStatePointId;
+        _pointIds = right._pointIds;
+        _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
+    }
+    return *this;
 }
 
 void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisablePointMessage )
 {
     _disabledStatePointId = newId;
-
     if ( sendDisablePointMessage )
     {
-        syncDisabledPoint( Cti::CapControl::DisableMsgPriority );
+        auto pMsg = std::make_unique<CtiPointDataMsg>( _disabledStatePointId, _disableFlag ? 1.0 : 0.0 );   // NormalQuality, StatusPointType
+
+        CtiCapController::getInstance()->sendMessageToDispatch( pMsg.release(), CALLSITE );
     }
 }
 
 long CapControlPao::getDisabledStatePointId() const
 {
     return _disabledStatePointId;
-}
-
-void CapControlPao::syncDisabledPoint( const int priority ) const
-{
-    if ( const auto pointID = getDisabledStatePointId() )
-    {
-        CTILOG_DEBUG( dout, getPaoName() << " - Syncing disabled state point [PID: " << pointID
-                        << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
-
-        auto pointSync =
-            std::make_unique<CtiPointDataMsg>(
-                pointID,
-                getDisableFlag() );    // NormalQuality, StatusPointType
-
-        pointSync->setMessagePriority( priority );
-        pointSync->setSource( CAPCONTROL_APPLICATION_NAME "-sourced" );
-
-        CtiCapController::getInstance()->sendMessageToDispatch( pointSync.release(), CALLSITE );
-    }
 }
 
 Cti::CapControl::PointIdVector* CapControlPao::getPointIds()
@@ -352,13 +363,21 @@ long desolveDisabledStateCommand( const std::string & paoType, const bool disabl
 
 void CapControlPao::handlePointData( const CtiPointDataMsg & message )
 {
-    const long pointID = message.getId();
+    const long   pointID = message.getId();
+    const double value   = message.getValue();
 
     handleSpecializedPointData( message );
 
     if ( pointID == getDisabledStatePointId() )
     {
-        handleDisableStatePointData( message );
+        const bool disabled = value;
+
+        if ( disabled != getDisableFlag() )
+        {
+            CtiCCExecutorFactory::createExecutor(
+                new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
+                                 getPaoId() ) )->execute();
+        }
     }
 }
 
@@ -367,33 +386,5 @@ void CapControlPao::handleSpecializedPointData( const CtiPointDataMsg & message 
 
 
 
-}
-
-void CapControlPao::handleDisableStatePointData( const CtiPointDataMsg & message )
-{
-    const CtiTime timestamp = message.getTime();
-
-    CTILOG_DEBUG( dout, getPaoName() << " - Incoming point data for the disabled state point [PID: " << message.getId()
-                    << ", O: " << Cti::CapControl::Offset_PaoIsDisabled << "]." );
-
-    if ( timestamp <= _disabledStateUpdatedTime )
-    {
-        CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Incoming point data timestamp: " << timestamp
-                        << " is not newer than the last state change time: " << _disabledStateUpdatedTime );
-        return;
-    }
-
-    const bool disabled = message.getValue();
-
-    if ( disabled == getDisableFlag() )
-    {
-        CTILOG_DEBUG( dout, getPaoName() << " - Ignoring disabled state point data. Already in requested state: "
-                        << ( disabled ? "Dis" : "En" ) << "abled." );
-        return;
-    }
-
-    CtiCCExecutorFactory::createExecutor(
-        new ItemCommand( desolveDisabledStateCommand( getPaoType(), disabled ),
-                         getPaoId() ) )->execute();
 }
 

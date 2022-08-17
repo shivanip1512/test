@@ -55,7 +55,7 @@
 
     <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
-        <h3 class="title js-box-container-title">
+        <h3 class="title">
             <c:choose>
                 <c:when test="${pageScope.escapeTitle}">${fn:escapeXml(pageScope.title)}</c:when>
                 <c:otherwise>${pageScope.title}</c:otherwise>
@@ -76,7 +76,7 @@
                 <cti:button renderMode="image" icon="icon-bullet-go-down" classes="widget-controls js-move-down"/>
                 <cti:button renderMode="image" icon="icon-bullet-go-left" classes="widget-controls js-move-left"/>
                 <cti:button renderMode="image" icon="icon-bullet-go" classes="widget-controls js-move-right"/>
-                <cti:button renderMode="image" icon="icon-delete" classes="widget-controls js-remove"/>
+                <cti:button renderMode="image" icon="icon-cross" classes="widget-controls js-remove"/>
             </c:if>
         </div>
     </div>
@@ -86,10 +86,10 @@
 
 <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
     <div id="box-container-info-popup-${thisId}" 
-            class="dn js-help-text" 
+            class="dn" 
             data-title="${pageScope.title}"
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if> 
-            data-width="600" data-max-height="600">${helpText}</div>
+            data-width="600"><div class="scroll-lg">${helpText}</div></div>
 </c:if>
 <c:if test="${not empty pageScope.smartNotificationsEvent}">
     <cti:url var="smartNotificationsUrl" value="/notifications/subscription/existingPopup/${pageScope.smartNotificationsEvent}"/>

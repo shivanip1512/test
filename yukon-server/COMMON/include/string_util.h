@@ -2,13 +2,11 @@
 
 #include "dlldefs.h"
 #include "streamBuffer.h"
-#include "std_helper.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/regex.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <wtypes.h>  //  for SYSTEMTIME
 
@@ -282,9 +280,6 @@ class IM_EX_CTIBASE FormattedList : public Loggable, private boost::noncopyable
     template<typename First>
     FormattedList& addItems(std::string firstname, First&& firstval)
     {
-        using Logging::Vector::Hex::operator<<;
-        using Logging::Set::operator<<;
-
         add(firstname) << firstval;
 
         return *this;

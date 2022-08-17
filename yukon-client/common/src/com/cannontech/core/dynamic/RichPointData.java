@@ -3,21 +3,19 @@ package com.cannontech.core.dynamic;
 import java.io.Serializable;
 
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 
-/**
- * A point data object that comes with pao point identifier already included.
- */
 public class RichPointData implements Serializable {
-    private PointValueQualityTagHolder pointValue;
+    private PointValueQualityHolder pointValue;
     private PaoPointIdentifier paoPointIdentifier;
     
-    public RichPointData(PointValueQualityTagHolder pointValue,
+    public RichPointData(PointValueQualityHolder pointValue,
             PaoPointIdentifier paoPointIdentifier) {
         this.pointValue = pointValue;
         this.paoPointIdentifier = paoPointIdentifier;
     }
     
-    public PointValueQualityTagHolder getPointValue() {
+    public PointValueQualityHolder getPointValue() {
         return pointValue;
     }
     

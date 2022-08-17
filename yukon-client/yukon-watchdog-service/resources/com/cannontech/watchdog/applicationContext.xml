@@ -35,7 +35,6 @@
        <bean class="com.cannontech.watchdogs.impl.WebServerWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.YukonMessageBrokerWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.NetworkManagerWatcher"/>
-       <bean class="com.cannontech.watchdogs.impl.EatonCloudConnectionWatcher"/>
        
        <bean class="com.cannontech.watchdogs.impl.DispatchServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.LoadManagementServiceWatcher"/>
@@ -46,7 +45,6 @@
        <bean class="com.cannontech.watchdogs.impl.CalcLogicServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.ScannerServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.ItronServiceWatcher"/>
-       <bean class="com.cannontech.watchdogs.impl.YukonDBConnectionWatcher"/>
        
        <bean class="com.cannontech.watchdogs.util.WatchdogDispatchClientConnection"/>
        <bean class="com.cannontech.watchdogs.util.WatchdogLoadManagementClientConnection"/>

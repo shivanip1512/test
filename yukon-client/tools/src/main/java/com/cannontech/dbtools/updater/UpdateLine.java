@@ -5,8 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * @author rneuharth
  *
@@ -220,40 +218,4 @@ public class UpdateLine
         getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[5] );
     }
 
-    /**
-     * Method to check if warning message is required or not.
-     */
-    public Boolean isWarning() {
-        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
-        return o != null ? true : false;
-    }
-
-    /**
-     * Method to retrieve commandName from the @start-warning annotation.<br>
-     * <br>
-     * For example, this method returns <b>checkDirectoryAccess</b> from "@start-warning checkDirectoryAccess Yukon requires write access to Import
-     * and Export directories".
-     */
-    public String getCommandName() {
-        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
-        if (o != null)
-            return o.toString().split("\\s+")[0];
-        else
-            return StringUtils.EMPTY;
-    }
-
-    /**
-     * Method to retrieve commandName from the @start-warning annotation.<br>
-     * <br>
-     * For example, this method returns <b> Yukon requires write access to Import
-     * and Export directories</b> from "@start-warning checkDirectoryAccess Yukon requires write access to Import
-     * and Export directories".
-     */
-    public String getWarningMessage() {
-        Object o = getMetaProps().get(DBMSDefines.START_WARNING);
-        if (o != null)
-            return o.toString().split("\\s+", 2)[1];
-        else
-            return StringUtils.EMPTY;
-    }
 }

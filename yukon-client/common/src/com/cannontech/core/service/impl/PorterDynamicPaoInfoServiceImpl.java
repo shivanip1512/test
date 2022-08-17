@@ -4,8 +4,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.ThriftRequestReplyTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.PorterDynamicPaoInfoService;
 import com.cannontech.message.porter.message.DynamicPaoInfoDurationKeyEnum;
 import com.cannontech.message.porter.message.DynamicPaoInfoPercentageKeyEnum;
@@ -28,20 +25,18 @@ import com.google.common.collect.Sets;
 
 public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoService {
 
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
     private static final Logger log = YukonLogManager.getLogger(PorterDynamicPaoInfoServiceImpl.class);
 
+    private static final DynamicPaoInfoRequestSerializer serializer = new DynamicPaoInfoRequestSerializer();
+    private static final DynamicPaoInfoResponseSerializer deserializer = new DynamicPaoInfoResponseSerializer();
+    
     private static final int DEFAULT_TIMEOUT_MINUTES = 1;
     
-    private ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse> thriftMessenger;
+    ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse> thriftMessenger;
     
-    @PostConstruct
-    public void initialize() {
-        thriftMessenger = new ThriftRequestReplyTemplate<>(
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.PORTER_DYNAMIC_PAOINFO),
-                new DynamicPaoInfoRequestSerializer(),
-                new DynamicPaoInfoResponseSerializer());
+    @Autowired
+    PorterDynamicPaoInfoServiceImpl(String queueName, ConnectionFactory connectionFactory) {
+        thriftMessenger = new ThriftRequestReplyTemplate<>(connectionFactory, queueName, serializer, deserializer);
     }
     
     private DynamicPaoInfoResponse requestInfoFromPorter(DynamicPaoInfoRequest requestMsg)

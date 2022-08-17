@@ -19,26 +19,15 @@ yukon.deviceConfig.summary = (function () {
             
             if (_initialized) return;
             
-            $('#selectedConfigurations').chosen({width: "300px"});
-            
             $(document).on('click', '.js-device-action', function () {   
                 var deviceId = $(this).data('deviceId'),
                     action = $(this).data('action');
                 $.ajax({
                     url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/' + action),
                     type: 'post'
-                }).done(function (data) {
-                    if (data.successMessage) {
-                        yukon.ui.alertSuccess(yukon.escapeXml(data.successMessage));
-                        //refresh row
-                        $.ajax(yukon.url('/deviceConfiguration/summary/' + deviceId + '/refreshDeviceRow'))
-                        .done(function (rowData) {
-                            //remove any existing view history dialogs
-                            $('.js-view-history-' + deviceId).remove();
-                            var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
-                            deviceRow.html(rowData).flash();
-                        });
-                    }
+                }).done(function () {
+                    $(document).scrollTop(0);
+                    window.location.reload();
                 });
             });
             
@@ -64,37 +53,8 @@ yukon.deviceConfig.summary = (function () {
                 window.location = yukon.url('/deviceConfiguration/summary/download?' + data);
             });
             
-            $(document).on('click', '.js-filter-configs', function() {
-                var tableContainer = $('#results-container'),
-                    form = $('#filter-form');
-                form.ajaxSubmit({
-                    success: function(data, status, xhr, $form) {
-                        tableContainer.html(data);
-                        tableContainer.data('url', yukon.url('/deviceConfiguration/summary/filter?' + form.serialize()));
-                        yukon.ui.unbusy($('.js-filter-configs'));
-                    }
-                });   
-            });
-            
             _initialized = true;
 
-        },
-        
-        refreshCheck: function (deviceId) {
-            return function (data) {
-                var isActionFinished = data.isInProgress === 'false';
-                if (isActionFinished) {
-                    //refresh row
-                    $.ajax(yukon.url('/deviceConfiguration/summary/' + deviceId + '/refreshDeviceRow'))
-                    .done(function (rowData) {
-                        var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
-                        deviceRow.html(rowData).flash();
-                        //stop data updaters
-                        var idMap = {isInProgress : "DEVICE_CONFIG_SUMMARY/" + deviceId + "/IS_IN_PROGRESS"};
-                        yukon.dataUpdater.unRegisterCallback(idMap);
-                    });
-                }
-            }
         },
 
     };

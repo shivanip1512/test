@@ -14,15 +14,6 @@ using namespace std;
 
 namespace Cti {
 
-namespace   {
-
-void applyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
-{
-    Device->resetUpdatedFlag();
-}
-
-}   // anon
-
 void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, int type)
 {
     Inherited::refreshDeviceProperties(paoids, type);
@@ -46,8 +37,8 @@ bool ScannableDeviceManager::shouldDiscardDevice(CtiDeviceSPtr dev) const
         return true;
     }
 
-    //  then look to see if the device has a scan rate or is collecting load profile and is enabled (non-inhibited)
-    if( dev && dev->isSingle() && ! dev->isInhibited() )
+    //  then look to see if the device has a scan rate or is collecting load profile
+    if( dev && dev->isSingle() )
     {
         CtiDeviceSingleSPtr devSingle = boost::static_pointer_cast<CtiDeviceSingle>(dev);
 
@@ -84,18 +75,14 @@ void ScannableDeviceManager::refreshAllDevices()
     map<int, Database::id_set > type_paoids;
 
     {
-        static const string sql =
-            "SELECT "
-                "DISTINCT YP.PAObjectID, YP.Type "
-            "FROM "
-                "YukonPAObject YP "
-                    "LEFT OUTER JOIN DEVICESCANRATE DSR ON DSR.DEVICEID = YP.PAObjectID "
-                    "LEFT OUTER JOIN DEVICELOADPROFILE DLP ON DLP.DEVICEID = YP.PAObjectID "
-                    "LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DEVICEID = YP.PAObjectID "
-                    "LEFT OUTER JOIN YukonPAObject PORTPAO ON PORTPAO.PAObjectID = DDCS.PORTID "
-            "WHERE "
-                "(DSR.DEVICEID IS NOT NULL OR DLP.LOADPROFILECOLLECTION != 'NNNN') "
-                    "AND (PORTPAO.DisableFlag IS NULL OR PORTPAO.DisableFlag != 'Y')";
+        static const string sql =  "SELECT YP.paobjectid, YP.type "
+                                   "FROM yukonpaobject YP "
+                                   "WHERE YP.paobjectid IN (SELECT DSR.deviceid "
+                                                           "FROM devicescanrate DSR "
+                                                           "UNION "
+                                                           "SELECT DLP.deviceid "
+                                                           "FROM deviceloadprofile DLP "
+                                                           "WHERE DLP.loadprofilecollection != 'NNNN')";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
@@ -128,19 +115,12 @@ void ScannableDeviceManager::refreshAllDevices()
         CTILOG_INFO(dout, "loaded "<< load_count <<" scannables ");
     }
 
-    // this 'full reload' code is not calling the 'full reload' code of the base class.  This resets the update
-    //  flag on all devices so the device eviction code that follows works correctly.
-    apply(applyDeviceResetUpdated, NULL);
-
     map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
 
     for( itr = type_paoids.begin(); itr != itr_end; ++itr )
     {
         Inherited::refreshList(itr->second, itr->first);
     }
-
-    // evict any non-updated devices
-    evictDevices( getDiscardableDevices() );
 }
 
 

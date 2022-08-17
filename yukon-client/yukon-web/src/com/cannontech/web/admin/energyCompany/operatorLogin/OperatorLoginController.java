@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -21,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.UsersEventLogService;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -50,6 +49,7 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.model.Login;
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
@@ -70,8 +70,6 @@ public class OperatorLoginController {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private UsersEventLogService usersEventLogService; 
-    
-    private static final Logger log = YukonLogManager.getLogger(OperatorLoginController.class);
     
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                ModelMap modelMap,
@@ -338,7 +336,7 @@ public class OperatorLoginController {
             StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup, userContext.getYukonUser());
         }
         jsonResponse.put("loginStatus", liteUser.getLoginStatus().name());
-        jsonResponse.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-disable" : "icon-accept");
+        jsonResponse.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-delete" : "icon-accept");
         return jsonResponse;
     }
     
@@ -354,17 +352,12 @@ public class OperatorLoginController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         // Delete user
-        try {
-            yukonUserDao.deleteUser(operatorLogin.getUserId());
-            usersEventLogService.userDeleted(operatorLogin.getUsername(), userContext.getYukonUser());
-            // Add message
-            flashScope.setConfirm(
-                    new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));
-        } catch (Exception e) {
-            log.error("Failed to delete User "+ e.getMessage());
-            flashScope.setError(
-                    new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorDeleteFailure"));
-        }
+        yukonUserDao.deleteUser(operatorLogin.getUserId());
+        usersEventLogService.userDeleted(operatorLogin.getUsername(), userContext.getYukonUser());
+        
+        // Add message
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));
+        
         return "redirect:home";
     }
     

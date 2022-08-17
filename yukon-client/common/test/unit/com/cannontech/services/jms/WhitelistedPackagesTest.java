@@ -1,7 +1,5 @@
 package com.cannontech.services.jms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -14,8 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.RegexPatternTypeFilter;
@@ -60,7 +59,7 @@ public class WhitelistedPackagesTest {
         serializablePackages = ImmutableList.of("java.lang","javax.security","java.util","javax.jms","com.thoughtworks.xstream.mapper","org.joda","com.google.common.collect","com.cannontech");
     }
 
-    @BeforeEach
+    @Before
     public void setup() {
         excludeClassMap = new HashMap<String, List<Class<?>>>();
         List<Class<?>> excludeClassList = new ArrayList<Class<?>>();
@@ -107,11 +106,11 @@ public class WhitelistedPackagesTest {
             packages = getPackages(trustedPackages);
             for (Package pkg : packages) {
                 isFound = checkInPackages(pkg);
-                assertEquals(true, isFound);
+                Assert.assertEquals(true, isFound);
             }
         } catch (ClassNotFoundException | IntrospectionException e) {
 
-            assertEquals(true, isFound);
+            Assert.assertEquals(true, isFound);
         }
     }
 

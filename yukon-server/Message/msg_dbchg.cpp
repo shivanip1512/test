@@ -86,10 +86,4 @@ string    CtiDBChangeMsg::getCategory() const        { return _category; }
 string    CtiDBChangeMsg::getObjectType() const      { return _objecttype; }
 INT          CtiDBChangeMsg::getTypeOfChange() const    { return _typeofchange; }
 
-std::size_t CtiDBChangeMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   dynamic_sizeof( _category )
-        +   dynamic_sizeof( _objecttype );
-}
 

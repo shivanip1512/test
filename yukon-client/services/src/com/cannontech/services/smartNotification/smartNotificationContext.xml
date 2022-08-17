@@ -7,22 +7,51 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     
     <!-- Smart Notification Deciders -->
-    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotifInfrastructureWarningsDecider"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotifDeviceDataMonitorDecider"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotificationWatchdogDecider"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDataImportDecider"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.MeterDrDecider"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.EatonCloudDrDecider"/>
+    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDeciderServiceImpl"/>
+    <bean id="infrastructureWarningsNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotifInfrastructureWarningsDecider"/>
+    <bean id="deviceDataMonitorNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotifDeviceDataMonitorDecider"/>
+    <bean id="watchdogNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationWatchdogDecider"/>
+    <bean id="dataImportNotifListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDataImportDecider"/>
+    <bean id="meterDrListener" class="com.cannontech.services.smartNotification.service.impl.MeterDrDecider"/>
     
-    <bean id="smartNotificationDeciderListener" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDeciderServiceImpl"/>
+    
+    
+    <!-- Decider Queue Definitions -->
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event" />
-        <property name="pubSubDomain" value="false"/>
-        <property name="concurrentConsumers" value="1"/>
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.deviceDataMonitor" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
         <property name="connectionFactory" ref="connectionFactory" />
-        <property name="messageListener" ref="smartNotificationDeciderListener"/>
+        <property name="messageListener" ref="deviceDataMonitorNotifListener" />
     </bean>
-   
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.infrastructureWarnings" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="infrastructureWarningsNotifListener" />
+    </bean>
+        <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.yukonWatchdog" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="watchdogNotifListener" />
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.dataImport" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="dataImportNotifListener" />
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifEvent.event.meterDr" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="meterDrListener" />
+    </bean>
     <!-- Message Assembler -->
     <bean id="smartNotificationMessageAssembler" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationMessageAssembler"/>
     
@@ -55,5 +84,4 @@
     <bean class="com.cannontech.services.smartNotification.service.impl.email.ServiceStatusWatchdogEmailFormatHandler"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.DataImportEmailBuilder"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.email.MeterDrEmailBuilder"/>
-    <bean class="com.cannontech.services.smartNotification.service.impl.email.EatonCloudDrEmailBuilder"/>
 </beans>

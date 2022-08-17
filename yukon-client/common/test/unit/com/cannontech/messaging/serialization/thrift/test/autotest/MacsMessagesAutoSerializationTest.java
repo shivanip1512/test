@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.test.autotest;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
 

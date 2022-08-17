@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Point Group
+
+*Request Parameter* :
+
+include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Copy/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Copy/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Copy/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Copy/http-response.adoc[]

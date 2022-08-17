@@ -1,15 +1,11 @@
 package com.cannontech.common.bulk.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import junit.framework.Assert;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.google.common.collect.Lists;
@@ -17,7 +13,7 @@ import com.google.common.collect.Lists;
 public class FdrTranslationManagerCsvHelperTest {
 private static FdrTranslationManagerCsvHelper helper;
     
-    @BeforeAll
+    @BeforeClass
     public static void setup() {
         helper = new FdrTranslationManagerCsvHelper();
     }
@@ -28,7 +24,7 @@ private static FdrTranslationManagerCsvHelper helper;
         String interfaceName = "INTERFACE";
         
         String output = helper.formatOptionForColumnHeader(optionString, interfaceName);
-        assertEquals("INTERFACE_TEST_TEST__TEST_TEST", output);
+        Assert.assertEquals("INTERFACE_TEST_TEST__TEST_TEST", output);
     }
     
     @Test
@@ -37,12 +33,12 @@ private static FdrTranslationManagerCsvHelper helper;
         List<String> list = Lists.newArrayList(array);
         helper.addDefaultExportColumnsToList(list);
         
-        assertTrue(list.contains("ONE"));
-        assertTrue(list.contains("TWO"));
-        assertTrue(list.contains("DEVICE_NAME"));
-        assertTrue(list.contains("DEVICE_TYPE"));
-        assertTrue(list.contains("POINT_NAME"));
-        assertTrue(list.contains("DIRECTION"));
+        Assert.assertTrue(list.contains("ONE"));
+        Assert.assertTrue(list.contains("TWO"));
+        Assert.assertTrue(list.contains("DEVICE_NAME"));
+        Assert.assertTrue(list.contains("DEVICE_TYPE"));
+        Assert.assertTrue(list.contains("POINT_NAME"));
+        Assert.assertTrue(list.contains("DIRECTION"));
     }
     
     @Test
@@ -56,14 +52,14 @@ private static FdrTranslationManagerCsvHelper helper;
         String deviceNameSpace = "DEVICE NAME";
         String other = "OTHER";
         
-        assertTrue(helper.matchesDefaultColumn(action));
-        assertTrue(helper.matchesDefaultColumn(deviceName));
-        assertTrue(helper.matchesDefaultColumn(deviceType));
-        assertTrue(helper.matchesDefaultColumn(pointName));
-        assertTrue(helper.matchesDefaultColumn(direction));
-        assertFalse(helper.matchesDefaultColumn(actionLc));
-        assertFalse(helper.matchesDefaultColumn(other));
-        assertFalse(helper.matchesDefaultColumn(deviceNameSpace));
+        Assert.assertTrue(helper.matchesDefaultColumn(action));
+        Assert.assertTrue(helper.matchesDefaultColumn(deviceName));
+        Assert.assertTrue(helper.matchesDefaultColumn(deviceType));
+        Assert.assertTrue(helper.matchesDefaultColumn(pointName));
+        Assert.assertTrue(helper.matchesDefaultColumn(direction));
+        Assert.assertFalse(helper.matchesDefaultColumn(actionLc));
+        Assert.assertFalse(helper.matchesDefaultColumn(other));
+        Assert.assertFalse(helper.matchesDefaultColumn(deviceNameSpace));
     }
     
     @Test
@@ -79,11 +75,11 @@ private static FdrTranslationManagerCsvHelper helper;
         String[] actionDirectionMissingArray = {"DEVICE_NAME", "DEVICE_TYPE", "POINT_NAME"};
         List<String> actionDirectionMissingList = Lists.newArrayList(actionDirectionMissingArray);
         
-        assertNull(helper.checkForMissingDefaultImportHeaders(allList));
-        assertEquals("ACTION", helper.checkForMissingDefaultImportHeaders(actionMissingList));
-        assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList));
-        assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList2));
-        assertEquals("ACTION, DIRECTION", helper.checkForMissingDefaultImportHeaders(actionDirectionMissingList));
+        Assert.assertNull(helper.checkForMissingDefaultImportHeaders(allList));
+        Assert.assertEquals("ACTION", helper.checkForMissingDefaultImportHeaders(actionMissingList));
+        Assert.assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList));
+        Assert.assertEquals("DIRECTION", helper.checkForMissingDefaultImportHeaders(directionMissingList2));
+        Assert.assertEquals("ACTION, DIRECTION", helper.checkForMissingDefaultImportHeaders(actionDirectionMissingList));
     }
     
     @Test
@@ -91,24 +87,20 @@ private static FdrTranslationManagerCsvHelper helper;
         String[] array = {" outerspace  ", "inner space"};
         List<String> output = helper.cleanAndValidateHeaders(array);
         
-        assertTrue(output.contains("OUTERSPACE"));
-        assertTrue(output.contains("INNERSPACE"));
+        Assert.assertTrue(output.contains("OUTERSPACE"));
+        Assert.assertTrue(output.contains("INNERSPACE"));
     }
     
-    @Test
+    @Test(expected=ImportFileFormatException.class)
     public void testCleanAndValidateHeaders2() throws ImportFileFormatException {
-        String[] array = { " s i m i l a r", "similar" };
-        Assertions.assertThrows(ImportFileFormatException.class, () -> {
-            helper.cleanAndValidateHeaders(array); // should throw exception
-        });
+        String[] array = {" s i m i l a r", "similar"};
+        helper.cleanAndValidateHeaders(array); //should throw exception
     }
-
-    @Test
+    
+    @Test(expected=ImportFileFormatException.class)
     public void testCleanAndValidateHeaders3() throws ImportFileFormatException {
-        String[] array = { "similar", "SIMILAR" };
-        Assertions.assertThrows(ImportFileFormatException.class, () -> {
-            helper.cleanAndValidateHeaders(array); // should throw exception
-        });
+        String[] array = {"similar", "SIMILAR"};
+        helper.cleanAndValidateHeaders(array); //should throw exception
     }
 
 }

@@ -32,7 +32,8 @@ using Cti::Logging::Range::Hex::operator<<;
 
 extern CtiDeviceManager DeviceManager;
 
-namespace Cti::Porter {
+namespace Cti    {
+namespace Porter {
 
 /* Threads that handle each port for communications */
 void PortRfDaThread(void *pid)
@@ -61,8 +62,7 @@ void PortRfDaThread(void *pid)
 
 RfDaPortHandler::RfDaPortHandler( Ports::RfDaPortSPtr &rf_da_port, CtiDeviceManager &deviceManager ) :
     UnsolicitedHandler(boost::static_pointer_cast<CtiPort>(rf_da_port), deviceManager),
-    _rf_da_port(rf_da_port),
-    _active_endpoint(nullptr)
+    _rf_da_port(rf_da_port)
 {
     Messaging::Rfn::E2eMessenger::registerDnpHandler(
             [&](const Messaging::Rfn::E2eMessenger::Indication &msg)
@@ -95,7 +95,6 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::Request msg;
 
     msg.rfnIdentifier = _rf_da_port->getRfnIdentifier();
-    msg.priorityClass = Messaging::Rfn::PriorityClass::RfDa;
 
     if( dr.outbound.empty() || ! dr.outbound.front() )
     {
@@ -107,7 +106,7 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     {
         const CtiOutMessage &om = *dr.outbound.front();
 
-        msg.priority   = std::clamp<int>(om.Priority, 1, MAXPRIORITY);
+        msg.priority   = clamp<1, MAXPRIORITY>(om.Priority);
 
         msg.expiration = om.ExpirationTime
                              ? CtiTime(om.ExpirationTime)
@@ -133,8 +132,6 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
     Messaging::Rfn::E2eMessenger::sendE2eAp_Dnp(msg, successCallback, failCallback);
 
     dr.last_outbound = CtiTime::now();
-
-    _last_endpoint_send_time = std::chrono::high_resolution_clock::now();
 
     return ClientErrors::None;
 }
@@ -303,26 +300,6 @@ void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
     }
 }
 
-
-bool RfDaPortHandler::isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const
-{
-    return std::chrono::high_resolution_clock::now() >= ( _last_endpoint_send_time + std::chrono::milliseconds( postCommWait ) );
+}
 }
 
-void RfDaPortHandler::setDeviceActive(const device_record& dr)
-{
-    _active_endpoint = &dr;
-}
-
-bool RfDaPortHandler::isDeviceActive(const device_record& dr)
-{
-    return _active_endpoint == &dr;
-}
-
-void RfDaPortHandler::clearActiveDevice(const device_record& dr)
-{
-    _active_endpoint = nullptr;
-}
-
-
-}

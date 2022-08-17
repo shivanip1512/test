@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,17 +25,18 @@ import com.cannontech.azure.service.AzureCloudService;
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.ConfigurationSettings;
 import com.cannontech.message.model.SystemData;
-import com.google.gson.Gson;
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol;
 import com.microsoft.azure.sdk.iot.device.IotHubEventCallback;
 import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.ProxySettings;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.Device;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 
 /**
  * This service connects to IOT hub and push data on it.
- * It will be pushing telemetry data to show on IOT dashboard.
+ * It will be pushing telemetry and property data to show on IOT dashboard.
  */
 @Service
 public class IOTHubService extends AzureCloudService {
@@ -103,42 +107,70 @@ public class IOTHubService extends AzureCloudService {
     }
 
     private void prepareAndPushData() throws IllegalArgumentException, UnsupportedOperationException, IOException {
-        ConcurrentHashMap<String, Object> telemetryData = new ConcurrentHashMap<>();
+        List<String> telemetryData = new ArrayList<>();
+        Set<Property> propertyData = new HashSet<>();
+        
+        // Prepare telemetry and property data.
+        prepareData(telemetryData , propertyData);
 
-        // Prepare telemetry data.
-        prepareData(telemetryData);
-
-        // Push telemetry data to IOT hub.
+        // Push telemetry and property data to IOT hub.
         pushTelemetryData(telemetryData);
+        pushPropertyData(propertyData);
     }
 
-    private void prepareData(Map<String, Object> telemetryData) {
+    private void prepareData(List<String> telemetryData, Set<Property> propertyData) {
         Map<String, SystemData> data = dataProviderService.getSystemInformation();
         for (Map.Entry<String, SystemData> entry : data.entrySet()) {
             IOTDataType dataType = entry.getValue().getIotDataType();
             String fieldName = entry.getValue().getFieldName();
-            Object fieldValue = entry.getValue().getFieldValue();
-            if (dataType == IOTDataType.TELEMETRY) {
-                telemetryData.put(fieldName, fieldValue);
+            String fieldValue = entry.getValue().getFieldValue();
+            if (dataType == IOTDataType.TELEMETRY || dataType == IOTDataType.BOTH) {
+                telemetryData.add(buildTelemetryDataString(fieldName, fieldValue));
+            }
+            if (dataType == IOTDataType.PROPERTY || dataType == IOTDataType.BOTH) {
+                propertyData.add(new Property(fieldName, fieldValue));
             }
         }
     }
 
     /**
-     * Build and push telemetry data in json format.
+     * Build telemetry data string in {"fieldName": fieldValue} format.
      */
-    private void pushTelemetryData(Map<String, Object> telemetryData) {
-        Gson gson = new Gson();
-        Message message = new Message(gson.toJson(telemetryData));
-        message.setContentEncoding("utf-8");
-        message.setContentTypeFinal("application/json");
-        client.sendEventAsync(message, new EventCallback(), message);
+    private String buildTelemetryDataString (String fieldName, String fieldValue) {
+        return "{\"" + fieldName + "\":" + fieldValue + "}";
     }
 
+    private void pushTelemetryData(List<String> telemetryData) {
+        Message message = new Message(telemetryData.toString());
+        client.sendEventAsync(message, new EventCallback(), new Object());
+    }
+
+    private void pushPropertyData(Set<Property> propertyData)
+            throws IllegalArgumentException, UnsupportedOperationException, IOException {
+        Device dataCollector = new Device() {
+            @Override
+            public void PropertyCall(String propertyKey, Object propertyValue, Object context) {
+                log.info(propertyKey + " changed to " + propertyValue);
+            }
+        };
+        client.startDeviceTwin(new DeviceTwinStatusCallBack(), null, dataCollector, null);
+
+        for (Property p : propertyData) {
+            dataCollector.setReportedProp(new Property(p.getKey(), p.getValue()));
+        }
+        client.sendReportedProperties(dataCollector.getReportedProp());
+    }
 
     private class EventCallback implements IotHubEventCallback {
         public void execute(IotHubStatusCode status, Object context) {
             log.info("IoT Hub responded to message with status: " + status.name());
+        }
+    }
+    
+    private class DeviceTwinStatusCallBack implements IotHubEventCallback {
+        @Override
+        public void execute(IotHubStatusCode status, Object context) {
+            log.info("IoT Hub responded to device twin operation with status " + status.name());
         }
     }
 

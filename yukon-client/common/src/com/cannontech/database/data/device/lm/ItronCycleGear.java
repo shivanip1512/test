@@ -13,7 +13,7 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
     
     public static final String SETTER_COLUMNS[] = { "CycleOption" };
     public static final String CONSTRAINT_COLUMNS[] = { "GearId" };
-    public static final String TABLE_NAME = "LMConfigurableCycleGear";
+    public static final String TABLE_NAME = "LMItronCycleGear";
 
     public ItronCycleGear() {
         setControlMethod(GearControlMethod.ItronCycle);

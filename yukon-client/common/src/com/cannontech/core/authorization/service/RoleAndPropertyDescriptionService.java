@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.core.roleproperties.AccessLevel;
 import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -162,20 +161,6 @@ public class RoleAndPropertyDescriptionService {
             try {
                 MasterConfigBoolean key = MasterConfigBoolean.valueOf(someEnumName);
                 boolean configValue = configurationSource.getBoolean(key);
-
-                UserChecker propertyChecker = configValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
-                if (inverted) {
-                    propertyChecker = configValue ? UserCheckerBase.FALSE : UserCheckerBase.TRUE;
-                }
-                checkers.add(propertyChecker);
-                continue;
-            } catch (IllegalArgumentException ignore) {
-                // It's not a master.cfg boolean.
-            }
-            
-            try {
-                MasterConfigLicenseKey key = MasterConfigLicenseKey.valueOf(someEnumName);
-                boolean configValue = configurationSource.isLicenseEnabled(key);
 
                 UserChecker propertyChecker = configValue ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {

@@ -30,7 +30,7 @@
                 <cti:url var="editUrl" value="/stars/consumer/contacts/edit">
                     <cti:param name="contactId" value="${primaryContact.contactID}"/>
                 </cti:url>
-                <a href="${editUrl}" class="fr button naked"><cti:icon icon="icon-pencil"/><span class="b-label"><i:inline key=".editContact"/></span></a>
+                <a href="${editUrl}" class="fr button naked"><i class="icon icon-pencil"></i><span class="b-label"><i:inline key=".editContact"/></span></a>
             </h3>
             <c:if test="${fn:length(primaryContact.liteContactNotifications) eq 0}">
                 <h4><i:inline key=".noNotifications" /></h4>
@@ -70,7 +70,7 @@
                         <cti:url var="editUrl" value="/stars/consumer/contacts/edit">
                             <cti:param name="contactId" value="${contact.contactID}"/>
                         </cti:url>
-                        <a href="${editUrl}" class="fr button naked"><cti:icon icon="icon-pencil"/><span class="b-label"><i:inline key=".editContact"/></span></a>
+                        <a href="${editUrl}" class="fr button naked"><i class="icon icon-pencil"></i><span class="b-label"><i:inline key=".editContact"/></span></a>
                     </h3>
                     <c:if test="${fn:length(contact.liteContactNotifications) eq 0}">
                         <h4><i:inline key=".noNotifications" /></h4>

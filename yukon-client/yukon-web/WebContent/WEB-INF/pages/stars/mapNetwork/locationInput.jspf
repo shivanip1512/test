@@ -12,9 +12,9 @@
     <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="8" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
     ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="8" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="INTERACT">
-        <div class="button-group fr">
-            <cti:button renderMode="buttonImage" icon="icon-disk" classes="js-save-coordinates"/>
-            <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel"/>
+        <div class="dib vat fr">
+            <cti:button nameKey="save" classes="primary action js-save-coordinates MR0"/>
+            <cti:button nameKey="cancel" classes="js-cancel"/>
         </div>
     </cti:checkRolesAndProperties>
     <div class="js-location-error error"></div>

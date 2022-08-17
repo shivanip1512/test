@@ -51,7 +51,7 @@ public class HoneywellWifiMessageListener {
 
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDRDutyCycleEventForGroup(parameters);
-            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), Integer.toString(parameters.getEventId()), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
@@ -86,7 +86,7 @@ public class HoneywellWifiMessageListener {
             
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDRSetpointEventForGroup(parameters);
-            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), Integer.toString(parameters.getEventId()), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getStopTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
@@ -143,13 +143,12 @@ public class HoneywellWifiMessageListener {
      * HoneywellWifiDutyCycleDrParameters object.
      *
      * Load Management sends
-     * 1. Program ID       : signed int (32 bits) [0 if no program]
-     * 2. Group ID         : signed int (32 bits)
-     * 3. Duty Cycle       : signed char (8 bits)
-     * 4. Ramping option   : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
-     * 5. Mandatory        : signed char (8 bits)  [0 == optional, 1 == mandatory]
-     * 6. Start time       : signed int (32 bits) [seconds from 1970.01.01:UTC]
-     * 7. End time         : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 1. Program ID : signed int (32 bits) [0 if no program]
+     * 2. Group ID : signed int (32 bits)
+     * 3. Duty Cycle : signed char (8 bits)
+     * 4. Ramping option : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
+     * 5. Start time : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 6. End time : signed int (32 bits) [seconds from 1970.01.01:UTC]
      */
     private HoneywellWifiDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message)
             throws JMSException {
@@ -158,7 +157,6 @@ public class HoneywellWifiMessageListener {
         int groupId = message.readInt();
         int controlCyclePercent = message.readByte();
         byte rampingOptions = message.readByte();
-        byte mandatoryByte = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
@@ -167,7 +165,6 @@ public class HoneywellWifiMessageListener {
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampInOut = (rampingOptions & 2) == 2;
-        boolean optional = (mandatoryByte == 0);
         // If rampInOut is set then randomizationInterval is 30 else 0
         int randomizationInterval = (rampInOut ? 30 : 0);
         int eventId = nextValueHelper.getNextValue("HoneywellDREvent");
@@ -175,14 +172,13 @@ public class HoneywellWifiMessageListener {
         Duration controlDuration = new Duration(startTime, endTime);
         int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
         
-        log.trace("Parsed duty cycle dr parameters. Start time: {} ({}) End time: {} ({}) Ramp in-out: {} Optional: {}",
-                startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, rampInOut, optional);
+        log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds + ")"
+                + " End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in-out: " + rampInOut);
 
         return new HoneywellWifiDutyCycleDrParameters(programId,
                                                       eventId,
                                                       startTime,
                                                       endTime,
-                                                      optional,
                                                       dutyCyclePercent,
                                                       randomizationInterval,
                                                       groupId,

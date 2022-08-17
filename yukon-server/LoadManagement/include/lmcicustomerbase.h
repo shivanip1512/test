@@ -35,8 +35,6 @@ public:
     int operator==(const CtiLMCICustomerBase& right) const;
     int operator!=(const CtiLMCICustomerBase& right) const;
 
-    virtual std::size_t getMemoryConsumption() const;
-
     // Static Members
 
     // Possible acknowledge statuses

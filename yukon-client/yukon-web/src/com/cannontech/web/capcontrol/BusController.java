@@ -330,25 +330,15 @@ public class BusController {
             @RequestParam(value="children[]", required=false, defaultValue="") Integer[] feederIds,
             @RequestParam(value = "available[]", required = false, defaultValue = "") List<Integer> availableFeederIds) {
         boolean isCapbankAssigned = false;
-        boolean isFeederAssignedToVoltagePoint = false;
-        boolean isFeederAssignedToRegulator = false;
         if (!availableFeederIds.isEmpty()) {
             isCapbankAssigned = busService.isCapBanksAssignedToZone(availableFeederIds);
-            isFeederAssignedToVoltagePoint = busService.isFeedersAssignedToVoltagePointForZone(availableFeederIds);
-            isFeederAssignedToRegulator = busService.isFeedersAssignedToRegulatorForZone(availableFeederIds);
         }
         if (isCapbankAssigned) {
             flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.error"));
         } else {
-            if (isFeederAssignedToVoltagePoint) {
-                flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.voltagePoint.error"));
-            } else if (isFeederAssignedToRegulator) {
-                flash.setError(new YukonMessageSourceResolvable(busKey + ".feeders.update.regulatorPoint.error"));
-            } else {
-                busService.assignFeeders(busId, Arrays.asList(feederIds));
-                flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".feeders.updated"));
-                resp.setStatus(HttpStatus.NO_CONTENT.value());
-            }
+            busService.assignFeeders(busId, Arrays.asList(feederIds));
+            flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".feeders.updated"));
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
         }
     }
 }

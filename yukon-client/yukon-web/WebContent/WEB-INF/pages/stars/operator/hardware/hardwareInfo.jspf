@@ -114,10 +114,6 @@ $(function() { updateServiceCompanyInfo();});
                 <tags:inputNameValue nameKey=".installCode" path="installCode" disabled="false" maxlength="23" size="25"/>
             </c:if>
             
-            <c:if test="${showGuid}">
-              <tags:inputNameValue nameKey=".guid" path="guid"/>
-            </c:if>
-                 
             <c:if test="${showMacAddress}">
                 <c:choose>
                    <c:when test="${macAddressEditable}">
@@ -157,30 +153,9 @@ $(function() { updateServiceCompanyInfo();});
             </c:if>
             
             <c:if test="${showFirmwareVersion}">
-                 <c:choose>
-                   <c:when test="${firmwareVersionEditable}">
-                        <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"/>
-                   </c:when>
-                   
-                   <c:otherwise>
-                       <tags:nameValue2 nameKey=".firmwareVersion">
-                           <tags:bind path="firmwareVersion">
-                               <form:hidden path="firmwareVersion"/>
-                               ${fn:escapeXml(hardware.firmwareVersion)}
-                           </tags:bind>
-                       </tags:nameValue2>
-                   </c:otherwise>
-                </c:choose>
+                <tags:inputNameValue nameKey=".firmwareVersion" path="firmwareVersion"></tags:inputNameValue>
             </c:if>
             
-            <c:if test="${not empty IMEI}">
-                <tags:nameValue2 nameKey=".IMEI">${fn:escapeXml(IMEI)}</tags:nameValue2>
-            </c:if>
-             
-            <c:if test="${not empty IMEI}">
-                <tags:nameValue2 nameKey=".ICCID">${fn:escapeXml(ICCID)}</tags:nameValue2>
-            </c:if>
-
             <tags:inputNameValue nameKey=".label" path="displayLabel"/>
             
             <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber" readonly="${hardware.hardwareType.isNest()}" />
@@ -281,7 +256,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span class="success"  title="<cti:msg2 key=".assetAvailability.active.title"/>">
-                                        <i:inline key="${aaStatus}"/>
+                                        <i:inline key=".assetAvailability.active"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>
@@ -295,7 +270,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span title="<cti:msg2 key=".assetAvailability.inactive.title"/>">
-                                        <i:inline key="${aaStatus}"/>
+                                        <i:inline key=".assetAvailability.inactive"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>
@@ -309,7 +284,7 @@ $(function() { updateServiceCompanyInfo();});
                                 </c:when>
                                 <c:otherwise>
                                     <span title="<cti:msg2 key=".assetAvailability.unavailable.title"/>">
-                                        <i:inline key="${aaStatus}"/>
+                                        <i:inline key=".assetAvailability.unavailable"/>
                                     </span>
                                 </c:otherwise>
                             </c:choose>

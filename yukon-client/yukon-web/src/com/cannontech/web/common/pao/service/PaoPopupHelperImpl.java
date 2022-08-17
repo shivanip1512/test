@@ -49,7 +49,7 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
 
         List<String> header = Lists.newArrayList();
         header.add(accessor.getMessage("yukon.common.deviceName"));
-        header.add(accessor.getMessage("yukon.common.addressSerial"));
+        header.add(accessor.getMessage("yukon.common.address"));
         if (allRfn) {
             header.add(accessor.getMessage("yukon.common.deviceType"));
         } else {

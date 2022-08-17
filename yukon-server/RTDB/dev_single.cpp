@@ -729,7 +729,7 @@ std::string CtiDeviceSingle::eWordReport( const ESTRUCT &ESt, Cti::Optional<repe
 }
 
 
-YukonError_t CtiDeviceSingle::ProcessInMessageResult( const INMESS   &InMessage,
+YukonError_t CtiDeviceSingle::ProcessResult( const INMESS   &InMessage,
     const CtiTime   TimeNow,
     CtiMessageList &vgList,
     CtiMessageList &retList,

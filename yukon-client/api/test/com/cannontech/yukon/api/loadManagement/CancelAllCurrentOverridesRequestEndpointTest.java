@@ -1,10 +1,9 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.jdom2.Element;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -31,7 +30,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     
     private static final String RESP_ELEMENT_NAME = "cancelAllCurrentOverridesResponse";
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
     	mockOptOutService = new MockOptOutService();
@@ -71,7 +70,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
-        assertEquals(1, mockOptOutService.getCallCount(), "cancelAllOptOuts was not called");
+        Assert.assertEquals("cancelAllOptOuts was not called", 1, mockOptOutService.getCallCount());
         
         // create template and parse response data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(respElement);
@@ -87,13 +86,13 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
-        assertEquals(2, mockOptOutService.getCallCount(), "cancelAllOptOuts was not called");
+        Assert.assertEquals("cancelAllOptOuts was not called", 2, mockOptOutService.getCallCount());
         
         // create template and parse response data
         template = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
-        assertEquals("Program1", mockOptOutService.getProgramName(), "Wrong program name");
+        Assert.assertEquals("Wrong program name", "Program1", mockOptOutService.getProgramName());
         
     }
     

@@ -14,7 +14,7 @@
             <tags:nameValue2 nameKey=".group">
                  <c:choose>
                     <c:when test="${empty loadGroup.group && isViewMode}">
-                        <i:inline key="yukon.common.none"/>
+                        <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:when test="${empty loadGroup.group && not isViewMode}">
                         <tags:selectWithItems items="${groups}" path="group" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
@@ -27,7 +27,7 @@
             <tags:nameValue2 nameKey=".areaCode" rowClass="js-area-code-row">
                 <c:choose>
                     <c:when test="${empty loadGroup.areaCode && isViewMode}">
-                        <i:inline key="yukon.common.none"/>
+                        <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:when test="${empty loadGroup.areaCode && not isViewMode}">
                         <tags:selectWithItems items="${areaCodes}" path="areaCode" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
@@ -42,7 +42,7 @@
             <tags:nameValue2 nameKey=".control">
                 <c:choose>
                     <c:when test="${empty loadGroup.control}">
-                        <i:inline key="yukon.common.none"/>
+                        <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:otherwise>
                         ${loadGroup.control}
@@ -52,7 +52,7 @@
             <tags:nameValue2 nameKey=".restore">
                 <c:choose>
                     <c:when test="${empty loadGroup.restore}">
-                        <i:inline key="yukon.common.none"/>
+                        <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:otherwise>
                         ${loadGroup.restore}

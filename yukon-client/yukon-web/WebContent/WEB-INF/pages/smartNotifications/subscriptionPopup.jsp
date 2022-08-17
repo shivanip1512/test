@@ -9,13 +9,15 @@
     
     <input type="hidden" class="js-event-type-ddm" value="${eventTypeDDM}"/>
     <input type="hidden" class="js-event-type-asset-import" value="${eventTypeAssetImport}"/>
-    <input type="hidden" class="js-event-type-meter-dr" value="${eventTypeMeterDR}"/>
-    <input type="hidden" class="js-event-type-eaton-cloud-dr" value="${eventTypeEatonCloudDR}"/>
 
     <cti:url var="action" value="/notifications/subscription/saveDetails"/>
     <form:form id="notification-details" modelAttribute="subscription" action="${action}" method="POST">
         <cti:csrfToken/>
         <form:hidden path="id"/>
+        <span class="fr">
+            <cti:button renderMode="image" icon="icon-help" classes="fr js-notifications-help"/>
+        </span><br/>
+        <tags:alertBox type="info" key=".popup.helpText" classes="dn js-user-message" includeCloseButton="true"/>
 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".type">
@@ -74,8 +76,7 @@
                 <tags:input path="recipient" size="30" maxlength="100"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".detail">
-                <tags:selectWithItems path="verbosity" items="${detailTypes}" inputClass="js-detail"/>
-                <input type="hidden" name="verbosity" value="SUMMARY" class="js-detail-hidden" disabled="disabled"/>
+                <tags:selectWithItems path="verbosity" items="${detailTypes}"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
 

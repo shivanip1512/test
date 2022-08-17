@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="On Timer+Change"/>
  *     &lt;enumeration value="Constant"/>
  *     &lt;enumeration value="Historical"/>
- *     &lt;enumeration value="Backfilling"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -41,9 +40,7 @@ public enum UpdateTypeType {
     @XmlEnumValue("Constant")
     CONSTANT("Constant"),
     @XmlEnumValue("Historical")
-    HISTORICAL("Historical"),
-    @XmlEnumValue("Backfilling")
-    BACKFILLING("Backfilling");
+    HISTORICAL("Historical");
     private final String value;
 
     UpdateTypeType(String v) {

@@ -51,7 +51,7 @@ BILLING_ERRORS = {
         <ct:sectionContainer title="${formatSetup}" id="dbgFormatSetup">
             <ct:nameValueContainer2>
                 <ct:nameValue2 nameKey=".nameOfFormat" >
-                    <input type="text" onkeyup="updateFormatName()" name="formatName" class="fl w300" id="formatName" value="<c:out value="${format.name}"/>" ><span class="error">*</span>
+                    <input type="text" onkeyup="updateFormatName()" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span class="error">*</span>
                 </ct:nameValue2>
                 <ct:nameValue2 nameKey=".delimiter">
                     <select  name="delimiterChoice" id="delimiterChoice" onchange="updateDelimiter();">
@@ -90,8 +90,8 @@ BILLING_ERRORS = {
                 <div class="column one">
             <%--  FIELD SETUP --%>
                     <ct:sectionContainer2 nameKey=".fieldSetup" id="dbgFieldSetup">
-                    <div><h4 class="di fl"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span></div>
-                    <div class="clear">
+                    <div><h4 style="display: inline;"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span></div>
+                    <div>
                         <div>
                             <select id="selectedFields" name="selectedFields" style="width:260px;" size="7" onchange="selectedFieldsChanged()" >
                                 <c:forEach var="field" items="${selectedFields}" varStatus="status">
@@ -111,22 +111,22 @@ BILLING_ERRORS = {
                             <cti:button id="upArrowButton" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" label="${moveUp}" disabled="true"/>
                             <cti:button id="downArrowButton" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" label="${moveDown}" disabled="true"/>
                             <cti:button id="removeButton" onclick="removeFromSelected();" label="${remove}" disabled="true"/>
-                            <cti:button id="addButton" onclick="addFieldButton();" label="${addFields}" classes="MR0"/>
+                            <cti:button id="addButton" onclick="addFieldButton();" label="${addFields}"/>
                             
                         </div>
                         
-                        <div id="addFieldsDropDown" style="display:none; width: 500px">
+                        <div id="addFieldsDropDown" style="display:none;">
                             <br>
                             <h4 style="display: inline;"><cti:msg2 key=".availableFields"/></h4><br>
-                            <select id="availableFields" name="availableFields" style="width:260px;" class="MT5">
+                            <select id="availableFields" name="availableFields" style="width:260px;" >
                                 <c:forEach var="field" items="${availableFields}">
                                     <option>${field}</option>
                                 </c:forEach>
                             </select>&nbsp;
                             <cti:msg2 key=".add" var="add" />
                             <cti:msg2 key=".done" var="done" />
-                            <cti:button onclick="addToSelected('${defaultRoundingMode}');" label="${add}" classes="MT5"/>
-                            <cti:button onclick="addFieldButton();" label="${done}" classes="MT5"/>
+                            <cti:button onclick="addToSelected('${defaultRoundingMode}');" label="${add}"/>
+                            <cti:button onclick="addFieldButton();" label="${done}"/>
                         </div>
                     </div>
                     </ct:sectionContainer2>

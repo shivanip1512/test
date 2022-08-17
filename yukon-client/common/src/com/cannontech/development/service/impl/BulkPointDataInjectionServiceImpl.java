@@ -17,7 +17,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -37,7 +36,6 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
-    @Autowired private AttributeDao attributeDao;
     @Autowired RphSimulatorDao rphSimulatorDao;
 
     @Override
@@ -100,7 +98,8 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
         log.info("[Bulk injector] ----------Starting bulk point injection----------");
         if (CollectionUtils.isEmpty(bulkInjection.getYukonPaos())) {
             DeviceGroup group = deviceGroupService.resolveGroupName(bulkInjection.getGroupName());
-            List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, bulkInjection.getAttribute());
+            List<SimpleDevice> supportedDevices =
+                attributeService.getDevicesInGroupThatSupportAttribute(group, bulkInjection.getAttribute());
             int deviceCount = 0;
             for (SimpleDevice device : supportedDevices) {
                 log.debug("[Bulk injector] #" + ++deviceCount + " Device " + device.getPaoIdentifier());
@@ -192,7 +191,8 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
 
     private List<LitePoint> getLitePointListOfDevicesInGroupWithAttribute(BulkFakePointInjectionDto bulkInjection) {
         DeviceGroup group = deviceGroupService.resolveGroupName(bulkInjection.getGroupName());
-        List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(group, bulkInjection.getAttribute());
+        List<SimpleDevice> supportedDevices =
+            attributeService.getDevicesInGroupThatSupportAttribute(group, bulkInjection.getAttribute());
         return getLitePointsFromSimpleDevicesWithAttribute(supportedDevices, bulkInjection.getAttribute());
     }
 

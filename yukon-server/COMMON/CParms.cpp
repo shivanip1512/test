@@ -268,34 +268,16 @@ CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
     return retStr;
 }
 
-std::optional<int> CtiConfigParameters::findValueAsInt(const string& key)
-{
-    if( isOpt(key) )
-    {
-        return atoi(getValueAsString(key).c_str());
-    }
-
-    return std::nullopt;
-}
-
 int CtiConfigParameters::getValueAsInt(const string& key, int defaultval)
 {
-    return findValueAsInt(key).value_or(defaultval);
-}
+    int ret = defaultval;
 
-unsigned CtiConfigParameters::getValueAsUnsigned(const string& key, unsigned defaultval)
-{
-    if( const auto str = getValueAsString(key);
-        ! str.empty() )
+    if(isOpt(key))
     {
-        char* end = nullptr;
-        const auto val = strtoull(str.c_str(), &end, 10);
-        if( end != str.c_str() && val <= std::numeric_limits<unsigned>::max() )
-        {
-            return val;
-        }
+        ret = atoi(getValueAsString(key).c_str());
     }
-    return defaultval;
+
+    return ret;
 }
 
 ULONG CtiConfigParameters::getValueAsULong(const string& key, ULONG defaultval, int base)

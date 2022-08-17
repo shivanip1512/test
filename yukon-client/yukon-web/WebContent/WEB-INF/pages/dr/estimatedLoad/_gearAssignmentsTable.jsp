@@ -27,11 +27,11 @@
                                  <td><i:inline key="${gearAssignment.gear.controlMethod}"/></td>
                                  <td>
                                     <cti:url var="programUrl" value="/dr/program/detail">
-                                        <cti:param name="programId" value="${gearAssignment.gear.programId}"/>
+                                        <cti:param name="programId" value="${gearAssignment.gear.deviceId}"/>
                                     </cti:url>
-                                    <a href="${programUrl}">${fn:escapeXml(gearPrograms[gearAssignment.gear.programId].paoName)}</a>
+                                    <a href="${programUrl}">${fn:escapeXml(gearPrograms[gearAssignment.gear.deviceId].paoName)}</a>
                                  </td>
-                                 <td id="formula-picker-row-gear_${gearAssignment.gear.gearId}">
+                                 <td id="formula-picker-row-gear_${gearAssignment.gear.yukonID}">
                                      <%@ include file="_gearFormulaPicker.jsp" %>
                                  </td>
                          </tr>

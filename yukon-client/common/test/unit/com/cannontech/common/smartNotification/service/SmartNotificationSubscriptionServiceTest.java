@@ -1,13 +1,12 @@
 package com.cannontech.common.smartNotification.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
@@ -17,12 +16,14 @@ import com.cannontech.common.smartNotification.model.SmartNotificationSubscripti
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+import static org.junit.Assert.assertEquals;
+
 public class SmartNotificationSubscriptionServiceTest {
 
     private List<DeviceDataMonitor> deviceDataMonitorList = Lists.newArrayList();
     private DeviceDataMonitor deviceDataMonitor = null;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         SmartNotificationSubscription smartNotificationSubscriptionIW = new SmartNotificationSubscription();
         smartNotificationSubscriptionIW.setType(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
@@ -32,7 +33,7 @@ public class SmartNotificationSubscriptionServiceTest {
         deviceDataMonitorList.add(deviceDataMonitor);
     }
 
-    @AfterEach
+    @After
     public void tearDown() throws Exception {
         deviceDataMonitorList.clear();
     }

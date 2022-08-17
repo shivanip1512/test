@@ -9,9 +9,10 @@
     </tags>
     <pointInfos>
         <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
 
         <pointInfo name="Relay 1 Call for Cool" init="true" attributes="RELAY_1_CALL_FOR_COOL"/>
-        <pointInfo name="Relay 1 Load State" attributes="RELAY_1_LOAD_STATE"/>
+        <pointInfo name="Relay 1 Relay State" init="true" attributes="RELAY_1_RELAY_STATE"/>
         <pointInfo name="Relay 1 Run Time Data Log" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 1 Run Time Data Log 5 Minutes" attributes="RELAY_1_RUN_TIME_DATA_LOG_5_MIN"/>
         <pointInfo name="Relay 1 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG_15_MIN"/>
@@ -22,7 +23,8 @@
         <pointInfo name="Relay 1 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_1_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 1 Shed Time Data Log 30 Minutes" attributes="RELAY_1_SHED_TIME_DATA_LOG_30_MIN"/>
 
-        <pointInfo name="Relay 2 Load State" attributes="RELAY_2_LOAD_STATE"/>
+        <pointInfo name="Relay 2 Call for Cool" init="true" attributes="RELAY_2_CALL_FOR_COOL"/>
+        <pointInfo name="Relay 2 Relay State" init="true" attributes="RELAY_2_RELAY_STATE"/>
         <pointInfo name="Relay 2 Run Time Data Log" attributes="RELAY_2_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 2 Run Time Data Log 5 Minutes" attributes="RELAY_2_RUN_TIME_DATA_LOG_5_MIN"/>
         <pointInfo name="Relay 2 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_2_RUN_TIME_DATA_LOG_15_MIN"/>
@@ -33,26 +35,28 @@
         <pointInfo name="Relay 2 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 2 Shed Time Data Log 30 Minutes" attributes="RELAY_2_SHED_TIME_DATA_LOG_30_MIN"/>
 
-        <pointInfo name="Relay 3 Load State" attributes="RELAY_3_LOAD_STATE"/>
+        <pointInfo name="Relay 3 Call for Cool" init="true" attributes="RELAY_3_CALL_FOR_COOL"/>
+        <pointInfo name="Relay 3 Relay State" init="true" attributes="RELAY_3_RELAY_STATE"/>
         <pointInfo name="Relay 3 Run Time Data Log" attributes="RELAY_3_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 3 Run Time Data Log 5 Minutes" attributes="RELAY_3_RUN_TIME_DATA_LOG_5_MIN"/>
-        <pointInfo name="Relay 3 Run Time Data Log 15 Minutes" attributes="RELAY_3_RUN_TIME_DATA_LOG_15_MIN"/>
+        <pointInfo name="Relay 3 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_3_RUN_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 3 Run Time Data Log 30 Minutes" attributes="RELAY_3_RUN_TIME_DATA_LOG_30_MIN"/>
-        <pointInfo name="Relay 3 Shed Status" attributes="RELAY_3_SHED_STATUS"/>
+        <pointInfo name="Relay 3 Shed Status" init="true" attributes="RELAY_3_SHED_STATUS"/>
         <pointInfo name="Relay 3 Shed Time Data Log" attributes="RELAY_3_SHED_TIME_DATA_LOG"/>
         <pointInfo name="Relay 3 Shed Time Data Log 5 Minutes" attributes="RELAY_3_SHED_TIME_DATA_LOG_5_MIN"/>
-        <pointInfo name="Relay 3 Shed Time Data Log 15 Minutes" attributes="RELAY_3_SHED_TIME_DATA_LOG_15_MIN"/>
+        <pointInfo name="Relay 3 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_3_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 3 Shed Time Data Log 30 Minutes" attributes="RELAY_3_SHED_TIME_DATA_LOG_30_MIN"/>
 
-        <pointInfo name="Relay 4 Load State" attributes="RELAY_4_LOAD_STATE"/>
+        <pointInfo name="Relay 4 Call for Cool" init="true" attributes="RELAY_4_CALL_FOR_COOL"/>
+        <pointInfo name="Relay 4 Relay State" init="true" attributes="RELAY_4_RELAY_STATE"/>
         <pointInfo name="Relay 4 Run Time Data Log" attributes="RELAY_4_RUN_TIME_DATA_LOG"/>
         <pointInfo name="Relay 4 Run Time Data Log 5 Minutes" attributes="RELAY_4_RUN_TIME_DATA_LOG_5_MIN"/>
-        <pointInfo name="Relay 4 Run Time Data Log 15 Minutes" attributes="RELAY_4_RUN_TIME_DATA_LOG_15_MIN"/>
+        <pointInfo name="Relay 4 Run Time Data Log 15 Minutes" init="true" attributes="RELAY_4_RUN_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 4 Run Time Data Log 30 Minutes" attributes="RELAY_4_RUN_TIME_DATA_LOG_30_MIN"/>
-        <pointInfo name="Relay 4 Shed Status" attributes="RELAY_4_SHED_STATUS"/>
+        <pointInfo name="Relay 4 Shed Status" init="true" attributes="RELAY_4_SHED_STATUS"/>
         <pointInfo name="Relay 4 Shed Time Data Log" attributes="RELAY_4_SHED_TIME_DATA_LOG"/>
         <pointInfo name="Relay 4 Shed Time Data Log 5 Minutes" attributes="RELAY_4_SHED_TIME_DATA_LOG_5_MIN"/>
-        <pointInfo name="Relay 4 Shed Time Data Log 15 Minutes" attributes="RELAY_4_SHED_TIME_DATA_LOG_15_MIN"/>
+        <pointInfo name="Relay 4 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_4_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 4 Shed Time Data Log 30 Minutes" attributes="RELAY_4_SHED_TIME_DATA_LOG_30_MIN"/>
 
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
@@ -65,8 +69,5 @@
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
         <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
-        <pointInfo name="Event Started" attributes="EVENT_STARTED"/>
-        <pointInfo name="Event Cancelled" attributes="EVENT_CANCELLED"/>
-        <pointInfo name="Event Stopped" attributes="EVENT_STOPPED"/>
     </pointInfos>
 </pao>

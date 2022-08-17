@@ -1,8 +1,8 @@
 package com.cannontech.stars.energyCompany;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class EnergyCompanySettingTypeTest {
 

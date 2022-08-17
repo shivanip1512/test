@@ -50,814 +50,796 @@
     <Xml Include="..\..\yukon-shared\src\main\resources\error-code.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAPBANK.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAPBANKCONTROLLER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAP_CONTROL_AREA.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAP_CONTROL_FEEDER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAP_CONTROL_SPECIAL_AREA.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAP_CONTROL_SUBBUS.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CAP_CONTROL_SUBSTATION.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7010.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7011.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7012.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7020.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7022.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7023.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_7024.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_8020.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_8024.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_DNP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_EXPRESSCOM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_FP_2800.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\CBC_LOGICAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\FAULT_CI.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\GANG_OPERATED.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\LOAD_TAP_CHANGER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\NEUTRAL_MONITOR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\PHASE_OPERATED.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\702X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\802X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\CAPBANK.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\CAP_CONTROL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\FAULT_CI.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\NEUTRAL_MONITOR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\points\RFN_1200.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\capControl\RFN_1200.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\gateway\GWY800.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\gateway\points\GATEWAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\gateway\RFN_GATEWAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\gateway\VIRTUAL_GATEWAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR3102.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR6200_RFN.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR6600S.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR6600_RFN.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR6601S.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\LCR6700_RFN.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\points\ITRON_LCR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\points\LCR3102.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\lcr\points\RFN_LCR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_CONTROL_AREA.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_DIRECT_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_ECOBEE_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_DIGI_SEP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_ECOBEE.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_EMETCON.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_EXPRESSCOMM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_GOLAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_HONEYWELL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_ITRON.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_MCT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_METER_DISCONNECT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_NEST.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_POINT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_RFN_EXPRESSCOMM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_RIPPLE.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_SA205.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_SA305.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_SADIGITAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_GROUP_VERSACOM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_HONEYWELL_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_ITRON_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_METER_DISCONNECT_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_NEST_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_SCENARIO.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\LM_SEP_PROGRAM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\MACRO_GROUP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\points\LM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\points\ZIGBEE_ENDPOINT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\loadManagement\ZIGBEE_ENDPOINT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\ALPHA_A1.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\ALPHA_PPLUS.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\DCT_501.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\DR_87.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\FOCUS.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\FULCRUM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\ION_7330.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\ION_7700.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\ION_8300.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\IPC410FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\IPC420FD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\IPC430S4E.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\IPC430SL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\LANDISGYRS4.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\LMT_2.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT210.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT213.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT240.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT248.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT250.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310CT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310ID.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310IDL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310IL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT310IM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT318.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT318L.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT360.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT370.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT410CL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT410FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT410GL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT410IL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT420CD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT420CL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT420FD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT420FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT430A.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT430A3.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT430S4.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT430SL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT440_2131B.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT440_2132B.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT440_2133B.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCT470.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\MCTBROADCAST.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\ALPHA.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\DCT_501.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\DR_87.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\FOCUS.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\FULCRUM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\ION.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\IPC410FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\IPC420FD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\IPC430S4E.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\IPC430SL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\LANDISGYRS4.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\LMT_2.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT2XX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT31X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT360.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT370.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT43X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT44X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\MCT470.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\QUANTUM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\RFG.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\RFN.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\RFW.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\SENTINEL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\SIXNET.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\TRANSDATA_MARKV.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\points\VECTRON.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\QUANTUM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFG201.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFG301.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN410CL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN410FD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN410FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN410FX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420CD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420CL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420FD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420FRD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420FRX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN420FX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430A3D.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430A3K.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430A3R.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430A3T.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430KV.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430SL0.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430SL1.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430SL2.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430SL3.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN430SL4.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN440_2131TD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN440_2132TD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN440_2133TD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN510FL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN520FAX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN520FAXD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN520FRX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN520FRXD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530FAX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530FRX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530S4EAX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530S4EAXR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530S4ERX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530S4ERXR.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFN530S4X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFW201.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\RFWMETER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\SENTINEL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\SIXNET.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\TRANSDATA_MARKV.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\VECTRON.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\WRL420CD.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\meter\WRL420CL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\DIALOUT_POOL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\LOCAL_DIALBACK.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\LOCAL_DIALUP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\LOCAL_DIRECT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\LOCAL_RADIO.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\LOCAL_SHARED.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\points\PORT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\TCPPORT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\TSERVER_DIALUP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\TSERVER_DIRECT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\TSERVER_RADIO.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\TSERVER_SHARED.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\porter\UDP_PORT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\relay\points\RFN_RELAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\relay\RFN_RELAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\points\RTU.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTUILEX.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTUWELCO.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTU_DART.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTU_DNP.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\rtu\RTU_MODBUS.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\DAVISWEATHER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\points\SYSTEM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\points\WEATHER_LOCATION.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\ROUTE_RDS_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\ROUTE_SNPP_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\ROUTE_TAP_PAGING.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\ROUTE_TNPP_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\ROUTE_WCTP_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\SCRIPT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\SIMPLE_SCHEDULE.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\SYSTEM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\VIRTUAL_SYSTEM.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\system\WEATHER_LOCATION.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\ECOBEE_3.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\ECOBEE_3_LITE.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\ECOBEE_SMART.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\ECOBEE_SMART_SI.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\HONEYWELL_9000.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\HONEYWELL_FOCUSPRO.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\HONEYWELL_THERMOSTAT.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\HONEYWELL_VISIONPRO_8000.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\NEST.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\points\ECOBEE.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\thermostat\points\HONEYWELL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\CCU710A.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\CCU711.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\CCU721.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\DIGIGATEWAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\LCU415.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\LCULG.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\LCU_ER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\LCU_T3026.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\points\DIGIGATEWAY.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\points\TCU5X.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\points\TRANSMITTER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\RDS_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER_800.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER_801.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER_850.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER_902.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\REPEATER_921.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\RTC.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\SERIES_5_LMI.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\SNPP_TERMINAL.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\TAPTERMINAL.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\TCU5000.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\TCU5500.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\TNPP_TERMINAL.xml">
-      <Filter>XML Files</Filter>
-    </Xml>
-    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\transmitter\WCTP_TERMINAL.xml">
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml">
       <Filter>XML Files</Filter>
     </Xml>
   </ItemGroup>

@@ -33,10 +33,9 @@
                 <li class="divider"></li>
 
                 <!-- Delete -->
-                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                     data-ok-event="yukon:load-program:delete" />
-                <cti:msg2 var="userWarningMessage" key="yukon.web.modules.dr.setup.loadProgram.delete.warning"/>
-                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${loadProgram.name}" userMessage="${userWarningMessage}" userMessageClass="warning"/>
+                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${loadProgram.name}" />
                 <cti:url var="deleteUrl" value="/dr/setup/loadProgram/${loadProgram.programId}/delete" />
                 <form:form id="js-delete-load-program-form" action="${deleteUrl}" method="delete" modelAttribute="loadProgram">
                     <tags:hidden path="name" />
@@ -78,7 +77,7 @@
                 <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" maxlength="60"/>
+                            <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">
@@ -204,7 +203,7 @@
                                     </tags:nameValue2>
                                     <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
                                     <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}" >
-                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" wrapClass="${startTimeErrorWindowOne ? 'date-time-error' : ''}"/>
+                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" cssClass="${startTimeErrorWindowOne ? 'error' : ''}"/>
                                             <c:if test="${not empty startTimeErrorWindowOne}">
                                                 <br/></br>
                                                 <div class="error">
@@ -215,7 +214,7 @@
                                         <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" wrapClass="${stopTimeErrorWindowOne ? 'date-time-error' : ''}"/>
+                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" cssClass="${stopTimeErrorWindowOne ? 'error' : ''}"/>
                                             <c:if test="${not empty stopTimeErrorWindowOne}">
                                                 <br/></br>
                                                 <div class="error">
@@ -235,7 +234,7 @@
                                     </tags:nameValue2>
                                     <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
                                     <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"  wrapClass="${startTimeErrorWindowTwo ? 'date-time-error' : ''}"/>
+                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"  cssClass="${startTimeErrorWindowTwo ? 'error' : ''}"/>
                                             <c:if test="${not empty startTimeErrorWindowTwo}">
                                                 <br/></br>
                                                 <div class="error">
@@ -246,7 +245,7 @@
                                         <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"  wrapClass="${stopTimeErrorWindowTwo ? 'date-time-error' : ''}"/>
+                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"  cssClass="${stopTimeErrorWindowTwo ? 'error' : ''}"/>
                                             <c:if test="${not empty stopTimeErrorWindowTwo}">
                                                 <br/></br>
                                                 <div class="error">
@@ -440,7 +439,7 @@
 
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <cti:msg2 var="minutes" key="yukon.common.units.MINUTES" />
-                        <table class="compact-results-table no-stripes no-borders">
+                        <table class="compact-results-table no-stripes">
                             <tr>
                                 <td>
                                     <input type="checkbox" id="js-program-start-check" <c:if test="${not empty loadProgram.notification.programStartInMinutes}">checked="checked" </c:if>
@@ -579,4 +578,5 @@
     <cti:includeScript link="YUKON_TIME_FORMATTER" />
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.program.js" />
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.programGear.js" />
+    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY" />
 </cti:msgScope>

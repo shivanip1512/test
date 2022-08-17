@@ -69,26 +69,19 @@ yukon.da.capbank = (function () {
         var toggle = $('#customSizeCheckbox'),
             bankSize = $('#bankSize'),
             customBankSize = $('#customBankSize'),
-            active = toggle.prop('checked'),
-            customBankSizeErrors = $("#CapBank\\.bankSizeCustom\\.errors");
+            active = toggle.prop('checked');
     
         if (active) {
             var commValue = bankSize.val();
             bankSize.val(600);
             bankSize.addClass("dn");
             customBankSize.removeClass("dn");
-			if (customBankSizeErrors.exists()) {
-				customBankSizeErrors.removeClass("dn");
-			}
             if (initialized) 
                 customBankSize.val(commValue);
         } else {
             bankSize.removeClass("dn");
             customBankSize.val(null);
             customBankSize.addClass("dn");
-			if (customBankSizeErrors.exists()) {
-				customBankSizeErrors.addClass("dn");
-			}
             if (initialized) 
                 bankSize.val(600);
         }
@@ -167,11 +160,6 @@ yukon.da.capbank = (function () {
                 });
 
             });
-            
-            if ($("#CapBank\\.bankSizeCustom\\.errors").exists()) {
-                $(".js-custom-size-checkbox-container").insertBefore($("#CapBank\\.bankSizeCustom\\.errors").prev("br"));
-                $(".js-custom-size-checkbox-container").addClass("ML15");
-            }
             
             initialized = true;
             

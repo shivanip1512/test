@@ -129,7 +129,7 @@ $(document).on('click', '.dateTimeClear', function(event) {
 });
 </script>
 
-<table id="pointTable" class="compact-results-table no-stripes">
+<table id="pointTable" class="compact-results-table">
 <thead>
 <tr>
 <th>PaoIdentifier</th>

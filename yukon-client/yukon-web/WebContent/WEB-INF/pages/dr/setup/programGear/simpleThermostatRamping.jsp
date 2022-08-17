@@ -6,7 +6,25 @@
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".mode">
-                        <tags:radioButtonGroup items="${temperatureModes}" path="fields.mode" viewModeKey="${programGear.fields.mode}"/>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <c:forEach var="temperatureMode" items="${temperatureModes}" varStatus="status">
+                                <c:choose>
+                                    <c:when test="${status.index == 0}">
+                                        <c:set var="css" value="left yes ML0"/>
+                                    </c:when>
+                                    <c:when test="${status.index == fn:length(units)-1}">
+                                        <c:set var="css" value="right yes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="css" value="middle yes"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <tags:radio path="fields.mode" value="${temperatureMode}" classes="${css}" key=".${temperatureMode}" />
+                            </c:forEach>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.mode}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".randomStartTimeInMinutes" nameClass="vam">
                         <cti:msg var="randomStartTimeInMinutesRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0:00,2:00"/>

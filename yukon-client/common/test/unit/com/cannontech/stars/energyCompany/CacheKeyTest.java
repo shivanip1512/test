@@ -1,9 +1,9 @@
 package com.cannontech.stars.energyCompany;
 
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class CacheKeyTest {
 

@@ -65,26 +65,19 @@
                 <tags:inputNameValue inputClass="js-focus" nameKey=".nameOfFormat" path="formatName" size="50" maxlength="100"/>
                 
                 <tags:nameValue2 nameKey=".delimiter">
-                    <cti:displayForPageEditModes modes="CREATE,EDIT">
-                        <select name="delimiterSelect" id="delimiters">
-                            <c:forEach var="delimiter" items="${delimiters}">
-                                <c:choose>
-                                    <c:when test="${format.delimiterType == delimiter}">
-                                        <c:set var="selected">selected="selected"</c:set>
-                                    </c:when>
-                                    <c:otherwise><c:set var="selected" value=""/></c:otherwise>
-                                </c:choose>
-                                <option value="${delimiter.value}" type="${delimiter}" ${selected}>
-                                    <cti:msg2 key="${delimiter}"/>
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="VIEW">
-                        <c:if test="${not empty format.delimiter}">
-                            <cti:msg2 key="${format.delimiterType}"/>
-                        </c:if>
-                    </cti:displayForPageEditModes>
+                    <select name="delimiterSelect" id="delimiters">
+                        <c:forEach var="delimiter" items="${delimiters}">
+                            <c:choose>
+                                <c:when test="${format.delimiterType == delimiter}">
+                                    <c:set var="selected">selected="selected"</c:set>
+                                 </c:when>
+                                <c:otherwise><c:set var="selected" value=""/></c:otherwise>
+                            </c:choose>
+                            <option value="${delimiter.value}" type="${delimiter}" ${selected}>
+                                <cti:msg2 key="${delimiter}"/>
+                            </option>
+                        </c:forEach>
+                    </select>
                     <tags:input id="delimiter" path="delimiter" size="2" maxlength="1"/>
                 </tags:nameValue2>
                 
@@ -93,26 +86,17 @@
                 
 
                 <tags:nameValue2 nameKey=".timeZoneFormat">
-                    <cti:displayForPageEditModes modes="CREATE,EDIT">
-                        <form:select id="date-timezone-format" path="dateTimeZoneFormat">
-                            <c:forEach var="dateTZFormat" items="${dateTimeZoneFormats}">
-                                <form:option value="${dateTZFormat}">
-                                    <cti:msg2 key="${dateTZFormat}"/>
-                                </form:option>
-                            </c:forEach>
-                        </form:select>
-                    </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="VIEW">
-                        <c:if test="${not empty format}">
-                            <cti:msg2 key="${format.dateTimeZoneFormat}"/>
-                        </c:if>
-                    </cti:displayForPageEditModes>
+                    <form:select id="date-timezone-format" path="dateTimeZoneFormat">
+                        <c:forEach var="dateTZFormat" items="${dateTimeZoneFormats}">
+                            <form:option value="${dateTZFormat}">
+                                <cti:msg2 key="${dateTZFormat}"/>
+                            </form:option>
+                        </c:forEach>
+                    </form:select>
                 </tags:nameValue2>
                 <tags:nameValue2 excludeColon="true">
-                    <c:if test="${not empty format.dateTimeZoneFormat}">
-                        <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
-                        <tags:helpInfoPopup nameKey=".excludeAbnormal.help"/>
-                    </c:if>
+                    <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
+                    <tags:helpInfoPopup nameKey=".excludeAbnormal.help"/>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
@@ -137,25 +121,21 @@
                             <tr>
                                 <td>
                                     <tags:hidden path="attributes[${row.index}]"/>
-                                    <span><i:inline key="${attribute.attribute}" htmlEscape="true"/></span>
+                                    <span><i:inline key="${attribute.attribute}"/></span>
                                 </td>
                                 <td><span><cti:msg2 key="${attribute.dataSelection}"/></span></td>
                                 <td><span>${fn:escapeXml(attribute.daysPrevious)}</span></td>
                                 <td>
-                                    <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
-                                        <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
-                                    </cti:displayForPageEditModes>
+                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
+                                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
-                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                    <div class="action-area">
-                        <cti:button id="b-add-attribute" nameKey="add" icon="icon-add"/>
-                    </div>
-                </cti:displayForPageEditModes>
+                <div class="action-area">
+                    <cti:button id="b-add-attribute" nameKey="add" icon="icon-add"/>
+                </div>
             </tags:sectionContainer2>
         </c:if>
 
@@ -217,44 +197,38 @@
                                 <span><cti:msg2 key="${exportField.padSide}"/>&nbsp;&nbsp;${fn:escapeXml(exportField.padChar)}</span>
                             </td>
                             <td>
-                                <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <div class="button-group fr wsnw oh">
-                                        <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
-                                        <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
-                                        <c:set var="disableUp" value="${row.first}" />
-                                        <c:set var="disableDown" value="${row.last}" />
-                                        <cti:button icon="icon-bullet-go-up" classes="js-up right fn M0"
-                                                    renderMode="buttonImage" disabled="${disableUp}" />
-                                        <cti:button icon="icon-bullet-go-down" classes="js-down left fn M0"
-                                                    renderMode="buttonImage" disabled="${disableDown}" />
-                                    </div>
-                                </cti:displayForPageEditModes>
+                                <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
+                                    <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
+                                    <c:set var="disableUp" value="${row.first}" />
+                                    <c:set var="disableDown" value="${row.last}" />
+                                    <cti:button icon="icon-bullet-go-up" classes="js-up right fn M0"
+                                        renderMode="buttonImage" disabled="${disableUp}" />
+                                    <cti:button icon="icon-bullet-go-down" classes="js-down left fn M0"
+                                        renderMode="buttonImage" disabled="${disableDown}" />
+                                </div>
                             </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
-            <cti:displayForPageEditModes modes="CREATE,EDIT">
-                <div class="action-area">
-                    <cti:button id="b-add-field" nameKey="add" icon="icon-add"/>
-                </div>
-            </cti:displayForPageEditModes>
+            <div class="action-area">
+                <cti:button id="b-add-field" nameKey="add" icon="icon-add"/>
+            </div>
         </tags:sectionContainer2>
         
         <h3><i:inline key=".preview.title"/></h3>
-        <pre class="code"><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
-        
-        <cti:displayForPageEditModes modes="CREATE,EDIT"> 
-            <div class="page-action-area">
-                <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
-                <cti:displayForPageEditModes modes="EDIT">
-                    <cti:button id="deleteBtn" nameKey="delete" classes="delete" data-form="#delete-form"/>
-                    <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${format.formatName}"/>
-                </cti:displayForPageEditModes>
-                <cti:url value="/tools/data-exporter/view" var="cancelUrl"/>
-                <cti:button nameKey="cancel" href="${cancelUrl}"/>
-            </div>
-        </cti:displayForPageEditModes>
+        <pre><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+            
+        <div class="page-action-area">
+            <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:button id="deleteBtn" nameKey="delete" classes="delete" data-form="#delete-form"/>
+                <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${format.formatName}"/>
+            </cti:displayForPageEditModes>
+            <cti:url value="/tools/data-exporter/view" var="cancelUrl"/>
+            <cti:button nameKey="cancel" href="${cancelUrl}"/>
+        </div>
     </form:form>
     
     <cti:url var="deleteUrl" value="/tools/data-exporter/format/${format.formatId}"/>

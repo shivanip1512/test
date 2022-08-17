@@ -1,11 +1,11 @@
 package com.cannontech.core.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 

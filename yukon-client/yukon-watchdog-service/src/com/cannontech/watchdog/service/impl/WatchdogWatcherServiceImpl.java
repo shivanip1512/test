@@ -18,7 +18,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.dao.WatchdogWatcherDao;
 import com.cannontech.watchdog.service.WatchdogWatcherService;
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
@@ -40,13 +39,8 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
         } else if (serviceName == YukonServices.ITRON) {
             String itronApiURL = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
             String itronUserName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
-            return (StringUtils.isNotBlank(itronApiURL) && StringUtils.isNotBlank(itronUserName))
-                    && doPaoWithPaoClassExists(PaoClass.ITRON);
-        } else if (serviceName == YukonServices.EATON_CLOUD) {
-            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-            return !Strings.isNullOrEmpty(serviceAccountId);
-        }
-        else {
+            return (StringUtils.isNotBlank(itronApiURL) && StringUtils.isNotBlank(itronUserName)) && doPaoWithPaoClassExists(PaoClass.ITRON);
+        } else {
             log.info("Incorrect service name " + serviceName);
             return true;
         }

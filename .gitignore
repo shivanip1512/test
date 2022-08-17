@@ -57,11 +57,6 @@ hs_err_pid*
 *.out
 *.app
 
-# Rest Assured asciidoc file
-*.adoc
-
-*.classpath
-
 yukon-build/bin
 yukon-build/build
 yukon-client/.metadata
@@ -192,7 +187,3 @@ yukon-server/yukon-server.log
 yukon-shared/build/classes
 yukon-test/restAssured/test-output/*
 yukon-test/restAssured/Logs
-yukon-test/selenium-tests/test-output/*
-yukon-test/selenium-tests/RegressionTests/bin/*
-yukon-test/selenium-tests/RegressionTests/test-output/*
-

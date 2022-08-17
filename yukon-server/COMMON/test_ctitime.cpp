@@ -221,56 +221,116 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     //BOOST_CHECK_EQUAL( ct.seconds() - 4*timeduration, ctt.seconds() );
 }
 
+namespace { // anonymous namespace
+
+/**
+ * retrieve Time Zone registry key name
+ */
+int getTimeZoneOffset()
+{
+    HKEY hKey = 0;
+
+    RegOpenKey(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation", &hKey);
+
+    DWORD lpType = REG_SZ;
+    TCHAR buffer[512]; // we expect ANSI
+    DWORD bufferSize = sizeof(buffer);
+
+    if( RegQueryValueEx(hKey, "TimeZoneKeyName", NULL, &lpType, (LPBYTE)buffer, &bufferSize) != ERROR_SUCCESS )
+    {
+        BOOST_FAIL("No time zone key");
+    }
+
+    std::string result(buffer, bufferSize);
+
+    result.erase(result.find_first_of('\0'));
+
+    if( result == "Central Standard Time" )
+        return -6;
+    if( result == "Eastern Standard Time" )
+        return -5;
+    if( result == "Pacific Standard Time" )
+        return -8;
+
+    BOOST_FAIL("Unknown time zone " << result);
+
+    return 0;
+}
+
+struct TimeParts
+{
+    int year, month, day, hour, minute, second, tz_offset;
+
+    TimeParts( int year, int month, int day, int hour, int minute, int second, int tz_offset ) :
+        year(year), month(month), day(day), hour(hour), minute(minute), second(second), tz_offset(tz_offset)
+    {}
+};
+
+unsigned long mkGmtSeconds(const TimeParts &tp)
+{
+    tm tm_info = {};
+
+    tm_info.tm_year  = tp.year - 1900;
+    tm_info.tm_mon   = tp.month - 1;
+    tm_info.tm_mday  = tp.day;
+    tm_info.tm_hour  = tp.hour;
+    tm_info.tm_min   = tp.minute;
+    tm_info.tm_sec   = tp.second;
+    tm_info.tm_isdst = -1;
+
+    return mktime( &tm_info );
+}
+
+unsigned long mkLocalSeconds(const TimeParts &tp)
+{
+    return mkGmtSeconds(tp) + (tp.tz_offset * 60);
+}
+
+} // anonymous namespace
+
 BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    const long standard_offset = getTimeZoneOffset() * 60;
+    const long daylight_offset = standard_offset + 60;
 
-    constexpr int standard_offset = -6 * 3600;
-    constexpr int daylight_offset = -5 * 3600;
-
-    struct TimeParts
+    std::vector<TimeParts> time_parts
     {
-        time_t local_seconds;
-        int tz_offset;
+        { 2009,  1,  1,  0, 00, 00, standard_offset }, //  known ST date
+
+        { 2009,  3,  7,  0, 00, 00, standard_offset }, //  standard -> daylight-saving-time transition
+        { 2009,  3,  8,  1, 59, 59, standard_offset }, //
+
+        { 2009,  3,  8,  2, 00, 00, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
+        { 2009,  3,  8,  2, 59, 59, standard_offset }, //
+
+        { 2009,  3,  8,  3, 00, 00, daylight_offset }, //
+        { 2009,  3,  9,  0, 00, 00, daylight_offset }, //
+
+        { 2009,  7,  1,  0, 00, 00, daylight_offset }, //  known DST date
+
+        { 2009, 10, 31,  0, 00, 00, daylight_offset }, //  daylight-saving-time -> standard transition
+        { 2009, 11,  1,  0, 59, 59, daylight_offset }, //
+
+        { 2009, 11,  1,  1, 00, 00, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
+        { 2009, 11,  1,  1, 59, 59, standard_offset }, //
+
+        { 2009, 11,  1,  2, 00, 00, standard_offset }, //
+        { 2009, 11,  2,  0, 00, 00, standard_offset }, //
+
+        { 2009, 12, 31,  0, 00, 00, standard_offset }  //  known ST date
     };
 
-    std::initializer_list<TimeParts> time_parts =
+    BOOST_REQUIRE( ! time_parts.empty() );
+
+    for each(const TimeParts & tp in time_parts )
     {
-        { /* 2009-01-01 00:00:00 */ 1230768000, standard_offset }, //  known ST date
-
-        { /* 2009-03-07 00:00:00 */ 1236384000, standard_offset }, //  standard -> daylight-saving-time transition
-        { /* 2009-03-08 01:59:59 */ 1236477599, standard_offset }, //  1236477599 - standard_offset = 1236499199
-
-        { /* 2009-03-08 02:00:00 */ 1236474000, standard_offset }, //  nonexistent hour;  this test is here to pin the behavior
-        { /* 2009-03-08 02:59:59 */ 1236477599, standard_offset }, //    Results in 01:00:00 Standard and 01:59:59 Standard
-
-        { /* 2009-03-08 03:00:00 */ 1236481200, daylight_offset }, //  1236481200 - daylight_offset = 1236499200
-        { /* 2009-03-09 00:00:00 */ 1236556800, daylight_offset }, //
-
-        { /* 2009-07-01 00:00:00 */ 1246406400, daylight_offset }, //  known DST date
-
-        { /* 2009-10-31 00:00:00 */ 1256947200, daylight_offset }, //  daylight-saving-time -> standard transition
-        { /* 2009-11-01 00:59:59 */ 1257037199, daylight_offset }, //
-
-        { /* 2009-11-01 01:00:00 */ 1257037200, standard_offset }, //  ambiguous hour;  this test is here to pin the behavior
-        { /* 2009-11-01 01:59:59 */ 1257040799, standard_offset }, //
-
-        { /* 2009-11-01 02:00:00 */ 1257040800, standard_offset }, //
-        { /* 2009-11-02 00:00:00 */ 1257120000, standard_offset }, //
-
-        { /* 2009-12-31 00:00:00 */ 1262217600, standard_offset }  //  known ST date
-    };
-
-    for(const auto& tp : time_parts )
-    {
-        const auto t = CtiTime::fromLocalSeconds(tp.local_seconds);
-        BOOST_CHECK_EQUAL(t.seconds(), tp.local_seconds - tp.tz_offset);
+        BOOST_CHECK_EQUAL(mkGmtSeconds(tp), CtiTime::fromLocalSeconds(mkLocalSeconds(tp)).seconds());
     }
 }
 
 BOOST_AUTO_TEST_CASE(test_ctitime_CentralTime_GMT_conversions)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     // Wed Jan 20th, 2010 at 12:00:00 CST == Wed Jan 20th, 2010 at 18:00:00 GMT
 
@@ -328,8 +388,8 @@ BOOST_AUTO_TEST_CASE(test_ctitime_CentralTime_GMT_conversions)
     BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
 
 
-    // Sun Mar 14th, 2010 at 2:00:00 Central == Sun Mar 14th, 2010 at 7:00:00 GMT
-    //  This local time does not actually exist, but document the behavior anyway.
+    // Sun Mar 14th, 2010 at 2:00:00 CST == Sun Mar 14th, 2010 at 7:00:00 GMT?!?!
+    //  Just for documentation and completeness and fail.
 
     theTime = CtiTime(CtiDate( 14, 3, 2010),  2,   0,   0  );
 
@@ -421,7 +481,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_CentralTime_GMT_conversions)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_EasternTime_GMT_conversions)
 {
-    const auto tz_override = Cti::Test::set_to_eastern_timezone();
+    Cti::Test::set_to_eastern_timezone();
 
     // Wed Jan 20th, 2010 at 12:00:00 EST == Wed Jan 20th, 2010 at 17:00:00 GMT
 
@@ -572,8 +632,6 @@ BOOST_AUTO_TEST_CASE(test_ctitime_EasternTime_GMT_conversions)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
-
     {
         CtiTime t0(CtiDate(7, 11, 2010), 0, 59, 59);
         CtiTime t1(CtiDate(7, 11, 2010), 1,  0,  0);
@@ -587,6 +645,8 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_asString)
 {
+    Cti::Test::unset_timezone();
+
     CtiDate d = CtiDate(1, 1, 2009);
 
     CtiTime t = CtiTime(d, 0, 0, 0);
@@ -618,8 +678,20 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_get_local_seconds)
 {
-	const auto tz_override = Cti::Test::set_to_central_timezone();
+	Cti::Test::set_to_central_timezone();
 
+    Cti::Test::Override_CtiTime_TimeZoneInformation overrideTzi({
+            6 * 60,                     // LONG       Bias;
+            L"Central Standard Time",   // WCHAR      StandardName[32];
+            //  unused by CtiTime, just leaving it blank
+            {},                         // SYSTEMTIME StandardDate;
+            0,                          // LONG       StandardBias;
+            L"Central Daylight Time",   // WCHAR      DaylightName[32];
+            //  unused by CtiTime, just leaving it blank
+            {},                         // SYSTEMTIME DaylightDate;
+            -60                         // LONG       DaylightBias;
+        });
+    
     // In Central time, localtime in seconds is a smaller number than GST in seconds.
     // If you are in CST, for GMT 1970 6am as CST = GMT-6.
     // .seconds = 21600, .getLocalTimeSeconds = 0
@@ -644,9 +716,10 @@ BOOST_AUTO_TEST_CASE(test_ctitime_get_local_seconds)
 }
 
 
+/*
 BOOST_AUTO_TEST_CASE(test_ctitime_asString_CST)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     CtiDate d = CtiDate(1, 1, 2009);
 
@@ -684,7 +757,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_CST)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_asString_CDT)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     CtiDate d = CtiDate(1, 6, 2009);
 
@@ -722,7 +795,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_CDT)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_asString_EST)
 {
-    const auto tz_override = Cti::Test::set_to_eastern_timezone();
+    Cti::Test::set_to_eastern_timezone();
 
     CtiDate d = CtiDate(1, 1, 2009);
 
@@ -760,7 +833,7 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_EST)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_asString_EDT)
 {
-    const auto tz_override = Cti::Test::set_to_eastern_timezone();
+    Cti::Test::set_to_eastern_timezone();
 
     CtiDate d = CtiDate(1, 6, 2009);
 
@@ -794,81 +867,6 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_EDT)
         expected.begin(), expected.end(),
         results.begin(), results.end());
 }
-
-
-BOOST_AUTO_TEST_CASE(test_ctitime_asString_IST)
-{
-    const auto tz_override = Cti::Test::set_to_india_timezone();
-
-    CtiDate d = CtiDate(1, 6, 2009);
-
-    CtiTime t = CtiTime(d, 0, 0, 0);
-
-    BOOST_CHECK_EQUAL(t.asString(), "06/01/2009 00:00:00");
-
-    struct test_case
-    {
-        CtiTime::DisplayOffset offset;
-        CtiTime::DisplayTimezone timezone;
-        std::string expected;
-    }
-    const test_cases[] = {
-        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "05/31/2009 18:30:00" },
-        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "05/31/2009 18:30:00 (UTC+0:00 GMT)" },
-        { CtiTime::Local,      CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
-        { CtiTime::Local,      CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC+5:30 IST-IND)" },
-        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
-        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC+5:30 IST-IND)" } };
-
-    std::vector<std::string> results, expected;
-
-    for( const auto& tc : test_cases )
-    {
-        results.push_back(t.asString(tc.offset, tc.timezone));
-        expected.push_back(tc.expected);
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        expected.begin(), expected.end(),
-        results.begin(), results.end());
-}
-
-
-BOOST_AUTO_TEST_CASE(test_ctitime_asString_NPT)
-{
-    const auto tz_override = Cti::Test::set_to_nepal_timezone();
-
-    CtiDate d = CtiDate(1, 6, 2009);
-
-    CtiTime t = CtiTime(d, 0, 0, 0);
-
-    BOOST_CHECK_EQUAL(t.asString(), "06/01/2009 00:00:00");
-
-    struct test_case
-    {
-        CtiTime::DisplayOffset offset;
-        CtiTime::DisplayTimezone timezone;
-        std::string expected;
-    }
-    const test_cases[] = {
-        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "05/31/2009 18:15:00" },
-        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "05/31/2009 18:15:00 (UTC+0:00 GMT)" },
-        { CtiTime::Local,      CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
-        { CtiTime::Local,      CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC+5:45 NPT-NPL)" },
-        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
-        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC+5:45 NPT-NPL)" } };
-
-    std::vector<std::string> results, expected;
-
-    for( const auto& tc : test_cases )
-    {
-        results.push_back(t.asString(tc.offset, tc.timezone));
-        expected.push_back(tc.expected);
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        expected.begin(), expected.end(),
-        results.begin(), results.end());
-}
+*/
 
 BOOST_AUTO_TEST_SUITE_END()

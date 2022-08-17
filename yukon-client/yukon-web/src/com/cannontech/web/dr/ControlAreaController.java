@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -41,8 +40,6 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.JsonUtils;
@@ -60,7 +57,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
-import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
@@ -75,8 +71,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -90,7 +84,6 @@ import com.google.common.collect.Ordering;
 public class ControlAreaController extends DemandResponseControllerBase {
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
-    @Autowired private ControlAreaDao controlAreaDao;
     @Autowired private ControlAreaFieldService controlAreaFieldService;
     @Autowired private ControlAreaNameField controlAreaNameField;
     @Autowired private ControlAreaService controlAreaService;
@@ -98,8 +91,6 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DurationFormattingService durationFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private ProgramDao programDao;
     @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TriggerFieldService triggerFieldService;
@@ -297,16 +288,12 @@ public class ControlAreaController extends DemandResponseControllerBase {
     
     @RequestMapping("/controlArea/assetAvailability")
     public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        
         model.addAttribute("paoId", paoId);
         DisplayablePao controlArea = controlAreaService.getControlArea(paoId);
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(controlArea, model, userContext);
         }
-        Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlArea.getPaoIdentifier().getPaoId());
-        List<Program> programs = programDao.getByProgramIds(programIds);
-        boolean allowPing = programs.stream().anyMatch(
-            program -> paoDefinitionDao.isTagSupported(program.getPaoType(), PaoTag.SUPPORTS_PING));
-        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
 

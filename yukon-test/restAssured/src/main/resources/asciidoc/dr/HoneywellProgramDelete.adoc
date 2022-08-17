@@ -1,0 +1,21 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Honeywell Program
+
+*Request Properties* :
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/request-fields.adoc[]
+
+*Request JSON* :
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/http-request.adoc[]
+
+*Response Properties* :
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/response-fields.adoc[]
+
+*Response JSON* :
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/http-response.adoc[]
+

@@ -1,13 +1,12 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 
 import org.jdom2.Element;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -50,7 +49,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     static final String byProgramResponseStr = "/y:totalOverriddenDevicesByProgramNameResponse";   
     static final String byProgramTotalDevicesStr = byProgramResponseStr + "/y:totalDevices";    
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
@@ -93,10 +92,10 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertNull(mockOptOutService.getProgramName(), "Incorrect programName");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -105,7 +104,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         long totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
 
         // verify data in the response
-        assertEquals(AUTH_USER.getUsername().length(), totalDevicesResult, "Incorrect totalDevices");
+        Assert.assertEquals("Incorrect totalDevices", AUTH_USER.getUsername().length(), totalDevicesResult);
 
         
         // test with invalid account number, no program, authorized user
@@ -119,10 +118,10 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        assertEquals(INVALID_ACCOUNT, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertNull(mockOptOutService.getProgramName(), "Incorrect programName");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
+        Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidAccountNumber");
@@ -139,10 +138,10 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(PROGRAM1, mockOptOutService.getProgramName(), "Incorrect accountNumber.");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect accountNumber.", PROGRAM1, mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -151,7 +150,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
 
         // verify data in the response
-        assertEquals(AUTH_USER.getUsername().length(), totalDevicesResult, "Incorrect totalDevices");
+        Assert.assertEquals("Incorrect totalDevices", AUTH_USER.getUsername().length(), totalDevicesResult);
 
         
         // test with valid account number, invalid program, authorized user
@@ -165,10 +164,10 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(INVALID_PROGRAM, mockOptOutService.getProgramName(), "Incorrect accountNumber.");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect accountNumber.", INVALID_PROGRAM, mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
        
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
         TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "InvalidProgramName");
@@ -208,9 +207,9 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(PROGRAM1, mockOptOutService.getProgramName(), "Incorrect programName.");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect programName.", PROGRAM1, mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
 
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -219,7 +218,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         long totalDevicesResult = outputTemplate.evaluateAsLong(byProgramTotalDevicesStr);
 
         // verify data in the response
-        assertEquals(totalDevicesResult, AUTH_USER.getUsername().length(), "Incorrect totalDevices");
+        Assert.assertEquals("Incorrect totalDevices", totalDevicesResult, AUTH_USER.getUsername().length());
         
         
         // test with valid program, authorized user
@@ -232,9 +231,9 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(INVALID_PROGRAM, mockOptOutService.getProgramName(), "Incorrect programName.");
-        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
-        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
+        Assert.assertEquals("Incorrect programName.", INVALID_PROGRAM, mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
         
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);

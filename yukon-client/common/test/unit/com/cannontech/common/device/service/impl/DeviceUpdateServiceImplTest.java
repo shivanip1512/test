@@ -1,13 +1,12 @@
 package com.cannontech.common.device.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.device.service.DeviceUpdateService.PointToTemplate;
@@ -30,7 +29,7 @@ public class DeviceUpdateServiceImplTest {
 
     private DeviceUpdateServiceImpl service;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         PointDao pointDao = new MockPointDao();
         service = new DeviceUpdateServiceImpl();
@@ -102,20 +101,20 @@ public class DeviceUpdateServiceImplTest {
 
     private void assertPointToAdd(Set<PointTemplate> templates, String pointName) {
         Collection<PointTemplate> template = Collections2.filter(templates, t -> t.getName().equals(pointName));
-        assertEquals(1, template.size(), pointName + " should be added");
+        Assert.assertEquals(pointName + " should be added", 1, template.size());
     }
 
     private void assertPointToTransfer(Map<Integer, PointToTemplate> pointsToTransfer, int pointId, String from,
             String to) {
         PointToTemplate pointToTransfer = pointsToTransfer.get(pointId);
-        assertEquals(from, pointToTransfer.getPoint().getPoint().getPointName(), from + " should be transfered");
-        assertEquals(to, pointToTransfer.getTemplate().getName(), from + " should be transfered to " + to);
+        Assert.assertEquals(from + " should be transfered", from, pointToTransfer.getPoint().getPoint().getPointName());
+        Assert.assertEquals(from + " should be transfered to " + to, to, pointToTransfer.getTemplate().getName());
     }
 
     private void assertPointToDelete(Set<PointBase> pointsToDelete, String pointName) {
         Collection<PointBase> pointToDelete =
             Collections2.filter(pointsToDelete, t -> t.getPoint().getPointName().equals(pointName));
-        assertEquals(1, pointToDelete.size(), pointName + " should be deleted");
+        Assert.assertEquals(pointName + " should be deleted", 1, pointToDelete.size());
     }
 
 }

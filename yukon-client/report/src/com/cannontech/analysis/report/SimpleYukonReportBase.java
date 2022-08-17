@@ -1,8 +1,10 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
+import java.awt.geom.Rectangle2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -13,24 +15,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
-import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.GroupFooter;
-import org.pentaho.reporting.engine.classic.core.GroupHeader;
-import org.pentaho.reporting.engine.classic.core.ItemBand;
-import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.RelationalGroup;
-import org.pentaho.reporting.engine.classic.core.ReportFooter;
-import org.pentaho.reporting.engine.classic.core.elementfactory.DateFieldElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.HorizontalLineElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.NumberFieldElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.RectangleElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.TextElementFactory;
-import org.pentaho.reporting.engine.classic.core.elementfactory.TextFieldElementFactory;
-import org.pentaho.reporting.engine.classic.core.function.Expression;
-import org.pentaho.reporting.engine.classic.core.function.ExpressionCollection;
-import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
-import org.pentaho.reporting.libraries.base.util.FloatDimension;
+import org.jfree.report.ElementAlignment;
+import org.jfree.report.Group;
+import org.jfree.report.GroupFooter;
+import org.jfree.report.GroupHeader;
+import org.jfree.report.GroupList;
+import org.jfree.report.ItemBand;
+import org.jfree.report.JFreeReport;
+import org.jfree.report.ReportFooter;
+import org.jfree.report.elementfactory.DateFieldElementFactory;
+import org.jfree.report.elementfactory.LabelElementFactory;
+import org.jfree.report.elementfactory.NumberFieldElementFactory;
+import org.jfree.report.elementfactory.StaticShapeElementFactory;
+import org.jfree.report.elementfactory.TextElementFactory;
+import org.jfree.report.elementfactory.TextFieldElementFactory;
+import org.jfree.report.function.Expression;
+import org.jfree.report.function.ExpressionCollection;
+import org.jfree.report.function.FunctionInitializeException;
+import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFactory;
@@ -48,18 +50,19 @@ import com.google.common.collect.Lists;
 /**
  * This class is meant to be used as a base class for reports that have a very simple
  * layout. It uses either a BareReportModel or a ReportModelBase as input.
- * Overriding classes only need to indicate which columns are in the body, their order,
+ * Overriding classes only need to indicate which columns are in the body, their order, 
  * and their widths.
  */
 public abstract class SimpleYukonReportBase extends YukonReportBase {
     private final ReportModelBase model;
     private BareReportModel bareModel = null;
 
-    protected Map<ColumnLayoutData, Point2D> columnProperties = new HashMap<ColumnLayoutData, Point2D>();
-    protected Map<String, Integer> columIndexLookup = new HashMap<String, Integer>();
-
+    protected Map<ColumnLayoutData,Point2D> columnProperties = new HashMap<ColumnLayoutData, Point2D>();
+    protected Map<String,Integer> columIndexLookup = new HashMap<String, Integer>();
+    
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm z");
     public static String columnDateFormat = "MM/dd/yyyy HH:mm:ss";
+
 
     public SimpleYukonReportBase(BareReportModel bareModel) {
         Validate.notNull(bareModel, "BareReportModel must not be null");
@@ -74,8 +77,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
 
     public SimpleYukonReportBase(ReportModelBase model) {
         if (model instanceof BareReportModelAdapter) {
-            throw new IllegalArgumentException(
-                    "The BareReportModelAdapter is used internally and should not be instantiated by the calling code.");
+            throw new IllegalArgumentException("The BareReportModelAdapter is used internally and should not be instantiated by the calling code.");
         }
         this.model = new ReportModelDelegate(model, new ReportModelLayout() {
             public ColumnProperties getColumnProperties(int i) {
@@ -83,15 +85,15 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             }
         });
         setModel(model);
-
+        
     }
-
+    
     protected void initialize() {
         initializeColumns();
     }
-
+    
     @Override
-    public MasterReport createReport() throws FunctionProcessingException {
+    public JFreeReport createReport() throws FunctionInitializeException {
         initialize();
         return super.createReport();
     }
@@ -106,36 +108,34 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             columnProperties.put(data, position);
             accumulativeWidth += width + getExtraFieldSpacing();
         }
-
+        
         buildColumnIndexLookup();
     }
-
+    
     protected abstract List<ColumnLayoutData> getBodyColumns();
-
     protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
         // extending classes can choose to implement
         return Collections.emptyList();
     }
-
     protected List<? extends AggregateFooterFieldFactory> getReportFooterColumns() {
         // extending classes can choose to implement
         return Collections.emptyList();
-    }
-
+    }    
     protected List<? extends ExpressionFieldFactory> getBodyExpressions() {
-        // extending classes can choose to implement
-        return Collections.emptyList();
+    	// extending classes can choose to implement
+    	return Collections.emptyList();    	
     }
-
+    
     protected int getExtraFieldSpacing() {
         return 0;
     }
-
+    
+    
     protected ItemBand createItemBand() {
         ItemBand items = ReportFactory.createItemBandDefault();
-
+        
         applyBackgroundColor(items);
-
+        
         Iterator<ColumnLayoutData> bodyColumns = getBodyColumns().iterator();
         while (bodyColumns.hasNext()) {
             ColumnLayoutData layoutData = bodyColumns.next();
@@ -155,14 +155,14 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
                 // make it a text field on all other occasions.
                 factory = new TextFieldElementFactory();
             }
-
+            
             applyFieldProperties(factory, layoutData);
             factory.setName(layoutData.getColumnName());
             factory.setFieldname(layoutData.getFieldName());
-
+            
             items.addElement(factory.createElement());
         }
-
+        
         return items;
     }
 
@@ -173,7 +173,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
         return value;
     }
-
+    
     protected void applyElementProperties(TextElementFactory factory, ColumnLayoutData layoutData) {
         Point2D point2D = columnProperties.get(layoutData);
         factory.setAbsolutePosition(point2D);
@@ -184,7 +184,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         if (layoutData.getHorizontalAlignment() != null) {
             factory.setHorizontalAlignment(layoutData.getHorizontalAlignment());
         }
-
+        
     }
 
     protected void applyFieldProperties(TextFieldElementFactory factory, ColumnLayoutData layoutData) {
@@ -196,33 +196,36 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         applyElementProperties(labelFactory, layoutData);
         labelFactory.setBold(true);
     }
-
+    
     private void applyBackgroundColor(ItemBand items) {
-        if (showBackgroundColor) {
-            items.addElement(RectangleElementFactory.createFilledRectangle(0, 0, -100, -100, java.awt.Color.decode("#DFDFDF")));
-            items.addElement(HorizontalLineElementFactory.createHorizontalLine(0, java.awt.Color.decode("#DFDFDF"),
-                    new BasicStroke(0.1f)));
-            items.addElement(HorizontalLineElementFactory.createHorizontalLine(10, java.awt.Color.decode("#DFDFDF"),
-                    new BasicStroke(0.1f)));
+        if ( showBackgroundColor ) {
+            items.addElement(StaticShapeElementFactory.createRectangleShapeElement
+                ("background", Color.decode("#DFDFDF"), new BasicStroke(0),
+                    new Rectangle2D.Float(0, 0, -100, -100), false, true));
+            items.addElement(StaticShapeElementFactory.createHorizontalLine
+                ("top", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 0));
+            items.addElement(StaticShapeElementFactory.createHorizontalLine
+                ("bottom", Color.decode("#DFDFDF"), new BasicStroke(0.1f), 10));
         }
     }
+    
 
-    private RelationalGroup createSingleGroup() {
-        final RelationalGroup collHdgGroup = new RelationalGroup();
+    private Group createSingleGroup() {
+        final Group collHdgGroup = new Group();
         collHdgGroup.setName(getSingleGroupName());
-
+    
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
         createGroupLabels(header);
-        header.addElement(HorizontalLineElementFactory.createHorizontalLine(22, null, new BasicStroke(0.5f)));
+        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
         collHdgGroup.setHeader(header);
-
+    
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
         createFooterFields(footer);
         collHdgGroup.setFooter(footer);
 
         return collHdgGroup;
     }
-
+    
     protected void createFooterFields(GroupFooter footer) {
         List<? extends AggregateFooterFieldFactory> totalColumns = getFooterColumns();
         for (AggregateFooterFieldFactory factory : totalColumns) {
@@ -244,7 +247,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             labelFactory.setText(layoutData.getColumnName());
             applyLabelProperties(labelFactory, layoutData);
             labelFactory.setName(layoutData.getColumnName() + ReportFactory.NAME_GROUP_LABEL_ELEMENT);
-
+            
             header.addElement(labelFactory.createElement());
         }
     }
@@ -257,14 +260,16 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
     }
 
-    protected List<RelationalGroup> createGroups() {
-        return List.of(createSingleGroup());
+    protected GroupList createGroups() {
+      GroupList list = new GroupList();
+      list.add(createSingleGroup());
+      return list;
     }
-
+    
     @Override
     protected ReportFooter createReportFooter() {
-        ReportFooter reportFooter = super.createReportFooter();
-
+    	ReportFooter reportFooter = super.createReportFooter();
+    	
         List<? extends AggregateFooterFieldFactory> totalColumns = getReportFooterColumns();
         for (AggregateFooterFieldFactory factory : totalColumns) {
             TextElementFactory elementFactory = factory.createElementFactory();
@@ -272,11 +277,11 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             reportFooter.addElement(elementFactory.createElement());
         }
 
-        return reportFooter;
+		return reportFooter;		
     }
-
+    
     @Override
-    protected ExpressionCollection getExpressions() throws FunctionProcessingException {
+    protected ExpressionCollection getExpressions() throws FunctionInitializeException {
         ExpressionCollection expressionCollection = super.getExpressions();
 
         List<? extends ExpressionFieldFactory> bodyExpressions = getBodyExpressions();
@@ -287,9 +292,9 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             }
         }
 
-        List<? extends AggregateFooterFieldFactory> allFooterColumns = Lists
-                .newArrayList(Iterables.concat(getFooterColumns(), getReportFooterColumns()));
-
+        List<? extends AggregateFooterFieldFactory> allFooterColumns = 
+        	Lists.newArrayList(Iterables.concat(getFooterColumns(), getReportFooterColumns()));
+        
         for (AggregateFooterFieldFactory factory : allFooterColumns) {
             Expression expression = factory.createExpression();
             if (expression != null) {
@@ -298,33 +303,33 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         }
         return expressionCollection;
     }
-
+    
     @Override
     protected String getDateRangeString() {
         if (bareModel == null) {
             return model.getDateRangeString();
         }
-
+        
         if (bareModel instanceof DatedModelAttributes) {
             DatedModelAttributes datedModel = (DatedModelAttributes) bareModel;
             Date startDate = datedModel.getStartDate();
             Date stopDate = datedModel.getStopDate();
-            if (startDate == null || stopDate == null) {
+            if(startDate == null || stopDate == null){
                 /* Must be a report that can disable the date fields as an option. */
-                /* Some browsers will not return inputs that are disabled. */
+                /* Some browsers will not return inputs that are disabled. */ 
                 /* Just print out the date the report was run. */
-                return getDateFormat().format(new Date());
+                return getDateFormat().format(new Date()); 
             } else {
                 return getDateFormat().format(startDate) + " through " + getDateFormat().format(stopDate);
             }
         }
-
+        
         // won't work because report is "created" before data is loaded
 //        if (bareModel instanceof LoadableModel) {
 //            LoadableModel loadModel = (LoadableModel) bareModel;
 //            return getDateFormat().format(loadModel.getLoadDate());
 //        }
-
+        
         return getDateFormat().format(new Date());
     }
 

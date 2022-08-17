@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.Logger;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
@@ -20,8 +18,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.opencsv.CSVReader;
 
 public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdateService {
-    
-    private static final Logger log = YukonLogManager.getLogger(BulkUpdateServiceImpl.class);
     
     public ParsedBulkUpdateFileInfo createParsedBulkUpdateFileInfo(BulkUpdateFileInfo info) {
         
@@ -115,8 +111,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
                 getBulkFieldService().getYukonDeviceForIdentifier(bulkField, identifier);
             }
             catch (ObjectMappingException e) {
-                result.addError(new YukonMessageSourceResolvable(e.getKey(), e.getArgs()));
-                log.error(e);
+                result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.update.error.noDeviceForIdenifier", identifierBulkFieldColumnHeader.toString(), identifier));
             }
             catch (IllegalArgumentException e) {
                 result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.update.error.identifierNotApplicable", identifier, identifierBulkFieldColumnHeader.toString(), identifier));

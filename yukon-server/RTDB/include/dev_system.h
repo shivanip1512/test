@@ -16,6 +16,6 @@ public:
 
    virtual std::string getDescription(const CtiCommandParser &parse) const;
 
-   virtual YukonError_t ProcessInMessageResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+   virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
 };

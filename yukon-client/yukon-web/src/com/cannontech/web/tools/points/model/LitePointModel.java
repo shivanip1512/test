@@ -4,14 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class LitePointModel {
 
     private Integer pointId;
     private String pointName;
     private PointType pointType;
-    @JsonIgnore
     private boolean physicalOffset;
     private Integer pointOffset;
     private Integer paoId;

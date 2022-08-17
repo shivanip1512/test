@@ -2,7 +2,6 @@ package com.cannontech.common.util;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -493,15 +492,5 @@ public static int differenceMinutes(Date from, Date to) {
             return false;
         }
         return !date.withTimeAtStartOfDay().isBefore(new DateTime().withTimeAtStartOfDay().plusHours(24));
-    }
-
-    /**
-     * Convert minutes of time into HH:mm string.
-     */
-    public static String fromMinutesToHHmm(int minutes) throws RuntimeException {
-        if (minutes >= 0 && minutes <= 1440)
-            return LocalTime.MIN.plus(java.time.Duration.ofMinutes(minutes)).toString();
-        else
-            throw new RuntimeException("Invalid minute value.");
     }
 }

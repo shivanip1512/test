@@ -4,7 +4,6 @@ import com.cannontech.common.model.Phase;
 
 public class ZoneAssignmentPointRow extends ZoneAssignmentRow {
     private Phase phase;
-    private Integer feederId;
     private boolean ignore;
     
     public ZoneAssignmentPointRow() {
@@ -22,18 +21,11 @@ public class ZoneAssignmentPointRow extends ZoneAssignmentRow {
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
     }
-    public Integer getFeederId() {
-        return feederId;
-    }
-    public void setFeederId(Integer feederId) {
-        this.feederId = feederId;
-    }
     @Override
     public String toString() {
         return String.format(
             "ZoneAssignmentPointRow [phase=%s, isIgnore()=%s, getId()=%s, getName()=%s, getDevice()=%s, getGraphPositionOffset()=%s, getDistance()=%s, isDeletion()=%s]",
             phase, isIgnore(), getId(), getName(), getDevice(), getGraphPositionOffset(), getDistance(), isDeletion());
     }
-
 
 }

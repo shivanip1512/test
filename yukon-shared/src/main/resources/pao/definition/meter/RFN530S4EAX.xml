@@ -13,7 +13,6 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="THREE_PHASE_CURRENT"/>
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
@@ -25,7 +24,6 @@
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
@@ -35,18 +33,6 @@
         <pointInfo name="Current Phase A" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
-        <pointInfo name="Peak kW" attributes="PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Rate A kW)" attributes="PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
-        <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
-        <pointInfo name="Rate A kWh" attributes="DELIVERED_KWH_RATE_A"/>
-        <pointInfo name="Rate B kWh" attributes="DELIVERED_KWH_RATE_B"/>
-        <pointInfo name="Rate C kWh" attributes="DELIVERED_KWH_RATE_C"/>
-        <pointInfo name="Rate D kWh" attributes="DELIVERED_KWH_RATE_D"/>
-        <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
@@ -54,15 +40,6 @@
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
-        <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
-        <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
-        <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
-        <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
-        <pointInfo name="Net Peak kW" attributes="NET_PEAK_DEMAND"/>
-        <pointInfo name="Net Peak kW (Rate A kW)" attributes="NET_PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Net Peak kW (Rate B kW)" attributes="NET_PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Net Peak kW (Rate C kW)" attributes="NET_PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Net Peak kW (Rate D kW)" attributes="NET_PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
         <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
@@ -80,19 +57,10 @@
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
         <pointInfo name="Sum kWh" init="true" attributes="USAGE,SUM_KWH"/>
-        <pointInfo name="Sum kWh (Rate A kWh)" attributes="SUM_KWH_RATE_A"/>
-        <pointInfo name="Sum kWh (Rate B kWh)" attributes="SUM_KWH_RATE_B"/>
-        <pointInfo name="Sum kWh (Rate C kWh)" attributes="SUM_KWH_RATE_C"/>
-        <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
         <pointInfo name="Sum kWh per Interval" init="true" attributes="SUM_KWH_PER_INTERVAL"/>
-        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND"/>
-		<pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Sum Peak kW (Rate B kW)" attributes="SUM_PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Sum Peak kW (Rate C kW)" attributes="SUM_PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
-        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>

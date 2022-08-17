@@ -116,7 +116,8 @@ private:
        return readLinePtr;
    }
 
-   void initParserAndHandler();
+   XERCES_CPP_NAMESPACE::SAX2XMLReader*  getSAXParser();
+   SAXWctpHandler* getWctpHandler();
 
    CHAR* removeDocType(const CHAR *src, CHAR *dst);
 

@@ -10,7 +10,6 @@ namespace Cti
 
 DeviceAttributeLookup::DeviceAttributeNameMap DeviceAttributeLookup::_unknownAttributes;
 DeviceAttributeLookup::AttributeMappingInfoCollection DeviceAttributeLookup::_lookup;
-std::set<std::string> DeviceAttributeLookup::_unknownDeviceTypes;
 
 
 void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
@@ -25,16 +24,6 @@ void DeviceAttributeLookup::AddUnknownAttribute( const DeviceTypes      deviceTy
                                                  const std::string &    attributeName )
 {
     _unknownAttributes.emplace( deviceType, attributeName );
-}
-
-void DeviceAttributeLookup::AddUnknownDeviceType(std::string typeString)
-{
-    _unknownDeviceTypes.emplace( std::move( typeString ) );
-}
-
-std::set<std::string> DeviceAttributeLookup::GetUnknownDeviceTypes()
-{
-    return _unknownDeviceTypes;
 }
 
 boost::optional<DeviceAttributeLookup::PointTypeOffset> DeviceAttributeLookup::Lookup( const DeviceTypes     deviceType,

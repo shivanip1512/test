@@ -1,5 +1,4 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -9,9 +8,6 @@
     <form:form id="rtu-copy-form" action="${actionUrl}" method="post" modelAttribute="rtu">
         <cti:csrfToken />
         <form:hidden path="id" />
-        <form:hidden path="deviceDirectCommSettings.portID" />
-        <form:hidden path="ipAddress" />
-        <form:hidden path="port" />
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".deviceName">
                 <tags:input path="name" />
@@ -22,11 +18,6 @@
              <tags:nameValue2 nameKey=".slaveAddress">
                    <tags:input path="deviceAddress.slaveAddress" />
              </tags:nameValue2>
-             <tags:nameValue2 nameKey=".commChannel">
-                <select disabled="true">
-                    <option>${fn:escapeXml(commChannelName)}</option>
-                </select>
-            </tags:nameValue2>
             <tags:nameValue2 nameKey=".copy.copyPoints">
                 <tags:switchButton path="copyPointFlag" offNameKey=".no.label"
                     onNameKey=".yes.label" disabled="${!isPointsAvailable}" 

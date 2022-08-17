@@ -159,7 +159,7 @@
                                             <div class="js-designation-code js-removable-designation-code">
                                                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                                                     <c:if test="${canEditDesignationCodes}">
-                                                        <span class="js-remove-designation-code fr"><a href="#"><cti:icon icon="icon-cross"/></a></span>
+                                                        <span class="js-remove-designation-code fr"><a href="#"><i class="icon icon-cross"></i></a></span>
                                                     </c:if>
                                                     ${fn:escapeXml(serviceCompany.designationCodes[row.index].value)}
                                                     <input type="hidden" name="designationCodes[${row.index}].id" 

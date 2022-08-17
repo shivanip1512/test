@@ -127,7 +127,6 @@
     <entry key="yukon.web.modules.operator.hardware.choose.label">Choose</entry>
     <entry key="yukon.web.modules.operator.hardware.voltage">Voltage</entry>
     <entry key="yukon.web.modules.operator.hardware.warehouse">Warehouse</entry>
-    <entry key="yukon.web.modules.operator.hardware.guid">GUID</entry>
     <entry key="yukon.web.modules.operator.hardware.macAddress">MAC Address</entry>
     <entry key="yukon.web.modules.operator.hardware.macAddressSecondary">Secondary MAC Address</entry>
     <entry key="yukon.web.modules.operator.hardware.firmwareVersion">Firmware Version</entry>
@@ -143,8 +142,6 @@
     <entry key="yukon.web.modules.operator.hardware.readNow.label">Read</entry>
     <entry key="yukon.web.modules.operator.hardware.readNowSuccess">Read initiated successfully</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceVendorUserId">Device Vendor User Id</entry>
-    <entry key="yukon.web.modules.operator.hardware.ICCID">ICCID</entry>
-    <entry key="yukon.web.modules.operator.hardware.IMEI">IMEI</entry>
     
     <entry key="yukon.web.modules.operator.hardware.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
@@ -154,6 +151,10 @@
     <entry key="yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse">General Inventory</entry>
 
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.label">Asset Availability</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.active">Active</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.inactive">Inactive</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOut">Opted Out</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutActive">Opted Out (Active)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutInactive">Opted Out (Inactive)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable">Opted Out (Unavailable)</entry>
@@ -220,7 +221,6 @@
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.secondaryMacAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
-    <entry key="yukon.web.modules.operator.hardware.error.format.guid">Invalid GUID format.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.notFound.inventoryId">This device is not associated with a two way LCR.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.itronCommunicationError">There was a communication error trying to connect with Itron. Please view the logs for more details.</entry>
     <!-- Rf errors -->

@@ -83,7 +83,7 @@
                         <cti:url var="mapUrl" value="/tools/map">
                             <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
                             
                         <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                             <!-- Read Attribute -->

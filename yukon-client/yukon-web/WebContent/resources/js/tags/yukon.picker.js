@@ -241,8 +241,6 @@ yukon.protoPicker = function (okText,
                     return null;
                 } else {
                     pickerThis.allLinks.push({'hit' : hit, 'link' : link});
-                    var key = hit[pickerThis.idFieldName];
-                    pickerThis.hitMap[key] = hit;
                     return function () {
                         selectThisItem.call(pickerThis, hit);
                     };
@@ -270,7 +268,6 @@ yukon.protoPicker = function (okText,
             
         resultArea.append(resultAreaFixed);
         this.allLinks = [];
-        this.hitMap = [];
         if (hitList && hitList.length && hitList.length > 0) {
             $(this.noResultsDiv).hide();
             $(this.resultsDiv).show();
@@ -779,10 +776,6 @@ yukon.protoPicker = function (okText,
         }
     };
     
-    yukon.protoPicker.prototype.selectThisItem = function (hit) {
-        selectThisItem.call(this, hit);
-    };
-    
     /** Invoked from jsp */
     yukon.protoPicker.prototype.showAll = function () {
         if (this.memoryGroup) {
@@ -1110,18 +1103,6 @@ $(function () {
     $(document).on('click', '.js-picker-show-all', function (ev) {
         var pickerId = $(this).closest('[data-picker]').data('picker');
         yukon.pickers[pickerId].showAll();
-    });
-    
-    $(document).on('click', 'table.picker-results-table tr', function (event) {
-        if ($(event.target).closest('a').length) {
-            return;
-        }
-        var pickerId = $(this).closest('[data-picker]').data('picker'),
-            picker = yukon.pickers[pickerId],
-            id = $(this).closest("tr").data("id"),
-            hit = picker.hitMap[id];
-        
-        yukon.pickers[pickerId].selectThisItem(hit);
     });
     
     $(document).on('keydown', '.js-picker-dialog', function (ev) {

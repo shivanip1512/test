@@ -4,7 +4,7 @@
 
 #include <chrono>
 
-namespace Cti::Messaging::Rfn {
+namespace Cti::Messaging::Pil {
 
     enum class IM_EX_MSG ProgrammingStatus
     {

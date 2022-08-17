@@ -8,11 +8,13 @@ import javax.swing.JLabel;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.DatabaseEditor;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointCalcBaseSettingsPanel extends DataInputPanel implements ActionListener {
     private JComboBox<String> ivjPeriodicRateComboBox = null;
@@ -29,7 +31,7 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
     public void actionPerformed(java.awt.event.ActionEvent e) {
         try {
             if (e.getSource() == getUpdateTypeComboBox()) {
-                fireInputUpdate();
+                this.fireInputUpdate();
                 if (((String) getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer") || 
                         ((String) getUpdateTypeComboBox().getSelectedItem()).equalsIgnoreCase("On Timer+Change")) {
                     getPeriodicRateLabel().setEnabled(true);
@@ -41,7 +43,7 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
             }
             
             if (e.getSource() == getPeriodicRateComboBox()) {
-                fireInputUpdate();
+                this.fireInputUpdate();
             }
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -51,7 +53,7 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
     private JComboBox<String> getPeriodicRateComboBox() {
         if (ivjPeriodicRateComboBox == null) {
             try {
-                ivjPeriodicRateComboBox = new JComboBox<>();
+                ivjPeriodicRateComboBox = new JComboBox<String>();
                 ivjPeriodicRateComboBox.setName("PeriodicRateComboBox");
                 ivjPeriodicRateComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 
@@ -98,7 +100,7 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
     private JComboBox<String> getUpdateTypeComboBox() {
         if (ivjUpdateTypeComboBox == null) {
             try {
-                ivjUpdateTypeComboBox = new JComboBox<>();
+                ivjUpdateTypeComboBox = new JComboBox<String>();
                 ivjUpdateTypeComboBox.setName("UpdateTypeComboBox");
                 ivjUpdateTypeComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 
@@ -109,7 +111,6 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
                 ivjUpdateTypeComboBox.addItem("On Timer+Change");
                 ivjUpdateTypeComboBox.addItem("Constant");
                 ivjUpdateTypeComboBox.addItem("Historical");
-                ivjUpdateTypeComboBox.addItem("Backfilling");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -151,9 +152,9 @@ public class PointCalcBaseSettingsPanel extends DataInputPanel implements Action
             point.getPoint().setStateGroupID(StateGroupUtils.STATEGROUP_ANALOG);
             point.getPoint().setPointOffset(new Integer(0));
 
-            List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
+            List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
             // Better be at least 1!
-            point.getPointUnit().setUomID(unitMeasures.get(0).getId());
+            point.getPointUnit().setUomID(unitMeasures.get(0).getUomID());
             point.getPointUnit().setDecimalPlaces(DatabaseEditor.getDecimalPlaces());
         }
         return val;

@@ -7,34 +7,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<LocationResponse> {
-    
+    private static final Logger log = YukonLogManager.getLogger(LocationArchiveResponseListener.class);
+    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponseAck";
+
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private EndpointEventLogService endpointEventLogService ;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private YukonJmsTemplate jmsTemplate;
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
-    
+
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
             super("LocationArchiveResponse", workerNumber, queueSize);
@@ -59,11 +58,6 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
             sendAcknowledgement(location);
             return Optional.empty();  //  no point data to track
         }
-
-        @Override
-        protected Instant getDataTimestamp(LocationResponse request) {
-            return null;
-        }
     }
 
     @Override
@@ -79,7 +73,6 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
             worker.start();
         }
         workers = workerBuilder.build();
-        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.LOCATION);
     }
 
     @PreDestroy
@@ -92,8 +85,8 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
     }
 
     @Override
-    protected YukonJmsTemplate getJmsTemplate() {
-        return jmsTemplate;
+    protected String getRfnArchiveResponseQueueName() {
+        return archiveResponseQueueName;
     }
 
     @Override

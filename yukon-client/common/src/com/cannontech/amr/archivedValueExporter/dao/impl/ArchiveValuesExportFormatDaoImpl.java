@@ -33,7 +33,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportFormatDao{
 
     public static final String TABLE_NAME = "ArchiveValuesExportFormat";
-        @Autowired DbChangeManager dbChangeManager;
+	@Autowired DbChangeManager dbChangeManager;
     private final YukonRowMapper<ExportFormat> rowMapper = new YukonRowMapper<ExportFormat>() {
         @Override
         public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
@@ -221,7 +221,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         for (ExportField field:format.getFields()) {
             
             if (field.getField().getType().equals(FieldType.ATTRIBUTE)
-                && field.getField().getAttribute().getAttribute().equals(attribute.getAttribute())
+                && field.getField().getAttribute().getAttribute() == attribute.getAttribute()
                 && field.getField().getAttribute().getDataSelection() == attribute.getDataSelection()
                 && field.getField().getAttribute().getDaysPrevious().intValue() == attribute.getDaysPrevious().intValue()) {
                 exportFields.add(field);

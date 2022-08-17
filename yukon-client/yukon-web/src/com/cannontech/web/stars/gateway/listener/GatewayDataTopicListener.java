@@ -14,13 +14,13 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigLicenseKey;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
@@ -51,7 +51,7 @@ public class GatewayDataTopicListener implements MessageListener {
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private ConfigurationSource configSource;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private NmSyncServiceImpl nmSyncService;
     
     private boolean isDataStreamingEnabled;
     private Map<PaoIdentifier, Instant> deviceReadyNodeLastArchiveTimes = new HashMap<>();
@@ -59,7 +59,7 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @PostConstruct
     public void init() {
-        isDataStreamingEnabled = configSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
+        isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
     }
     
     @Override
@@ -85,15 +85,17 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            log.debug("Received message from SM. Updating RfnGatewayDataCache with the new value. Message: {} ", message);
+            log.debug("Handling gateway data message: " + message);
             RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
+            
+            nmSyncService.syncGatewayName(rfnDevice, message.getName());
             
             cache.put(rfnDevice.getPaoIdentifier(), data);
             
             // Archive data streaming point values only if data streaming is enabled and gateway supports it
             if (isDataStreamingEnabled) {
-                boolean deviceSupported = paoDefinitionDao.isTagSupported(rfnDevice.getPaoIdentifier().getPaoType(), PaoTag.DATA_STREAMING);
-                if (deviceSupported) {
+                if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800
+                        || rfnDevice.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
                     rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
                             data.getDataStreamingLoadingPercent(), false);
                 }

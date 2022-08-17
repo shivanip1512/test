@@ -11,11 +11,12 @@ import javax.swing.JPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.DataProperties;
@@ -26,7 +27,7 @@ import com.klg.jclass.util.value.JCValueListener;
 import com.klg.jclass.util.value.MutableValueModel;
 
 public class AnalogBasePanel extends DataInputPanel implements ActionListener, JCValueListener {
-    private JComboBox<UnitOfMeasure> unitOfMeasureComboBox = null;
+    private JComboBox<LiteUnitMeasure> unitOfMeasureComboBox = null;
     private JLabel unitOfMeasureLabel = null;
     private JComboBox<String> archiveIntervalComboBox = null;
     private JLabel archiveIntervalLabel = null;
@@ -50,12 +51,12 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
     public void actionPerformed(java.awt.event.ActionEvent e) {
         try {
             if (e.getSource() == getArchiveTypeComboBox()) {
-                archiveTypeComboBox_ActionPerformed(e);
+                this.archiveTypeComboBox_ActionPerformed(e);
             }
             if (e.getSource() == getUnitOfMeasureComboBox() ||
                     e.getSource() == getArchiveIntervalComboBox() ||
                     e.getSource() == getStateGroupComboBox()) {
-                fireInputUpdate();
+                this.fireInputUpdate();
             }
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -84,7 +85,7 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
     private JComboBox<String> getArchiveIntervalComboBox() {
         if (archiveIntervalComboBox == null) {
             try {
-                archiveIntervalComboBox = new JComboBox<>();
+                archiveIntervalComboBox = new JComboBox<String>();
                 archiveIntervalComboBox.setName("ArchiveIntervalComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -110,7 +111,7 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
     private JComboBox<String> getArchiveTypeComboBox() {
         if (archiveTypeComboBox == null) {
             try {
-                archiveTypeComboBox = new JComboBox<>();
+                archiveTypeComboBox = new JComboBox<String>();
                 archiveTypeComboBox.setName("ArchiveTypeComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -325,10 +326,10 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         return holderPanel;
     }
 
-    private JComboBox<UnitOfMeasure> getUnitOfMeasureComboBox() {
+    private JComboBox<LiteUnitMeasure> getUnitOfMeasureComboBox() {
         if (unitOfMeasureComboBox == null) {
             try {
-                unitOfMeasureComboBox = new JComboBox<>();
+                unitOfMeasureComboBox = new JComboBox<LiteUnitMeasure>();
                 unitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
                 unitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
             } catch (java.lang.Throwable ivjExc) {
@@ -369,7 +370,7 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
     private JComboBox<LiteStateGroup> getStateGroupComboBox() {
         if (stateGroupComboBox == null) {
             try {
-                stateGroupComboBox = new JComboBox<>();
+                stateGroupComboBox = new JComboBox<LiteStateGroup>();
                 stateGroupComboBox.setName("StateGroupComboBox");
                 stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
             } catch (java.lang.Throwable ivjExc) {
@@ -384,20 +385,20 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         // Assume that commonObject is an instance of com.cannontech.database.data.point.AnalogPoint
         AnalogPoint point = (AnalogPoint) val;
 
-        int uOfMeasureID = ((UnitOfMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getId();
+        int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
-        point.getPointUnit().setUomID(uOfMeasureID);
+        point.getPointUnit().setUomID(new Integer(uOfMeasureID));
 
         String selectedArchiveType = getArchiveTypeComboBox().getSelectedItem().toString();
         point.getPoint().setArchiveType(PointArchiveType.getByDisplayName(selectedArchiveType));
 
         point.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
 
-        point.getPointUnit().setDecimalPlaces(((Number) getDecimalPlacesSpinner().getValue()).intValue());
-        point.getPointUnit().setMeterDials(((Number) getMeterDialsSpinner().getValue()).intValue());
+        point.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
+        point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
 
         LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
-        point.getPoint().setStateGroupID(stateGroup.getStateGroupID());
+        point.getPoint().setStateGroupID(new Integer(stateGroup.getStateGroupID()));
 
         return point;
     }
@@ -460,9 +461,9 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         setBorder(border);
 
         // Load the unit of measure combo box with default possible values
-        List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
-        for (UnitOfMeasure uom : unitMeasures) {
-            getUnitOfMeasureComboBox().addItem(uom);
+        List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
+        for (LiteUnitMeasure lum : unitMeasures) {
+            getUnitOfMeasureComboBox().addItem(lum);
         }
 
         // Load the Archive Type combo box with default possible values
@@ -515,7 +516,7 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         getArchiveIntervalLabel().setEnabled(false);
         getArchiveIntervalComboBox().setEnabled(false);
         for (int i = 0; i < getUnitOfMeasureComboBox().getModel().getSize(); i++) {
-            if (getUnitOfMeasureComboBox().getItemAt(i).getId() == uOfMeasureID) {
+            if (getUnitOfMeasureComboBox().getItemAt(i).getUomID() == uOfMeasureID) {
                 getUnitOfMeasureComboBox().setSelectedIndex(i);
                 break;
             }
@@ -524,9 +525,8 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
         for (int i = 0; i < getArchiveTypeComboBox().getModel().getSize(); i++) {
             if (getArchiveTypeComboBox().getItemAt(i).equalsIgnoreCase(archiveType.getDisplayName())) {
                 getArchiveTypeComboBox().setSelectedIndex(i);
-                if (getArchiveIntervalComboBox().isEnabled()) {
+                if (getArchiveIntervalComboBox().isEnabled())
                     SwingUtil.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());
-                }
                 break;
             }
         }
@@ -551,9 +551,8 @@ public class AnalogBasePanel extends DataInputPanel implements ActionListener, J
 
     @Override
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        if ((arg1.getSource() == getDecimalPlacesSpinner()) || (arg1.getSource() == getMeterDialsSpinner())) {
-            fireInputUpdate();
-        }
+        if ((arg1.getSource() == getDecimalPlacesSpinner()) || (arg1.getSource() == getMeterDialsSpinner()))
+            this.fireInputUpdate();
     }
 
     @Override

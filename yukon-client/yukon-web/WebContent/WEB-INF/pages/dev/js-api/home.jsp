@@ -12,7 +12,6 @@
 <style>
 .description { line-height: 22px; font-size: 16px; }
 h2 { margin-top: 40px; }
-.card { margin-bottom: 20px; }
 </style>
 
 <p class="description">
@@ -329,16 +328,12 @@ $(function () { yukon.circle.init(); });
     It is built by the <span class="label label-attr">&lt;tags:jsGlobals/&gt;</span> tag.
     Below is the <span class="label label-attr">yg</span> object printed out in tree form.
 </p>
-<div class="yukon-props scroll-lg code js-yg-data">
+<div class="yukon-props scroll-lg code js-yg-data ">
 </div>
-
 <style>
 .yukon-props dt {
     display: inline-block;
     margin-bottom: 5px;
-}
-.yukon-props dd {
-    margin-inline-start: 40px;
 }
 </style>
 <script>
@@ -354,9 +349,7 @@ $(function () { yukon.circle.init(); });
         
         propList.append(propTerm).append('&nbsp;{').append(propDef);
         
-        if (d === null) {
-            propDef.append('<span style="color:#7F007F;">' + d + '</span>');
-        } else if (d instanceof RegExp) {
+        if (d instanceof RegExp) {
             propDef.append('<span style="color:#06C;">' + d + '</span>');
         } else if (typeof(d) === 'object') {
             Object.keys(d).forEach(function (key) {
@@ -390,16 +383,15 @@ $(function () { yukon.circle.init(); });
     <span class="label label-info">Note:</span> It is safe to use on relative paths, which don't need the app context.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body js-url"></div>
+<div class="clearfix">
+    <div class="well js-url"></div>
+    <script>
+    $('.js-url').text(yukon.url('/this-is/my/cool/url'));
+    </script>
 </div>
-<script>
-$('.js-url').text(yukon.url('/this-is/my/cool/url'));
-</script>
-
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-url&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;well js-url&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 &lt;/script&gt;
@@ -415,9 +407,9 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     <span class="label label-attr">yukon.fromJson</span>.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
+<div class="clearfix">
     <cti:toJson object="${company}" id="my-company"/>
-    <div class="card-body js-from-json-ex"></div>
+    <div class="well js-from-json-ex"></div>
     <script>
     $('.js-from-json-ex').text(JSON.stringify(yukon.fromJson('#my-company')));
     </script>
@@ -425,7 +417,7 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
 &lt;cti:toJson object=&quot;&#36;{company}&quot; id=&quot;my-company&quot;/&gt;
-&lt;div class=&quot;js-from-json-ex&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;well js-from-json-ex&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 &#36;(&#39;.js-from-json-ex&#39;).text(JSON.stringify(yukon.fromJson(&#39;#my-company&#39;)));
 &lt;/script&gt;
@@ -436,8 +428,8 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     Returns a random number between min (inclusive) and max (exclusive).
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body js-rand-ex"></div>
+<div class="clearfix">
+    <div class="well js-rand-ex"></div>
     <script>
     (function () {
         var rando = function () {
@@ -451,7 +443,7 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-rand-ex&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;well js-rand-ex&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 (function () {
     var rando = function () {
@@ -469,8 +461,8 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     Returns a random integer between min (inclusive) and max (inclusive).
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body js-rand-int-ex"></div>
+<div class="clearfix">
+    <div class="well js-rand-int-ex"></div>
     <script>
     (function () {
         var rando = function () {
@@ -484,7 +476,7 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-rand-int-ex&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;well js-rand-int-ex&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 (function () {
     var rando = function () {
@@ -502,8 +494,8 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     Takes a count, a total, and an amount of decimal digits and returns a percent string.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body">
+<div class="clearfix">
+    <div class="well">
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="yukon.percent(13, 205, 3)" valueClass="js-percent-1"></tags:nameValue>
             <tags:nameValue name="yukon.percent(5, 10, 3)" valueClass="js-percent-2"></tags:nameValue>
@@ -511,7 +503,7 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
                 <td class="name">Progress Bar: <span class="js-percent-pb-text"></span></td>
                 <td class="value js-percent-pb">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"></div>
+                        <div class="progress-bar progress-bar-info progress-bar-striped active"></div>
                     </div>
                 </td>
             </tr>
@@ -534,18 +526,20 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;tags:nameValueContainer tableClass=&quot;natural-width&quot;&gt;
-    &lt;tags:nameValue name=&quot;yukon.percent(13, 205, 3)&quot; valueClass=&quot;js-percent-1&quot;&gt;&lt;/tags:nameValue&gt;
-    &lt;tags:nameValue name=&quot;yukon.percent(5, 10, 3)&quot; valueClass=&quot;js-percent-2&quot;&gt;&lt;/tags:nameValue&gt;
-    &lt;tr&gt;
-        &lt;td class=&quot;name&quot;&gt;Progress Bar: &lt;span class=&quot;js-percent-pb-text&quot;&gt;&lt;/span&gt;&lt;/td&gt;
-        &lt;td class=&quot;value js-percent-pb&quot;&gt;
-            &lt;div class=&quot;progress&quot;&gt;
-                &lt;div class=&quot;progress-bar progress-bar-info progress-bar-striped progress-bar-animated&quot;&gt;&lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/td&gt;
-    &lt;/tr&gt;
-&lt;/tags:nameValueContainer&gt;
+&lt;div class=&quot;well&quot;&gt;
+    &lt;tags:nameValueContainer tableClass=&quot;natural-width&quot;&gt;
+        &lt;tags:nameValue name=&quot;yukon.percent(13, 205, 3)&quot; valueClass=&quot;js-percent-1&quot;&gt;&lt;/tags:nameValue&gt;
+        &lt;tags:nameValue name=&quot;yukon.percent(5, 10, 3)&quot; valueClass=&quot;js-percent-2&quot;&gt;&lt;/tags:nameValue&gt;
+        &lt;tr&gt;
+            &lt;td class=&quot;name&quot;&gt;Progress Bar: &lt;span class=&quot;js-percent-pb-text&quot;&gt;&lt;/span&gt;&lt;/td&gt;
+            &lt;td class=&quot;value js-percent-pb&quot;&gt;
+                &lt;div class=&quot;progress&quot;&gt;
+                    &lt;div class=&quot;progress-bar progress-bar-info progress-bar-striped active&quot;&gt;&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tags:nameValueContainer&gt;
+&lt;/div&gt;
 &lt;script&gt;
 (function () {
     $(&#39;.js-percent-1&#39;).text(yukon.percent(13, 205, 3));
@@ -570,8 +564,8 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     call.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body">
+<div class="clearfix">
+    <div class="well">
         <div class="stacked js-values-literal">
             <span>The values of <span class="label label-attr">{ foo: 'bar', fee: 'baz' }</span> are: </span>
             <span class="js-result"></span>
@@ -607,13 +601,15 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;stacked js-values-literal&quot;&gt;
-    &lt;span&gt;The values of &lt;span class=&quot;label label-attr&quot;&gt;{ foo: &#39;bar&#39;, fee: &#39;baz&#39; }&lt;/span&gt; are: &lt;/span&gt;
-    &lt;span class=&quot;js-result&quot;&gt;&lt;/span&gt;
-&lt;/div&gt;
-&lt;div class=&quot;stacked js-values-class&quot;&gt;
-    &lt;span&gt;The values of a &lt;span class=&quot;label label-attr&quot;&gt;new Circle(42, 43, 44)&lt;/span&gt; instance are: &lt;/span&gt;
-    &lt;span class=&quot;js-result&quot;&gt;&lt;/span&gt;
+&lt;div class=&quot;well&quot;&gt;
+    &lt;div class=&quot;stacked js-values-literal&quot;&gt;
+        &lt;span&gt;The values of &lt;span class=&quot;label label-attr&quot;&gt;{ foo: &#39;bar&#39;, fee: &#39;baz&#39; }&lt;/span&gt; are: &lt;/span&gt;
+        &lt;span class=&quot;js-result&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;stacked js-values-class&quot;&gt;
+        &lt;span&gt;The values of a &lt;span class=&quot;label label-attr&quot;&gt;new Circle(42, 43, 44)&lt;/span&gt; instance are: &lt;/span&gt;
+        &lt;span class=&quot;js-result&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
 &lt;/div&gt;
 &lt;script&gt;
 (function () {
@@ -647,39 +643,36 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     <span class="label label-attr">yukon.validate.email</span>. 
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="card bg-light">
-    <div class="card-body clearfix">
-        <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="yukon.validate.latitude(100.1234)">
-                <span>Is Valid? </span><span class="js-lat-1"></span>
-            </tags:nameValue>
-            <tags:nameValue name="yukon.validate.latitude(-100.1234)">
-                <span>Is Valid? </span><span class="js-lat-2"></span>
-            </tags:nameValue>
-            <tags:nameValue name="yukon.validate.latitude(45.1234)">
-                <span>Is Valid? </span><span class="js-lat-3"></span>
-            </tags:nameValue>
-            <tags:nameValueGap/>
-            <tags:nameValue name="yukon.validate.longitude(190.1234)">
-                <span>Is Valid? </span><span class="js-long-1"></span>
-            </tags:nameValue>
-            <tags:nameValue name="yukon.validate.longitude(-190.1234)">
-                <span>Is Valid? </span><span class="js-long-2"></span>
-            </tags:nameValue>
-            <tags:nameValue name="yukon.validate.longitude(-120.1234)">
-                <span>Is Valid? </span><span class="js-long-3"></span>
-            </tags:nameValue>
-            <tags:nameValueGap/>
-            <tags:nameValue name="yukon.validate.email(bobvila.com)">
-                <span>Is Valid? </span><span class="js-email-1"></span>
-            </tags:nameValue>
-            <tags:nameValue name="yukon.validate.email(bob@vila.com)">
-                <span>Is Valid? </span><span class="js-email-2"></span>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </div>
-</div>
-<script>
+<div class="well clearfix">
+    <tags:nameValueContainer tableClass="natural-width">
+        <tags:nameValue name="yukon.validate.latitude(100.1234)">
+            <span>Is Valid? </span><span class="js-lat-1"></span>
+        </tags:nameValue>
+        <tags:nameValue name="yukon.validate.latitude(-100.1234)">
+            <span>Is Valid? </span><span class="js-lat-2"></span>
+        </tags:nameValue>
+        <tags:nameValue name="yukon.validate.latitude(45.1234)">
+            <span>Is Valid? </span><span class="js-lat-3"></span>
+        </tags:nameValue>
+        <tags:nameValueGap/>
+        <tags:nameValue name="yukon.validate.longitude(190.1234)">
+            <span>Is Valid? </span><span class="js-long-1"></span>
+        </tags:nameValue>
+        <tags:nameValue name="yukon.validate.longitude(-190.1234)">
+            <span>Is Valid? </span><span class="js-long-2"></span>
+        </tags:nameValue>
+        <tags:nameValue name="yukon.validate.longitude(-120.1234)">
+            <span>Is Valid? </span><span class="js-long-3"></span>
+        </tags:nameValue>
+        <tags:nameValueGap/>
+        <tags:nameValue name="yukon.validate.email(bobvila.com)">
+            <span>Is Valid? </span><span class="js-email-1"></span>
+        </tags:nameValue>
+        <tags:nameValue name="yukon.validate.email(bob@vila.com)">
+            <span>Is Valid? </span><span class="js-email-2"></span>
+        </tags:nameValue>
+    </tags:nameValueContainer>
+    <script>
     var lat1 = yukon.validate.latitude(100.1234);
     $('.js-lat-1').text(lat1).addClass(lat1 ? 'success' : 'error');
     var lat2 = yukon.validate.latitude(-100.1234);
@@ -696,7 +689,8 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     $('.js-email-1').text(email1).addClass(email1 ? 'success' : 'error');
     var email2 = yukon.validate.email('bob@vila.com');
     $('.js-email-2').text(email2).addClass(email2 ? 'success' : 'error');
-</script>
+    </script>
+</div>
 
 
 <h3 id="yukon-cookie-ex">Function: yukon.cookie</h3>
@@ -707,24 +701,23 @@ $(&#39;.js-url&#39;).text(yukon.url(&#39;/this-is/my/cool/url&#39;));
     In the example below, 'dev', is the scope and 'foo' is the id.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body js-cookie-ex">
+<div class="clearfix">
+    <div class="well js-cookie-ex">
         The value of the 'dev.foo' in the yukon cookie is <span class="success js-cookie-ex-value"></span>.
     </div>
-</div>
-<input type="text" class="js-cookie-ex-set"><cti:button label="Set 'dev.foo'" classes="js-set-cookie-btn"/>
-<script>
-yukon.cookie.set('dev', 'foo', 'bar');
-$('.js-cookie-ex-value').text(yukon.cookie.get('dev', 'foo'));
-$('.js-set-cookie-btn').click(function () {
-    yukon.cookie.set('dev', 'foo', $('.js-cookie-ex-set').val());
+    <input type="text" class="js-cookie-ex-set"><cti:button label="Set 'dev.foo'" classes="js-set-cookie-btn"/>
+    <script>
+    yukon.cookie.set('dev', 'foo', 'bar');
     $('.js-cookie-ex-value').text(yukon.cookie.get('dev', 'foo'));
-});
-</script>
-    
+    $('.js-set-cookie-btn').click(function () {
+        yukon.cookie.set('dev', 'foo', $('.js-cookie-ex-set').val());
+        $('.js-cookie-ex-value').text(yukon.cookie.get('dev', 'foo'));
+    });
+    </script>
+</div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-cookie-ex&quot;&gt;
+&lt;div class=&quot;well js-cookie-ex&quot;&gt;
     The value of the &#39;dev.foo&#39; in the yukon cookie is &lt;span class=&quot;success js-cookie-ex-value&quot;&gt;&lt;/span&gt;.
 &lt;/div&gt;
 &lt;input type=&quot;text&quot; class=&quot;js-cookie-ex-set&quot;&gt;&lt;cti:button label=&quot;Set &#39;dev.foo&#39;&quot; classes=&quot;js-set-cookie-btn&quot;/&gt;
@@ -751,10 +744,8 @@ $(&#39;.js-set-cookie-btn&#39;).click(function () {
     <input type="text" class="js-user-input">
     <cti:button label="Append XSS safe span" classes="js-get-xss-safe-str-btn fn vat"/>
     <br><br>
-    <div class="card bg-light">
-        <div class="card-body js-escapeXml-example">
-            XSS safe &lt;span&gt; will be appended here.
-        </div>
+    <div class="well js-escapeXml-example">
+        XSS safe &lt;span&gt; will be appended here.
     </div>
     <script>
         $('.js-get-xss-safe-str-btn').click(function () {
@@ -774,7 +765,7 @@ $(&#39;.js-set-cookie-btn&#39;).click(function () {
     &lt;input type=&quot;text&quot; class=&quot;js-user-input&quot;&gt;
     &lt;cti:button label=&quot;Get XSS safe string&quot; classes=&quot;js-get-xss-safe-str-btn fn vat&quot;/&gt;
     &lt;br&gt;&lt;br&gt;
-    &lt;div class=&quot;js-escapeXml-example&quot;&gt;
+    &lt;div class=&quot;well js-escapeXml-example&quot;&gt;
         XSS safe &lt;span&gt; will be appended here.
     &lt;/div&gt;
     &lt;script&gt;
@@ -884,27 +875,27 @@ $(function() {
 <h4 class="subtle">Example:</h4>
 <div class="stacked clearfix">
     <cti:button label="Show/Hide My Stuff" data-show-hide=".js-my-sneaky-stuff"/>
-    <div class="js-my-sneaky-stuff dn">
+    <div class="js-my-sneaky-stuff dn" class="well">
         My sneaky stuff!
     </div>
 </div>
 <div class="clearfix">
     <cti:button label="Show/Hide My Ajax'd Stuff" data-show-hide=".js-my-sneaky-ajax-stuff"/>
     <cti:url var="url" value="/dev/js-api/show-hide-ajax"/>
-    <div class="js-my-sneaky-ajax-stuff dn" data-url="${url}"></div>
+    <div class="js-my-sneaky-ajax-stuff dn" class="well" data-url="${url}"></div>
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
 &lt;div class=&quot;stacked clearfix&quot;&gt;
     &lt;cti:button label=&quot;Show/Hide My Stuff&quot; data-show-hide=&quot;.js-my-sneaky-stuff&quot;/&gt;
-    &lt;div class=&quot;js-my-sneaky-stuff dn&quot;&gt;
+    &lt;div class=&quot;js-my-sneaky-stuff dn&quot; class=&quot;well&quot;&gt;
         My sneaky stuff!
     &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;clearfix&quot;&gt;
     &lt;cti:button label=&quot;Show/Hide My Ajax&#39;d Stuff&quot; data-show-hide=&quot;.js-my-sneaky-ajax-stuff&quot;/&gt;
     &lt;cti:url var=&quot;url&quot; value=&quot;/dev/js-api/show-hide-ajax&quot;/&gt;
-    &lt;div class=&quot;js-my-sneaky-ajax-stuff dn&quot; data-url=&quot;&#36;{url}&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;js-my-sneaky-ajax-stuff dn&quot; class=&quot;well&quot; data-url=&quot;&#36;{url}&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 </pre>
 
@@ -929,13 +920,13 @@ $(function() {
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="clearfix">
-    <div class="js-block-this clearfix">
+    <div class="js-block-this clearfix well">
         <cti:button label="Block Me" classes="js-blocker"/>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-block-this clearfix&quot;&gt;
+&lt;div class=&quot;js-block-this clearfix well&quot;&gt;
     &lt;cti:button label=&quot;Block Me&quot; classes=&quot;js-blocker&quot;/&gt;
 &lt;/div&gt;
 </pre>
@@ -1185,7 +1176,7 @@ $(&#39;.js-format-phone-btn&#39;).click(function () {
 &lt;cti:button label=&quot;Save&quot; data-toggle-group=&quot;my stuff2&quot;/&gt;
 </pre>
 <p class="description">
-    The toggle behavior can also be done programmatically using <span class="label label-attr">yukon.ui.toggleInputs</span>.
+    The toggle behavior can also be done programatically using <span class="label label-attr">yukon.ui.toggleInputs</span>.
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="stacked clearfix">
@@ -1225,7 +1216,6 @@ $(&#39;.js-format-phone-btn&#39;).click(function () {
         yukon.ui.toggleInputs(cb);
         setTimeout(toggle, 1000);
     };
-    toggle();
 })();
 &lt;/script&gt;
 </pre>
@@ -1845,24 +1835,24 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
     Will highlight all the text in an element. Useful for copy actions.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body js-jq-select-ex">
+<div class="clearfix">
+    <div class="well js-jq-select-ex">
         The <span class="success">coolest</span> thing about<br>
         $.selectText is that it will
         <div class="user-message success">select the text reguardless of nested elements.</div>
     </div>
+    <div class="page-action-area">
+        <cti:button classes="js-jq-select-btn" label="Highlight All The Things"/>
+    </div>
+    <script>
+    $('.js-jq-select-btn').click(function () {
+        $('.js-jq-select-ex').selectText();
+    });
+    </script>
 </div>
-<div class="page-action-area">
-    <cti:button classes="js-jq-select-btn" label="Highlight All The Things"/>
-</div>
-<script>
-$('.js-jq-select-btn').click(function () {
-    $('.js-jq-select-ex').selectText();
-});
-</script>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;js-jq-select-ex&quot;&gt;
+&lt;div class=&quot;well js-jq-select-ex&quot;&gt;
     The &lt;span class=&quot;success&quot;&gt;coolest&lt;/span&gt; thing about&lt;br&gt;
     $.selectText is that it will
     &lt;div&gt;select the text reguardless of nested elements.&lt;/div&gt;
@@ -1939,7 +1929,7 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
 <div class="clearfix">
     <div class="stacked">
         <span class="js-flash-me">Look Mom, no hands!</span>
-        <div class="card bg-light"><div class="card-body buffered js-flash-me">I'm so good at Jquery!</div></div>
+        <div class="well buffered js-flash-me">I'm so good at Jquery!</div>
         <div class="js-flash-speed" style="max-width: 400px;"></div>
         Speed: <span class="js-flash-speed-val"></span>
     </div>
@@ -1979,7 +1969,7 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
 <pre class="code prettyprint">
 &lt;div class=&quot;stacked&quot;&gt;
     &lt;span class=&quot;js-flash-me&quot;&gt;Look Mom, no hands!&lt;/span&gt;
-    &lt;div class=&quot;buffered js-flash-me&quot;&gt;I&#39;m so good at Jquery!&lt;/div&gt;
+    &lt;div class=&quot;well buffered js-flash-me&quot;&gt;I&#39;m so good at Jquery!&lt;/div&gt;
     &lt;div class=&quot;js-flash-speed&quot; style=&quot;max-width: 400px;&quot;&gt;&lt;/div&gt;
     Speed: &lt;span class=&quot;js-flash-speed-val&quot;&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -2021,23 +2011,23 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
     Does the same as jquery's built in $.show, $.hide, and $.toggle except they change the CSS <em>visibility</em> property.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body">
+<div class="clearfix">
+    <div class="well">
         <span>Who ya gonna call? <cti:icon classes="js-ghost fn" icon="icon-status-offline"/> Ghost busters!</span>
     </div>
+    <script>
+    (function () {
+        var runner = function () {
+            $('.js-ghost').visibilityToggle();
+            setTimeout(runner, 1000);
+        };
+        runner();
+    })();
+    </script>
 </div>
-<script>
-(function () {
-    var runner = function () {
-        $('.js-ghost').visibilityToggle();
-        setTimeout(runner, 1000);
-    };
-    runner();
-})();
-</script>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div&gt;
+&lt;div class=&quot;well&quot;&gt;
     &lt;span&gt;Who ya gonna call? &lt;cti:icon classes=&quot;js-ghost fn&quot; icon=&quot;icon-status-offline&quot;/&gt; Ghost busters!&lt;/span&gt;
 &lt;/div&gt;
 &lt;script&gt;
@@ -2057,8 +2047,8 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
     <span class="label label-attr">$.removeMessages</span> removes all alerts from a container element.
 </p>
 <h4 class="subtle">Example:</h4>
-<div class="clearfix card bg-light">
-    <div class="card-body clearfix js-add-msg-ex">
+<div class="clearfix">
+    <div class="well clearfix js-add-msg-ex">
         <cti:button classes="js-add-msg" label="Add Success" data-label="Success" data-type="success"/>
         <cti:button classes="js-add-msg" label="Add Info" data-label="Info" data-type="info"/>
         <cti:button classes="js-add-msg" label="Add Warning" data-label="Warning" data-type="warning"/>
@@ -2066,23 +2056,23 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
         <cti:button classes="js-add-msg" label="Add Pending" data-label="Pending" data-type="pending"/>
         <cti:button classes="js-remove-msgs" label="Remove Messages"/>
     </div>
+    <script>
+    (function () {
+        $('.js-add-msg').click(function () { 
+            $('.js-add-msg-ex').addMessage({
+                message: $(this).data('label'),
+                messageClass: $(this).data('type')
+            }); 
+        });
+        $('.js-remove-msgs').click(function () { 
+            $('.js-add-msg-ex').removeMessages();
+        });
+    })();
+    </script>
 </div>
-<script>
-(function () {
-    $('.js-add-msg').click(function () { 
-        $('.js-add-msg-ex').addMessage({
-            message: $(this).data('label'),
-            messageClass: $(this).data('type')
-        }); 
-    });
-    $('.js-remove-msgs').click(function () { 
-        $('.js-add-msg-ex').removeMessages();
-    });
-})();
-</script>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div class=&quot;clearfix js-add-msg-ex&quot;&gt;
+&lt;div class=&quot;well clearfix js-add-msg-ex&quot;&gt;
     &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Success&quot; data-label=&quot;Success&quot; data-type=&quot;success&quot;/&gt;
     &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Info&quot; data-label=&quot;Info&quot; data-type=&quot;info&quot;/&gt;
     &lt;cti:button classes=&quot;js-add-msg&quot; label=&quot;Add Warning&quot; data-label=&quot;Warning&quot; data-type=&quot;warning&quot;/&gt;

@@ -1,12 +1,10 @@
 package com.cannontech.web.smartNotifications;
 
-import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.joda.time.DateTime;
@@ -25,8 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,7 +72,6 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebFileUtils;
@@ -102,33 +96,23 @@ public class SmartNotificationsController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
-
-    @RequestMapping(value = "events/{type}", method = RequestMethod.GET)
-    public String eventDetailByType(@PathVariable String type,
-            @DefaultSort(dir = Direction.desc, sort = "timestamp") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging, ModelMap model, YukonUserContext userContext,
-            @ModelAttribute("filter") SmartNotificationEventFilter filter) {
-
-        // Validates Date Range
-        validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
-
+    
+    @RequestMapping(value="events/{type}", method=RequestMethod.GET)
+    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
+                               @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
         return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
     }
-
+    
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
     public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
                                YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
-
-        // Validates Date Range
-        validateFilterDates(model, userContext, filter.getStartDate(), filter.getEndDate());
-
         return retrieveEventDetail(type, parameter, sorting, paging, userContext, model, filter);
     }
-
+    
     private String retrieveEventDetail(String type, String parameter, SortingParameters sorting, PagingParameters paging, 
                                        YukonUserContext userContext, ModelMap model, SmartNotificationEventFilter filter) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -178,7 +162,7 @@ public class SmartNotificationsController {
             addDeviceCollectionToModelMap(allDetail, model);
         } else if (eventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
-            if (CollectionUtils.isEmpty(filter.getCategories())) {
+            if (filter.getCategories().isEmpty()) {
                 filter.setCategories(Arrays.asList(categories));
             }
             model.addAttribute("types", categories);
@@ -409,8 +393,6 @@ public class SmartNotificationsController {
     private void setupEventType(ModelMap model) {
         model.addAttribute("eventTypeDDM", SmartNotificationEventType.DEVICE_DATA_MONITOR);
         model.addAttribute("eventTypeAssetImport", SmartNotificationEventType.ASSET_IMPORT);
-        model.addAttribute("eventTypeMeterDR", SmartNotificationEventType.METER_DR);
-        model.addAttribute("eventTypeEatonCloudDR", SmartNotificationEventType.EATON_CLOUD_DR);
     }
 
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
@@ -574,26 +556,4 @@ public class SmartNotificationsController {
         }
     }
 
-    /**
-     * / Checks either start date is greater than end date or not
-     */
-    private void validateFilterDates(ModelMap model, YukonUserContext userContext, Date startDate, Date endDate) {
-
-        if (startDate != null && endDate != null) {
-            if (startDate.compareTo(endDate) > 0) {
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-                String startBeforeStopErrorMessage = accessor.getMessage("yukon.common.error.date.startBeforeStop");
-                model.addAttribute("errorMsg", startBeforeStopErrorMessage);
-            }
-        }
-    }
-
-    /* INIT BINDER */
-    @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-
-        PropertyEditor fullDateTimeEditor = datePropertyEditorFactory.getPropertyEditor(DateFormatEnum.LONG_DATE_TIME, userContext);
-
-        binder.registerCustomEditor(DateTime.class, fullDateTimeEditor);
-    }
 }

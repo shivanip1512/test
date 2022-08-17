@@ -30,8 +30,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     }
 
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
-    private static long extraTimeoutForSocketDelayState = 600000;
-    private long lastSuccessfulCheckTime = System.currentTimeMillis();
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private ConfigurationSource configurationSource;
@@ -91,16 +89,11 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
                     return ServiceStatus.STOPPED;
                 }
             }
-            lastSuccessfulCheckTime = System.currentTimeMillis();
             return ServiceStatus.RUNNING;
         } catch (SocketTimeoutException e) {
             log.debug("Yukon web server may be starting. Checked with url: " + url + " with proxy as " + proxySetting
                 + " Error " + e);
-            if ((System.currentTimeMillis() - lastSuccessfulCheckTime) < extraTimeoutForSocketDelayState) {
-                return ServiceStatus.UNKNOWN;
-            } else {
-                return ServiceStatus.STOPPED;
-            }    
+            return ServiceStatus.UNKNOWN;
         } catch (IOException e) {
             log.debug("Yukon web server is down. Checked with url: " + url + " with proxy as " + proxySetting
                 + " Error " + e);
@@ -111,7 +104,6 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     //Returns the response of Web Server.
     private int getWebServerResponse(String webServerUrl, boolean useProxy) throws SocketTimeoutException, IOException{
         boolean isHttps = StringUtils.containsIgnoreCase(webServerUrl, "https");
-        webServerUrl = webServerUrl.concat("/common/runningStatus");
         URL url = new URL(webServerUrl);
 
         if (url.getPort() == -1) {

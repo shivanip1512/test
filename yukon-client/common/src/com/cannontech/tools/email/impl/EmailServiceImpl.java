@@ -4,35 +4,35 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
-import jakarta.mail.Authenticator;
-import jakarta.mail.Message.RecipientType;
-import jakarta.mail.MessagingException;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import javax.mail.Authenticator;
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.SystemEmailSettingsType;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
-    private static final String smtpAuthPropertyName = "mail.smtp.auth";
-    
+    private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
+
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private SmtpHelper smtpHelper;
+    @Autowired private SmtpHelper configurationSource;
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -68,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
         // Ready to go, send the message.
         send(message, session);
     }
-
+    
     /**
      * Attempts to get any authentication information required for the SMTP server and
      * send the email message. No modification is done to the message itself.
@@ -77,22 +77,17 @@ public class EmailServiceImpl implements EmailService {
      * SMTP server or send the message.
      */
     private void send(final MimeMessage message, Session session) throws MessagingException {
-        String host = smtpHelper.getCachedValue(SmtpPropertyType.HOST.getKey(false));
-        if (StringUtils.isEmpty(host)) {
-            // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings.
-            throw new MessagingException(
-                    "SMTP host name not defined in configuration.properties file or in the GlobalSettings table in the database.");
-        }
-        String port = smtpHelper.getCachedValue(SmtpPropertyType.PORT.getKey(false));
-        String protocol = smtpHelper.getCachedValue(SystemEmailSettingsType.SMTP_PROTOCOL.getKey());
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
         Transport transport = null;
-        transport = session.getTransport(protocol);
+        SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+        transport = session.getTransport(encryptionType.getProtocol());
         try {
             if (authentication != null) {
                 String username = authentication.getUserName();
                 String password = authentication.getPassword();
+                String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
+                String port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
                 if (!StringUtils.isEmpty(port)) {
                     transport.connect(host, Integer.parseInt(port), username, password);
                 } else {
@@ -121,18 +116,15 @@ public class EmailServiceImpl implements EmailService {
      * @throws MessagingException if no SMTP host value is defined in GlobalSettings
      */
     private Session getSession() throws MessagingException {
-        if (smtpHelper == null) {
-            smtpHelper = new SmtpHelper();
-        }
         Properties properties = new Properties();
-        Map<String, String> smtpSettings = smtpHelper.getSmtpConfigSettings();
+        Map<String, String> smtpSettings = configurationSource.getSmtpConfigSettings();
         if (smtpSettings != null) {
             smtpSettings.forEach((key, value) -> properties.put(key, value));
         }
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         if (authenticator.getPasswordAuthentication() != null) {
             // Make sure we use authentication.
-            properties.put(smtpAuthPropertyName, "true");
+            properties.put(SMTP_AUTH_PROPERTY_NAME, "true");
             return Session.getInstance(properties, authenticator);
         }
 
@@ -145,12 +137,12 @@ public class EmailServiceImpl implements EmailService {
      * call when the Session for sending emails is retrieved.
      */
     private class SmtpAuthenticator extends Authenticator {
-        String username = smtpHelper.getCachedValue(SystemEmailSettingsType.SMTP_USERNAME.getKey());
-        String password = smtpHelper.getCachedValue(SystemEmailSettingsType.SMTP_PASSWORD.getKey());
         private PasswordAuthentication authentication = null;
         
         public SmtpAuthenticator() {
-
+            String username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
+            String password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
+            
             if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
                 log.debug("SMTP username and password");
                 authentication = new PasswordAuthentication(username, password);

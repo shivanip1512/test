@@ -1,64 +1,57 @@
 package com.cannontech.dr.recenteventparticipation;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.cannontech.dr.eatonCloud.model.EatonCloudEventStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.itron.service.impl.ItronLoadControlEventStatus;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public enum ControlEventDeviceStatus {
 
-    UNKNOWN(0),
-    FAILED_WILL_RETRY(1),
-    FAILED(2),
-    SUCCESS_RECEIVED(3),
-    SUCCESS_STARTED(4),
-    SUCCESS_COMPLETED(5);
+    UNKNOWN(null, new ArrayList<>(), 0),
+    SUCCESS_RECEIVED(EventPhase.NOT_STARTED, ItronLoadControlEventStatus.EVENT_RECEIVED, 1),
+    SUCCESS_STARTED(EventPhase.PHASE_1, ItronLoadControlEventStatus.EVENT_STARTED, 2),
+    SUCCESS_COMPLETED(EventPhase.COMPLETED, Lists.newArrayList(ItronLoadControlEventStatus.EVENT_CANCELLED, ItronLoadControlEventStatus.EVENT_COMPLETED), 3);
 
+    private EventPhase eventPhase;
+    private List<ItronLoadControlEventStatus> itronStatus;
     private int messageOrder;
-    
     private static final ImmutableMap<EventPhase, ControlEventDeviceStatus> lookupByEventPhase;
     private static final ImmutableMap<ItronLoadControlEventStatus, ControlEventDeviceStatus> lookupByItronStatus;
-    private static final ImmutableMap<EatonCloudEventStatus, ControlEventDeviceStatus> lookupByCloudStatus;
     private static final ImmutableSet<ControlEventDeviceStatus> allDeviceStatus;
     
-    ControlEventDeviceStatus(int messageOrder) {
+    ControlEventDeviceStatus(EventPhase eventPhase, ItronLoadControlEventStatus status, int messageOrder) {
+        this.eventPhase = eventPhase;
+        itronStatus = Lists.newArrayList(status);
+        this.messageOrder = messageOrder;
+    }
+    
+    ControlEventDeviceStatus(EventPhase eventPhase, List<ItronLoadControlEventStatus> statuses, int messageOrder) {
+        this.eventPhase = eventPhase;
+        itronStatus = statuses;
         this.messageOrder = messageOrder;
     }
 
     static {
-        
-        ImmutableMap.Builder<EventPhase, ControlEventDeviceStatus> eventPhaseLookupBuilder = ImmutableMap.builder();
-        lookupByEventPhase = eventPhaseLookupBuilder
-                .put(EventPhase.NOT_STARTED, SUCCESS_RECEIVED)
-                .put(EventPhase.PHASE_1, SUCCESS_STARTED)
-                .put(EventPhase.COMPLETED, SUCCESS_COMPLETED)
-                .build();
-        
+        ImmutableMap.Builder<EventPhase, ControlEventDeviceStatus> eventPhaseBuilder = ImmutableMap.builder();
         ImmutableMap.Builder<ItronLoadControlEventStatus, ControlEventDeviceStatus> itronStatusBuilder = ImmutableMap.builder();
-        lookupByItronStatus = itronStatusBuilder
-                .put(ItronLoadControlEventStatus.EVENT_RECEIVED, SUCCESS_RECEIVED)
-                .put(ItronLoadControlEventStatus.EVENT_STARTED, SUCCESS_STARTED)
-                .put(ItronLoadControlEventStatus.EVENT_CANCELLED, SUCCESS_COMPLETED)
-                .put(ItronLoadControlEventStatus.EVENT_COMPLETED, SUCCESS_COMPLETED)
-                .build();
-        
-        ImmutableMap.Builder<EatonCloudEventStatus, ControlEventDeviceStatus> eatonCloudStatusBuilder = ImmutableMap.builder();
-        lookupByCloudStatus = eatonCloudStatusBuilder
-                .put(EatonCloudEventStatus.RECEIVED, SUCCESS_RECEIVED)
-                .put(EatonCloudEventStatus.STARTED, SUCCESS_STARTED)
-                .put(EatonCloudEventStatus.COMPLETE, SUCCESS_COMPLETED)
-                .put(EatonCloudEventStatus.CANCELED, SUCCESS_COMPLETED)
-                .build();
-        
         ImmutableSet.Builder<ControlEventDeviceStatus> eventDeviceStatusBuilder = ImmutableSet.builder();
-        allDeviceStatus = eventDeviceStatusBuilder
-                .addAll(Arrays.asList(ControlEventDeviceStatus.values()))
-                .build();
         
+        for (ControlEventDeviceStatus controlEventDeviceStatus : values()) {
+            if (controlEventDeviceStatus.eventPhase != null) {
+                eventPhaseBuilder.put(controlEventDeviceStatus.eventPhase, controlEventDeviceStatus);
+                eventDeviceStatusBuilder.add(controlEventDeviceStatus);
+            }
+            for (ItronLoadControlEventStatus itronStatus : controlEventDeviceStatus.itronStatus) {
+                itronStatusBuilder.put(itronStatus, controlEventDeviceStatus);
+            }
+        }
+        lookupByEventPhase = eventPhaseBuilder.build();
+        lookupByItronStatus = itronStatusBuilder.build();
+        allDeviceStatus = eventDeviceStatusBuilder.build();
     }
 
     public static ControlEventDeviceStatus getDeviceStatus(EventPhase eventPhase) {
@@ -68,44 +61,19 @@ public enum ControlEventDeviceStatus {
     public static ControlEventDeviceStatus getDeviceStatus(ItronLoadControlEventStatus itronStatus) {
         return lookupByItronStatus.get(itronStatus);
     }
-    
-    public static ControlEventDeviceStatus getDeviceStatus(EatonCloudEventStatus cloudStatus) {
-        return lookupByCloudStatus.get(cloudStatus);
-    }
 
     public int getMessageOrder() {
         return messageOrder;
     }
 
     public EventPhase getEventPhase(){
-        //returns null for UNKNOWN
-        return lookupByEventPhase
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() == this)
-                .map(Map.Entry::getKey)
-                .findAny()
-                .orElse(null);
+        return eventPhase;
     }
     
     public List<ItronLoadControlEventStatus> getItronLoadControlEventStatus() {
-        return lookupByItronStatus
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() == this)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        return itronStatus;
     }
 
-    public List<EatonCloudEventStatus> getEatonCloudEventStatus() {
-        return lookupByCloudStatus
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() == this)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-    }
-    
     public static ImmutableSet<ControlEventDeviceStatus> getAllDeviceStatus() {
         return allDeviceStatus;
     }

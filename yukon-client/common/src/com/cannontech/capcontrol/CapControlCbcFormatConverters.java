@@ -1,6 +1,8 @@
 package com.cannontech.capcontrol;
 
-import com.cannontech.common.YukonColorPalette;
+import java.awt.Color;
+
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -8,6 +10,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ColorUtil;
 
 public class CapControlCbcFormatConverters {
 
@@ -80,8 +83,21 @@ public class CapControlCbcFormatConverters {
     }
 
     public static String convertLastControlReasonColor(Double value) {
-        YukonColorPalette yukonColor = getColorForState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, value.intValue());
-        return yukonColor.getHexValue();
+        StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
+
+        LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_LASTCONTROL_STATE, value.intValue());
+
+        Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
+
+        if (stateColor == Color.green) {
+            stateColor = new Color(0,153, 51); //#009933
+        } else if (stateColor == Color.red) {
+            stateColor = new Color(209, 72, 54); //#D14836
+        } else if (stateColor == Color.orange) {
+            stateColor = new Color(255, 153, 0); //#FF9900
+        }
+
+        return ColorUtil.getHTMLColor(stateColor);
     }
 
     public static String convertIgnoredControlReason(Double value) {
@@ -103,17 +119,21 @@ public class CapControlCbcFormatConverters {
     }
 
     public static String convertIgnoredControlReasonColor(Double value) {
-        YukonColorPalette yukonColor = getColorForState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, value.intValue());
-        return yukonColor.getHexValue();
-    }
-
-    private static YukonColorPalette getColorForState(int stateGroupId, int state) {
         StateGroupDao stateGroupDao = YukonSpringHook.getBean(StateGroupDao.class);
-        LiteState liteState = stateGroupDao.findLiteState(stateGroupId, state);
 
-        YukonColorPalette yukonColor = liteState == null ? 
-                YukonColorPalette.WHITE : YukonColorPalette.getColor(liteState.getFgColor());
+        LiteState liteState = stateGroupDao.findLiteState(StateGroupUtils.STATEGROUP_IGNORED_CONTROL, value.intValue());
 
-        return yukonColor;
+        Color stateColor = liteState == null ? Color.WHITE : Colors.getColor(liteState.getFgColor());
+
+        if (stateColor == Color.green) {
+            stateColor = new Color(0,153, 51); //#009933
+        } else if (stateColor == Color.red) {
+            stateColor = new Color(209, 72, 54); //#D14836
+        } else if (stateColor == Color.orange) {
+            stateColor = new Color(255, 153, 0); //#FF9900
+        }
+
+        return ColorUtil.getHTMLColor(stateColor);
     }
+
 }

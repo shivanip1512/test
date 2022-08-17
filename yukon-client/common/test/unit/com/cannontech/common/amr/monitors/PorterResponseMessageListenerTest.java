@@ -1,13 +1,12 @@
 package com.cannontech.common.amr.monitors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -54,7 +53,7 @@ public class PorterResponseMessageListenerTest {
     private PorterResponseMessage message5;
     private final List<Integer> sentPointData = Lists.newArrayList();
     
-    @BeforeEach
+    @Before
     public void setup() {
         
         List<PorterResponseMonitorRule> standardRules = Lists.newArrayList();
@@ -153,9 +152,9 @@ public class PorterResponseMessageListenerTest {
 
         handleMockMessage(message1, 0, true);
         
-        assertEquals(2, sentPointData.size());
-        assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
-        assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
+        Assert.assertEquals(2, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
     }
     
     @Test
@@ -164,9 +163,9 @@ public class PorterResponseMessageListenerTest {
 
         handleMockMessage(message1, 74, true);
         
-        assertEquals(2, sentPointData.size());
-        assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
-        assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
+        Assert.assertEquals(2, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
     }
     
     @Test
@@ -180,9 +179,9 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 0, true);
-        assertEquals(2, sentPointData.size());
-        assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
-        assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
+        Assert.assertEquals(2, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(1));
     }
     @Test
     public void test_default_rule2() {
@@ -192,9 +191,9 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 17, false);
         handleMockMessage(message1, 74, false);
         handleMockMessage(message1, 300, true);
-        assertEquals(2, sentPointData.size());
-        assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
-        assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
+        Assert.assertEquals(2, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(1));
     }
     @Test
     public void test_default_rule3() {
@@ -204,8 +203,8 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 300, true);
-        assertEquals(1, sentPointData.size());
-        assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0));
+        Assert.assertEquals(1, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0));
     }
     
     @Test
@@ -234,10 +233,10 @@ public class PorterResponseMessageListenerTest {
         handleMockMessage(message1, 300, false);
         handleMockMessage(message1, 0, true); // sent GOOD
         
-        assertEquals(5, sentPointData.size());
-        assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0)); //message 3
-        assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(2)); //message 2
-        assertEquals(Integer.valueOf(GOOD), sentPointData.get(4)); //message 1
+        Assert.assertEquals(5, sentPointData.size());
+        Assert.assertEquals(Integer.valueOf(QUESTIONABLE), sentPointData.get(0)); //message 3
+        Assert.assertEquals(Integer.valueOf(GOOD_QUESTIONABLE), sentPointData.get(2)); //message 2
+        Assert.assertEquals(Integer.valueOf(GOOD), sentPointData.get(4)); //message 1
     }
     
     @Test
@@ -245,7 +244,7 @@ public class PorterResponseMessageListenerTest {
         sentPointData.clear();
 
         handleMockMessage(message4, 0, true);
-        assertEquals(0, sentPointData.size());
+        Assert.assertEquals(0, sentPointData.size());
     }
     
     @Test
@@ -253,7 +252,7 @@ public class PorterResponseMessageListenerTest {
         sentPointData.clear();
 
         handleMockMessage(message4, 0, true);
-        assertEquals(0, sentPointData.size());
+        Assert.assertEquals(0, sentPointData.size());
     }
 
     @Test
@@ -261,7 +260,7 @@ public class PorterResponseMessageListenerTest {
         sentPointData.clear();
 
         handleMockMessage(message5, 0, true);
-        assertEquals(0, sentPointData.size());
+        Assert.assertEquals(0, sentPointData.size());
     }
 
     private void handleMockMessage(PorterResponseMessage message, int errorCode, boolean isFinalMsg) {

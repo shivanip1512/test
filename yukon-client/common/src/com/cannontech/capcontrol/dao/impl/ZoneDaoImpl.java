@@ -99,7 +99,6 @@ public class ZoneDaoImpl implements ZoneDao {
             
             regulatorToZone.setRegulatorId(rs.getInt("RegulatorId"));
             regulatorToZone.setZoneId(rs.getInt("ZoneId"));
-            regulatorToZone.setFeederId(rs.getNullableInt("FeederId"));
             regulatorToZone.setPhase(rs.getEnum("Phase", Phase.class));
             if (regulatorToZone.getPhase() == null) {
                 regulatorToZone.setPhase(Phase.ALL);
@@ -128,7 +127,6 @@ public class ZoneDaoImpl implements ZoneDao {
             PointToZoneMapping pointToZone = new PointToZoneMapping();
             pointToZone.setPointId(rs.getInt("PointId"));
             pointToZone.setZoneId(rs.getInt("ZoneId"));
-            pointToZone.setFeederId(rs.getNullableInt("FeederId"));
             pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
             pointToZone.setDistance(rs.getDouble("Distance"));
             pointToZone.setPhase(rs.getEnum("Phase", Phase.class));
@@ -175,7 +173,7 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId) {
         
         SqlStatementBuilder regulatorToZoneSql = new SqlStatementBuilder();
-        regulatorToZoneSql.append("SELECT rtz.RegulatorId, rtz.ZoneId, rtz.FeederId, cc.Phase");
+        regulatorToZoneSql.append("SELECT rtz.RegulatorId, rtz.ZoneId, cc.Phase");
         regulatorToZoneSql.append("FROM RegulatorToZoneMapping rtz");
         regulatorToZoneSql.append("LEFT JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
         regulatorToZoneSql.append("WHERE rtz.zoneId").eq(zoneId);
@@ -223,7 +221,7 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<PointToZoneMapping> getPointToZoneMappingByZoneId(int zoneId) {
         
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT ptz.PointId, ptz.ZoneId, ptz.FeederId, ptz.GraphPositionOffset, ptz.Distance, cc.Phase, ptz.Ignore");
+        sqlBuilder.append("SELECT ptz.PointId, ptz.ZoneId, ptz.GraphPositionOffset, ptz.Distance, cc.Phase, ptz.Ignore");
         sqlBuilder.append("FROM PointToZoneMapping ptz");
         sqlBuilder.append("JOIN CcMonitorBankList cc ON ptz.PointId = cc.PointId");
         sqlBuilder.append("WHERE ptz.ZoneId").eq(zoneId);
@@ -272,27 +270,7 @@ public class ZoneDaoImpl implements ZoneDao {
             return null;
         }
     }
-
-    @Override
-    public Zone findZoneByZoneName(String zoneName) {
-
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT ZoneId, ZoneName, SubstationBusId, ParentId, GraphStartPosition, ZoneType");
-        sqlBuilder.append("FROM Zone");
-        sqlBuilder.append("WHERE UPPER(ZoneName)").eq(zoneName.toUpperCase());
-
-        try {
-            Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
-            List<RegulatorToZoneMapping> regulatorToZoneList = getRegulatorToZoneMappingsByZoneId(zone.getId());
-            zone.setRegulators(regulatorToZoneList);
-
-            return zone;
-        } catch (EmptyResultDataAccessException e) {
-            //Eating the exception and returning null.
-            return null;
-        }
-    }
-
+    
     @Override
     public void save(Zone zone) {
         zoneTemplate.save(zone);
@@ -411,8 +389,8 @@ public class ZoneDaoImpl implements ZoneDao {
         
         for (PointToZoneMapping pointToZone : pointsToZone) {
             SqlStatementBuilder sqlBuilderInsert = new SqlStatementBuilder();
-            sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, FeederId, GraphPositionOffset, Distance, Ignore)");
-            sqlBuilderInsert.values(pointToZone.getPointId(), abstractZone.getZoneId(), pointToZone.getFeederId(), pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.isIgnore());
+            sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance, Ignore)");
+            sqlBuilderInsert.values(pointToZone.getPointId(), abstractZone.getZoneId(), pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.isIgnore());
             
             yukonJdbcTemplate.update(sqlBuilderInsert);
             
@@ -538,18 +516,11 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<CcEvent> getLatestCommStatusEvents(int subBusId, TimeRange range) {
         Duration hours = Duration.standardHours(range.getHours());
         Instant since = Instant.now().minus(hours);
-        List<CcEventType> ivvcEventTypes = Lists.newArrayList(new CcEventType[] { CcEventType.IvvcCommStatus,
-                                                                                  CcEventType.IvvcTapOperation,
-                                                                                  CcEventType.IvvcScanOperation,
-                                                                                  CcEventType.IvvcSetPointOperation,
-                                                                                  CcEventType.IvvcPowerFlowIndication,
-                                                                                  CcEventType.IvvcAnalysisSkipped,
-                                                                                  CcEventType.IvvcAnalysisState });
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EV.LogId, EV.Text, EV.DateTime, YP.PaoName, EV.Value, EV.UserName");
         sql.append("FROM CcEventLog EV");
         sql.append("JOIN YukonPAObject YP ON EV.SubID = YP.PAObjectID");
-        sql.append("WHERE EV.EventType").in(ivvcEventTypes);
+        sql.append("WHERE EV.EventType").eq_k(CcEventType.IvvcCommStatus);
         sql.append("AND EV.SubId").eq(subBusId);
         sql.append("AND EV.DateTime").gte(since);
 
@@ -703,9 +674,7 @@ public class ZoneDaoImpl implements ZoneDao {
             regulatorToZone.setRegulatorId(value);
         }
         @Override
-        public void extractValues(MapSqlParameterSource parameterHolder, RegulatorToZoneMapping object) {
-            parameterHolder.addValue("FeederId", object.getFeederId());
-        }
+        public void extractValues(MapSqlParameterSource parameterHolder, RegulatorToZoneMapping object) {}
     };
 
     @PostConstruct

@@ -28,6 +28,7 @@
 <cti:includeCss link="BUTTONS" force="true"/>
 <cti:includeCss link="ICONS" force="true"/>
 <cti:includeCss link="JQUERY_UI_MIN" force="true"/>
+<cti:includeCss link="TIPSY" force="true"/>
 
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
 <cti:includeCss link="OVERRIDES" force="true"/>
@@ -35,6 +36,7 @@
 <cti:includeScript link="MODERNIZR" force="true"/>
 
 <cti:includeScript link="JQUERY" force="true"/>
+<cti:includeScript link="JQUERY_TIPSY" force="true"/>
 <cti:includeScript link="JQUERY_COOKIE" force="true"/>
 <cti:includeScript link="JQUERY_UI" force="true"/>
 <cti:includeScript link="JQUERY_CHOSEN" force="true"/>

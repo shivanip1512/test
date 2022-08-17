@@ -13,7 +13,7 @@
                 <label>
                     <i:inline key="yukon.common.search"/>:
                     <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field">
-                    <cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat M0 js-picker-show-all"
+                    <cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat right M0 js-picker-show-all"
                             id="picker-${id}-show-all-link"/>
                 </label>
             </div>

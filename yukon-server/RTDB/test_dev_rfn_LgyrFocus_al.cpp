@@ -15,7 +15,6 @@ struct test_state_rfn_lgyr_focus_al
 {
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
-    Cti::Devices::RfnDevice::RequestMsgList requestMsgs;
     Cti::Devices::RfnDevice::RfnCommandList rfnRequests;
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
@@ -66,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, requestMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -187,7 +186,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display_out_of_order_slot_disabled )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, requestMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
@@ -204,8 +203,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display_out_of_order_slot_disabled )
 
 BOOST_AUTO_TEST_CASE( test_config_notification )
 {
-    const auto tzOverride = Cti::Test::set_to_central_timezone();
-
     auto cmd = Cti::Devices::Commands::RfnCommand::handleUnsolicitedReport(execute_time, test_cmd_rfn_ConfigNotification::payload);
 
     BOOST_REQUIRE(cmd);
@@ -290,9 +287,9 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_Schedule4Rate4, "A" },
         { PI::Key_RFN_Schedule4Rate5, "D" },
 
-        { PI::Key_RFN_Holiday1, "2018-03-14" },
-        { PI::Key_RFN_Holiday2, "2018-06-27" },
-        { PI::Key_RFN_Holiday3, "not-a-date-time" },
+        { PI::Key_RFN_Holiday1, "03/14/2018" },
+        { PI::Key_RFN_Holiday2, "06/27/2018" },
+        { PI::Key_RFN_Holiday3, "02/07/2018" },
 
         { PI::Key_RFN_VoltageAveragingInterval, 105 },
         { PI::Key_RFN_LoadProfileInterval,       11 },
@@ -324,8 +321,6 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
     
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
         { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
-
-        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));

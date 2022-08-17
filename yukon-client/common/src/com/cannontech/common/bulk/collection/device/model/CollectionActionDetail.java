@@ -1,9 +1,7 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
-import com.cannontech.common.YukonColorPalette;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -12,26 +10,25 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
  * This enum defines collection action buckets.
  */
 public enum CollectionActionDetail implements DisplayableEnum {
-    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
-    FAILURE(CollectionActionDetailSummary.FAILURE, null, YukonColorPalette.RED),
-    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, YukonColorPalette.GRAY),
-    INVALID_STATE(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.INVALID_STATE, YukonColorPalette.YELLOW),
-    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
-    ARMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.SAGE),
-    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.ORANGE),
+    SUCCESS(CollectionActionDetailSummary.SUCCESS, null, "#009933"),  //green
+    FAILURE(CollectionActionDetailSummary.FAILURE, null, "#d14836"),  //red
+    UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED, "#888888"),  //grey
+    CONNECTED(CollectionActionDetailSummary.SUCCESS, null, "#009933"),  //green
+    ARMED(CollectionActionDetailSummary.SUCCESS, null, "#5cb85c"),  //light green
+    DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, "#ec971f"),  //orange
     // NOT_CONFIGURED means the device was not in a proper state before the action was attempted so we were not able to perform the action.
-    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, YukonColorPalette.BLUE),
-    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, YukonColorPalette.SKY),
-    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GREEN),
-    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, YukonColorPalette.GRAY_LIGHT),
-    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, YukonColorPalette.GRAY_LIGHT);
+    NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, "#4d90fe"),  //blue
+    CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, "#849ddf"), //light blue
+    CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, "#009933"), //green
+    UNCONFIRMED(CollectionActionDetailSummary.SUCCESS, null, "#d3d3d3"),  //light grey
+    ALREADY_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.ALREADY_CONFIGURED, "#C0C0C0"); //silver
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;
-    private YukonColorPalette color;
+    private String color;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    private CollectionActionDetail(CollectionActionDetailSummary summary, CommandRequestUnsupportedType unsupportedType, YukonColorPalette color) {
+    private CollectionActionDetail(CollectionActionDetailSummary summary, CommandRequestUnsupportedType unsupportedType, String color) {
         this.summary = summary;
         this.unsupportedType = unsupportedType;
         this.color = color;
@@ -81,12 +78,8 @@ public enum CollectionActionDetail implements DisplayableEnum {
         return detail;
     }
 
-    public YukonColorPalette getColor() {
+    public String getColor() {
         return color;
-    }
-    
-    public String getColorHex() {
-        return color.getHexValue();
     }
 
     @Override

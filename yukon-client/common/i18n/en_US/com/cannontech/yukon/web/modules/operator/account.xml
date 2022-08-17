@@ -128,7 +128,6 @@
     <entry key="yukon.web.modules.operator.contactEdit.firstNameRequired">First Name Required</entry>
     <entry key="yukon.web.modules.operator.accountGeneral.email.invalid">Not a valid email address.</entry>
     <entry key="yukon.web.modules.operator.accountGeneral.email.required">Email is required.</entry>
-    <entry key="yukon.web.modules.operator.accountGeneral.from.email.required">Please configure Mail From Address in Yukon Services.</entry>
     
 	<!-- accountImport.jsp -->
 	<entry key="yukon.web.modules.operator.accountImport.pageName">Account Import</entry>
@@ -221,7 +220,6 @@
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.OPTION_PARAMS">Optional parameter for special import functions.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84). Not supported by legacy devices.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84). Not supported by legacy devices.</entry>
-    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.GUID">The corresponding GUID for the device. Required for Eaton Cloud LCRs.</entry>
     
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.label">a.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.text">These field are required to insert, update, or remove a load control device in STARS.</entry>

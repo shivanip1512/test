@@ -23,7 +23,7 @@ public interface INOTClient {
      * @param MultispeakVendor used as input.
      * @return PingURLResponse
      */
-    public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, String interfaceName)
+    public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri)
             throws MultispeakWebServiceClientException;
 
     /**
@@ -31,7 +31,7 @@ public interface INOTClient {
      * @param MultispeakVendor used as input.
      * @param String the URI of the NOT Server
      */
-    public List<String> getMethods(MultispeakVendor mspVendor, String uri, String interfaceName)
+    public List<String> getMethods(MultispeakVendor mspVendor, String uri)
             throws MultispeakWebServiceClientException;
 
     /**
@@ -42,7 +42,7 @@ public interface INOTClient {
      * @param EndDeviceStatesNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void endDeviceStatesNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void endDeviceStatesNotification(MultispeakVendor mspVendor, String uri,
             EndDeviceStatesNotification endDeviceStatesNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -53,7 +53,7 @@ public interface INOTClient {
      * @param CDStatesChangedNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void cdStatesChangedNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void cdStatesChangedNotification(MultispeakVendor mspVendor, String uri,
             CDStatesChangedNotification cdStatesChangedNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -64,7 +64,7 @@ public interface INOTClient {
      * @param EndDeviceEventsNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void endDeviceEventsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void endDeviceEventsNotification(MultispeakVendor mspVendor, String uri,
             EndDeviceEventsNotification deviceEventsNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -75,7 +75,7 @@ public interface INOTClient {
      * @param MeterReadingsNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void meterReadingsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void meterReadingsNotification(MultispeakVendor mspVendor, String uri,
             MeterReadingsNotification meterReadingsNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -86,7 +86,7 @@ public interface INOTClient {
      * @param FormattedBlockNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void formattedBlockNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void formattedBlockNotification(MultispeakVendor mspVendor, String uri,
             FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -97,7 +97,7 @@ public interface INOTClient {
      * @param FormattedBlockNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void drProgramEnrollmentsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void drProgramEnrollmentsNotification(MultispeakVendor mspVendor, String uri,
             DRProgramEnrollmentsNotification drProgramEnrollmentsNotification) throws MultispeakWebServiceClientException;
     
     /**
@@ -108,7 +108,7 @@ public interface INOTClient {
      * @param FormattedBlockNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void drProgramUnenrollmentsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void drProgramUnenrollmentsNotification(MultispeakVendor mspVendor, String uri,
             DRProgramUnenrollmentsNotification drProgramUnenrollmentsNotification) throws MultispeakWebServiceClientException;
     
     
@@ -120,7 +120,7 @@ public interface INOTClient {
      * @param FormattedBlockNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void intervalDataNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+    public void intervalDataNotification(MultispeakVendor mspVendor, String uri,
             IntervalDataNotification intervalDataNotification) throws MultispeakWebServiceClientException;
 
     /**
@@ -131,7 +131,7 @@ public interface INOTClient {
      * @param EndDeviceEventsNotification
      * @throws MultispeakWebServiceClientException
      */
-    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, String interfaceName, EndDeviceEventsNotification endDeviceEventsNotification)
+    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, EndDeviceEventsNotification endDeviceEventsNotification)
             throws MultispeakWebServiceClientException;
     
    

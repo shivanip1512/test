@@ -14,13 +14,12 @@ public class PortTiming extends DBPersistent {
 	private Integer receiveDataWait = null;
 	private Integer extraTimeOut = null;
 	private Integer portID = null;
-	private Integer postCommWait = null;
 /**
  * SerialPortDelays constructor comment.
  */
 public PortTiming() {
 	super();
-	initialize( null, null, null, null, null, null, null);
+	initialize( null, null, null, null, null, null );
 }
 /**
  * This method was created in VisualAge.
@@ -28,7 +27,7 @@ public PortTiming() {
  */
 public PortTiming( Integer portNumber) {
 	super();
-	initialize( portNumber, null, null, null,null, null, null);
+	initialize( portNumber, null, null, null,null, null);
 }
 /**
  * This method was created in VisualAge.
@@ -37,19 +36,18 @@ public PortTiming( Integer portNumber) {
  * @param rtsToTxWait java.lang.Integer
  * @param postTxWait java.lang.Integer
  * @param receiveDataWait java.lang.Integer
- * @param postCommWait java.lang.Integer
  */
-public PortTiming( Integer portNumber, Integer preTxWait, Integer rtsToTxWait, Integer postTxWait, Integer receiveDataWait, Integer extraTimeOut, Integer postCommWait) 
+public PortTiming( Integer portNumber, Integer preTxWait, Integer rtsToTxWait, Integer postTxWait, Integer receiveDataWait, Integer extraTimeOut ) 
 {
 	super();
-	initialize( portNumber, preTxWait, rtsToTxWait, postTxWait, receiveDataWait, extraTimeOut, postCommWait);
+	initialize( portNumber, preTxWait, rtsToTxWait, postTxWait, receiveDataWait, extraTimeOut );
 }
 /**
  * add method comment.
  */
 public void add() throws java.sql.SQLException {
 
-	Object addValues[] = { getPortID(), getPreTxWait(), getRtsToTxWait(), getPostTxWait(), getReceiveDataWait(), getExtraTimeOut(), getPostCommWait() };
+	Object addValues[] = { getPortID(), getPreTxWait(), getRtsToTxWait(), getPostTxWait(), getReceiveDataWait(), getExtraTimeOut() };
 	
 	add( "PortTiming", addValues );
 
@@ -104,22 +102,14 @@ public Integer getRtsToTxWait() {
 	return rtsToTxWait;
 }
 /**
- * @return java.lang.Integer
- */
-public Integer getPostCommWait() {
-        return postCommWait;
-}
-/**
  * This method was created in VisualAge.
  * @param PortNumber java.lang.Integer
  * @param preTxWait java.lang.Integer
  * @param rtsToTxWait java.lang.Integer
  * @param postTxWait java.lang.Integer
  * @param receiveDataWait java.lang.Integer
- * @param extraTimeout java.lang.Integer
- * @param postCommWait java.lang.Integer
  */
-public void initialize( Integer portID, Integer preTxWait, Integer rtsToTxWait, Integer postTxWait, Integer receiveDataWait, Integer extraTimeOut, Integer postCommWait) {
+public void initialize( Integer portID, Integer preTxWait, Integer rtsToTxWait, Integer postTxWait, Integer receiveDataWait, Integer extraTimeOut) {
 
 	setPortID( portID );
 	setPreTxWait( preTxWait );
@@ -127,14 +117,13 @@ public void initialize( Integer portID, Integer preTxWait, Integer rtsToTxWait, 
 	setPostTxWait( postTxWait );
 	setReceiveDataWait( receiveDataWait );
 	setExtraTimeOut( extraTimeOut );
-	setPostCommWait(postCommWait);
 }
 /**
  * retrieve method comment.
  */
 public void retrieve() throws java.sql.SQLException {
 
-	String selectColumns[] = { "PreTxWait", "RTSToTxWait", "PostTxWait", "ReceiveDataWait", "ExtraTimeOut", "PostCommWait" };
+	String selectColumns[] = { "PreTxWait", "RTSToTxWait", "PostTxWait", "ReceiveDataWait", "ExtraTimeOut" };
 	String constraintColumns[] = { "PortID" };
 	Object constraintValues[] = { getPortID() };
 	
@@ -146,7 +135,6 @@ public void retrieve() throws java.sql.SQLException {
 		setPostTxWait( (Integer) results[2] );
 		setReceiveDataWait( (Integer) results[3] );
 		setExtraTimeOut( (Integer) results[4] );
-		setPostCommWait( (Integer) results[5]);
 	}
 
 }
@@ -193,18 +181,12 @@ public void setRtsToTxWait(Integer newValue) {
 	this.rtsToTxWait = newValue;
 }
 /**
- * @param newValue java.lang.Integer
- */
-public void setPostCommWait(Integer newValue) {
-        this.postCommWait = newValue;
-}
-/**
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
 
-	String setColumns[] = { "PreTxWait", "RTSToTxWait", "PostTxWait", "ReceiveDataWait", "ExtraTimeOut", "PostCommWait" };
-	Object setValues[] = { getPreTxWait(), getRtsToTxWait(), getPostTxWait(), getReceiveDataWait(), getExtraTimeOut(), getPostCommWait() };
+	String setColumns[] = { "PreTxWait", "RTSToTxWait", "PostTxWait", "ReceiveDataWait", "ExtraTimeOut" };
+	Object setValues[] = { getPreTxWait(), getRtsToTxWait(), getPostTxWait(), getReceiveDataWait(), getExtraTimeOut() };
 
 	String constraintColumns[] = { "PortID" };
 	Object constraintValues[] = { getPortID() };

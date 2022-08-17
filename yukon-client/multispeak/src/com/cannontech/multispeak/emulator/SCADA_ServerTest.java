@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.emulator;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -15,7 +14,6 @@ import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.msp.beans.v3.ScadaAnalog;
-import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.SCADAClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -23,11 +21,11 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 public class SCADA_ServerTest {
 
     private static String endpointURL = "http://127.0.0.1:8088/mockSCADA_ServerSoap";
-    private static SCADAClient port;
-    private static ObjectFactory objectFactory;
-    static List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
-    private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
-            120, 12, null, false, attributes);
+	private static SCADAClient port;
+	private static ObjectFactory objectFactory;
+
+	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
+        120, 12, null, false);
 
     public static void main(String[] args) {
         SCADA_ServerTest test = new SCADA_ServerTest();

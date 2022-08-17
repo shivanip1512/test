@@ -216,11 +216,6 @@ public class MockPointDao implements PointDao {
     public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
         return null;
     }
-    
-    @Override
-    public PaoPointIdentifier findPaoPointIdentifier(int pointId) {
-        return null;
-    }
 
     @Override
     public LitePoint getLitePoint(PaoPointIdentifier paoPointIdentifier) {
@@ -320,4 +315,6 @@ public class MockPointDao implements PointDao {
     public List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds) {
         return null;
     }
+
+
 }

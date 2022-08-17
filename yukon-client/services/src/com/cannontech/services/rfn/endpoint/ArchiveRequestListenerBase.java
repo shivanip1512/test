@@ -7,13 +7,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-
 import javax.annotation.PreDestroy;
+import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.amr.rfn.model.CalculationData;
@@ -21,25 +21,35 @@ import com.cannontech.amr.rfn.service.RfnChannelDataConverter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
+import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataTracker;
 import com.cannontech.message.dispatch.message.PointData;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
+    private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
+
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected RfnChannelDataConverter pointDataProducer;
     @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    protected Logger log = YukonLogManager.getRfnLogger();
+
+    protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
+    
+    private static final String CREATION_FAILED_FOR = "Creation failed for ";
     
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -130,14 +140,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         protected String delimited(Optional<String> field) {
             return field.map(t -> " " + t).orElse("");
         }
-        
-        /**
-         * @param request The original request message.  This is used by subclasses.
-         */
-        protected RfnDevice processCreation(T request, RfnIdentifier identifier) {
-           return rfnDeviceCreationService.getOrCreate(identifier, getDataTimestamp(request));
-        }
-
 
         /**
          * Processes the request and returns any tracking information for the request
@@ -147,26 +149,71 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         protected Optional<String> processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
             if (rfnIdentifier.is_Empty_()) {
+                if (log.isInfoEnabled()) {
+                    log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
+                             + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
+                }
                 sendAcknowledgement(request);
                 return Optional.empty();
             }
+            RfnDevice rfnDevice;
             try {
-                RfnDevice rfnDevice = processCreation(request, rfnIdentifier);
-                return processData(rfnDevice, request);
-            } catch (RuntimeException e) {
-                boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
-                boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
-                if (isDev || isAcknowledgeable) {
-                    log.info("Exception:" + e.getMessage(), e);
-                    sendAcknowledgement(request);
-                    return Optional.empty();
+                rfnDeviceCreationService.incrementDeviceLookupAttempt();
+                rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+            } catch (NotFoundException e1) {
+                // looks like we need to create the device
+                try {
+                    rfnDevice = processCreation(request, rfnIdentifier);
+                } catch (RuntimeException e) {
+                    boolean isDev = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+                    boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
+                    if (isDev || isAcknowledgeable) {
+                        log.info("Exception:" + e.getMessage());
+                        sendAcknowledgement(request);
+                        return Optional.empty();
+                    }
+                    throw e;
                 }
-                throw e;
             }
-
+            return processData(rfnDevice, request);
         }
 
-        protected abstract Instant getDataTimestamp(T request);
+        /**
+         * @param request The original request message.  This is used by subclasses.
+         */
+        protected RfnDevice processCreation(T request, RfnIdentifier identifier) {
+            try {
+                RfnDevice device = rfnDeviceCreationService.create(identifier);
+                rfnDeviceCreationService.incrementNewDeviceCreated();
+                if (log.isDebugEnabled()) {
+                    log.debug("Created new device: " + device);
+                }
+                return device;
+            } catch (IgnoredTemplateException e) {
+                throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
+            } catch (BadTemplateDeviceCreationException e) {
+                log.warn(CREATION_FAILED_FOR + identifier + ". Manufacturer, Model and Serial Number combination do "
+                    + "not match any templates.", e);
+                throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
+            } catch (DeviceCreationException e) {
+                log.warn(CREATION_FAILED_FOR + identifier + ", checking cache for any new entries.");
+                //  Try another lookup in case someone else beat us to it
+                try {
+                    return rfnDeviceLookupService.getDevice(identifier);
+                } catch (NotFoundException e1) {
+                    throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
+                }
+            } catch (Exception e) {
+                if (log.isTraceEnabled()) {
+                    // Only log full exception when trace is on so lots of failed creations don't kill performance.
+                    log.warn(CREATION_FAILED_FOR + identifier, e);
+                } else {
+                    log.warn(CREATION_FAILED_FOR + identifier +":" + e);
+                }
+                throw new RuntimeException(CREATION_FAILED_FOR + identifier, e);
+            }
+        }
+
         /**
          * Processes the data in the request for the given device.
          * @return the tracking information for the request, if any. 
@@ -248,6 +295,14 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         }
     }
     
+    @ManagedAttribute
+    public int getProcessedArchiveRequest() {
+        return processedArchiveRequest.get();
+    }
+    
+    public void incrementProcessedArchiveRequest() {
+        processedArchiveRequest.incrementAndGet();
+    }
     
     @ManagedAttribute
     public int getWorkerCount() {
@@ -262,7 +317,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     public abstract void init();
     protected abstract List<? extends ConverterBase> getConverters();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
-    protected abstract YukonJmsTemplate getJmsTemplate();
+    protected abstract String getRfnArchiveResponseQueueName();
     
     @PreDestroy
     protected abstract void shutdown();
@@ -291,19 +346,15 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        if (response != null) {
-            YukonJmsTemplate jmsTemplate = getJmsTemplate();
-            log.info("<<< Sent " + response);
-            jmsTemplate.convertAndSend(response);
-        }
+        String queueName = getRfnArchiveResponseQueueName();
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + queueName);
+        jmsTemplate.convertAndSend(queueName, response);
     }
-    
-    @ManagedAttribute
-    public int getProcessedArchiveRequest() {
-        return processedArchiveRequest.get();
-    }
-    
-    public void incrementProcessedArchiveRequest() {
-        processedArchiveRequest.incrementAndGet();
+
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }

@@ -8,8 +8,26 @@
 <tags:sectionContainer2 nameKey="geoAddress">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-addressUsage' nameKey=".addressUsage">
-            <c:set var="items" value="${isViewMode ? geoAddressUsage : addressUsageList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="addressUsage" buttonGroupContainerCssClasses="addressUsage" />
+             <cti:displayForPageEditModes modes="CREATE,EDIT">
+                <div class="button-group stacked addressUsage">
+                    <c:forEach var="addressUsageValue" items="${addressUsageList}">
+                        <tags:check id="${addressUsageValue}_chk" path="addressUsage" value="${addressUsageValue}"
+                                    key="${addressUsageValue}"/>
+                    </c:forEach>
+                </div>
+             </cti:displayForPageEditModes>
+             <cti:displayForPageEditModes modes="VIEW">
+                 <c:if test="${not empty geoAddressUsage}">
+                     <c:set var="geoCounter" value="0"/>
+                     <c:forEach var="geoAddress" items="${geoAddressUsage}">
+                         <c:if test="${geoCounter != 0}">
+                             <i:inline key="yukon.common.comma"/>&nbsp;
+                         </c:if>
+                         <i:inline key="${geoAddress}"/>
+                         <c:set var="geoCounter" value="${geoCounter + 1}"/>
+                     </c:forEach>
+                 </c:if>
+            </cti:displayForPageEditModes>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
@@ -59,8 +77,25 @@
 <tags:sectionContainer2 nameKey="loadAddress">
     <tags:nameValueContainer2>
        <tags:nameValue2 id='js-loadAddressUsage'  nameKey=".loadAddressUsage">
-            <c:set var="items" value="${isViewMode ? loadAddressUsage : loadAddressUsageList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="addressUsage" buttonGroupContainerCssClasses="loadaddressing" />
+           <cti:displayForPageEditModes modes="CREATE,EDIT">
+               <div class="button-group loadaddressing">
+                   <c:forEach var="loadAddressUsageValue" items="${loadAddressUsageList}">
+                       <tags:check id="${loadAddressUsageValue}_chk" path="addressUsage"  value="${loadAddressUsageValue}" key="${loadAddressUsageValue}"/>
+                   </c:forEach>
+               </div>
+           </cti:displayForPageEditModes>
+           <cti:displayForPageEditModes modes="VIEW">
+               <c:if test="${not empty loadAddressUsage}">
+                   <c:set var="loadCounter" value="0"/>
+                   <c:forEach var="loadAddress" items="${loadAddressUsage}">
+                       <c:if test="${loadCounter != 0}">
+                           <i:inline key="yukon.common.comma"/>&nbsp;
+                       </c:if>
+                       <i:inline key="${loadAddress}"/>
+                       <c:set var="loadCounter" value="${loadCounter + 1}"/>
+                    </c:forEach>
+                </c:if>
+            </cti:displayForPageEditModes>
        </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
@@ -87,8 +122,25 @@
             </cti:displayForPageEditModes>
         </tags:nameValue2>
         <tags:nameValue2 id="js-loads" nameKey=".loads">
-            <c:set var="items" value="${isViewMode ? loadGroup.relayUsage : loadsList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="relayUsage" />
+            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                <div class="button-group">
+                    <c:forEach var="loadValue" items="${loadsList}" varStatus="status">
+                        <tags:check id="${loadValue}_chk" path="relayUsage" value="${loadValue}" key="${loadValue}" classes="${status.first ? 'ML0' : ''}"/>
+                    </c:forEach>
+                </div>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="VIEW">
+                <c:if test="${not empty loadGroup.relayUsage}">
+                    <c:set var="loadNumberCounter" value="0"/>
+                    <c:forEach var="load" items="${loadGroup.relayUsage}">
+                        <c:if test="${loadNumberCounter != 0}">
+                            <i:inline key="yukon.common.comma"/>&nbsp;
+                        </c:if>
+                        <i:inline key="${load}"/>
+                        <c:set var="loadNumberCounter" value="${loadNumberCounter + 1}"/>
+                    </c:forEach>
+                 </c:if>
+            </cti:displayForPageEditModes>
         </tags:nameValue2>
         <tags:nameValue2 id="js-programRow" nameKey=".program" rowClass="${displayProgram == true ? '' : 'dn'}">
             <tags:input id="js-program" path="program" size="25" maxlength="60"/>

@@ -57,7 +57,7 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <div class="vat dib MT10"><i:inline key="yukon.common.filterBy"/></div>
+            <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
             <div class="dib">
                 <cti:url value="/dr/setup/filter" var="filterUrl"/>
                 <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
@@ -70,12 +70,12 @@
                     <c:set var="displayLoadProgramFilters" value="${isFilterByLoadProgramSelected ? '' : 'dn'}"/>
                     
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat MR5"/>
-                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name" autocomplete="nofill"/>
-                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR10">
+                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name"/>
+                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR5">
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
                     </div>
-                    <div class="js-load-program-types-container vat dib ${displayLoadProgramFilters} MR5 MB5">
+                    <div class="js-load-program-types-container vat dib ${displayLoadProgramFilters} MR5">
                         <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
                     </div>
@@ -88,7 +88,7 @@
                         <tags:selectWithItems items="${gearTypes}" path="gearTypes" dataPlaceholder="${selectLbl}"
                                                                id="js-gear-types"/>
                     </div>
-                    <div class="js-program-container dib vat ${displayGearFilters} MR5 MT5">
+                    <div class="js-program-container dib vat ${displayGearFilters} MR5">
                             <form:hidden path="programIds" id="js-programIds"/>
                            <tags:pickerDialog id="programPicker"
                                                             type="programPicker"
@@ -101,7 +101,7 @@
                                                             endEvent="yukon:gear:filter:programSelected"
                                                             allowEmptySelection="true"/>
                     </div>
-                    <cti:button label="${filterLbl}" classes="primary action fr MR0 ML5" type="submit"/>
+                    <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
                 </form:form>
             </div>
         </div>

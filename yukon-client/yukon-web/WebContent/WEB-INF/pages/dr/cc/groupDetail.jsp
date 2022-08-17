@@ -52,7 +52,7 @@
                         <td>
                             <form:hidden path="assignedCustomers[${status.index}].companyName"/>
                             <form:hidden path="assignedCustomers[${status.index}].id"/>
-                            <cti:button renderMode="buttonImage" icon="icon-cross" data-customer-id="${assignedCustomer.id}"/>
+                            <cti:button renderMode="buttonImage" icon="icon-delete" data-customer-id="${assignedCustomer.id}"/>
                         </td>
                     </tr>
                 </c:forEach>

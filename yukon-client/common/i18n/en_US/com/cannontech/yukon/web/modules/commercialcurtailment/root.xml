@@ -172,7 +172,6 @@
     <entry key="yukon.web.modules.dr.cc.init.eventParameters">Event Parameters</entry>
     <entry key="yukon.web.modules.dr.cc.init.notificationTime">Notification Time</entry>
     <entry key="yukon.web.modules.dr.cc.init.startTime">Start Time</entry>
-    <entry key="yukon.web.modules.dr.cc.init.stopTime">Stop Time</entry>
     <entry key="yukon.web.modules.dr.cc.init.duration">Duration (Minutes)</entry>
     <entry key="yukon.web.modules.dr.cc.init.reason">Reason</entry>
     <entry key="yukon.web.modules.dr.cc.init.message">Message</entry>
@@ -223,9 +222,6 @@
     <entry key="yukon.web.modules.dr.cc.init.confirmation.customers">Customers</entry>
     <entry key="yukon.web.modules.dr.cc.init.confirmation.confirm.label">Confirm</entry>
     
-    <!--  Confirm popup -->
-    <entry key="yukon.web.modules.dr.cc.init.confirmationPopup.title">Confirm Event Start</entry>
-    <entry key="yukon.web.modules.dr.cc.init.messagedetail">Are you sure you want to start event {0} Event ({1})?</entry>
     <!-- pricing.jsp (init step 2) -->
     <entry key="yukon.web.modules.dr.cc.init.pricing.pageTitle">Event Setup</entry>
     <entry key="yukon.web.modules.dr.cc.init.pricing.pageHeading">"{1}" Event ({0})</entry>

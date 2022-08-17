@@ -4,6 +4,7 @@
 
     <jsp:include page="progressReport.jsp"/>
     
+    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/pages/yukon.collection.actions.progress.report.js"/>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 

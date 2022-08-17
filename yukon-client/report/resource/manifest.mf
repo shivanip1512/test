@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.analysis.gui.ReportClient
-Class-Path: ./  
+Class-Path: ./ 
+ jfreereport.jar 
  jradius-client.jar 
  jcommon.jar 
  bsh.jar 
@@ -11,6 +12,6 @@ Class-Path: ./
  jcpagelayout450K.jar 
  junit.jar 
  sqljdbc42.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  ../log/ 
  ../export/ 

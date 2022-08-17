@@ -23,9 +23,6 @@ public:
 
     const std::string& getMessage() const;
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
 private:
     // The connection that received/produced this message
     std::string _message;
@@ -86,9 +83,6 @@ public:
     LONG getAuxId() const;
 
     CtiLMCommand& operator=(const CtiLMCommand& right);
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
 
 private:
 
@@ -156,9 +150,6 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
     CtiLMManualControlRequest& operator=(const CtiLMManualControlRequest& right);
 private:
 
@@ -196,9 +187,6 @@ public:
     CtiLMManualControlResponse& setBestFitAction(const std::string& best_fit_action);
 
     virtual CtiMessage* replicateMessage() const;
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
 
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
@@ -253,9 +241,6 @@ public:
                                    const std::vector<DOUBLE>& amountsrequested,
                                    const std::vector<LONG>& pricesoffered );
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
     CtiLMEnergyExchangeControlMsg& operator=(const CtiLMEnergyExchangeControlMsg& right);
 private:
 
@@ -307,9 +292,6 @@ public:
                                   const std::string& energyexchangenotes,
                                   const std::vector<DOUBLE>& amountscommitted );
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
     CtiLMEnergyExchangeAcceptMsg& operator=(const CtiLMEnergyExchangeAcceptMsg& right);
 private:
 
@@ -342,9 +324,6 @@ public:
     virtual CtiMessage* replicateMessage() const;
 
     CtiLMControlAreaMsg& operator=(const CtiLMControlAreaMsg& right);
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
 
     // Possible bit mask settings
     static ULONG AllControlAreasSent;
@@ -385,9 +364,6 @@ public:
                                     const std::string& nameofackperson,
                                     const std::string& curtailmentnotes );
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
     CtiLMCurtailmentAcknowledgeMsg& operator=(const CtiLMCurtailmentAcknowledgeMsg& right);
 private:
 
@@ -425,9 +401,6 @@ public:
     const CtiTime& getNextControlTime() const       { return _next_control_time; };
     unsigned getInternalState() const               { return _internalState; };
     LONG getDailyOps() const                        { return _daily_ops; };
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
 
 private:
     typedef CtiMessage Inherited;
@@ -473,9 +446,6 @@ public:
     const CtiTime& getStartedRampingOutTime() const { return _startedrampingouttime; };
     std::string getOrigin() const                   { return _origin; }
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
 private:
     typedef CtiMessage Inherited;
     CtiLMDynamicProgramDataMsg() {};
@@ -515,9 +485,6 @@ public:
     const CtiTime& getLastPeakPointValueTimestamp() const { return _lastpeakpointvaluetimestamp; }
     DOUBLE getProjectedPointValue() const                 { return _projectedpointvalue; }
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
-
 private:
     typedef CtiMessage Inherited;
     CtiLMDynamicTriggerDataMsg() {};
@@ -552,9 +519,6 @@ public:
     LONG getCurrentDailyStartTime() const   { return _currentdailystarttime; };
     LONG getCurrentDailyStopTime() const    { return _currentdailystoptime; };
     const std::vector<CtiLMDynamicTriggerDataMsg>& getTriggers() const { return _triggers; };
-
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-    std::size_t getVariableSize() const override;
 
 private:
     typedef CtiMessage Inherited;

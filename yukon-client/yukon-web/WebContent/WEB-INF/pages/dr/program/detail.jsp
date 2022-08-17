@@ -163,11 +163,11 @@
 										<cti:param name="isEnabled" value="false" />
 									</cti:url>
 									<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title"
-									        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-disable"
+									        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
 											labelKey=".actions.disable" /></li>
 								</div>
 								<div class="dn" data-disable-program-action="off" data-pao-id="${programId}">
-									<cm:dropdownOption icon="icon-disable" disabled="true" key=".actions.disable" />
+									<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" />
 								</div>
 							 </c:when>
 							<c:otherwise>
@@ -175,7 +175,7 @@
 									<cm:dropdownOption icon="icon-accept" disabled="true" key=".actions.enable" />
 								</div>
 								<div class="dn" data-disable-program-action="off" data-pao-id="${programId}">
-									<cm:dropdownOption icon="icon-disable" disabled="true" key=".actions.disable" />
+									<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" />
 								</div>
 							</c:otherwise>
 						</c:choose>
@@ -187,7 +187,7 @@
 					<cm:dropdownOption icon="icon-control-play-blue" disabled="true" key=".actions.start" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-control-stop-blue" disabled="true" key=".actions.stop" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears" title="${noProgramControl}" />
-					<cm:dropdownOption icon="icon-disable" disabled="true" key=".actions.disable" title="${noProgramControl}" />
+					<cm:dropdownOption icon="icon-delete" disabled="true" key=".actions.disable" title="${noProgramControl}" />
 				</cti:checkPaoAuthorization>
                 
                 <!-- Meter Disconnect Status -->
@@ -274,11 +274,12 @@
     </div>
 	<cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateProgramMenu(${programId},${changeGearAllowed},${enableDisableProgramsAllowed})" 
 		initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION" />
-    
-    <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
+        
     <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
 
 </cti:standardPage>

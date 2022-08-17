@@ -36,7 +36,6 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
         
     private static final Logger log = YukonLogManager.getLogger(ItronBuilder.class);
     private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
-            .put(HardwareType.LCR_6200S, PaoType.LCR6200S)
             .put(HardwareType.LCR_6600S, PaoType.LCR6600S)
             .put(HardwareType.LCR_6601S, PaoType.LCR6601S)
             .build();
@@ -65,9 +64,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
             deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
             itronCommunicationService.addDevice(hardware, account, hardware.getAccountId());
             hardware.setDeviceId(pao.getDeviceId());
-            // Attempt to retrieve secondary mac, but don't fail if there isn't one
-            itronCommunicationService.findAndSaveSecondaryMacAddress(pao.getDeviceType(), pao.getDeviceId(), 
-                                                                     hardware.getMacAddress());
+            itronCommunicationService.saveSecondaryMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         } catch (ItronCommunicationException e) {
             log.error("Unable to create device.", e);
             MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(YukonUserContext.system);

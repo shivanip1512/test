@@ -59,7 +59,7 @@ public class ItronDeviceDataParser {
     private static final DateTime y2k = new LocalDate(2000, 1, 1).toDateTimeAtStartOfDay();
     private static final Duration year = Duration.standardDays(365);
 
-    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip, boolean updateMaxRecordId) throws EmptyImportFileException {
+    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
         if(zip == null) {
             log.error("Unable to parse data, Itron file is null.");
             return null;
@@ -74,7 +74,7 @@ public class ItronDeviceDataParser {
                 ZipEntry file = entries.nextElement();
                 InputStream stream = zip.getInputStream(file);
                 try {
-                    Multimap<PaoIdentifier, PointData> pointValues = parseData(stream, updateMaxRecordId);
+                    Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
                     log.debug("Parsed {} point values for {} devices.", pointValues.values().size(), pointValues.keySet().size());
                     dataSource.putValues(pointValues.values());
                     allPointValues.putAll(pointValues);
@@ -96,8 +96,7 @@ public class ItronDeviceDataParser {
      * @throws IOException 
      * @throws EmptyImportFileException 
      */
-    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream, boolean updateMaxRecordId) 
-            throws IOException, EmptyImportFileException {
+    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream) throws IOException, EmptyImportFileException {
         
       Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
 
@@ -113,7 +112,7 @@ public class ItronDeviceDataParser {
           }
           while (row != null) { 
               int currentRecordId = Integer.parseInt(row[0]);
-              if (!updateMaxRecordId || (currentRecordId > maxRecordId)) {
+              if (currentRecordId > maxRecordId) {
                   maxRecordId = currentRecordId;
                   try {
                       pointValues.putAll(generatePointData(row));
@@ -126,9 +125,7 @@ public class ItronDeviceDataParser {
           csvReader.close();
       }
       
-      if(updateMaxRecordId) {
-          setMaxRecordId(maxRecordId);
-      }
+      setMaxRecordId(maxRecordId);
       return pointValues;
     }
     
@@ -221,7 +218,7 @@ public class ItronDeviceDataParser {
             BuiltInAttribute attribute = null;
             try {
                 attribute = event.getAttribute(decodedData);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 log.warn("No attribute matches {} with data {}. Ignoring.", event, Arrays.toString(decodedData));
                 return pointValues;
             }

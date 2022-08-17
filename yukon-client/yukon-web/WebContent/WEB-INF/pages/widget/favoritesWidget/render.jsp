@@ -27,9 +27,9 @@
                                 <cti:button classes="b-favorite remove" nameKey="favorite" renderMode="image" icon="icon-star" 
                                     data-name="${favorite.name}"
                                     data-module="${favorite.moduleName}"
-                                    data-path="${fn:escapeXml(favorite.path)}"
+                                    data-path="${favorite.path}"
                                     data-label-args="${labelArgs}"/>
-                                <a href="<cti:url value="${fn:escapeXml(favorite.path)}"/>">${favoritePageName}</a>
+                                <a href="<cti:url value="${favorite.path}"/>">${favoritePageName}</a>
                             </li>
                         </c:forEach>
                     </ul>

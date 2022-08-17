@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== MCT
+
+*Request JSON* :
+
+include::{snippets}/MCTLoadGroupSetupApiControllerTest/Test_LmMCT_Get/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/MCTLoadGroupSetupApiControllerTest/Test_LmMCT_Get/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/MCTLoadGroupSetupApiControllerTest/Test_LmMCT_Get/http-response.adoc[]

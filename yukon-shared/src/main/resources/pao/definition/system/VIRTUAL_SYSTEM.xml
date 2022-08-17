@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <!-- VIRTUAL PAOS -->
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="VIRTUAL_SYSTEM" displayGroup="Virtual" displayName="VIRTUAL SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd">
-    <tags>
-        <tag name="DEVICE_ICON_TYPE" option="virtual_device"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
-        <tag name="VIRTUAL_DEVICE_DISPLAYABLE"/>
-    </tags>
-</pao>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="VIRTUAL_SYSTEM" displayGroup="Virtual" displayName="VIRTUAL SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd"/>

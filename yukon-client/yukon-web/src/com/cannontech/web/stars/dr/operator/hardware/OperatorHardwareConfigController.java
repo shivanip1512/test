@@ -473,7 +473,6 @@ public class OperatorHardwareConfigController {
         // The operator pages appear to only be able to support PLC (not RFN) meters.
         //MeterConfig page now handles PLC and RFN meters
         YukonMeter meter = meterDao.getForId(meterId);
-        Integer inventoryId = inventoryDao.getYukonInventoryForDeviceId(meter.getDeviceId()).getInventoryId();
         if(meter.getPaoType().isPlc()) {
             meter = meterDao.getPlcMeterForId(meterId);
         }
@@ -482,7 +481,6 @@ public class OperatorHardwareConfigController {
         }
         model.addAttribute("meter", meter);
         model.addAttribute("displayName", meter.getName());
-        model.addAttribute("inventoryId", inventoryId);
         
         List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new PaoType[]{PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO}));
         model.addAttribute("routes", routes);

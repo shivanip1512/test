@@ -76,43 +76,11 @@
                 readonly="readonly"></textarea>
         </div>
     </div>
-    
-    <cti:msg2 key=".confirmGenerateEcobeeZeusKey.title" var="confirmGenerateEcobeeZeusKeyDialogTitle"/>
-    <div class="dn" id="generateEcobeeZeusKeyDialog" data-dialog data-title="${confirmGenerateEcobeeZeusKeyDialogTitle}"  data-event="yukon:admin:security:generateEcobeeZeusKey" data-width="500" data-height="auto" >
-        <div id="generateEcobeeZeusKeyWarning">
-            <tags:alertBox type="warning" key=".confirmGenerateEcobeeZeusKey.warning"/>
-        </div>
-        
-        <div id="generateEcobeeZeusKeyMessage">
-            <p><i:inline key=".confirmGenerateEcobeeZeusKey.message" /></p>
-        </div>
-    </div>
-    
-    <cti:msg2 key=".confirmRegisterConfigurationEcobeeZeusKey.title" var="confirmRegisterConfigurationEcobeeZeusKeyDialogTitle"/>
-    <div class="dn" id="registerEcobeeZeusDialog" data-dialog data-title="${confirmRegisterConfigurationEcobeeZeusKeyDialogTitle}"  data-event="yukon:admin:security:registerEcobeeZeusKey" data-dialog data-ok-text="<cti:msg2 key=".ecobeeZeusKeyRegisterBtn.label"/>" data-width="500" data-height="auto">
-        <div id="registerEcobeeZeusWarning">
-            <tags:alertBox type="warning" key=".confirmRegisterConfigurationEcobeeZeusKey.warning"/>  
-        </div>
-        
-        <div id="registerEcobeeZeusMessage">
-            <p><i:inline key=".confirmRegisterConfigurationEcobeeZeusKey.message" /></p>
-        </div>
-    </div>
-    
-    <cti:msg2 key=".confirmViewEcobeeZeusKey.title" var="confirmViewEcobeeZeusKeyDialogTitle"/>
-    <div class="dn" id="viewEcobeeZeusKeyDialog" data-dialog data-title="${confirmViewEcobeeZeusKeyDialogTitle}" data-load-event="yukon:admin:security:viewEcobeeZeusPublicKey">
-        <div id="ecobeeZeusErrorMessage"></div>
-        
-        <div id="ecobeeZeuPublicKeyText">
-            <p><i:inline key=".currentPublicKey" /></p>
-            <textarea id="ecobeeZeuPublicKeyArea" rows="17" cols="70" readonly="readonly"></textarea>
-        </div>
-    </div>
-    
+
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable" class="compact-results-table no-stripes">
+                <table id="routesBoxTable" class="compact-results-table row-highlighting">
                     <thead>
                         <tr>
                             <th><i:inline key=".paoName" /></th>
@@ -139,14 +107,14 @@
                                             <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
                                             <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
                                             <d:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
-                                            <select disabled="disabled" style="width: 85%">
+                                            <select disabled="disabled" style="width: 100%">
                                                 <option>${fn:escapeXml(route.encryptionKeyName)}</option>
                                             <select>
                                         </c:if> 
                                         <c:if test="${!route.encrypted}">
                                             <c:if test="${fn:length(encryptionKeys) > 0}">
                                                 <d:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
-                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:85%">
+                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
                                                     <c:forEach items="${encryptionKeys}" var="key">
                                                         <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
                                                     </c:forEach>
@@ -172,26 +140,6 @@
                     </tbody>
                 </table>
             </tags:boxContainer2>
-            <tags:boxContainer2 nameKey="secretsBox" styleClass="largeContainer">
-                <c:if test="${!empty secretExpirationError}">
-                    <tags:alertBox type="warning">${secretExpirationError}</tags:alertBox> 
-                </c:if>
-                <form:form id="refreshSecretForm" method="POST" action="refreshSecret">
-                	<cti:csrfToken/>
-                	<input type="hidden" id="secretNumber" name="secretNumber"/>
-                </form:form>
-                <cti:msg2 var="secretNotFoundMessage" key=".secretsBox.secretNotFound"/>
-            	<div class="PB10" style="line-height:40px;">
-            		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
-            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}" nullText="${secretNotFoundMessage}"/>
-            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1" disabled="${!secretRotationAllowed}" title="${secretRotationTitleText}"/>
-            	</div>
-            	<div style="line-height:40px;">
-            		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
-            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}" nullText="${secretNotFoundMessage}"/>
-            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2" disabled="${!secretRotationAllowed}" title="${secretRotationTitleText}"/>
-            	</div>
-            </tags:boxContainer2>
         </div>
         <div class="column two nogutter">
             <tags:boxContainer2 nameKey="keyBox" styleClass="largeContainer">
@@ -214,10 +162,7 @@
                                 <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
                                     <cti:csrfToken/>
                                     <tr>
-                                        <td style="width: 55%;">
-                                            <input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />
-                                            <span class="wrbw">${fn:escapeXml(key.name)}</span>
-                                        </td>
+                                        <td><input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />${fn:escapeXml(key.name)}</td>
                                         <td id="keyStatus_${key.encryptionKeyId}">
                                             <c:if test="${key.isValid}">
                                                 <span class="success"><i:inline key=".validKey" /></span>
@@ -240,12 +185,12 @@
                                             <c:choose>
                                                 <c:when test="${key.currentlyUsed}">
                                                     <cti:msg2 key=".deleteKeyBtnDisabledTitle" var="title"/>
-                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-delete" />
+                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-cross" />
                                                 </c:when>
                                                 <c:otherwise>
                                                     <cti:msg2 key=".deleteKeyBtnTitle" var="title"/>
                                                     <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}" title="${title}" 
-                                                        icon="icon-delete" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
+                                                        icon="icon-cross" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
                                                     <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}"/>
                                                 </c:otherwise>
                                             </c:choose>
@@ -274,7 +219,7 @@
                           <c:set var="isPublicKeyGenerated" value="true" />
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
-            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="54" 
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
@@ -285,58 +230,30 @@
                       <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" data-popup="#importHoneywellKeyDialog"/>
                       <form:form method="POST" action="generateHoneywellCertificate" autocomplete="off" enctype="multipart/form-data">
                          <cti:csrfToken/>
-                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" classes="MT5"/>
+                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" />
                       </form:form>
                   </div>
               </tags:boxContainer2>
            </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="SHOW_ECOBEE">
-                <tags:boxContainer2 nameKey="ecobeeZeusKeyBox">
-                    <cti:msg2 key=".ecobeeZeusURL.blank" var="ecobeeZeusUrlBlank"/>
-                    <input type="hidden" class="js-ecobee-url" value="${ecobeeZeusUrlBlank}"/>
-                    <div id="ecobee-zeus-js-message"></div>
-                    <c:if test="${empty reportingUrl}">
-                       <div id="js-url-message">
-                        <tags:alertBox type="warning">${ecobeeZeusUrlBlank}</tags:alertBox> 
-                       </div>
-                    </c:if>
-                    <c:set var="keyRegisteredClass" value="${!empty ecobeeZeusRegisteredDateTime ? '' : 'dn'}"/>
-                    <span class="js-ecobee-zeus-key-registered ${keyRegisteredClass}">
-                        <span class="js-ecobee-zeus-key-register-date-time">${ecobeeZeusRegisteredDateTime}</span><br>
+                <tags:boxContainer2 nameKey="ecobeeKeyBox">
+                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? '' : 'dn'}"/>
+                    <span class="js-ecobee-key-generated ${keyGeneratedClass}">
+                        <i:inline key=".ecobeeKeyGenerated"/>&nbsp;<span class="js-ecobee-key-date-time">${ecobeeKeyGeneratedDateTime}</span>
                     </span>
-                    <c:set var="keyGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? '' : 'dn'}"/>
-                    <span class="js-ecobee-zeus-key-generated ${keyGeneratedClass}">
-                        <i:inline key=".ecobeeZeusKeyGenerated"/>&nbsp;<span class="js-ecobee-zeus-key-date-time">${ecobeeKeyZeusGeneratedDateTime}</span>
-                    </span>
-                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyZeusGeneratedDateTime ? 'dn' : ''}"/>
-                    <span class="js-ecobee-zeus-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeZeusNoKeyGenerated"/></span>
-                    
-                    <div id="reportingUrl">
-                        <span class="js-url"><b> <cti:msg2 key=".ecobeeZeusURL"/></b></span>
-                        <span class="js-value">${reportingUrl}</span>
-                    </div>
+                    <c:set var="keyNotGeneratedClass" value="${!empty ecobeeKeyGeneratedDateTime ? 'dn' : ''}"/>
+                    <span class="js-ecobee-key-not-generated ${keyNotGeneratedClass}"><i:inline key=".ecobeeNoKeyGenerated"/></span>
                     <div class="page-action-area">
-	                    <div class="column-12-12 clearfix">
-	                       <div class="column one">
-	                           <cti:button id="generateEcobeeZeusKey" nameKey="generateEcobeeKey" data-popup="#generateEcobeeZeusKeyDialog" /><br/><br/>
-	                           <c:choose>
-	                               <c:when test="${empty reportingUrl}">
-                                       <cti:button id="registerEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:registerEcobeeZeusKey"/>
-                                    </c:when>
-                                    <c:otherwise>
-	                                    <cti:button id="registerConfigurationEcobeeZeusKey" nameKey="registerConfigurationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#registerEcobeeZeusDialog" />
-                                    </c:otherwise>
-	                           </c:choose>
-	                        </div>
-	                        <div class="column two nogutter">
-	                            <cti:button id="viewEcobeeZeusKey" nameKey="viewEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-popup="#viewEcobeeZeusKeyDialog" /><br/><br/>
-		                        <cti:button id="checkRegistrationEcobeeZeusKey" nameKey="checkRegistrationEcobeeZeusKey" disabled="${empty ecobeeKeyZeusGeneratedDateTime}" data-ok-event="yukon:admin:security:checkRegistrationEcobeeZeusKey" />
-	                        </div>
-	                    </div>
+                        <form:form method="GET" action="downloadEcobeeKey">
+                            <cti:button nameKey="downloadEcobeeKey" type="submit" />
+                        </form:form>
+                        <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+                            <cti:button id="generateEcobeeKey" nameKey="generateEcobeeKey" data-ok-event="yukon:admin:security:generateEcobeeKey"/>
+                            <d:confirm on="#generateEcobeeKey" nameKey="confirmGenerateEcobeeKey" />
+                        </cti:checkRolesAndProperties>
                     </div>
                 </tags:boxContainer2>
             </cti:checkRolesAndProperties>
-            
             <tags:boxContainer2 nameKey="itronKeyBox">
                 <c:set var="keyGeneratedClass" value="${!empty itronKeyGeneratedDateTime ? '' : 'dn'}"/>
                 <span class="js-itron-key-generated ${keyGeneratedClass}">

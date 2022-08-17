@@ -78,9 +78,6 @@
     <link>/dr/home</link>
     <options>
       <option name="dashboard">
-        <permissions>
-            <role name="DEMAND_RESPONSE" />
-        </permissions>
         <link>/dr/home</link>
       </option>
       <option name="scenarios">
@@ -144,55 +141,31 @@
   </menu>
   <menu name="vv">
     <permissions>
-      <or>
-        <roleProperty name="CAP_CONTROL_ACCESS" />
-        <roleProperty name="FDR_TRANSLATION_MANAGER" />
-      </or>
+      <roleProperty name="CAP_CONTROL_ACCESS" />
     </permissions>
     <link>/capcontrol/tier/areas</link>
     <options>
       <option name="dashboard">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/tier/areas</link>
       </option>
       <option name="schedules">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/schedules</link>
       </option>
       <option name="strategies">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/strategies</link>
       </option>
       <option name="movedBanks">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/move/movedCapBanks</link>
       </option>
       <option name="orphans">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
       </option>
       <option name="regulatorSetup">
-        <permissions>
-          <roleProperty name="CAP_CONTROL_ACCESS" />
-        </permissions>
         <link>/capcontrol/regulator-setup</link>
       </option>
     <option name="dmvTest">
         <permissions>
-            <and>
-                <roleProperty name="CAP_CONTROL_ACCESS" />
-                <license name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
-            </and>
+            <license name="DEMAND_MEASUREMENT_VERIFICATION_ENABLED" />
         </permissions>
         <link>/capcontrol/dmvTestList</link>
       </option>
@@ -227,7 +200,10 @@
       <or>
         <role name="CONSUMER_INFO" />
         <role name="INVENTORY" />
-        <roleProperty name="MANAGE_INFRASTRUCTURE" level="VIEW"/>
+        <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+        <roleProperty name="INFRASTRUCTURE_DELETE"/>
+        <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+        <roleProperty name="INFRASTRUCTURE_VIEW"/>
         <roleProperty name="CBC_DATABASE_EDIT"/>
       </or>
     </permissions>
@@ -244,13 +220,23 @@
       </option>
       <option name="gateways">
         <permissions>
-            <roleProperty name="MANAGE_INFRASTRUCTURE" level="VIEW"/>
+          <or>
+            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+            <roleProperty name="INFRASTRUCTURE_DELETE"/>
+            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+            <roleProperty name="INFRASTRUCTURE_VIEW"/>
+          </or>
         </permissions>
         <link>/stars/gateways</link>
       </option>
       <option name="relays">
         <permissions>
-            <roleProperty name="ENDPOINT_PERMISSION" level="VIEW"/>
+          <or>
+            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+            <roleProperty name="INFRASTRUCTURE_DELETE"/>
+            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+            <roleProperty name="INFRASTRUCTURE_VIEW"/>
+          </or>
         </permissions>
         <link>/stars/relay</link>
       </option>
@@ -259,12 +245,6 @@
             <roleProperty name="CBC_DATABASE_EDIT"/>
         </permissions>
         <link>/stars/rtu-list</link>
-      </option>
-      <option name="virtualDevices">
-        <permissions>
-            <roleProperty name="ENDPOINT_PERMISSION" level="VIEW"/>
-        </permissions>
-        <link>/stars/virtualDevices</link>
       </option>
       <option name="optouts">
         <permissions>
@@ -319,10 +299,7 @@
       </option>
       <option name="dataStreaming">
         <permissions>
-         <and>
-            <license name="RF_DATA_STREAMING_ENABLED" />
-            <role name="DEVICE_ACTIONS" />
-         </and>
+            <masterConfig name="RF_DATA_STREAMING_ENABLED" />
         </permissions>
         <link>/tools/dataStreaming/configurations</link>
       </option>

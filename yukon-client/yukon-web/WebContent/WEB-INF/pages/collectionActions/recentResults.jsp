@@ -12,44 +12,38 @@
     <c:set var="urlPath" value="/collectionActions/filter"/>
     <cti:url var="detailUrl" value="${urlPath}"/>
     <hr>
+    <div><i:inline key=".filterBy"/></div>
+    <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter" class="dib full-width push-down-4">
         <div>
-            <cti:url var="detailUrl" value="${urlPath}"/>
-            <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter" class="full-width push-down-4">
-                <div class="dib vat">
-                    <i:inline key=".filterBy"/>
-                </div>
-                <div class="dib ML10">
-                    <cti:msg2 var="actionLabel" key=".action"/>
-                    <tags:selectWithItems items="${actionsList}" path="actions" itemLabel="${formatKey}" dataPlaceholder="${actionLabel}" inputClass="js-chosen"/>
-                </div>
-                <div class="dib ML15 vat">
-                    <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:2%;"  startPath="startDate" endPath="endDate" 
-                                  startValue="${filter.startDate}" endValue="${filter.endDate}" displayValidationToRight="true"/>
-                </div>
-                <div>
-                    <div class="button-group MT10" style="margin-left: 70px;">
-                        <c:forEach var="status" items="${statuses}">
-                            <c:set var="selected" value="${false}"/>
-                            <c:if test="${fn:contains(filter.statuses, status)}">
-                                <c:set var="selected" value="${true}"/>
-                            </c:if>
-                            <cti:msg2 var="statusLabel" key="${status.formatKey}"/>
-                            <tags:check name="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
-                        </c:forEach>
-                    </div>
-                    <div class="dib ML15">
-                        <tags:pickerDialog id="userPicker" type="deviceActionsRoleUserPicker" destinationFieldName="userIds"
-                                           linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
-                                           icon="icon-user" allowEmptySelection="true" styleClass="fl MT15 vam" multiSelectMode="true"
-                                           excludeIds="${excludedUserIds}"/>
-                    </div>
-                    <div class="push-down-4 fr">
-                        <cti:button classes="primary action" nameKey="filter" type="submit" busy="true" style="margin: 0px 0px 5px"/>
-                    </div>
-                </div>
-            </form:form>
+            <div class="fl MR10">
+                <cti:msg2 var="actionLabel" key=".action"/>    
+                <tags:selectWithItems items="${actionsList}" path="actions" itemLabel="${formatKey}" dataPlaceholder="${actionLabel}" inputClass="js-chosen"/>
+            </div>
+            <div class="fl MR10">
+                <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:1%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" 
+                    startValue="${filter.startDate}" endValue="${filter.endDate}" displayValidationToRight="true"/>
+            </div>
+            <div class="button-group fl MR10">
+                <c:forEach var="status" items="${statuses}">
+                    <c:set var="selected" value="${false}"/>
+                    <c:if test="${fn:contains(filter.statuses, status)}">
+                        <c:set var="selected" value="${true}"/>
+                    </c:if>
+                    <cti:msg2 var="statusLabel" key="${status.formatKey}"/>
+                    <tags:check name="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
+                </c:forEach>
+            </div>
+            <tags:pickerDialog id="userPicker" type="deviceActionsRoleUserPicker" destinationFieldName="userIds"
+                linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
+                icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"
+                excludeIds="${excludedUserIds}"/>
         </div>
-    <hr>
+
+        <div class="push-down-4 fr">
+            <cti:button classes="primary action" nameKey="filter" type="submit" busy="true" style="margin: 0px 0px 5px"/>
+        </div>
+    </form:form>
+    <hr>    
     
     <c:choose>
         <c:when test="${empty recentActions || recentActions.hitCount == 0}">
@@ -110,7 +104,7 @@
                                 </td>
                                 <td>
                                     <a href="progressReport/view?key=${action.cacheKey}">View</a>
-                                </td>
+                                </td>                        
                                 <td>
                                     <i:inline key="${action.status.formatKey}"/>
                                 </td>
@@ -126,6 +120,6 @@
         </c:otherwise>
     </c:choose>
     <script>
-        $(".js-chosen").chosen({width: "330px"});
+        $(".js-chosen").chosen({width: "150px"});
     </script>
 </cti:standardPage>

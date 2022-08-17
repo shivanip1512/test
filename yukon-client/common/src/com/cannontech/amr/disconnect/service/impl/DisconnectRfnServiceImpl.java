@@ -65,6 +65,7 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
     @Autowired private ConfigurationSource configurationSource;
         
     private static final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
+    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     private RfnMeterDisconnectArming mode;
     private Set<PaoType> validTypes;
@@ -103,12 +104,6 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
             disconnectCallback.getResult().addCancellationCallback(
                 new CollectionActionCancellationCallback(getStrategy(), disconnectCallback));
         }
-        
-        Set<Integer> deviceIds = meters.stream()
-                .map(device -> device.getDeviceId())
-                .collect(Collectors.toSet());
-        commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIds);
-        
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -119,6 +114,11 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
                         break;
                     }
                     Callback callback = new Callback(meter, disconnectCallback, pendingRequests, execution);
+
+                    if (rfnLogger.isDebugEnabled()) {
+                        rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType()
+                            + " to " + ((RfnMeter) meter).getRfnIdentifier());
+                    }
                     rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(),
                         callback);
                 }
@@ -194,6 +194,9 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
 
         private void proccessResult(RfnDisconnectStatusState state, PointValueQualityHolder pointData,
                 MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
+            if (rfnLogger.isInfoEnabled()) {
+                rfnLogger.info("RFN proccessState:" + meter + " state:" + state);
+            }
             /*
              * message is null if the state == UNKNOWN
              * state is null if there was an error sending the command

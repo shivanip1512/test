@@ -1,11 +1,11 @@
 package com.cannontech.stars.dr.optout.model;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.google.common.collect.Lists;
@@ -14,7 +14,7 @@ public class OptOutLimitTest {
 
     private static final List<OptOutLimit> optOutLimits = Lists.newArrayList();
 
-    @BeforeEach
+    @Before
     public void setup() {
         OptOutLimit limit = new OptOutLimit();
         limit.setLimit(2);
@@ -33,23 +33,23 @@ public class OptOutLimitTest {
     public void testIsMonthUnderLimit() {
         int currentMonth = 5;
         OptOutLimit limit = getOptOutLimit(currentMonth);
-        assertTrue(limit == null, "Incorrect limit");
+        Assert.assertTrue("Incorrect limit", limit == null);
 
         currentMonth = 6;
         limit = getOptOutLimit(currentMonth);
-        assertTrue(limit != null, "Incorrect limit");
+        Assert.assertTrue("Incorrect limit", limit != null);
 
         currentMonth = 10;
         limit = getOptOutLimit(currentMonth);
-        assertTrue(limit == null, "Incorrect limit");
+        Assert.assertTrue("Incorrect limit", limit == null);
 
         currentMonth = 12;
         limit = getOptOutLimit(currentMonth);
-        assertTrue(limit != null, "Incorrect limit");
+        Assert.assertTrue("Incorrect limit", limit != null);
 
         currentMonth = 2;
         limit = getOptOutLimit(currentMonth);
-        assertTrue(limit != null, "Incorrect limit");
+        Assert.assertTrue("Incorrect limit", limit != null);
     }
 
     private OptOutLimit getOptOutLimit(int currentMonth) {

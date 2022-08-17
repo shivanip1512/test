@@ -48,10 +48,6 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService"/>
     </bean>
     
-    <bean id="commChannelEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.events.loggers.CommChannelEventLogService"/>
-    </bean>
-    
     <bean id="starsEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.StarsEventLogService"/>
     </bean>
@@ -157,9 +153,5 @@
     
     <bean id="meterProgrammingEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.MeterProgrammingEventLogService"/>
-    </bean>
-    
-    <bean id="eatonCloudEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
-        <property name="serviceInterface" value="com.cannontech.common.events.loggers.EatonCloudEventLogService"/>
     </bean>
 </beans>

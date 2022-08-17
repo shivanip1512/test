@@ -13,7 +13,7 @@ DEFINE_COLLECTABLE(LMGroupHoneywell, LMGROUPHONEYWELL_ID)
 
 
 LMGroupHoneywell::LMGroupHoneywell(Cti::RowReader &rdr)
-    :   SmartGroupBase( "Honeywell", rdr )
+    : CtiLMGroupBase(rdr)
 {
 }
 
@@ -29,7 +29,6 @@ CtiLMGroupBase* LMGroupHoneywell::replicate() const
 bool LMGroupHoneywell::sendCycleControl( const long programID,
                                          const long dutyCycle,
                                          const long controlDurationSeconds,
-                                         const bool mandatory,
                                          const bool rampInOutOption )
 {
     using namespace Cti::Messaging;
@@ -46,12 +45,11 @@ bool LMGroupHoneywell::sendCycleControl( const long programID,
             dutyCycle,
             static_cast<int>(now.seconds()),
             controlDurationSeconds,
-            mandatory,
             rampInOutOption));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
-        CTILOG_DEBUG(dout, "Sending " << _groupTypeName << " Cycle command, LM Group: " << getPAOName() << ", control minutes: "
+        CTILOG_DEBUG(dout, "Sending honeywell Cycle command, LM Group: " << getPAOName() << ", control minutes: "
             << (controlDurationSeconds / 60) << ", percent: " << dutyCycle);
     }
 
@@ -96,7 +94,7 @@ bool LMGroupHoneywell::sendSetpointControl( const long programID,
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Sending " << _groupTypeName << " Setpoint command, LM Group: " << getPAOName()
+        CTILOG_DEBUG(dout, "Sending Honeywell Setpoint command, LM Group: " << getPAOName()
                                 << ", control minutes: " << ( controlDurationSeconds / 60 )
                                 << ", control: "
                                 << ( temperatureOption ? "HEAT " : "COOL " ) << temperatureOffset << " degrees" );
@@ -134,7 +132,7 @@ bool LMGroupHoneywell::sendStopControl(bool stopImmediately /* unused */)
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
-        CTILOG_DEBUG(dout, "Sending " << _groupTypeName << " Stop command, LM Group: " << getPAOName());
+        CTILOG_DEBUG(dout, "Sending honeywell Stop command, LM Group: " << getPAOName());
     }
 
     setLastControlSent(now);
@@ -149,7 +147,7 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
-    // shed == mandatory cycle at 100% duty cycle with no ramp in/out
+    // shed == cycle at 100% duty cycle with no ramp in/out
 
     CtiTime now;
 
@@ -161,16 +159,49 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
             100,
             static_cast<int>(now.seconds()),
             controlMinutes * 60,
-            true,
             false));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
-        CTILOG_DEBUG(dout, "Sending " << _groupTypeName << " Shed command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes);
+        CTILOG_DEBUG(dout, "Sending honeywell Shed command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes);
     }
 
     setLastControlSent(now);
     setLastStopTimeSent(now + (controlMinutes * 60));
 
     return true;
+}
+
+// borrowed from SEP group...  honeywell devices also know how to stop themselves
+bool LMGroupHoneywell::doesStopRequireCommandAt(const CtiTime &currentTime) const
+{
+    return getLastStopTimeSent() > currentTime + 30 || getLastStopTimeSent() == gInvalidCtiTime;
+}
+
+CtiRequestMsg* LMGroupHoneywell::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
+{
+    CTILOG_INFO(dout, "Can not Time Refresh a honeywell Group,");
+
+    return 0;
+}
+
+CtiRequestMsg* LMGroupHoneywell::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
+{
+    CTILOG_INFO(dout, "Can not Smart Cycle a honeywell Group,");
+
+    return 0;
+}
+
+CtiRequestMsg* LMGroupHoneywell::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
+{
+    CTILOG_INFO(dout, "Can not Rotation a honeywell Group,");
+
+    return 0;
+}
+
+CtiRequestMsg* LMGroupHoneywell::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
+{
+    CTILOG_INFO(dout, "Can not Master Cycle a honeywell Group,");
+
+    return 0;
 }

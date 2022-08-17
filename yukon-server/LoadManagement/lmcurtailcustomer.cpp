@@ -332,24 +332,6 @@ void CtiLMCurtailCustomer::restoreDynamicData()
     }
 }
 
-std::size_t CtiLMCurtailCustomer::getMemoryConsumption() const
-{
-    // the fixed object size
-    std::size_t sz = sizeof( *this );
-
-    // the dynamic size of the base
-    sz  += CtiLMCICustomerBase::getMemoryConsumption();
-
-    // the local dynamic size
-    sz  +=  dynamic_sizeof( _acknowledgestatus )
-        +   dynamic_sizeof( _ipaddressofackuser )
-        +   dynamic_sizeof( _useridname )
-        +   dynamic_sizeof( _nameofackperson )
-        +   dynamic_sizeof( _curtailmentnotes );
-
-    return sz;
-}
-
 // Static Members
 
 // Possible acknowledge statuses

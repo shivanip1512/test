@@ -1,12 +1,10 @@
 package com.cannontech.common.dr.setup;
 
-import com.cannontech.common.device.port.DBPersistentConverter;
-import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class ControlAreaProgramAssignment implements DBPersistentConverter<LMControlAreaProgram> {
+public class ControlAreaProgramAssignment {
 
     private Integer programId;
     private String programName;
@@ -43,30 +41,6 @@ public class ControlAreaProgramAssignment implements DBPersistentConverter<LMCon
 
     public void setStopPriority(Integer stopPriority) {
         this.stopPriority = stopPriority;
-    }
-
-    /**
-     * Build program assignment model.
-     */
-    @Override
-    public void buildModel(LMControlAreaProgram lmControlAreaProgram) {
-        setProgramId(lmControlAreaProgram.getLmProgramDeviceID());
-        setStartPriority(lmControlAreaProgram.getStartPriority());
-        setStopPriority(lmControlAreaProgram.getStopPriority());
-    }
-
-    /**
-     * Build DBPersistent for program assignment.
-     */
-    @Override
-    public void buildDBPersistent(LMControlAreaProgram lmControlAreaProgram) {
-        lmControlAreaProgram.setLmProgramDeviceID(getProgramId());
-        if (getStartPriority() != null) {
-            lmControlAreaProgram.setStartPriority(getStartPriority());
-        }
-        if (getStopPriority() != null) {
-            lmControlAreaProgram.setStopPriority(getStopPriority());
-        }
     }
 
 }

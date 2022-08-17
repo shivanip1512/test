@@ -27,7 +27,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
     @Override
     protected void doValidation(FormulaBean bean, Errors errors) {
         // Probably prudent to check for NaN, infinity etc
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "name", bean.getName(), false, 32);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", bean.getName(), false, 32);
         
         if (formulaDao.isFormulaNameInUse(bean.getFormulaId(), bean.getName())) {
             errors.rejectValue("name", baseKey + "nameInUse");
@@ -44,7 +44,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                         errors.rejectValue("functions["+i+"].inputType", baseKey + "invalidPoint", null,"");
                     }
                 }
-                YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "functions["+i+"].name", function.getName(), 
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "functions["+i+"].name", function.getName(), 
                                                                     false, 32);
                 YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMax", function.getInputMax());
                 YukonValidationUtils.checkIsValidDouble(errors, "functions["+i+"].inputMin", function.getInputMin());
@@ -62,7 +62,7 @@ public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
                 List<TableEntryBean> entries = table.getEntries();
                 List<TimeTableEntryBean> timeEntries = table.getTimeEntries();
                 
-                YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "tables["+ i +"].name", table.getName(), 
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "tables["+ i +"].name", table.getName(), 
                                                                     false, 32);
                 
                 if (table.getInputType() == InputType.TIME_LOOKUP) {

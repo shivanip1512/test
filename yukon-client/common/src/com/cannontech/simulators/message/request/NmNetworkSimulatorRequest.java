@@ -34,9 +34,4 @@ public class NmNetworkSimulatorRequest implements SimulatorRequest {
     public Action getAction() {
         return action;
     }
-
-    @Override
-    public String toString() {
-        return String.format("NmNetworkSimulatorRequest [settings=%s, action=%s]", settings, action);
-    }
 }

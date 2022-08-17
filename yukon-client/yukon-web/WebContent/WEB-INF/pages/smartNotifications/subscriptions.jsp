@@ -47,14 +47,9 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cti:url var="editUrl" value="/notifications/subscription/${subId}/edit"/>
-                            <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
-                            <div id="edit-popup-${subId}" 
-                                 data-dialog class="dn js-smart-notifications-popup"
-                                 data-event="yukon:notifications:save" 
-                                 data-title="<cti:msg2 key=".editPopup.title"/>"
-                                 data-url="${editUrl}" data-load-event="yukon:notifications:load" 
-                                 data-width="600"
-                                 data-help-text="${helpText}"></div>
+                            <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup"
+                                data-event="yukon:notifications:save" data-title="<cti:msg2 key=".editPopup.title"/>"
+                                data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
                             <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
                             <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}"/>
                             <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
@@ -63,10 +58,7 @@
                             <c:if test="${subscription.type == 'ASSET_IMPORT'}">
                                 <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}/${subscription.parameters['assetImportResultType']}"/>
                             </c:if>
-                            <c:if test="${subscription.type == 'EATON_CLOUD_DR'}">
-                                <cti:url var="detailsUrl" value="/dr/recenteventparticipation/details"/>
-                            </c:if>
-                            <cm:dropdownOption key=".notificationDetail" icon="icon-calendar-view-month" href="${detailsUrl}"/>
+                            <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
                             <cm:dropdownOption key=".unsubscribe" icon="icon-email-delete" data-subscription-id="${subId}" 
                                 data-ok-event="yukon:notifications:remove" classes="js-hide-dropdown js-unsubscribe-${subId}"/>
                             <d:confirm on=".js-unsubscribe-${subId}" nameKey="unsubscribeConfirmation" argument="${subDescription}"/>

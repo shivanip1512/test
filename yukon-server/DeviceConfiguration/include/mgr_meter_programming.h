@@ -3,8 +3,6 @@
 #include "dlldefs.h"
 #include "rfn_identifier.h"
 
-#include "error_helper.h"
-
 #include <vector>
 
 namespace Cti::MeterProgramming {
@@ -16,18 +14,13 @@ class IM_EX_CONFIG MeterProgrammingManager
 public:
     using Bytes = std::vector<unsigned char>;
 
-    YukonError_t isProgramValid(const std::string guid);
+    Bytes getProgram(const std::string guid);
 
-    ErrorOr<Bytes> getProgram(const std::string guid);
+    std::optional<ProgramDescriptor> describeAssignedProgram(const RfnIdentifier rfnIdentifier);
 
-    virtual std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
-    ErrorOr<size_t> getProgramSize(const std::string guid);
-
-    virtual bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);
+    bool isUploading(const RfnIdentifier rfnIdentifier, const std::string guid);
 
     double calculateMeterProgrammingProgress(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
-
-    virtual ~MeterProgrammingManager() = default;
 
 protected:
 
@@ -36,13 +29,15 @@ protected:
         Bytes program;
         Bytes password;
     };
-    virtual ErrorOr<RawProgram> loadRawProgram(const std::string guid);
-    virtual Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
+    virtual RawProgram loadRawProgram(const std::string guid);
 
 private:
 
-    ErrorOr<Bytes> loadProgram(const std::string guid);
+    Bytes loadProgram(const std::string guid);
+    size_t getProgramSize(const std::string guid);
     
+    Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
+
     std::map<std::string, Bytes> _programs;
 };
 

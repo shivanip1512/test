@@ -8,10 +8,15 @@
 <cti:standardPage module="dr" page="scenarioDetail">
 
     <tags:simpleDialog id="drDialog"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${scenarioId}"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
 
     <div class="column-12-12">
         <div class="column one">
@@ -52,7 +57,7 @@
         
         <div class="fr column two nogutter">
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
-                <!--  Display the Asset Availability Info -->
+                <%-- Display the Asset Availability Info --%>
                 <tags:sectionContainer2 nameKey="assetAvailability">
                     <div class="js-asset-availability js-block-this">
                         <i:inline key="yukon.common.loading"/>
@@ -144,7 +149,7 @@
                                 		</cti:url>
                                 		<li>
                                     		<tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
-                                        		dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-disable"
+                                        		dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
                                         		labelKey=".actions.disablePrograms"/>
                                 		</li>
                                     </c:when>
@@ -161,7 +166,7 @@
                             				<li>
                             				<cti:msg2 var="noEnableDisable" key=".scenarioDetail.actions.noEnableDisable"/>      
                                         	<a class="clearfix" title="${noEnableDisable}"> 
-                                				<cti:icon icon="icon-disable" classes="disabled" /> 
+                                				<cti:icon icon="icon-delete" classes="disabled" /> 
                                 					<span class="dib disabled">
                                     					<cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms" />
                                				 		</span>
@@ -202,10 +207,5 @@
             <%@ include file="../program/programList.jspf" %>
         </div>
     </div>
-    
-    <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
 
 </cti:standardPage>

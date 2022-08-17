@@ -3,7 +3,6 @@ package com.cannontech.common.dr.setup;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -25,13 +24,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT"),
     @JsonSubTypes.Type(value = LoadGroupMCT.class, name = "LM_GROUP_MCT"),
     @JsonSubTypes.Type(value = LoadGroupPoint.class, name = "LM_GROUP_POINT"),
-    @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE"),
-    @JsonSubTypes.Type(value = LoadGroupEatonCloud.class, name = "LM_GROUP_EATON_CLOUD"),
-    @JsonSubTypes.Type(value = LoadGroupRFNExpresscom.class, name = "LM_GROUP_RFN_EXPRESSCOMM")
+    @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
-public class LoadGroupBase<T extends LMGroup> implements DBPersistentConverter<T> {
-
+public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {
     private Integer id;
     private String name;
     private PaoType type;

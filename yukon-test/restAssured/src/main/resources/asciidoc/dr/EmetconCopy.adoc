@@ -1,0 +1,27 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Emetcon
+
+*Request Properties* :
+
+include::{snippets}/EmetconLoadGroupSetupApiControllerTest/Test_LmEmetcon_Copy/request-fields.adoc[]
+
+
+*Request JSON* :
+
+include::{snippets}/EmetconLoadGroupSetupApiControllerTest/Test_LmEmetcon_Copy/http-request.adoc[]
+
+
+*Response Properties* :
+
+include::{snippets}/EmetconLoadGroupSetupApiControllerTest/Test_LmEmetcon_Copy/response-fields.adoc[]
+
+
+*Response JSON* :
+
+include::{snippets}/EmetconLoadGroupSetupApiControllerTest/Test_LmEmetcon_Copy/http-response.adoc[]

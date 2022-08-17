@@ -2,8 +2,6 @@ package com.cannontech.web.taglib;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -32,8 +30,6 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     private static final String REQUEST = "request";
     private static final String SESSION = "session";
     private static final String APPLICATION = "application";
-    private static final Pattern dataURLPattern = Pattern
-            .compile("^data:[a-zA-Z]{1,256}/[a-zA-Z]{1,256};base64,[a-zA-Z0-9\\\\=\\\\+\\\\/\\\\]{1,256}$");
 
     public UrlTag() {
         init();
@@ -53,13 +49,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         // get the baseUrl
         String baseUrl = ServletUtil.createSafeUrl(getRequest(), value);
         
-        //to handle base64 encoded urls
-        Matcher matcher = dataURLPattern.matcher(baseUrl);
-        if (matcher.matches()) {
-            String[] path = baseUrl.split(",");
-            baseUrl = path[1];
-        }
-        // process the params in the body of the tag
+        //process the params in the body of the tag
         StringWriter bodyWriter = new StringWriter();
         if (getJspBody() != null) {
             getJspBody().invoke(bodyWriter);

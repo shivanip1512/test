@@ -1,15 +1,15 @@
 package com.cannontech.dr.rfn.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.dr.dao.ExpressComReportedAddress;
@@ -80,19 +80,19 @@ public class RfnLcrTlvDataMappingServiceTest {
         ListMultimap<FieldType, byte[]> data1 = ArrayListMultimap.create();
         data1.put(FieldType.POWER_QUALITY_RESPONSE_ENABLED, getBytes(0));
         Object result1 = ReflectionTestUtils.invokeMethod(service, "evaluateArchiveReadValue", data1, RfnLcrTlvPointDataType.POWER_QUALITY_RESPONSE_ENABLED);
-        assertTrue(result1 instanceof Double, "evaluateArchiveReadValue did not return a double");
+        assertTrue("evaluateArchiveReadValue did not return a double", result1 instanceof Double);
         assertEquals(new Double(0), result1);
         
         ListMultimap<FieldType, byte[]> data2 = ArrayListMultimap.create();
         data2.put(FieldType.POWER_QUALITY_RESPONSE_ENABLED, getBytes(1));
         Object result2 = ReflectionTestUtils.invokeMethod(service, "evaluateArchiveReadValue", data2, RfnLcrTlvPointDataType.POWER_QUALITY_RESPONSE_ENABLED);
-        assertTrue(result2 instanceof Double, "evaluateArchiveReadValue did not return a double");
+        assertTrue("evaluateArchiveReadValue did not return a double", result2 instanceof Double);
         assertEquals(new Double(1), result2);
         
         ListMultimap<FieldType, byte[]> data3 = ArrayListMultimap.create();
         data3.put(FieldType.POWER_QUALITY_RESPONSE_ENABLED, getBytes(2));
         Object result3 = ReflectionTestUtils.invokeMethod(service, "evaluateArchiveReadValue", data3, RfnLcrTlvPointDataType.POWER_QUALITY_RESPONSE_ENABLED);
-        assertTrue(result3 instanceof Double, "evaluateArchiveReadValue did not return a double");
+        assertTrue("evaluateArchiveReadValue did not return a double", result3 instanceof Double);
         assertEquals(new Double(1), result3);
     }
     
@@ -102,7 +102,7 @@ public class RfnLcrTlvDataMappingServiceTest {
         ListMultimap<FieldType, byte[]> data = ArrayListMultimap.create();
         data.put(dataType.getFieldType(), getBytes(value));
         Object result = ReflectionTestUtils.invokeMethod(service, "evaluateArchiveReadValue", data, dataType);
-        assertTrue(result instanceof Double, "evaluateArchiveReadValue did not return a double");
+        assertTrue("evaluateArchiveReadValue did not return a double", result instanceof Double);
         assertEquals(new Double(value), result);
     }
     

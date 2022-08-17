@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN530S4X_DER" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-530S4X-DER" xsi:noNamespaceSchemaLocation="../pao.xsd">
-    <tags>
-        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
-        <tag name="METER_DETAIL_DISPLAYABLE"/>
-        <tag name="DER_EDGE_COORDINATOR_DISPLAYABLE"/>
-    </tags>
-</pao>

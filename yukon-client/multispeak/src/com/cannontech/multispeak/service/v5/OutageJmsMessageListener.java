@@ -3,6 +3,7 @@ package com.cannontech.multispeak.service.v5;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
@@ -53,6 +54,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
+    private AtomicLong atomicLong = new AtomicLong();
     private ImmutableMap<OutageActionType, EndDeviceStateKind> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
 
@@ -100,9 +102,18 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             Pair<String, MultiSpeakVersion> keyPair =
                 MultispeakVendor.buildMapKey(MultispeakDefines.NOT_Server_STR, MultiSpeakVersion.V5);
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
-                supportsOutage.add(mspVendor);
-                log.info("Added OMS vendor to receive Status Point Monitor messages: "
-                    + mspVendor.getCompanyName());
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_STR);
+                try {
+                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
+                    // not sure where a static variable containing this method exists.. doing this for now
+                    if (mspMethodNames.stream().anyMatch("EndDeviceStatesNotification"::equalsIgnoreCase)) {
+                        supportsOutage.add(mspVendor);
+                        log.info("Added OMS vendor to receive Status Point Monitor messages: "
+                            + mspVendor.getCompanyName());
+                    }
+                } catch (MultispeakWebServiceClientException e) {
+                    log.warn("caught exception in initialize", e);
+                }
             }
         }
 
@@ -127,12 +138,14 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                 + deviceState.getReferableID() + " Type: " + deviceState.getDeviceState().getValue());
 
             try {
+                String transactionId = String.valueOf(atomicLong.getAndIncrement());
                 EndDeviceStatesNotification endDeviceStatesNotification = objectFactory.createEndDeviceStatesNotification();
                 ArrayOfEndDeviceState arrayOfEndDeviceState = new ArrayOfEndDeviceState();
                 List<EndDeviceState> endDeviceStateList = arrayOfEndDeviceState.getEndDeviceState();
                 endDeviceStateList.add(deviceState);
+                endDeviceStatesNotification.setTransactionID(transactionId);
                 endDeviceStatesNotification.setArrayOfEndDeviceState(arrayOfEndDeviceState);
-                notClient.endDeviceStatesNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_STR, endDeviceStatesNotification);
+                notClient.endDeviceStatesNotification(mspVendor, endpointUrl, endDeviceStatesNotification);
 
                 List<ErrorObject> errObjects = new ArrayList<>();
                 errObjects = multispeakFuncs.getErrorObjectsFromResponse();

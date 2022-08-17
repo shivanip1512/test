@@ -3,16 +3,22 @@ package com.cannontech.web.spring;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.CannonXmlWebApplicationContext;
+import com.cannontech.util.ServletUtil;
+import com.cannontech.web.api.errorHandler.ApiExceptionHandler;
 import com.cannontech.web.util.ErrorHelperFilter;
+import com.google.common.collect.Lists;
 
 public class CannonDispatcherServlet extends DispatcherServlet {
     private HandlerInterceptor securityInterceptor;
@@ -43,9 +49,8 @@ public class CannonDispatcherServlet extends DispatcherServlet {
     protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 
         HandlerExecutionChain handler = super.getHandler(request);
-        if (handler == null) {
+        if (handler == null)
             return null;
-        }
 
         handler.addInterceptor(securityInterceptor);
         return handler;
@@ -58,7 +63,7 @@ public class CannonDispatcherServlet extends DispatcherServlet {
     }
     
     private void setSecurityInterceptor() {
-        securityInterceptor = (HandlerInterceptor) getWebApplicationContext().getBean("webSecurityInterceptor");
+        securityInterceptor = (HandlerInterceptor) this.getWebApplicationContext().getBean("webSecurityInterceptor");
     }
     
     private void handleException(ServletConfig servletConfig, Throwable e) {
@@ -66,4 +71,35 @@ public class CannonDispatcherServlet extends DispatcherServlet {
         CTILogger.error("Servlet startup error in " + servletConfig.getServletName(), e);
     }
     
+    /**
+     * No handler found -> set appropriate HTTP response status for API
+     */
+    @Override
+    protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
+        if (apiLoginrequest) {
+            ApiExceptionHandler.noHandlerFoundException(request, response);
+            return;
+        }
+        super.noHandlerFound(request, response);
+    }
+
+    /**
+     *  Handle HttpRequestMethodNotSupportedException for API calls.
+     */
+    @Override
+    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
+            Object handler, Exception ex) throws Exception {
+        if (ex instanceof HttpRequestMethodNotSupportedException) {
+            boolean apiLoginrequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/**"));
+            if (apiLoginrequest) {
+
+                ApiExceptionHandler.handleHttpRequestMethodNotSupported((HttpRequestMethodNotSupportedException) ex,
+                    request, response);
+                return null;
+            }
+        }
+        return super.processHandlerException(request, response, handler, ex);
+    }
+
 }

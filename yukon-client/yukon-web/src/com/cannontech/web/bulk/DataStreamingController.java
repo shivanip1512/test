@@ -30,7 +30,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.config.MasterConfigLicenseKey;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -41,13 +41,13 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckCparmLicense;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableList;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
-@CheckCparmLicense(license = MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED)
+@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
 public class DataStreamingController {
 

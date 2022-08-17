@@ -2,7 +2,7 @@
    German initialisation for the jQuery date/time entry extension
    Written by Eyk Schulz (eyk.schulz@gmx.net) and Milian Wolff (mail@milianw.de) */
 (function($) {
-	$.datetimeEntry.regionalOptions['de'] = {datetimeFormat: 'D.O.Y H:M',
+	$.datetimeEntry.regional['de'] = {datetimeFormat: 'D.O.Y H:M',
 		monthNames: ['Januar','Februar','März','April','Mai','Juni',
 		'Juli','August','September','Oktober','November','Dezember'],
 		monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun',
@@ -12,5 +12,5 @@
 		ampmNames: ['AM', 'PM'],
 		spinnerTexts: ['Jetzt', 'vorheriges Feld', 'nächstes Feld', 'hoch', 'runter'],
 		isRTL: false};
-	$.datetimeEntry.setDefaults($.datetimeEntry.regionalOptions['de']);
+	$.datetimeEntry.setDefaults($.datetimeEntry.regional['de']);
 })(jQuery);

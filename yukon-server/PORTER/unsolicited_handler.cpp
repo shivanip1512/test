@@ -82,10 +82,6 @@ void UnsolicitedHandler::startLog()
 
 void UnsolicitedHandler::run( void )
 {
-    extern std::atomic_int PortManagerThreadCount;
-
-    PortManagerThreadCount++;
-
     startLog();
 
     CTILOG_INFO(dout, describePort() <<" started");
@@ -115,8 +111,6 @@ void UnsolicitedHandler::run( void )
                 work_remaining |= startPendingRequests(loop_timer, loop_timer.elapsed() + 10);
 
                 work_remaining |= generateOutbounds   (loop_timer, loop_timer.elapsed() + 10);
-
-                work_remaining |= sendOutbounds       (loop_timer, loop_timer.elapsed() + 10);
 
                 work_remaining |= collectInbounds     (loop_timer, loop_timer.elapsed() + 10);
 
@@ -156,8 +150,6 @@ void UnsolicitedHandler::run( void )
     }
 
     CTILOG_INFO(dout, describePort() <<" shutdown");
-
-    PortManagerThreadCount--;
 }
 
 
@@ -269,7 +261,7 @@ void UnsolicitedHandler::deleteDeviceRecord(const long device_id)
         {
             purgeDeviceWork(*itr, ClientErrors::IdNotFound);
 
-            setDeviceInactive(itr->first);
+            _active_devices.erase(itr);
         }
 
         deleteDeviceProperties(*dr->device);
@@ -314,7 +306,7 @@ void UnsolicitedHandler::updateDeviceRecord(const long device_id)
                 //  erases it from _active_devices
                 purgeDeviceWork(*itr, ClientErrors::DeviceInhibited);
 
-                setDeviceInactive(itr->first);
+                _active_devices.erase(itr);
             }
         }
 
@@ -361,11 +353,12 @@ void UnsolicitedHandler::updatePort(void)
 
 void UnsolicitedHandler::purgePortWork(const YukonError_t error_code)
 {
-    while ( ! _active_devices.empty() )
+    for each( const device_activity_map::value_type &active_device in _active_devices )
     {
-        purgeDeviceWork( *_active_devices.begin(), error_code );
-        setDeviceInactive( _active_devices.begin()->first );
+        purgeDeviceWork(active_device, error_code);
     }
+
+    _active_devices.clear();
 }
 
 /*
@@ -407,11 +400,6 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
     case ToGenerate:
         CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _to_generate");
         _to_generate.remove(&dr);
-        break;
-
-    case WaitingToSend:
-        CTILOG_TRACE(dout, "Purging device " << dr.device->getID() << " from _waiting_to_send");
-        _waiting_to_send.remove(&dr);
         break;
 
     case WaitingForData:
@@ -472,9 +460,7 @@ bool UnsolicitedHandler::distributeRequests(const MillisecondTimer &timer, const
 template<class Element>
 bool UnsolicitedHandler::processQueue(std::list<Element> &queue, const char *function, void (UnsolicitedHandler::*processElement)(Element), const Cti::Timing::MillisecondTimer &timer, const unsigned long until)
 {
-    const auto max_elements = queue.size();
-
-    for( auto processed = 0; ! queue.empty() && processed < max_elements; ++processed )
+    while( ! queue.empty() )
     {
         try
         {
@@ -554,7 +540,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 
     dr->outbound.push_back(om);
 
-    if( ! _active_devices.count(dr) )
+    if( _active_devices.find(dr) == _active_devices.end() )
     {
         queueRequestPending(dr);
     }
@@ -653,15 +639,7 @@ bool UnsolicitedHandler::startPendingRequests(const MillisecondTimer &timer, con
 
 void UnsolicitedHandler::startPendingRequest(device_record *dr)
 {
-    //  If this device isn't active yet, we cannot start a request - another device_record is using the endpoint
-    if ( getPostCommWait( *dr ) && ! isDeviceActive( *dr ) )
-    {
-        queueRequestPending(dr);
-
-        return;
-    }
-
-    if ( ! dr->outbound.empty() )
+    if( ! dr->outbound.empty() )
     {
         if( OUTMESS *om = dr->outbound.front() )
         {
@@ -725,13 +703,13 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
                 dr->inbound.pop();
             }
 
-            setDeviceInactive(dr);
+            _active_devices.erase(dr);
         }
     }
     else
     {
         //  no outbounds, no inbounds - this guy is done for now
-        setDeviceInactive(dr);
+        _active_devices.erase(dr);
     }
 }
 
@@ -762,27 +740,8 @@ void UnsolicitedHandler::tryGenerate(device_record *dr)
 
     dr->xfer.setInCountActual(0UL);
 
-    queueWaitingToSend(dr);
-}
-
-bool UnsolicitedHandler::sendOutbounds(const MillisecondTimer &timer, const unsigned long until)
-{
-    return processQueue(_waiting_to_send, __FUNCTION__, &UnsolicitedHandler::trySendOutbounds, timer, until);
-}
-
-void UnsolicitedHandler::trySendOutbounds(device_record *dr)
-{
-    if (dr->xfer.getOutCount())
+    if( dr->xfer.getOutCount() )
     {
-        // bail out early if we are waiting for the postCommWait to expire
-        if ( ! availableToSend( *dr ) )
-        {
-            //  requeue onto _waiting_to_send
-            queueWaitingToSend(dr);
-            
-            return;
-        }
-
         dr->comm_status = sendOutbound(*dr);
 
         traceOutbound(*dr, dr->comm_status);
@@ -810,25 +769,6 @@ void UnsolicitedHandler::trySendOutbounds(device_record *dr)
 }
 
 
-bool UnsolicitedHandler::availableToSend( device_record &dr ) const
-{
-    auto postCommWait = getPostCommWait( dr );
-
-    if ( ! postCommWait )
-    {
-        return true;
-    }
-
-    return isPostCommWaitComplete( dr, postCommWait );
-}
-
-
-ULONG UnsolicitedHandler::getPostCommWait(device_record &dr) const
-{
-    return std::max<ULONG>( dr.device->getPostDelay(), _port->getDelay(POST_REMOTE_DELAY) );
-}
-
-
 string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 {
     ostringstream ostr;
@@ -836,13 +776,6 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
     ostr << dr.device->getName() << " (" << describeDeviceAddress(dr.device->getID()) << ")";
 
     return ostr.str();
-}
-
-
-void UnsolicitedHandler::setDeviceInactive(device_record *dr)
-{
-    _active_devices.erase( dr );
-    clearActiveDevice( *dr );
 }
 
 
@@ -1024,9 +957,9 @@ void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
             //  we just got work - we're ready to try a decode
             queueToDecode(&dr);
         }
-        else if( ! _active_devices.count(&dr) )
+        else if( _active_devices.find(&dr) == _active_devices.end() )
         {
-            //  it's new work, so try to get the device started next time the pending list is examined
+            //  it's new work, so get him started next time the pending list is examined
             queueRequestPending(&dr);
         }
     }
@@ -1400,19 +1333,10 @@ void UnsolicitedHandler::queueRequestComplete(device_record *dr)
     setDeviceState(_request_complete, dr, RequestComplete);
 }
 
-void UnsolicitedHandler::queueWaitingToSend(device_record *dr)
-{
-    CTILOG_TRACE(dout, "Queueing device " << dr->device->getID() << " to _waiting_to_send");
-
-    setDeviceState(_waiting_to_send, dr, WaitingToSend);
-}
-
 void UnsolicitedHandler::setDeviceState(device_list &queue, device_record *dr, DeviceState state)
 {
     queue.insert(queue.end(), dr);
     _active_devices[dr] = state;
-
-    setDeviceActive(*dr);
 }
 
 void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rfn_asid.h"
-#include "rfn_priority.h"
 #include "rfn_identifier.h"
 
 #include "RfnE2eDataIndicationMsg.h"
@@ -53,7 +52,6 @@ public:
         CtiTime expiration;
         long long groupId;
         unsigned char priority : 7;  //  7 bits - this needs to fit into a signed byte
-        PriorityClass priorityClass;
     };
 
     struct Indication : PayloadMessage, CallbackFor<Indication>
@@ -98,7 +96,6 @@ private:
     boost::optional<Indication::Callback> _e2edtCallback;
     CallbacksPerRfnIdentifier _dnp3Callbacks;
     boost::optional<Indication::Callback> _dataStreamingCallback;
-    boost::optional<Indication::Callback> _derCallback;
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg);

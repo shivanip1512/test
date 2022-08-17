@@ -415,7 +415,7 @@ yukon.ui.util = (function () {
          * Jquery (and plain old javascript) returns color values in rgb format:
          *  rgb(0, 153, 51)
          * This function will convert it to this format:
-         *  #2ca618
+         *  #009933
          */
         rgbToHex: function (rgb) {
             var compositeRgb,
@@ -423,7 +423,7 @@ yukon.ui.util = (function () {
                     return ('0' + parseInt(x, 10).toString(16)).slice(-2);
                 };
             if ('undefined' === typeof rgb || '' === rgb || null === rgb) {
-                return yg.colors.BLACK;
+                return '#000000';
             }
             
             // IE8 returns color in hex

@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.joda.time.Instant;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -15,24 +15,22 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveResponse;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @ManagedResource
 public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnEventArchiveRequest> {
-    
-    @Autowired private RfnMeterEventService rfnMeterEventService;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private static final Logger log = YukonLogManager.getLogger(EventArchiveRequestListener.class);
+    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.EventArchiveResponse";
 
-    private YukonJmsTemplate jmsTemplate;
+    @Autowired private RfnMeterEventService rfnMeterEventService;
+
     private List<Worker> workers;
     private AtomicInteger processedEventRequest = new AtomicInteger();
-    
+
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
             super("EventArchiveConverter", workerNumber, queueSize);
@@ -40,12 +38,11 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
 
         @Override
         protected Optional<String> processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
-            incrementProcessedArchiveRequest();
             Optional<String> trackingIds = Optional.empty();
-           
+            
+            // Only process events for meters at this time
             if (device.getPaoIdentifier().getPaoType().isMeter() ||
-                    device.getPaoIdentifier().getPaoType().isRfRelay() || 
-                    device.getPaoIdentifier().getPaoType().isRfda()) {
+                    device.getPaoIdentifier().getPaoType().isRfRelay()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
     
@@ -54,23 +51,15 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                 // Save analog value(s) to db
                 asyncDynamicDataSource.putValues(messagesToSend);
                 processedEventRequest.addAndGet(messagesToSend.size());
- 
+    
                 if (log.isDebugEnabled()) {
                     log.debug(messagesToSend.size() + " PointDatas generated for RfnEventArchiveRequest");
                 }
+                incrementProcessedArchiveRequest();
             }
             sendAcknowledgement(eventRequest);
             
             return trackingIds;
-        }
-
-        @Override
-        protected Instant getDataTimestamp(RfnEventArchiveRequest request) {
-            try {
-                return new Instant(request.getEvent().getTimeStamp());
-            } catch (Exception e) {
-                return null;
-            }
         }
     }
 
@@ -87,7 +76,6 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
             worker.start();
         }
         workers = workerBuilder.build();
-        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RF_EVENT_ARCHIVE);
     }
 
     @PreDestroy
@@ -107,8 +95,8 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
     }
 
     @Override
-    protected YukonJmsTemplate getJmsTemplate() {
-        return jmsTemplate;
+    protected String getRfnArchiveResponseQueueName() {
+        return archiveResponseQueueName;
     }
 
     @Override

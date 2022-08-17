@@ -26,8 +26,6 @@ DECLARE_COLLECTABLE( CtiLMGroupSADigital );
 
     CtiLMGroupSADigital& operator=(const CtiLMGroupSADigital& right);
 
-    std::size_t getFixedSize() const  override   { return sizeof( *this ); }
-
     /* Static Members */
 
 private:

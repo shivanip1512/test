@@ -1,34 +1,28 @@
 package com.cannontech.dr.ecobee.model;
 
-import java.io.Serializable;
-
 import org.joda.time.Instant;
 
 /**
  * Contains all parameters required to initiate a duty cycle demand response event in Ecobee.
  */
-public final class EcobeeDutyCycleDrParameters implements Serializable {
-    private final int programId;
+public final class EcobeeDutyCycleDrParameters {
     private final Instant startTime;
     private final Instant endTime;
     private final int dutyCyclePercent;
-    private final int randomTimeSeconds;
-    private final boolean isMandatory;
+    private final boolean rampIn;
+    private final boolean rampOut;
+    private final boolean isOptional;
     private final int groupId;
-
-    public EcobeeDutyCycleDrParameters(int programId, Instant startTime, Instant endTime, int dutyCyclePercent,
-            int randomTimeSeconds, boolean isMandatory, int groupId) {
-        this.programId = programId;
+    
+    public EcobeeDutyCycleDrParameters(Instant startTime, Instant endTime, int dutyCyclePercent, boolean rampIn, 
+                                       boolean rampOut, boolean isOptional, int groupId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.dutyCyclePercent = dutyCyclePercent;
-        this.randomTimeSeconds = randomTimeSeconds;
-        this.isMandatory = isMandatory;
+        this.rampIn = rampIn;
+        this.rampOut = rampOut;
         this.groupId = groupId;
-    }
-
-    public int getProgramId() {
-        return programId;
+        this.isOptional = isOptional;
     }
 
     public Instant getStartTime() {
@@ -43,16 +37,19 @@ public final class EcobeeDutyCycleDrParameters implements Serializable {
         return dutyCyclePercent;
     }
 
-    public int getRandomTimeSeconds() {
-        return randomTimeSeconds;
+    public boolean isRampIn() {
+        return rampIn;
     }
 
-    public boolean isMandatory() {
-        return isMandatory;
+    public boolean isRampOut() {
+        return rampOut;
+    }
+    
+    public boolean isOptional() {
+        return isOptional;
     }
 
     public int getGroupId() {
         return groupId;
     }
-
 }

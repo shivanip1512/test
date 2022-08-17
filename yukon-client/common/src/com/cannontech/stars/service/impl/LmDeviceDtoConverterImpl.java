@@ -66,7 +66,6 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         dto.setSerialNumber(hwFields[ImportFields.IDX_SERIAL_NO]);
         dto.setServiceCompanyName(hwFields[ImportFields.IDX_SERVICE_COMPANY]);
         dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
-        dto.setGuid(hwFields[ImportFields.IDX_GUID]);
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])
             && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
             dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
@@ -148,10 +147,6 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         
         if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_MAC_ADDRESS])) {
             dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
-        }
-        
-        if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_GUID])) {
-            dto.setGuid(hwFields[ImportFields.IDX_GUID]);
         }
         
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])

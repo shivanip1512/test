@@ -34,8 +34,6 @@ DECLARE_COLLECTABLE( LMGroupDigiSEP );
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
-    std::size_t getFixedSize() const override   { return sizeof( *this ); }
-
 protected:
     void restore(Cti::RowReader &rdr);
 };

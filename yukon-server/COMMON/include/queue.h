@@ -353,19 +353,6 @@ public:
         operand_for_each(getCollection().begin(),getCollection().end(),fn,d);
     }
 
-    std::size_t getQueueMemoryConsumption()
-    {
-        lock_t scoped_lock(mux, xt_eot);
-
-        size_t consumption = 0;
-        for ( const auto & entry : getCollection() )
-        {
-            consumption += calculateMemoryConsumption( entry.dataPointer );
-        }
-
-        return consumption;
-    }
-
     template<class Op>
     void erase_if(Op pred)
     {

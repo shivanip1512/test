@@ -101,7 +101,7 @@
                         </c:forEach>
                     </tbody>
                 </table>
-                <tags:pagingResultsControls result="${loadGroups}" adjustPageCount="true"/>
+                <tags:pagingResultsControls result="${loadGroups}"/>
             </div>
         </c:otherwise>
     </c:choose>

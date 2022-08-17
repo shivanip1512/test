@@ -1,7 +1,7 @@
 package com.cannontech.analysis.function;
 
-import org.pentaho.reporting.engine.classic.core.function.Expression;
-import org.pentaho.reporting.engine.classic.core.function.ItemHideFunction;
+import org.jfree.report.function.Expression;
+import org.jfree.report.function.ItemHideFunction;
 
 import com.cannontech.analysis.report.ColumnLayoutData;
 

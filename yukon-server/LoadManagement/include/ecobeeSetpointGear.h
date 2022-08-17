@@ -23,8 +23,6 @@ public:
 
     unsigned long estimateOffTime( long controlSeconds ) override;
 
-    std::size_t getFixedSize() const override    { return sizeof( *this ); }
-
     // Custom Gear settings
 
     bool isHeatControl() const;

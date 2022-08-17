@@ -8,13 +8,11 @@
         <tag name="ASSET_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Comm Status" init="true" attributes="COMM_STATUS"/>
         <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Cool Set Temperature" init="true" attributes="COOL_SET_TEMPERATURE"/>
         <pointInfo name="Heat Set Temperature" init="true" attributes="HEAT_SET_TEMPERATURE"/>
         <pointInfo name="Indoor Temperature" init="true" attributes="INDOOR_TEMPERATURE"/>
         <pointInfo name="Outdoor Temperature" init="true" attributes="OUTDOOR_TEMPERATURE"/>
         <pointInfo name="Run Time Data Log" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Thermostat Relay State" init="true" attributes="THERMOSTAT_RELAY_STATE"/>
     </pointInfos>
 </pao>

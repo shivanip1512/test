@@ -65,12 +65,12 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     public YukonObjectCriteria combineCriteria(YukonObjectCriteria baseCriteria,
             Iterable<Integer> initialIds) {
         
-        final BooleanQuery.Builder query = new BooleanQuery.Builder();
+        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
         if (baseCriteria != null) {
             query.add(baseCriteria.getCriteria(), Occur.MUST);
         }
         
-        final BooleanQuery.Builder idQuery = new BooleanQuery.Builder();
+        final BooleanQuery.Builder idQuery = new BooleanQuery.Builder().setDisableCoord(false);
         
         for (Integer id : initialIds) {
             TermQuery termQuery = new TermQuery(new Term(getLuceneIdFieldName(), id.toString()));

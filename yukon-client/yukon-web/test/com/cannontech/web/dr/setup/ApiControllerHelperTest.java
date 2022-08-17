@@ -1,16 +1,16 @@
 package com.cannontech.web.dr.setup;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -23,7 +23,7 @@ public class ApiControllerHelperTest {
     private ApiControllerHelper helper;
     private SimpleYukonUserContext userContext;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         req = createMockRequest();
         helper = new ApiControllerHelper();
@@ -32,7 +32,7 @@ public class ApiControllerHelperTest {
         userContext.setTimeZone(TimeZone.getTimeZone("America/Chicago"));
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
         req = null;
     }
@@ -42,7 +42,7 @@ public class ApiControllerHelperTest {
         String pathUrl = "/dr/setup/loadGroup/save";
         ReflectionTestUtils.invokeMethod(helper, "setWebServerUrl", req.getServerName());
         String url = helper.findWebServerUrl(req, userContext, pathUrl);
-        assertTrue(url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"), "The url is valid");
+        assertTrue("The url is valid", url.equals("http://localhost:8080/api/dr/setup/loadGroup/save"));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ApiControllerHelperTest {
         String pathUrl = "/dr/setup/loadGroup/save";
         ReflectionTestUtils.invokeMethod(helper, "setWebServerUrl", req.getServerName());
         String url = helper.findWebServerUrl(req, userContext, pathUrl);
-        assertFalse(url.equals("http://localhost:8080/yukon/dr/setup/loadGroup/save"), "The url is invalid");
+        assertFalse("The url is invalid", url.equals("http://localhost:8080/yukon/dr/setup/loadGroup/save"));
     }
 
     private HttpServletRequest createMockRequest() {

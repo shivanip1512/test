@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron;
 
-import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,13 +13,11 @@ import org.joda.time.DateTime;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ByteUtil;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.math.LongMath;
 
 /**
  * This enum maps events to the event IDs that will display in the data log, the attribute each event is associated
@@ -39,6 +36,9 @@ import com.google.common.math.LongMath;
  */
 public enum ItronDataEventType {
     //Event where the value and attribute are known and defined. decode() is not used for these enums.
+    EVENT_STARTED(0x000E, BuiltInAttribute.CONTROL_STATUS, 0, 4, 1),
+    EVENT_STOPPED(0x000F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
+    EVENT_CANCELED(0x0010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
     CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     
@@ -51,14 +51,11 @@ public enum ItronDataEventType {
     CALL_FOR_COOL_OFF(0x8099, null, 0, 1, 0),
 
     //Events where the values are obtained from the payload.
-    AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null, 0.1),
+    AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null),
     EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
     FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
-    EVENT_STARTED (0x000E, BuiltInAttribute.EVENT_STARTED, 0, 4, null),
-    EVENT_CANCELLED (0x0010, BuiltInAttribute.EVENT_CANCELLED, 0, 4, null),
-    EVENT_STOPPED (0x000F, BuiltInAttribute.EVENT_STOPPED, 0, 4, null),
 
     //Events where the values increment current count
     POWER_FAIL(0x0000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
@@ -66,9 +63,9 @@ public enum ItronDataEventType {
     LINE_UNDER_VOLTAGE(0x8084, BuiltInAttribute.TOTAL_LUV_COUNT, 0, 1, null),
     
     //Events that rely on two events to complete point data
-    MIN_VOLTAGE(0x809C, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 2, null, 0.1),
+    MIN_VOLTAGE(0x809C, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 2, null),
     MIN_VOLTAGE_TIME(0x809E, BuiltInAttribute.MINIMUM_VOLTAGE, 0, 4, null),
-    MAX_VOLTAGE(0x809B, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 2, null, 0.1),
+    MAX_VOLTAGE(0x809B, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 2, null),
     MAX_VOLTAGE_TIME(0x809F, BuiltInAttribute.MAXIMUM_VOLTAGE, 0, 4, null),
     ;
     
@@ -77,15 +74,14 @@ public enum ItronDataEventType {
     private final int firstByteIndex;
     private final int numOfBytes;
     private final Integer value;
-    private final double internalMultiplier;
     
     private static final Logger log = YukonLogManager.getLogger(ItronDataEventType.class);
+    private static final DateTime year2000 = new DateTime(2000, 1, 1, 0, 0, 0);
     
     private static final Cache<String, PointData> voltageCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final ImmutableSet<ItronDataEventType> incrementalTypes;
     private static final ImmutableSet<ItronDataEventType> voltageTypes;
     private static final ImmutableSet<ItronDataEventType> controlEventTypes;
-    private static final ImmutableSet<ItronDataEventType> relayNumberedTypes;
         
     static {
         incrementalTypes = ImmutableSet.of(
@@ -98,16 +94,10 @@ public enum ItronDataEventType {
                                        MAX_VOLTAGE,
                                        MAX_VOLTAGE_TIME);
         controlEventTypes = ImmutableSet.of(
+                                            EVENT_STARTED,
+                                            EVENT_STOPPED,
+                                            EVENT_CANCELED,
                                             EVENT_SUPERSEDED);
-        
-        relayNumberedTypes = ImmutableSet.of(
-                                             LOAD_ON,
-                                             LOAD_OFF,
-                                             SHED_START,
-                                             SHED_END,
-                                             CALL_FOR_COOL_ON,
-                                             CALL_FOR_COOL_OFF);
-                
     }
     
     private static Map<Long, ItronDataEventType> itronEventTypeFromHexMap = new HashMap<>();
@@ -117,20 +107,13 @@ public enum ItronDataEventType {
             itronEventTypeFromHexMap.put(eventType.eventIdHex, eventType);
         }
     }
-
-    // This will be used for enums that use the default multiplier value of 1.0
+    
     ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value) {
-        this(eventIdHex, attribute, firstByteIndex, numOfBytes, value, 1.0);
-        
-    }
-
-    ItronDataEventType(long eventIdHex, BuiltInAttribute attribute, int firstByteIndex, int numOfBytes, Integer value, double multiplier) {
         this.eventIdHex = eventIdHex;
         this.attribute = attribute;
         this.firstByteIndex = firstByteIndex;
         this.numOfBytes = numOfBytes;
         this.value = value; //Corresponds to the value in the point's state group
-        internalMultiplier = multiplier;
     }
     
     public static ItronDataEventType getFromHex(long hex) {
@@ -161,10 +144,6 @@ public enum ItronDataEventType {
         return controlEventTypes.contains(this);
     }
     
-    public boolean isRelayNumberedType() {
-        return relayNumberedTypes.contains(this);
-    }
-    
     /**
      * 
      * @param byteArray - this is a byte array that has been converted from a 5 byte hex string.
@@ -187,36 +166,24 @@ public enum ItronDataEventType {
     }
     
     /**
-     * Get the attribute for this event. If this is a relay-numbered type, use the relay number in the payload to
-     * determine the attribute.
-     * @throws IllegalArgumentException if relay number in payload is invalid or no appropriate attribute can be found.
+     * This is currently used to get relay numbered attributes.
+     * @throws IllegalArgumentException if no appropriate attribute can be found.
      */
     public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
-        // For non-relay-numbered-types, just use the attribute specified in the enum declaration
-        if (!isRelayNumberedType()) {
-            return attribute;
-        }
-        
-        // For relay-numbered types, relay number comes back as a bit mask in the first byte.
-        // Example: 08 00 00 00 00 = 00001000 ... = Relay 4
-        byte firstByte = byteArray[0];
-        int relayNumber = LongMath.log2(firstByte, RoundingMode.UNNECESSARY) + 1; //ArithmeticException if rounding required
-        if (relayNumber < 1 || relayNumber > 4) {
-            throw new IllegalArgumentException("Invalid relay number in payload: " + relayNumber);
-        }
-        
+        // Relay number comes back 0-indexed, but relay-related attributes are 1-indexed, so increment.
+        long relayNumber = decode(byteArray) + 1;
         switch (this) {
-            case LOAD_ON:
-            case LOAD_OFF:
-                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_LOAD_STATE");
-            case SHED_START:
-            case SHED_END:
-                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_SHED_STATUS");
-            case CALL_FOR_COOL_ON:
-            case CALL_FOR_COOL_OFF:
-                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_CALL_FOR_COOL");
-            default:
-                return attribute;
+        case LOAD_ON:
+        case LOAD_OFF:
+            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_RELAY_STATE");
+        case SHED_START:
+        case SHED_END:
+            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_SHED_STATUS");
+        case CALL_FOR_COOL_ON:
+        case CALL_FOR_COOL_OFF:
+            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_CALL_FOR_COOL");
+        default:
+            return attribute;
         }
     }
     
@@ -242,7 +209,7 @@ public enum ItronDataEventType {
             return currentValue + 1;
         } else {
             // Event has to be decoded
-            return decode(byteArray) * internalMultiplier;
+            return decode(byteArray);
         }
     }
     /**
@@ -289,7 +256,7 @@ public enum ItronDataEventType {
             pointData = new PointData();
             
             // Put either the time or the value into the pointdata
-            insertValueOrTime(pointData, isValue, byteArray, internalMultiplier);
+            insertValueOrTime(pointData, isValue, byteArray);
             
             String key = keyPrefix + name();
             log.debug("Caching incomplete data. Key: {}", key);
@@ -301,7 +268,7 @@ public enum ItronDataEventType {
         log.debug("Invalidating cache key: {}", cacheKey);
         voltageCache.invalidate(cacheKey);
         // Put the second part (time or value) into the pointdata
-        insertValueOrTime(pointData, isValue, byteArray, internalMultiplier);
+        insertValueOrTime(pointData, isValue, byteArray);
         log.debug("Completed point data - date: " + pointData.getPointDataTimeStamp() + ", value: " + pointData.getValue());
         return Optional.of(pointData);
     }
@@ -309,14 +276,13 @@ public enum ItronDataEventType {
     /**
      * Insert a value or time into the pointData.
      */
-    private void insertValueOrTime(PointData pointData, boolean isValue, byte[] byteArray, double multiplier) {
+    private void insertValueOrTime(PointData pointData, boolean isValue, byte[] byteArray) {
         long decodedData = decode(byteArray);
         if (isValue) {
-            double pointDataValue = decodedData * multiplier;
-            log.debug("Setting point data value: {}", pointDataValue);
-            pointData.setValue(pointDataValue);
+            log.debug("Setting point data value: {}", decodedData);
+            pointData.setValue(decodedData);
         } else {
-            // Date comes in as seconds since epoch, convert to millis
+            // Date comes in as seconds since epoch
             Date date = getLcrTimestamp(decodedData);
             log.debug("Setting point data date: {}", date.toString());
             pointData.setTime(date);
@@ -327,6 +293,7 @@ public enum ItronDataEventType {
      * @return The Date representation of an LCR data timestamp, given the seconds since the start of the year 2000.
      */
     private static Date getLcrTimestamp(long secondsSinceYear2000) {
-        return TimeUtil.convertUtc2000ToInstant(secondsSinceYear2000).toDate();
+        return year2000.plus(secondsSinceYear2000 * 1000)
+                       .toDate();
     }
 }

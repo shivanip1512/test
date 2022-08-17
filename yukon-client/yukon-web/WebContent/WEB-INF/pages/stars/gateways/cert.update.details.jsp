@@ -6,9 +6,18 @@
 
 <cti:msgScope paths="modules.operator.gateways.cert.update, yukon.common">
 
-<tags:nameValueContainer2>
+<tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
     <tags:nameValue2 nameKey=".file" >
-        ${fn:escapeXml(update.fileName)}
+        <table>
+            <tr>
+                <td class="full-width">${fn:escapeXml(update.fileName)}</td>
+                <td class="wsnw">
+                    <span class="badge badge-error">${fn:length(update.failed)}</span>
+                    <span class="badge badge-success">${fn:length(update.successful)}</span>
+                    <span class="badge">${fn:length(update.pending)}</span>
+                </td>
+            </tr>
+        </table>
     </tags:nameValue2>
 </tags:nameValueContainer2>
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
-import com.cannontech.common.YukonColorPalette;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -28,7 +28,7 @@ public class PointValues
 	private PointData pointData = null;
 
 	//signals can be null 
-	private HashMap<Signal, Signal> signalHash = null;
+	private HashMap signalHash = null;
 
 
 	//device data
@@ -39,10 +39,10 @@ public class PointValues
 	private String pointState = null;
 	private Integer decimalPlaces = null;
 
-	private int currentForegroundColor = YukonColorPalette.WHITE.getColorId();
-	private int currentBackgroundColor = YukonColorPalette.BLACK.getColorId();
+	private int currentForegroundColor = Colors.WHITE_ID;
+	private int currentBackgroundColor = Colors.BLACK_ID;
 
-	private int originalBackgroundColor = YukonColorPalette.BLACK.getColorId();
+	private int originalBackgroundColor = Colors.BLACK_ID;
 
 
 /**
@@ -105,6 +105,35 @@ public String[] getAllText()
                    .filter(ls -> ls.getStateRawState() >= 0)  //  filter the negative states, such as ANY (-1)
                    .map(LiteState::getStateText)
                    .toArray(k -> new String[k]);
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (2/2/00 4:59:47 PM)
+ * @param i int
+ */
+public String getBackGroundColor(int i) 
+{
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return String.valueOf( Colors.BLACK_ID );	
+	
+	return Colors.getColorString(
+					lpgrp.getStatesList().get(i).getBgColor() );
+}
+/**
+ * Insert the method's description here.
+ * Creation date: (2/2/00 4:59:47 PM)
+ * @param i int
+ */
+public String getColor(int i) 
+{
+	LiteStateGroup lpgrp = getLiteStateGroup();
+	if( lpgrp == null )
+		return String.valueOf( Colors.WHITE_ID );	
+
+
+	return Colors.getColorString( 
+					lpgrp.getStatesList().get(i).getFgColor() );
 }
 
 /**
@@ -291,8 +320,8 @@ public void setCurrentRowColor( int value )
 	{
 		if( lState.getStateRawState() == value )
 		{
-			currentForegroundColor = Integer.valueOf( lState.getFgColor() ).intValue();
-			currentBackgroundColor = Integer.valueOf( lState.getBgColor() ).intValue();
+			currentForegroundColor = new Integer( lState.getFgColor() ).intValue();
+			currentBackgroundColor = new Integer( lState.getBgColor() ).intValue();			
 			return;
 		}	
 	}
@@ -422,10 +451,10 @@ public String toString()
 	/**
 	 * @return
 	 */
-	private HashMap<Signal, Signal> getSignalHash()
+	private HashMap getSignalHash()
 	{
 		if( signalHash == null )
-			signalHash = new HashMap<>(16);
+			signalHash = new HashMap(16);
 
 		return signalHash;
 	}
@@ -438,7 +467,7 @@ public String toString()
 	public Signal[] getAllSignals()
 	{
 		Signal[] sigs = new Signal[ getSignalHash().values().size() ];
-		return getSignalHash().values().toArray( sigs );
+		return (Signal[])getSignalHash().values().toArray( sigs );
 	}
 
 	/**

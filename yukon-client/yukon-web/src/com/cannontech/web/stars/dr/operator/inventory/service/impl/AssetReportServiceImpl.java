@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
@@ -41,20 +43,23 @@ public class AssetReportServiceImpl implements AssetReportService {
         List<AssetReportDevice> devices = new ArrayList<>();
 
         chunkyTemplate.queryInto(getSqlFragmentGenerator(ecId), assetIds,
-            getYukonRowMapper(null, 0), devices);
+            getYukonRowMapper(null, new AtomicBoolean(), 0), devices);
 
         return devices;
     }
 
     @Override
-    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue) {
+    public void queueAssetReportDevices(int ecId, List<Integer> assetIds, BlockingQueue<AssetReportDevice> queue,
+            AtomicBoolean isCompleted) {
         chunkyTemplate.query(getSqlFragmentGenerator(ecId), assetIds,
-            getYukonRowMapper(queue, assetIds.size()));
+            getYukonRowMapper(queue, isCompleted, assetIds.size()));
     }
 
-    private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue, int size) {
+    private YukonRowMapper<AssetReportDevice> getYukonRowMapper(BlockingQueue<AssetReportDevice> queue,
+            AtomicBoolean isCompleted, int size) {
         return new YukonRowMapper<AssetReportDevice>() {
-       
+            private int count;
+
             @Override
             public AssetReportDevice mapRow(YukonResultSet rs) throws SQLException {
                 AssetReportDevice device = new AssetReportDevice();
@@ -76,6 +81,13 @@ public class AssetReportServiceImpl implements AssetReportService {
                 try {
                     if (queue != null) {
                         queue.put(device);
+                        synchronized (AssetReportServiceImpl.class) {
+                            count++;
+                        }
+                        if (count == size) {
+                            isCompleted.set(true);
+                            count = 0;
+                        }
                     }
                 } catch (InterruptedException e) {
                     log.error("Error while queuing data " + e);

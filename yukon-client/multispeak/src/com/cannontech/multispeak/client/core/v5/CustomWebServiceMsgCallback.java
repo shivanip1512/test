@@ -1,4 +1,5 @@
 package com.cannontech.multispeak.client.core.v5;
+
 import java.util.UUID;
 
 import javax.xml.soap.MimeHeaders;
@@ -17,7 +18,6 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.multispeak.client.Credentials;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 
@@ -26,7 +26,7 @@ public class CustomWebServiceMsgCallback {
 
     @Autowired public MultispeakFuncs multispeakFuncs;
 
-    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor, String interfaceName) {
+    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor) {
         return new WebServiceMessageCallback() {
             @Override
             public void doWithMessage(WebServiceMessage message) {
@@ -57,12 +57,9 @@ public class CustomWebServiceMsgCallback {
                     SOAPHeader header = env.getHeader();
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
                     headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
-                    
+
                     headElement.setAttribute("TimeStamp", Iso8601DateUtil.formatIso8601Date(Instant.now().toDate(), true));
-
-                    Credentials credentials = multispeakFuncs.getOutgoingCredentials(mspVendor, interfaceName);
-
-                    multispeakFuncs.getHeader(headElement, "req", credentials.getUserName(), credentials.getPassword());
+                    multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" packages="com.cannontech.clientutils" monitorInterval="5">
+    <!-- List of appenders -->
+    <Appenders>
+        <YukonRollingFile name="yukonRollingFileAppender">
+            <!-- Appender uses Layout to format a LogEvent -->
+            <!-- To change layout you can see Layouts\Patterns section in log4j2 documents -->
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+            <Policies>
+                <!-- Time based triggering policy which will roll log files daily -->
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DirectWriteRolloverStrategy maxFiles="1"/>
+        </YukonRollingFile>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+    <!-- package level Loggers -->
+    <!-- Adjust the following logger levels to fine-tune logging output -->
+    <!-- To turn off logging for any package use: level = "off"  -->
+    <!-- Possible levels: off, fatal, error, warn, info, debug, trace -->
+    <Logger name="com.cannontech" level="info" />
+
+    <Logger name="org.springframework" level="warn" />
+         <!-- root Logger will be inherited by all Loggers-->
+        <Root level="info">
+            <appender-ref ref="console" />
+            <appender-ref ref="yukonRollingFileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

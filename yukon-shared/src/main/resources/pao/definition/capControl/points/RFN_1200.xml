@@ -2,7 +2,7 @@
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
         <analog offset="100"/>
-        <status offset="103"/>
+        <status offset="9"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="20" type="Analog">
@@ -63,15 +63,5 @@
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Outage Status"/>
-    </point>
-    <point offset="102" type="Status">
-        <name>Ultra Capacitor Bad</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="103" type="Status">
-        <name>Blink Reported</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
     </point>
 </points>

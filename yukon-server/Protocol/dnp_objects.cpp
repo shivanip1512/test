@@ -247,10 +247,8 @@ static ObjectBlockPtr ObjectBlock::makeRangedBlock(std::map<unsigned, std::uniqu
 
 
 template<class T>
-static std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects, const size_t maximumObjectBlockSize)
+static std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects)
 {
-    constexpr auto MaxRangedBlockHeaderSize = 3 + 8;
-
     // create a mapping of the start index to number of consecutive indexes on the input collection keys
     //  e.g  { 1, 2, 3, 6, 8, 9 } -->  { { 1, 3 }, { 6, 1 }, { 8, 2 } }
 
@@ -260,19 +258,11 @@ static std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks(std::map<unsign
         stride = 0,
         workingIndex = 0;
 
-    if( objects.empty() )
+    for ( auto & e : objects )
     {
-        return {};
-    }
-
-    const auto objectSize = objects.begin()->second->getSerializedLen();
-    const auto maximumStride = (maximumObjectBlockSize - MaxRangedBlockHeaderSize) / objectSize;
-
-    for ( auto & [index, object] : objects )
-    {
-        if ( index != ( workingIndex + stride ) || stride == maximumStride )
+        if ( e.first != ( workingIndex + stride ) )
         {
-            workingIndex = index;
+            workingIndex = e.first;
             stride = 0;
         }
         splices[ workingIndex ] = ++stride;
@@ -309,11 +299,11 @@ template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::un
 template ObjectBlockPtr ObjectBlock::makeRangedBlock( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
-template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogInput>>, const size_t );
-template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>>, const size_t );
-template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryInput>>, const size_t );
-template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryOutput>>, const size_t );
-template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const Counter>>, const size_t );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const BinaryOutput>> objects );
+template std::vector<ObjectBlockPtr> ObjectBlock::makeRangedBlocks( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
 ObjectBlockPtr ObjectBlock::makeNoIndexNoRange( int group, int variation )
@@ -366,24 +356,6 @@ ObjectBlockPtr ObjectBlock::makeQuantityBlock( ObjectPtr object )
                     object->getVariation());
 
     objBlock->_objectList.emplace_back(std::move(object));
-
-    return std::move(objBlock);
-}
-
-
-ObjectBlockPtr ObjectBlock::makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs )
-{
-    auto objBlock =
-            makeObjectBlock(
-                    ShortIndex_ShortQty,
-                    objs[0].second->getGroup(),
-                    objs[0].second->getVariation());
-
-    for ( auto & [ index, object ] : objs )
-    {
-        objBlock->_objectList.emplace_back(std::move(object));
-        objBlock->_objectIndices.push_back(index);
-    }
 
     return std::move(objBlock);
 }

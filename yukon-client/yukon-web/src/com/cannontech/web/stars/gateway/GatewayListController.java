@@ -1,28 +1,26 @@
 package com.cannontech.web.stars.gateway;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -33,29 +31,38 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.gateway.DataType;
-import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
+import com.cannontech.common.rfn.model.RfnRelay;
+import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
+@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
+                    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
+                    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
+                    YukonRoleProperty.INFRASTRUCTURE_VIEW})
 public class GatewayListController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
@@ -63,120 +70,87 @@ public class GatewayListController {
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     
     @Autowired private GatewayControllerHelper helper;
+    @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoNotesService paoNotesService;
-    @Autowired private GatewayBulkUpdateValidator bulkUpdateValidator;
+    private Map<SortBy, Comparator<CertificateUpdate>> sorters;
+    
+    @PostConstruct
+    public void initialize() {
+        Builder<SortBy, Comparator<CertificateUpdate>> builder = ImmutableMap.builder();
+        builder.put(SortBy.TIMESTAMP, getTimestampComparator());
+        builder.put(SortBy.CERTIFICATE, getCertificateFileNameComparator());
+        sorters = builder.build();
+    }
+    
+    @RequestMapping(value = { "/gateways", "/gateways/" }, method = RequestMethod.GET)
+    public String gateways(ModelMap model, YukonUserContext userContext, FlashScope flash,
+                           @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
 
-    @GetMapping({ "/gateways", "/gateways/" })
-    public String gateways(ModelMap model) {
-        model.addAttribute("infrastructureWarningDeviceCategory", InfrastructureWarningDeviceCategory.GATEWAY);
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        Collections.sort(gateways);
+        model.addAttribute("gateways", gateways);
+        
+        // Check for gateways with duplicate colors
+        // If any are found, output a flash scope warning to notify the user
+        Multimap<Short, RfnGateway> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
+        if (!duplicateColorGateways.isEmpty()) {
+            StringBuilder gatewaysString = new StringBuilder(); 
+            for (Short color : duplicateColorGateways.keySet()) {
+                Set<String> gatewayNames = duplicateColorGateways.get(color)
+                                                                 .stream()
+                                                                 .map(RfnGateway::getName)
+                                                                 .collect(Collectors.toSet());
+                gatewaysString.append(color)
+                              .append(" (")
+                              .append(StringUtils.join(gatewayNames, ", "))
+                              .append(") ");
+            }
+            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.gateways.list.duplicateColors", 
+                                                                                    gatewaysString);
+            flash.setWarning(message);
+        }
+        
+        
+        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        Direction dir = sorting.getDirection();
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Comparator<CertificateUpdate> comparator = sorters.get(sortBy);
+        if (dir == Direction.desc) {
+            Collections.sort(certUpdates, Collections.reverseOrder(comparator));
+        } else {
+            Collections.sort(certUpdates, comparator);
+        }
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        for (SortBy column : SortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        model.addAttribute("certUpdates", certUpdates);
+        helper.addText(model, userContext);
+        
+        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+        firmwareUpdates.sort((first, second) -> second.getSendDate().compareTo(first.getSendDate()));
+        model.addAttribute("firmwareUpdates", firmwareUpdates);
+        
+        List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
+                                                                             .map(gateway -> gateway.getPaoIdentifier().getPaoId())
+                                                                             .collect(Collectors.toList()));
+        model.addAttribute("notesList", notesList);
+        
         return "gateways/list.jsp";
     }
-
-    @GetMapping("/gateways/list")
-    public String gatewaysList(ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        helper.buildGatewayListModel(model, userContext, sorting, gateways);
-        return "gateways/gatewayTable.jsp";
-    }
-
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @GetMapping("/gateways/manageFirmware")
-    public String firmwareDetails(ModelMap model) {
-        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        model.addAttribute("dataExists", gateways.stream().anyMatch(gateway -> (gateway.getData() != null)));
-        return "gateways/manageFirmware.jsp";
-    }
-
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @GetMapping("/gateways/firmwareDetailsList")
-    public String firmwareList(ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting) {
-        helper.buildFirmwareListModel(model, userContext, sorting);
-        return "gateways/firmwareTable.jsp";
-    }
-
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @GetMapping("/gateways/manageCertificates")
-    public String certificateUpdates() {
-        return "gateways/manageCertificates.jsp";
-    }
-
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @GetMapping("/gateways/certificateDetailsList")
-    public String certificateList(ModelMap model, YukonUserContext userContext,
-            @DefaultSort(dir = Direction.desc, sort = "TIMESTAMP") SortingParameters sorting) {
-        helper.buildCertificateListModel(model, userContext, sorting);
-        return "gateways/certificateTable.jsp";
-    }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @GetMapping("/gateways/update")
-    public String bulkUpdateGatewaysPopup(ModelMap model) {
-    	GatewayBulkUpdateModel updateModel = new GatewayBulkUpdateModel();
-    	GatewayNMIPAddressPort mostUsedNMIPAddressPort = helper.getMostUsedGatewayNMIPPort();
-    	if (mostUsedNMIPAddressPort != null) {
-    		updateModel.setNmIpAddress(mostUsedNMIPAddressPort.getNmIpAddress());
-    		updateModel.setNmPort(mostUsedNMIPAddressPort.getNmPort());
-    	}
-    	model.addAttribute("settings", updateModel);
-        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
-        return "gateways/bulkUpdate.jsp";
-    }
-    
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
-    @PostMapping("/gateways/update")
-    public String bulkUpdateGateways(@ModelAttribute("settings") GatewayBulkUpdateModel gatewayUpdateModel, BindingResult result,
-    		ModelMap model, HttpServletResponse resp, YukonUserContext userContext) {
-        Map<String, Object> json = new HashMap<>();
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-    	bulkUpdateValidator.validate(gatewayUpdateModel, result);
-        if (result.hasErrors()) {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
-            return "gateways/bulkUpdate.jsp";
-        }
-        List<String> gatewaySuccess = new ArrayList<String>();
-        List<String> gatewayErrors = new ArrayList<String>();
-        try {
-	        for (int gatewayId : gatewayUpdateModel.getGatewayIds()) {
-	        	RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
-	            RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
-	            RfnGatewayData data = builder.copyOf(gateway.getData())
-	           .nmIpAddress(gatewayUpdateModel.getNmIpAddress())
-	           .nmPort(gatewayUpdateModel.getNmPort())
-	           .build();  
-	            gateway.setData(data);
-				GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
-				if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
-					gatewaySuccess.add(gateway.getName());
-				} else {
-					gatewayErrors.add(gateway.getName());
-				}
-	        }
-	        if (!gatewaySuccess.isEmpty()) {
-	        	json.put("successMessage", 
-	        			accessor.getMessage(baseKey + "bulkUpdate.gatewaySuccessMessage", StringUtils.collectionToDelimitedString(gatewaySuccess, ", ")));
-	        }
-	        if (!gatewayErrors.isEmpty()) {
-	        	json.put("errorMessage", 
-	        			accessor.getMessage(baseKey + "bulkUpdate.gatewayErrorMessage", StringUtils.collectionToDelimitedString(gatewayErrors, ", ")));
-	        }
-		} catch (NmCommunicationException e) {
-            log.error("Failed communicating to NM while updating gateways.", e);
-            json.put("errorMessage", accessor.getMessage(baseKey + "error.comm"));
-		}
-        return JsonUtils.writeResponse(resp, json);
-    }
-
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
         String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        
         Map<Integer, Object> json = new HashMap<>();
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         List<Integer> notesList = paoNotesService.getPaoIdsWithNotes(gateways.stream()
@@ -204,7 +178,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.INTERACT)
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/connect")
     public @ResponseBody Map<String, Object> connect(YukonUserContext userContext, @PathVariable int id) {
         
@@ -224,7 +198,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/disconnect")
     public @ResponseBody Map<String, Object> disconnect(YukonUserContext userContext, @PathVariable int id) {
         
@@ -264,43 +238,39 @@ public class GatewayListController {
         return json;
     }
 
-    public enum CertificateUpdatesSortBy implements DisplayableEnum {
-        TIMESTAMP,
-        CERTIFICATE,
-        FAILED,
-        SUCCESSFUL,
-        PENDING;
-
-        @Override
-        public String getFormatKey() {
-            return "yukon.web.modules.operator.gateways.manageCertificates." + name();
-        }
+    private static Comparator<CertificateUpdate> getTimestampComparator() {
+        Ordering<Instant> normalComparer = Ordering.natural();
+        Ordering<CertificateUpdate> dateOrdering =
+            normalComparer.onResultOf(new Function<CertificateUpdate, Instant>() {
+                @Override
+                public Instant apply(CertificateUpdate from) {
+                    return from.getTimestamp();
+                }
+            });
+        Ordering<CertificateUpdate> result = dateOrdering.compound(getCertificateFileNameComparator());
+        return result;
     }
 
-    public enum FirmwareUpdatesSortBy implements DisplayableEnum {
-        TIMESTAMP,
-        FAILED,
-        SUCCESSFUL,
-        PENDING;
-
-        @Override
-        public String getFormatKey() {
-            return "yukon.web.modules.operator.gateways.manageFirmware." + name();
-        }
+    private static Comparator<CertificateUpdate> getCertificateFileNameComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<CertificateUpdate> certFileNameOrdering =
+            normalStringComparer.onResultOf(new Function<CertificateUpdate, String>() {
+                @Override
+                public String apply(CertificateUpdate from) {
+                    return from.getFileName();
+                }
+            });
+        return certFileNameOrdering;
     }
 
-    public enum GatewayListSortBy implements DisplayableEnum {
-        NAME,
-        SERIALNUMBER,
-        FIRMWAREVERSION,
-        LASTCOMMUNICATION;
-
+    public enum SortBy implements DisplayableEnum {
+        TIMESTAMP, CERTIFICATE;
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.operator.gateways.list." + name();
+            return "yukon.web.modules.operator.gateways.certUpdate.tableheader." + name();
         }
     }
-
+    
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DataTypeContainer {
         public DataType[] types;

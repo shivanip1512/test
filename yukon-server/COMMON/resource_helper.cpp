@@ -76,10 +76,8 @@ DataBuffer loadResourceFromLibrary( const int resourceId, const char * resourceT
 }
 
 
-std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
+DeviceTypes resolvePaoIdXmlType( const std::string & type )
 {
-    constexpr auto _unmapped_ = TYPE_NONE;
-
     static const std::map<std::string, DeviceTypes> _lookup
     {
         //  --- GridSmart ---
@@ -87,12 +85,6 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "FAULT_CI",                    TYPE_FCI },
 
         //  --- Capacitor Control ---
-        { "CAP_CONTROL_AREA",            _unmapped_ },
-        { "CAP_CONTROL_FEEDER",          _unmapped_ },
-        { "CAP_CONTROL_SPECIAL_AREA",    _unmapped_ },
-        { "CAP_CONTROL_SUBBUS",          _unmapped_ },
-        { "CAP_CONTROL_SUBSTATION",      _unmapped_ },
-        { "CAPBANKCONTROLLER",           _unmapped_ },
         { "CAPBANK",                     TYPE_CAPBANK },
         { "CBC_7010",                    TYPE_CBC7010 },
         { "CBC_7011",                    TYPE_CBC7010 },
@@ -101,12 +93,14 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "CBC_7022",                    TYPE_CBC7020 },
         { "CBC_7023",                    TYPE_CBC7020 },
         { "CBC_7024",                    TYPE_CBC7020 },
+//      { "cbc 7030",                    TYPE_CBC7020 },
         { "CBC_8020",                    TYPE_CBC8020 },
         { "CBC_8024",                    TYPE_CBC8020 },
         { "CBC_DNP",                     TYPE_CBCDNP },
         { "CBC_LOGICAL",                 TYPE_CBCLOGICAL },
         { "CBC_EXPRESSCOM",              TYPE_EXPRESSCOMCBC },
         { "CBC_FP_2800",                 TYPE_FISHERPCBC },
+//      { "cbc versacom",                TYPE_VERSACOMCBC },
 
         //  --- Voltage Regulator ---
         { "LOAD_TAP_CHANGER",            TYPE_LOAD_TAP_CHANGER },
@@ -114,6 +108,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "PHASE_OPERATED",              TYPE_PHASE_OPERATED_REGULATOR },
 
         //  --- Cooper PLC ---
+//      { "ccu-700",                     TYPE_CCU700 },
         { "CCU710A",                     TYPE_CCU710 },
         { "CCU711",                      TYPE_CCU711 },
         { "CCU721",                      TYPE_CCU721 },
@@ -121,8 +116,12 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "LMT_2",                       TYPELMT2 },
         { "MCTBROADCAST",                TYPEMCTBCAST },
         { "MCT210",                      TYPEMCT210 },
+//      { "mct-212",                     TYPEMCT212 },
         { "MCT213",                      TYPEMCT213 },
+//      { "mct-224",                     TYPEMCT224 },
+//      { "mct-226",                     TYPEMCT226 },
         { "MCT240",                      TYPEMCT240 },
+//      { "mct-242",                     TYPEMCT242 },
         { "MCT248",                      TYPEMCT248 },
         { "MCT250",                      TYPEMCT250 },
         { "MCT310",                      TYPEMCT310 },
@@ -130,7 +129,6 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "MCT310ID",                    TYPEMCT310ID },
         { "MCT310IDL",                   TYPEMCT310IDL },
         { "MCT310IL",                    TYPEMCT310IL },
-        { "MCT310IM",                    _unmapped_ },
         { "MCT318",                      TYPEMCT318 },
         { "MCT318L",                     TYPEMCT318L },
         { "MCT360",                      TYPEMCT360 },
@@ -149,11 +147,8 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "MCT430SL",                    TYPEMCT430SL },
         { "MCT470",                      TYPEMCT470 },
         { "MCT440_2131B",                TYPEMCT440_2131B },
-        { "MCT440_2131TD",               _unmapped_ },
         { "MCT440_2132B",                TYPEMCT440_2132B },
-        { "MCT440_2132TD",               _unmapped_ },
         { "MCT440_2133B",                TYPEMCT440_2133B },
-        { "MCT440_2133TD",               _unmapped_ },
         { "REPEATER_800",                TYPE_REPEATER800 },
         { "REPEATER_801",                TYPE_REPEATER800 },
         { "REPEATER_850",                TYPE_REPEATER850 },
@@ -161,16 +156,8 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "REPEATER_921",                TYPE_REPEATER900 },
         { "REPEATER",                    TYPE_REPEATER900 },
 
-        //  --- Eaton Cloud ---
-        { "LCR6200C",                    _unmapped_ },
-        { "LCR6600C",                    _unmapped_ },
-
-        //  --- RF infrastructure ---
-        { "GWY800",                      _unmapped_ },
-        { "GWY801",                      _unmapped_ },
-        { "RFN_GATEWAY",                 _unmapped_ },
-        { "RFN_RELAY",                   _unmapped_ },
-        { "VIRTUAL_GATEWAY",             _unmapped_ },
+        //  --- Receivers ---
+//      { "page receiver",               TYPE_PAGING_RECEIVER },
 
         //  --- RF mesh meters ---
         { "RFN410FL",                    TYPE_RFN410FL },
@@ -196,59 +183,27 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "RFN430SL2",                   TYPE_RFN430SL2 },
         { "RFN430SL3",                   TYPE_RFN430SL3 },
         { "RFN430SL4",                   TYPE_RFN430SL4 },
-        { "RFN440_2131TD",               _unmapped_ },
-        { "RFN440_2132TD",               _unmapped_ },
-        { "RFN440_2133TD",               _unmapped_ },
         { "RFN510FL",                    TYPE_RFN510FL },
-        //  RFN-500 Focus AX (gen 1)
         { "RFN520FAX",                   TYPE_RFN520FAX },
         { "RFN520FRX",                   TYPE_RFN520FRX },
         { "RFN520FAXD",                  TYPE_RFN520FAXD },
         { "RFN520FRXD",                  TYPE_RFN520FRXD },
         { "RFN530FAX",                   TYPE_RFN530FAX },
         { "RFN530FRX",                   TYPE_RFN530FRX },
-        //  RFN-500 Focus AXe (gen 2)
-        { "RFN520FAXE",                  TYPE_RFN520FAXE },
-        { "RFN520FRXE",                  TYPE_RFN520FRXE },
-        { "RFN520FAXED",                 TYPE_RFN520FAXED },
-        { "RFN520FRXED",                 TYPE_RFN520FRXED },
-        { "CRL520FAXE",                  TYPE_CRL520FAXE },
-        { "CRL520FAXED",                 TYPE_CRL520FAXED },
-        { "CRL520FRXE",                  TYPE_CRL520FRXE },
-        { "CRL520FRXED",                 TYPE_CRL520FRXED },
-        { "RFN530FAXE",                  TYPE_RFN530FAXE },
-        { "RFN530FRXE",                  TYPE_RFN530FRXE },
-        //  RFN-500 S4
         { "RFN530S4X",                   TYPE_RFN530S4X },
-        { "CRL530S4X",                   TYPE_CRL530S4X },
         { "RFN530S4EAX",                 TYPE_RFN530S4EAX },
         { "RFN530S4EAXR",                TYPE_RFN530S4EAXR },
         { "RFN530S4ERX",                 TYPE_RFN530S4ERX },
         { "RFN530S4ERXR",                TYPE_RFN530S4ERXR },
 
-        //  --- RF DA nodes ---
-        { "RFN_1200",                    TYPE_RFN1200 },
-
-        //  --- RFN LCRs ---
-        { "LCR6200_RFN",                 _unmapped_ },
-        { "LCR6600_RFN",                 _unmapped_ },
-        { "LCR6700_RFN",                 _unmapped_ },
+        { "RFN1200", TYPE_RFN1200 },
 
         //  --- RF water meters ---
-        { "RFWMETER",                    _unmapped_ },
         { "RFW201",                      TYPE_RFW201 },
 
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },
         { "RFG301",                      TYPE_RFG301 },
-        { "RFG301A",                     TYPE_RFG301A },
-        { "RFG301R",                     TYPE_RFG301R },
-
-        //  --- RF Cellular IPLink Relays ---
-        { "CRLY856",                     TYPE_CRLY856 },
-
-        //  --- DER Edge Coordinator Devices ---
-        { "RFN530S4X_DER",                     TYPE_RFN530S4X_DER },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },
@@ -256,6 +211,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "RTUILEX",                     TYPE_ILEXRTU },
         { "SERIES_5_LMI",                TYPE_SERIESVLMIRTU },
         { "RTU_MODBUS",                  TYPE_MODBUS },
+//      { "rtu-ses92",                   TYPE_SES92RTU },
         { "RTUWELCO",                    TYPE_WELCORTU },
 
         //  --- GRE { Great River Energy }, transmitters ---
@@ -264,64 +220,33 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
 
         //  --- GRE { Great River Energy }, Load Management groups ---
         { "LM_GROUP_GOLAY",              TYPE_LMGROUP_GOLAY },
+//      { "sa-105 group",                TYPE_LMGROUP_SA105 },
         { "LM_GROUP_SA205",              TYPE_LMGROUP_SA205 },
         { "LM_GROUP_SA305",              TYPE_LMGROUP_SA305 },
         { "LM_GROUP_SADIGITAL",          TYPE_LMGROUP_SADIGITAL },
 
         //  --- Load Management ---
+//      { "ci customer",                 TYPE_CI_CUSTOMER },
         { "LM_CONTROL_AREA",             TYPE_LM_CONTROL_AREA },
-        { "LM_SCENARIO",                 _unmapped_ },
+//      { "lm curtail program",          TYPE_LMPROGRAM_CURTAILMENT },
         { "LM_DIRECT_PROGRAM",           TYPE_LMPROGRAM_DIRECT },
-        { "LM_EATON_CLOUD_PROGRAM",      _unmapped_ },
-        { "LM_ECOBEE_PROGRAM",           _unmapped_ },
-        { "LM_HONEYWELL_PROGRAM",        _unmapped_ },
-        { "LM_ITRON_PROGRAM",            _unmapped_ },
-        { "LM_METER_DISCONNECT_PROGRAM", _unmapped_ },
-        { "LM_NEST_PROGRAM",             _unmapped_ },
+//      { "lm energy exchange",          TYPE_LMPROGRAM_ENERGYEXCHANGE },
         { "LM_SEP_PROGRAM",              TYPE_LMPROGRAM_DIRECT },
-
-        //  --- Load Management Groups ---
         { "LM_GROUP_DIGI_SEP",           TYPE_LMGROUP_DIGI_SEP },
-        { "LM_GROUP_EATON_CLOUD",        TYPE_LMGROUP_EATON_CLOUD },
         { "LM_GROUP_ECOBEE",             TYPE_LMGROUP_ECOBEE },
         { "LM_GROUP_EMETCON",            TYPE_LMGROUP_EMETCON },
         { "LM_GROUP_EXPRESSCOMM",        TYPE_LMGROUP_EXPRESSCOM },
-        { "LM_GROUP_HONEYWELL",          TYPE_LMGROUP_HONEYWELL },
-        { "LM_GROUP_ITRON",              TYPE_LMGROUP_ITRON },
         { "LM_GROUP_RFN_EXPRESSCOMM",    TYPE_LMGROUP_RFN_EXPRESSCOM },
         { "LM_GROUP_MCT",                TYPE_LMGROUP_MCT },
-        { "LM_GROUP_METER_DISCONNECT",   TYPE_LMGROUP_METER_DISCONNECT },
-        { "LM_GROUP_NEST",               TYPE_LMGROUP_NEST },
         { "LM_GROUP_POINT",              TYPE_LMGROUP_POINT },
         { "LM_GROUP_RIPPLE",             TYPE_LMGROUP_RIPPLE },
         { "LM_GROUP_VERSACOM",           TYPE_LMGROUP_VERSACOM },
 
-        //  --- Integrations ---
-        { "DIGIGATEWAY",                 _unmapped_ },
-        { "ECOBEE_3",                    _unmapped_ },
-        { "ECOBEE_3_LITE",               _unmapped_ },
-        { "ECOBEE_SMART",                _unmapped_ },
-        { "ECOBEE_SMART_SI",             _unmapped_ },
-        { "HONEYWELL_9000",              _unmapped_ },
-        { "HONEYWELL_FOCUSPRO",          _unmapped_ },
-        { "HONEYWELL_THERMOSTAT",        _unmapped_ },
-        { "HONEYWELL_VISIONPRO_8000",    _unmapped_ },
-        { "NEST",                        _unmapped_ },
-        { "ZIGBEE_ENDPOINT",             _unmapped_ },
-
-        //  --- Itron ---
-        { "LCR6200S",                    _unmapped_ },
-        { "LCR6600S",                    _unmapped_ },
-        { "LCR6601S",                    _unmapped_ },
-
         //  --- System ---
         { "MACRO_GROUP",                 TYPE_MACRO },
-        { "SCRIPT",                      _unmapped_ },
-        { "SIMPLE",                      _unmapped_ },
-        { "SIMPLE_SCHEDULE",             _unmapped_ },
+//      { "script",                      0 },
+//      { "simple",                      0 },
         { "SYSTEM",                      TYPE_SYSTEM },
-        { "WEATHER_LOCATION",            _unmapped_ },
-        { "VIRTUAL_METER",               _unmapped_ },
         { "VIRTUAL_SYSTEM",              TYPE_VIRTUAL_SYSTEM },
 
         //  --- Transmitters ---
@@ -336,13 +261,6 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "TCU5500",                     TYPE_TCU5500 },
         { "TNPP_TERMINAL",               TYPE_TNPP },
         { "WCTP_TERMINAL",               TYPE_WCTP },
-
-        //  --- Routes ---
-        { "ROUTE_RDS_TERMINAL",          _unmapped_ },
-        { "ROUTE_SNPP_TERMINAL",         _unmapped_ },
-        { "ROUTE_TAP_PAGING",            _unmapped_ },
-        { "ROUTE_TNPP_TERMINAL",         _unmapped_ },
-        { "ROUTE_WCTP_TERMINAL",         _unmapped_ },
 
         //  --- IEDs and electronic meters ---
         { "ALPHA_A1",                    TYPE_ALPHA_A1 },
@@ -370,28 +288,38 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "VECTRON",                     TYPE_VECTRON },
 
         //  --- Ports ---
+        //PortTypeRfDa remains unused, separate issue?
+        //PortTypeTServerDialback remains unused, ignore for now
         { "DIALOUT_POOL",                PortTypePoolDialout },
         { "LOCAL_DIALBACK",              PortTypeLocalDialBack },
         { "LOCAL_DIALUP",                PortTypeLocalDialup },
         { "LOCAL_DIRECT",                PortTypeLocalDirect },
-        { "LOCAL_RADIO",                 _unmapped_ },
-        { "LOCAL_SHARED",                _unmapped_ },
         { "TCPPORT",                     PortTypeTcp },
         { "TSERVER_DIALUP",              PortTypeTServerDialup },
         { "TSERVER_DIRECT",              PortTypeTServerDirect },
-        { "TSERVER_RADIO",               _unmapped_ },
-        { "TSERVER_SHARED",              _unmapped_ },
-        { "UDPPORT",                     PortTypeUdp }
+        { "UDP_PORT",                    PortTypeUdp }
     };
 
-    const auto itr = _lookup.find(type);
+    return mapFindOrDefault( _lookup, type, TYPE_NONE );
 
-    if( itr == _lookup.end() )
-    {
-        return std::nullopt;
-    }
+/*
+    Missing...
 
-    return itr->second;
+    LCR6(2|6)00_RFN
+    RFWMETER
+    ZIGBEE_ENDPOINT
+    DIGIGATEWAY
+    RFN440_213(1|2|3)TD?
+    CAP_CONTROL_((SPECIAL_)?AREA|FEEDER|SUB(BUS|STATION))
+    CAPBANKCONTROLLER
+    (GANG|PHASE)_OPERATED
+    LM_SCENARIO
+    MCT310IM
+    LOCAL_RADIO
+    LOCAL_SHARED
+    TSERVER_RADIO
+    TSERVER_SHARED
+*/
 }
 
 }

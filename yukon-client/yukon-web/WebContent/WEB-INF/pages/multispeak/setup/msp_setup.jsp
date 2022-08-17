@@ -79,16 +79,12 @@
                             </tags:nameValue2>
                             
                             <c:if test="${multispeak.paoNameUsesExtension || !viewMode}">
-                                <tags:nameValue2 nameKey=".useExtension">
-                                    <tags:switchButton path="paoNameUsesExtension"
-                                                       offClasses="M0"
-                                                       toggleGroup="mspPaoNameAliasExtension" 
-                                                       toggleAction="hide"
-                                                       hideValue="true"
-                                                       inputClass="js-use-offset"/>
+                            <tags:nameValue2 nameKey=".useExtension">
+                            <tags:switchButton path="paoNameUsesExtension" offClasses="M0" hideValue="true"
+                                toggleGroup="mspPaoNameAliasExtension" toggleAction="hide" inputClass="js-use-offset" />
                             
-                                    <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
-                                </tags:nameValue2>
+                            <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
+                            </tags:nameValue2>
                             </c:if>
                             <tags:nameValue2 nameKey=".meterLookupField">
                                 <tags:selectWithItems id="meterLookupField" path="meterLookupField" items="${meterLookupFields}" 
@@ -104,15 +100,12 @@
         <tags:sectionContainer2 nameKey="mspInterfaces">
          <div class="column-12-1-11 clearfix">
                 <div class="column one">
-            <table class="compact-results-table no-stripes">
+            <table class="compact-results-table row-highlighting">
                 <tbody>
                     <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
                     <c:forEach var="multispeakInterface" items="${multispeak.mspInterfaceList}" varStatus="i">
                         <c:if test="${i.index == 5}">
                            <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
-                        </c:if>
-                        <c:if test="${i.index == 11}">
-                           <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version4"/></b></td></tr>
                         </c:if>
                         <c:if test="${(multispeakInterface.interfaceEnabled && viewMode) || !viewMode}">
                             <tr>
@@ -146,8 +139,8 @@
          <div class="column two nogutter"> <tags:nameValueContainer2></tags:nameValueContainer2>
          </div>
          <div class="column three nogutter">
-             <tags:nameValueContainer2><br><br>
-                 <textarea cols="53" rows="${resultsCount * 2.5 + 1}" name="Results" id="results" readonly 
+             <tags:nameValueContainer2><br>
+                 <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly 
                            style='color:<c:out value="${resultColor}"/>;width: 400px;word-wrap:normal;overflow-x: scroll;'>
                      ${MSP_RESULT_MSG}
                  </textarea>

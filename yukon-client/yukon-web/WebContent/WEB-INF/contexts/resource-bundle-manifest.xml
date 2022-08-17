@@ -33,6 +33,7 @@
                 <value>/resources/css/lib/normalize.css</value>
                 <value>/resources/css/lib/bootstrap/bootstrap.css</value>
                 <value>/resources/css/lib/animate.css</value>
+                <value>/resources/js/lib/tipsy/tipsy.css</value>
                 <value>/resources/js/lib/spectrum/spectrum.css</value>
                 <value>/resources/js/lib/chosen/chosen.min.css</value>
                 <value>/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.css</value>

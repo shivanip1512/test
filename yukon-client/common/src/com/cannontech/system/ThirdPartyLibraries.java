@@ -19,17 +19,16 @@ public class ThirdPartyLibraries {
     public List<ThirdPartyJavaScriptLibrary> jsLibraries;
     @JsonProperty("Icons")
     public List<ThirdPartyIconLibrary> iconLibraries;
-    @JsonProperty("Css")
-    public List<ThirdPartyLibrary> cssLibraries;
     
     public List<ThirdPartyProject> getAllProjects() {
-        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, cssLibraries)
+        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, iconLibraries)
                      .map(List::stream)
                      .flatMap(Function.identity())
                      .distinct()
                      .sorted()
                      .filter(ThirdPartyProject::isAttributionRequired)
-                     .filter(ThirdPartyProject::isNotJunitProject)
                      .collect(Collectors.toList());
     }
 }
+
+

@@ -17,9 +17,6 @@ public final class LMFactory {
         case LM_GROUP_DIGI_SEP:
             retLm = new LMGroupDigiSep();
             break;
-        case LM_GROUP_EATON_CLOUD:
-            retLm = new LMGroupEatonCloud();
-            break;
         case LM_GROUP_ECOBEE:
             retLm = new LMGroupEcobee();
             break;
@@ -100,10 +97,7 @@ public final class LMFactory {
             break;
         case LM_METER_DISCONNECT_PROGRAM:
             retLm = new LmProgramMeterDisconnect();
-            break;
-        case LM_EATON_CLOUD_PROGRAM:
-            retLm = new LMProgramEatonCloud();
-            break;
+            break; 
         }
 
         if (retLm instanceof DeviceBase) {

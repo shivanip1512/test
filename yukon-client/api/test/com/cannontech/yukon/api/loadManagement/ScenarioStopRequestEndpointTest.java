@@ -1,13 +1,12 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Date;
 import java.util.List;
 
 import org.jdom2.Element;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -55,7 +54,7 @@ public class ScenarioStopRequestEndpointTest {
     private static final int NOT_FOUND_ID = 6;
     private static final int NOT_AUTH_ID = 7;
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
         mockService = new MockProgramService();
@@ -171,8 +170,8 @@ public class ScenarioStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(SCEN1_ID, mockService.getScenarioId(), "Incorrect scenarioName");
-        assertEquals("2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()), "Incorrect stopDateTime");
+        Assert.assertEquals("Incorrect scenarioName", SCEN1_ID, mockService.getScenarioId());
+        Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:49:01Z", Iso8601DateUtil.formatIso8601Date(mockService.getStopTime()));
         
         TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
@@ -185,8 +184,8 @@ public class ScenarioStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(SCEN2_ID, mockService.getScenarioId(), "Incorrect scenarioName");
-        assertEquals(null, mockService.getStopTime(), "Incorrect stopDateTime - should be null");
+        Assert.assertEquals("Incorrect scenarioName", SCEN2_ID, mockService.getScenarioId());
+        Assert.assertEquals("Incorrect stopDateTime - should be null", null, mockService.getStopTime());
         
         TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
@@ -235,7 +234,7 @@ public class ScenarioStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(false, mockService.isAsync(), "Synchronous method should have been called");
+        Assert.assertEquals("Synchronous method should have been called", false, mockService.isAsync());
         
         // test asynchronous method is called
         //==========================================================================================
@@ -246,7 +245,7 @@ public class ScenarioStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(true, mockService.isAsync(), "Synchronous method should have been called");
+        Assert.assertEquals("Synchronous method should have been called", true, mockService.isAsync());
         
         // test asynchronous method is called (invoked due to not including the waitForResponse tag at all)
         //==========================================================================================
@@ -257,7 +256,7 @@ public class ScenarioStopRequestEndpointTest {
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
         
-        assertEquals(true, mockService.isAsync(), "Synchronous method should have been called");
+        Assert.assertEquals("Synchronous method should have been called", true, mockService.isAsync());
     }
 
 }

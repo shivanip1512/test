@@ -1,18 +1,19 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
-import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
+import com.microsoft.azure.servicebus.IMessage;
+
 
 public abstract class AbstractHoneywellWifiData implements HoneywellWifiData {
-    private ServiceBusReceivedMessage originalMessage;
+    private IMessage originalMessage;
     private HoneywellWifiMessageWrapper messageWrapper;
     
     @Override
-    public ServiceBusReceivedMessage getOriginalMessage() {
+    public IMessage getOriginalMessage() {
         return originalMessage;
     }
 
     @Override
-    public void setOriginalMessage(ServiceBusReceivedMessage message) {
+    public void setOriginalMessage(IMessage message) {
         originalMessage = message;
     }
     

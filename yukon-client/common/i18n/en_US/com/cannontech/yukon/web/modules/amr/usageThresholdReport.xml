@@ -21,6 +21,7 @@
         </ul>
         This analysis will find the attribute’s reading equal to the start date. If one does not exist, the reading closest to (and greater than) the start date without exceeding the end date will be used. Similarly, it will find the attribute’s reading equal to the stop date. If one does not exist, the readings closest to (and less than) the end date without preceding the start date will be used.
     ]]></entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.invalidDevicesSelected">Invalid device selection. Please select either a device group or individual devices to run the report.</entry>
     
     <!-- USAGE THRESHOLD RESULTS results.jsp -->
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.pageTitle">Usage Threshold Results</entry>

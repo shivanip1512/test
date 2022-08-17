@@ -170,9 +170,6 @@ public class CryptoUtils {
      * The passkey generated is placed in <pk></pk> tag.
      */
     public static char[] createNewCryptoFile(File file) {
-        if (file == null) { 
-            return null; 
-        }
         char[] passkey = null;
         try {
             passkey = generateRandomPasskey(passKeyLength);
@@ -208,11 +205,11 @@ public class CryptoUtils {
      */
     public static char[] getPasskeyFromCryptoFile(File cryptoFile) throws IOException, CryptoException, JDOMException {
         char [] passkey = null;
-        if (cryptoFile != null) {
-            AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
-            SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
-            passkey = xmlFile.getElementValue("pk").toCharArray();
-        }
+        
+        AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
+        SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
+        passkey = xmlFile.getElementValue("pk").toCharArray();
+
         return passkey;
     }
 }

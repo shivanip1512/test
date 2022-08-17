@@ -14,10 +14,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.AttributeAssignment;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.model.CustomAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -26,10 +24,8 @@ import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.core.dao.NotFoundException;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Multimap;
 
@@ -163,6 +159,16 @@ public interface AttributeService {
     Set<Attribute> getAdvancedReadableAttributes();
 
     /**
+     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
+     * This method works recursively on each child group of the requested group.
+     * 
+     * @param group
+     * @param attribute
+     * @return
+     */
+    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+
+    /**
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
      * Will return empty set if no attributes in possible set matches the pao point identifier definition.
      * Used primarily by MultispeakMeterService to retrieve readable attributes.
@@ -273,57 +279,4 @@ public interface AttributeService {
      * Combines create and find point for attribute
      */
     LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute);
-
-    /**
-     * Returns a list of grouped attributes, including custom attributes
-     */
-    Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context);
-    
-
-    /**
-     * Parses string into BuiltInAttribute or CustomAttribute
-     */
-    Attribute parseAttribute(String attribute);
-    
-    /**
-     * Returns a list of all the devices in a given DeviceGroup that support the given Attribute.
-     * This method works recursively on each child group of the requested group.
-     */
-    List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
-
-    /**
-     * Returns Custom Attributes
-     */
-    List<CustomAttribute> getCustomAttributes();
-
-    /**
-     * Returns Custom Attribute for id, null if doesn't exist
-     */
-    CustomAttribute findCustomAttribute(int attributeId);
-
-    /**
-     * Returns List of attributes for identifier
-     */
-    List<CustomAttribute> findCustomAttributesForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
-
-    /**
-     * Returns true if the attribute is cached 
-     */
-    boolean isValidAttributeId(Integer attributeId);
-    
-    /**
-     * Returns true if the assignment is cached 
-     */
-    boolean isValidAssignmentId(Integer assignmentId);
-    
-    /**
-     * Get attribute
-     * 
-     * @return CustomAttribute
-     * @throws NotFoundException
-     */
-    CustomAttribute getCustomAttribute(int attributeId);
-    
-    Cache<Integer, CustomAttribute> customAttributes = CacheBuilder.newBuilder().build();
-    Cache<Integer, AttributeAssignment> customAttributeAssignments = CacheBuilder.newBuilder().build();
 }

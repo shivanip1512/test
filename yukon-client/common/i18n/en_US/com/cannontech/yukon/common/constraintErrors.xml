@@ -9,7 +9,7 @@
 <entry key="yukon.common.constrainterror.EXCEEDED_MONTHLY_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum monthly control hours by an estimated {numHours|2} hours.</entry>
 <entry key="yukon.common.constrainterror.EXCEEDED_SEASONAL_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum seasonal control hours by an estimated {numHours|2} hours.</entry>
 <entry key="yukon.common.constrainterror.EXCEEDED_ANNUAL_CONTROL_HOURS">Load group, '{groupName}' would exceed its maximum annual control hours by an estimated {numHours|2} hours.</entry>
-<entry key="yukon.common.constrainterror.CONTROLLED_LESS_THAN_MINIMUM">Load groups might be controlled less than their minimum activate time, which is {numSeconds} seconds.</entry>
+<entry key="yukon.common.constrainterror.CONTROLLED_LESS_THAN_MINIMUM">Load groups might be controlled less than their minimum activate time, which is {numHours|2} hours.</entry>
 <entry key="yukon.common.constrainterror.CONTROLLED_MORE_THAN_MAXIMUM">Load groups might control longer than their maximum activate time, which is {numHours|2} hours.</entry>
 <entry key="yukon.common.constrainterror.MIN_RESTART_TIME_VIOLATION">Load group: {paoName} might violate its minimum restart time, which is {numHours|2} hours.</entry>
 <entry key="yukon.common.constrainterror.MAXIMUM_DAILY_OPERATIONS_REACHED">Load group: {paoName} has reached its maximum daily operations which is {maxDailyOps}.</entry>
@@ -52,6 +52,5 @@
 <entry key="yukon.common.constrainterror.LOAD_GROUP_CANNOT_CONTROL_IN_WINDOW_NO_ADJUST">CA start: {areaStart|BOTH} CA stop: {areaStop|BOTH} duration {duration} adjust: N</entry>
 <entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_IN_PROGRAM_CONTROL_WINDOW">Load group: {paoName} not in program control window.</entry>
 <entry key="yukon.common.constrainterror.LOAD_GROUP_NOT_ENOUGH_TIME_LEFT_IN_WINDOW">Load group: {paoName} not enough control time left in program control window.</entry>
-<entry key="yukon.common.constrainterror.PROGRAM_CONTROL_WINDOW_EXCEEDS_MIDNIGHT">Program control window should not span midnight.</entry>
 
 </properties>

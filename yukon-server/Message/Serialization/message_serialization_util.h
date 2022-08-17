@@ -2,13 +2,13 @@
 
 #include "ctitime.h"
 #include "message.h"
-#include "rfn_identifier.h"
 #include "Thrift/Message_types.h"
-#include "Thrift/RfnAddressing_types.h"
 #include "message_factory.h"
 #include <boost/type_traits.hpp>
 
-namespace Cti::Messaging::Serialization {
+namespace Cti {
+namespace Messaging {
+namespace Serialization {
 
 /*-----------------------------------------------------------------------------
     structs for template type definitions
@@ -128,27 +128,6 @@ inline CtiTime MillisecondsToCtiTime( const int64_t t )
     return CtiTime((unsigned long)(t/1000));
 }
 
-inline RfnIdentifier fromThrift(Thrift::Rfn::RfnIdentifier t)
-{
-    return RfnIdentifier{
-        t.sensorManufacturer,
-        t.sensorModel,
-        t.sensorSerialNumber
-    };
-}
-
-inline Thrift::Rfn::RfnIdentifier toThrift(RfnIdentifier r)
-{
-    Thrift::Rfn::RfnIdentifier t;
-    t.__set_sensorManufacturer(
-        r.manufacturer);
-    t.__set_sensorModel(
-        r.model);
-    t.__set_sensorSerialNumber(
-        r.serialNumber);
-    return t;
-}
-
 /*-----------------------------------------------------------------------------
     serialize template message to Thrift generic message
 -----------------------------------------------------------------------------*/
@@ -207,4 +186,6 @@ inline MessagePtr<::CtiMessage>::type deserializeGenericMessage( const Thrift::G
 }
 
 
+}
+}
 }

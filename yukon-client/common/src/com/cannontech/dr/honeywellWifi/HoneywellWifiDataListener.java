@@ -11,9 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -24,19 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.aspectj.bridge.IMessage;
 import org.joda.time.DateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.azure.core.amqp.AmqpTransportType;
-import com.azure.messaging.servicebus.ServiceBusClientBuilder;
-import com.azure.messaging.servicebus.ServiceBusErrorContext;
-import com.azure.messaging.servicebus.ServiceBusException;
-import com.azure.messaging.servicebus.ServiceBusProcessorClient;
-import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
-import com.azure.messaging.servicebus.ServiceBusReceivedMessageContext;
-import com.azure.messaging.servicebus.ServiceBusReceiverAsyncClient;
-import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
@@ -47,6 +38,15 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteSource;
+import com.microsoft.azure.servicebus.ExceptionPhase;
+import com.microsoft.azure.servicebus.IMessage;
+import com.microsoft.azure.servicebus.IMessageHandler;
+import com.microsoft.azure.servicebus.MessageBody;
+import com.microsoft.azure.servicebus.QueueClient;
+import com.microsoft.azure.servicebus.ReceiveMode;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import com.microsoft.azure.servicebus.primitives.TransportType;
 
 /**
  * Pulls messages from the Honeywell Azure service bus queue and processes them.
@@ -70,7 +70,7 @@ public class HoneywellWifiDataListener {
     private volatile DateTime lastEmptyQueueTime;
     private volatile DateTime lastProcessedMessageTime;
 
-    private ServiceBusReceiverAsyncClient receiveClient;
+    private QueueClient receiveClient;
 
     @PostConstruct
     public void init() throws Exception {
@@ -145,66 +145,70 @@ public class HoneywellWifiDataListener {
             }
         });
 
+        ConnectionStringBuilder connStrBuilder = new ConnectionStringBuilder(connectionString, queueName);
+        connStrBuilder.setTransportType(TransportType.AMQP_WEB_SOCKETS);
         try {
-            receiveClient = new ServiceBusClientBuilder()
-                           .connectionString(connectionString)
-                           .transportType(AmqpTransportType.AMQP_WEB_SOCKETS)
-                           .receiver()
-                           .queueName(queueName)
-                           .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
-                           .buildAsyncClient();
+            // Create a QueueClient instance for receiving using the connection string builder
+            // We set the receive mode to "PeekLock", meaning the message is delivered
+            // under a lock and must be acknowledged ("completed") to be removed from the queue
+            receiveClient = new QueueClient(connStrBuilder, ReceiveMode.PEEKLOCK);
             log.info("Connection is established with Azure service bus");
+        } catch (InterruptedException e) {
+            log.error("Interrupted in  making connection to Azure service bus with exception: " + e);
         } catch (ServiceBusException e) {
-            log.error("Error making connection to Azure service bus to EndPoint URI " + receiveClient.getFullyQualifiedNamespace()
-            + " with Queue Name: " + receiveClient.getEntityPath() + " with exception: " + e);
+            log.error("Error making connection to Azure service bus to EndPoint URI " + connStrBuilder.getEndpoint() + " with Queue Name: " + connStrBuilder.getEntityPath() + " with exception: " + e);
         }
     }
 
-    void registerReceiver(ServiceBusReceiverAsyncClient queueClient, ExecutorService executorService) throws Exception {
-        Consumer<ServiceBusReceivedMessageContext> processMessage = messageContext -> {
-            HoneywellWifiData data = buildHoneywellWifiData(messageContext.getMessage());
-            try {
-                processMessage(data);
-                lastProcessedMessageTime = data.getMessageWrapper().getDate().toDateTime();
-            } catch (Exception e) {
-                log.error("Error processing Honeywell wifi message of type: " + data.getType(), e);
-                log.debug(data);
+    void registerReceiver(QueueClient queueClient, ExecutorService executorService) throws Exception {
+
+        // register the RegisterMessageHandler callback with executor service
+        queueClient.registerMessageHandler(new IMessageHandler() {
+            // callback invoked when the message handler loop has obtained a message
+            public CompletableFuture<Void> onMessageAsync(IMessage message) {
+                // receives message is passed to callback
+                {
+                    HoneywellWifiData data = buildHoneywellWifiData(message);
+                    try {
+                        processMessage(data);
+                        lastProcessedMessageTime = data.getMessageWrapper().getDate().toDateTime();
+                    } catch (Exception e) {
+                        log.error("Error processing Honeywell wifi message of type: " + data.getType(), e);
+                        log.debug(data);
+                    }
+                }
+                return CompletableFuture.completedFuture(null);
             }
-            // other message processing code
-        };
-        Consumer<ServiceBusErrorContext> processError = errorContext -> {
-            log.error("Error occured in handling the wifi message with ExceptionPhase type : " + errorContext.getErrorSource()
-                    + "-" + errorContext.getException());
-        };
-        ServiceBusProcessorClient processorClient = new ServiceBusClientBuilder()
-                                                       .connectionString(connectionString)
-                                                       .processor()
-                                                       .queueName(queueName)
-                                                       .processMessage(processMessage)
-                                                       .processError(processError)
-                                                       .buildProcessorClient();
-        processorClient.start();
+
+            // callback invoked when the message handler has an exception to report
+            public void notifyException(Throwable throwable, ExceptionPhase exceptionPhase) {
+                log.error("Error occured in handling the wifi message with ExceptionPhase type : " + exceptionPhase + "-" + throwable.getMessage());
+            }
+        }, executorService);
+
     }
 
     /**
      * Extracts binary message from an Azure IMessage.
      */
-    private byte[] extractBinaryMessage(ServiceBusReceivedMessage message) {
+    private byte[] extractBinaryMessage(IMessage message) {
 
+        MessageBody messageBody = message.getMessageBody();
+        List<byte[]> binaryData = messageBody.getBinaryData();
         // No more messages on the queue
-        if (message == null || message.getBody() == null || message.getBody().toBytes() == null) {
+        if (message == null || message.getMessageBody() == null || binaryData.get(0) == null) {
             log.debug("No messages available. (Message or messageId null)");
             lastEmptyQueueTime = DateTime.now();
             return ArrayUtils.EMPTY_BYTE_ARRAY;
         }
         log.debug("Handling message, id=" + message.getMessageId());
-        return message.getBody().toBytes();
+        return binaryData.get(0);
     }
 
     /**
      * Builds a HoneywellWifiData message from an Azure IMessage.
      */
-    private HoneywellWifiData buildHoneywellWifiData(ServiceBusReceivedMessage message) {
+    private HoneywellWifiData buildHoneywellWifiData(IMessage message) {
         String messageBody = null;
         byte[] binaryData = extractBinaryMessage(message);
         try (Scanner scanner = new Scanner(ByteSource.wrap(binaryData).openStream());
@@ -218,7 +222,7 @@ public class HoneywellWifiDataListener {
         }
 
         if (log.isTraceEnabled()) {
-            for (Map.Entry<String, Object> entry : message.getApplicationProperties().entrySet()) {
+            for (Map.Entry<String, Object> entry : message.getProperties().entrySet()) {
                 log.trace("Message property: " + entry.getKey() + ", value: " + entry.getValue());
             }
         }
@@ -226,7 +230,7 @@ public class HoneywellWifiDataListener {
         return getData(messageBody, message);
     }
 
-    private HoneywellWifiData getData(String messageBody, ServiceBusReceivedMessage message) {
+    private HoneywellWifiData getData(String messageBody, IMessage message) {
         ObjectMapper jsonParser = new ObjectMapper();
         HoneywellWifiMessageWrapper messageWrapper = null;
         try {
@@ -245,7 +249,7 @@ public class HoneywellWifiDataListener {
     /**
      * Extracts the json payload string from the message wrapper and converts it into a POJO for processing.
      */
-    private HoneywellWifiData getMessageData(HoneywellWifiMessageWrapper messageWrapper, ServiceBusReceivedMessage originalMessage) {
+    private HoneywellWifiData getMessageData(HoneywellWifiMessageWrapper messageWrapper, IMessage originalMessage) {
         ObjectMapper jsonParser = new ObjectMapper();
         String jsonPayload = StringEscapeUtils.unescapeJava(messageWrapper.getJson());
         try {
@@ -253,7 +257,7 @@ public class HoneywellWifiDataListener {
             if (messageWrapper.getType().name() == "UNKNOWN") {
                 log.info("Received new event of unknown data type, enable debugging for more information.");
 
-                if (log.isDebugEnabled() && originalMessage.getBody() != null) {
+                if (log.isDebugEnabled() && originalMessage.getMessageBody() != null) {
                     String unknownEventMessage;
                     byte[] binaryData = extractBinaryMessage(originalMessage);
                     Scanner scanner = new Scanner(ByteSource.wrap(binaryData).openStream());

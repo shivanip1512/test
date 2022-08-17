@@ -1,16 +1,16 @@
 package com.cannontech.util;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ExpireLRUMapTest {
     private Calendar now;
@@ -19,7 +19,7 @@ public class ExpireLRUMapTest {
     private SimpleReadDate nowRead;
     private SimpleReadDate yesterdayRead;
     
-    @BeforeEach
+    @Before
     public void setUp() {
         now = Calendar.getInstance();
         
@@ -37,7 +37,7 @@ public class ExpireLRUMapTest {
         map.put("yesterday", yesterdayRead);
     }
     
-    @AfterEach
+    @After
     public void tearDown() {
         map = null;
         now = null;
@@ -48,24 +48,24 @@ public class ExpireLRUMapTest {
     
     @Test
     public void test_get() {
-        assertNull( map.get("yesterday"), "has expired, should be null");
-        assertNull(map.get("yesterday"), "has already been expired, should be null");
-        assertNotNull(map.get("now"), "has not expired yet, should not be null");
+        assertNull("has expired, should be null", map.get("yesterday"));
+        assertNull("has already been expired, should be null", map.get("yesterday"));
+        assertNotNull("has not expired yet, should not be null", map.get("now"));
     }
     
     @Test
     public void test_containsKey() {
-        assertTrue(map.containsKey("now"), "has not expired yet, should be true");
-        assertNotNull(map.get("now"),"has not expired yet, should not be null");
-        assertFalse(map.containsKey("yesterday"), "has expired, should be false");
-        assertNull(map.get("yesterday"), "has expired, should be null");
+        assertTrue("has not expired yet, should be true", map.containsKey("now"));
+        assertNotNull("has not expired yet, should not be null", map.get("now"));
+        assertFalse("has expired, should be false", map.containsKey("yesterday"));
+        assertNull("has expired, should be null", map.get("yesterday"));
     }
     
     
     @Test 
     public void test_containsValue() {
-        assertTrue(map.containsValue(nowRead), "has not expired yet, should be true");
-        assertFalse( map.containsValue(yesterdayRead), "has expired, should be false");
+        assertTrue("has not expired yet, should be true", map.containsValue(nowRead));
+        assertFalse("has expired, should be false", map.containsValue(yesterdayRead));
     }
     
     public static class SimpleReadDate implements ExpireLRUMap.ReadDate {

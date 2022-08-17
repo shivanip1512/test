@@ -10,16 +10,12 @@ public enum ManagedService {
     SMART_NOTIFICATION("Smart Notification", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/smartNotification/smartNotificationContext.xml"),
     MAINTENANCE("System Maintenance", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/maintenance/service/maintenanceContext.xml"),
     SERVER_DEVICE_CREATION("Server Device Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/serverDeviceCreation/serverDeviceCreationContext.xml"),
-    ECOBEE("Ecobee", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/ecobeeContext.xml"),
+    ECOBEE_AUTH_TOKEN("Ecobee Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/ecobee/authToken/ecobeeAuthTokenContext.xml"),
     NEST_MESSAGE_LISTENER("Nest Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/nestMessageListener/nestMessageListenerContext.xml"),
     NM_ALARM_MESSAGE_LISTENER("NM Alarm Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/rf/alarms/nmAlarmContext.xml"),
     ITRON_SERVICES("Itron Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/itronServices/itronServicesContext.xml"),
     DISCONNECT_METER_SERVICES("Disconnect Meter Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/disconnectMeter/disconnectMeterServicesContext.xml"),
     SYSTEM_DATA_PUBLISHER("System Data Publisher", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/systemDataPublisherContext.xml"),
-    EATON_CLOUD_AUTH_TOKEN("Eaton Cloud Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/authToken/eatonCloudAuthTokenContext.xml"),
-    EATON_CLOUD("Eaton Cloud Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/dr/lmEatonCloudContext.xml"),
-    EATON_CLOUD_DEVICE_AUTO_CREATION("Eaton Cloud Device Auto Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/creation/eatonCloudDeviceCreationContext.xml"),
-    ASSET_AVAILABILITY_ARCHIVER("Asset Availability Archiving Service", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/assetAvailability/assetAvailabilityArchiving.xml")
     ;
     private final String name;
     private final ServiceType type;

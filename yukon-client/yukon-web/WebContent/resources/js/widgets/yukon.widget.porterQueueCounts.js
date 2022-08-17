@@ -44,8 +44,8 @@ yukon.widget.porterQueueCounts = (function () {
             legend = {
                 enabled: true,
                 align: 'center',
-                backgroundColor: yg.colors.WHITE,
-                borderColor: yg.colors.GRAY_LIGHT,
+                backgroundColor: '#fefefe',
+                borderColor: '#ccc',
                 borderWidth: 1,
                 borderRadius: 1,
                 layout: 'vertical',
@@ -53,7 +53,7 @@ yukon.widget.porterQueueCounts = (function () {
                 shadow: true,
                 title : {
                     style: {
-                        "color" : yg.colors.RED
+                        "color" :"#ff0000"
                     },
                     text: data.truncateMessage,
                 }
@@ -130,9 +130,6 @@ yukon.widget.porterQueueCounts = (function () {
                 series: data.series
             },
             series : data.series,
-            time: {
-                timezone: yg.timezone
-            },
             tooltip: {
                 dateTimeLabelFormats: dateTimeLabelFormats,
                 xDateFormat: labelFormat,
@@ -226,11 +223,13 @@ yukon.widget.porterQueueCounts = (function () {
         init : function () {
             if (_initialized) return;
             
-            var highChartOptions = yg.highcharts_options;
-            highChartOptions.lang.rangeSelectorZoom = "";
-            highChartOptions.lang.rangeSelectorFrom = "";
-            Highcharts.setOptions(highChartOptions);
-            
+            var highChartOptionsLangOptions = {
+                    lang:{
+                        rangeSelectorZoom: '',
+                        rangeSelectorFrom: ''
+                    }
+            };
+            Highcharts.setOptions($.extend(highChartOptionsLangOptions, yg.highcharts_options));
             $.ajax({
                 url: yukon.url('/amr/porterQueueCounts/getZoom'),
                 type: 'get',

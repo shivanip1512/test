@@ -71,7 +71,7 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
         if (device.getPaoIdentifier().getPaoType().isRfMeter()) {
             YukonMeter meter = meterDao.getForId(deviceId);
             isDisabled = meter.isDisabled();
-        } else if (device.getPaoIdentifier().getPaoType().isRfRelay() || device.getPaoIdentifier().getPaoType().isRfGateway()) {
+        } else if (device.getPaoIdentifier().getPaoType().isRfRelay()) {
             isDisabled = false;
         }
         model.addAttribute("isDisabled", isDisabled);

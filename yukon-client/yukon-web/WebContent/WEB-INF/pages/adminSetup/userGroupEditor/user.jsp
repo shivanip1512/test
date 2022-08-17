@@ -125,7 +125,7 @@
                         <c:set var="disabled" value="${currentUserId == userId}"/>
                         <cti:button nameKey="delete" name="delete" type="submit" classes="delete js-delete-user"
                             disabled="${disabled}"/>
-                        <d:confirm on=".js-delete-user" nameKey="confirmDelete" argument="${user.username}"/>
+                        <d:confirm on=".js-delete-user" nameKey="delete.confirm"/>
                         
                         <cti:url var="url" value="/admin/users/${user.userId}"/>
                         <cti:button nameKey="cancel" href="${url}"/>

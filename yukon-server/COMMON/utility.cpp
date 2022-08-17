@@ -646,23 +646,6 @@ auto convertHexStringToBytes( std::string stringInput ) -> std::vector<unsigned 
     return result;
 }
 
-auto convertBytesToHexString( const std::vector<unsigned char> & bytes ) -> std::string
-{
-    std::string result;
-
-    result.reserve( 2 * bytes.size() );
-
-    constexpr unsigned char convert[ 17 ] = "0123456789abcdef";
-
-    for ( const auto & byte : bytes )
-    {
-        result.push_back(  convert[ ( byte >> 4 ) & 0x0f ] );
-        result.push_back(  convert[ ( byte      ) & 0x0f ] );
-    }
-
-    return result;
-}
-
 //  Converts a number to base94 representation for logging.
 //    Matching Java implementation at /common/src/com/cannontech/common/util/Base94.java
 std::string toBase94(uint64_t input)
@@ -860,8 +843,6 @@ string& traceBuffer(string &str, BYTE *Message, ULONG Length)
 CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
 {
     CtiTime first(YUKONEOT);
-    const CtiTime midnight = CtiDate();
-    const long midnight_offset = midnight.seconds() % 3600;
 
     if( rate > 3600 )
     {
@@ -879,13 +860,13 @@ CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate )
         }
         else
         {
-            CtiTime hourstart = origin - ((origin.seconds() - midnight_offset) % 3600);            // align to the current hour.
-            first = hourstart - ((hourstart.hour() * 3600) % rate) + rate;
+            CtiTime hourstart = CtiTime(origin.seconds() - (origin.seconds() % 3600));            // align to the current hour.
+            first = CtiTime(hourstart.seconds() - ((hourstart.hour() * 3600) % rate) + rate);
         }
     }
     else if(rate > 0 )    // Prevent a divide by zero with this check...
     {
-        first = origin - ((origin.seconds() - midnight_offset) % rate) + rate;
+        first = CtiTime(origin.seconds() - (origin.seconds() % rate) + rate);
     }
     else if(rate == 0)
     {
@@ -2376,13 +2357,5 @@ IM_EX_CTIBASE bool canConnectToDatabase()
     DatabaseConnection  trialConnection;
 
     return trialConnection.isValid();
-}
-
-// This is counting the amount of memory allocated from the free store.  It is taking the
-//  small string optimization into account.  Strings less than 16 bytes long are stored in
-//  the object directly and are not dynamically allocated.
-std::size_t dynamic_sizeof( const std::string & s )
-{
-    return s.capacity() < 16 ? 0 : s.capacity();
 }
 

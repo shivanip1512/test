@@ -15,7 +15,6 @@ import com.cannontech.msp.beans.v3.InitiateLoadManagementEventResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -41,7 +40,7 @@ public class LMClient implements ILMClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.LM_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -54,7 +53,7 @@ public class LMClient implements ILMClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.LM_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -69,7 +68,7 @@ public class LMClient implements ILMClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetAllSubstationLoadControlStatusesResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getAllSubstationLoadControlStatuses, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.LM_Server_STR));
+                getAllSubstationLoadControlStatuses, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -84,7 +83,7 @@ public class LMClient implements ILMClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateLoadManagementEventResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateLoadManagementEvent, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.LM_Server_STR));
+                initiateLoadManagementEvent, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

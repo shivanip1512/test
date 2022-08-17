@@ -20,7 +20,7 @@ import com.cannontech.stars.energyCompany.EcMappingCategory;
 public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 {
 	/** A string for the title of the data */
-	private static String title = "Program Status Summary";
+	private static String title = "PROGRAM STATUS SUMMARY";
 	
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;

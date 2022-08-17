@@ -63,15 +63,11 @@ public:
     static void AddCategoriesForDeviceType( const DeviceTypes      deviceType,
                                             const CategoryNames &  categories );
 
-    static void AddUnknownDeviceType( std::string deviceType );
-
     static CategoryNames & GetCategoryNamesForDeviceType( const DeviceTypes deviceType );
 
     typedef boost::optional<const CategoryDescription &> OptionalCategoryDescription;
 
     static const OptionalCategoryDescription GetCategoryDescription( const std::string & categoryName );
-
-    static const std::set<std::string> GetUnknownDeviceTypes();
 
 private:
 
@@ -80,8 +76,6 @@ private:
 
     static CategoriesPerDeviceType _deviceCategories;
     static CategoriesByName        _categories;
-
-    static std::set<std::string> _unknownDeviceTypes;
 };
 
 }

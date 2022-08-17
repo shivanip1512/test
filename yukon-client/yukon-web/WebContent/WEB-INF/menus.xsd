@@ -83,7 +83,6 @@
             <xsd:element name="roleProperty" type="m:RoleProperty"/>
             <xsd:element name="globalSetting" type="m:GlobalSetting"/>
             <xsd:element name="masterConfig" type="m:MasterConfig"/>
-            <xsd:element name="license" type="m:License"/>
             <xsd:element name="ecOperator" type="m:EmptyElement"/>
         </xsd:choice>
     </xsd:complexType>

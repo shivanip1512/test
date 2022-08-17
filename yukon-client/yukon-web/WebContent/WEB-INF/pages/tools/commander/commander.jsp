@@ -24,10 +24,10 @@
     float: right;
 }
 .cmd-req-resp { margin: 10px 0; }
-.cmd-req { color: #7b8387; }
-.cmd-resp-success { color: #0088f2; }
+.cmd-req { color: #222; }
+.cmd-resp-success { color: #1f4cff; }
 .cmd-resp-fail { color: #d14836; }
-.cmd-resp-warn { color: #e99012; }
+.cmd-resp-warn { color: #fb8521; }
 .cmd-pending { margin-top: 4px; }
 </style>
 
@@ -49,10 +49,10 @@
             <cti:button id="target-lm-group-btn" icon="icon-database-add" 
                     nameKey="loadGroup" data-show="#load-group-row" classes="${clazz}"/>
             <c:set var="clazz" value="${target == 'EXPRESSCOM' ? 'on' : ''}"/>
-            <cti:button id="target-expresscom-btn" icon="icon-arrow-forward" nameKey="expressCom" 
+            <cti:button id="target-expresscom-btn" icon="icon-textfield" nameKey="expressCom" 
                     data-show="#serial-number-row, #route-row" data-type="EXPRESSCOM_SERIAL" classes="${clazz}"/>
             <c:set var="clazz" value="${target == 'VERSACOM' ? 'on' : ''}"/>
-            <cti:button id="target-versacom-btn" icon="icon-arrow-forward" nameKey="versaCom" 
+            <cti:button id="target-versacom-btn" icon="icon-textfield" nameKey="versaCom" 
                     data-show="#serial-number-row, #route-row" data-type="VERSACOM_SERIAL" classes="${clazz}"/>
         </div>
     </tags:nameValue2>
@@ -80,7 +80,7 @@
                     data-event="yukon.tools.commander.routeChange" class="dn"></div>
         </span>
         
-        <cm:dropdown id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
+        <cm:dropdown type="button" id="device-actions-menu" triggerClasses="js-device-actions-btn vab" showLabel="false">
             <c:set var="clazz" value="${!routable ? 'dn' : ''}"/>
             <c:if test="${changeRoute}">
                 <cm:dropdownOption id="change-route-btn" key=".changeRoute" icon="icon-pencil" classes="${clazz}"/>
@@ -210,23 +210,7 @@
             <tr>
                 <td class="name js-prompt-text"></td>
                 <td class="value">
-                    <input class="js-prompt-input dn" type="text">
-                    <span class="js-prompt-expresscom-group-picker dn">
-	                    <input type="hidden" id="expresscom-group-id"/>
-				        <tags:pickerDialog type="expresscomGroupPicker" id="expressComGroupPicker" 
-				    		linkType="selection" 
-				    		selectionProperty="paoName"
-				    		endEvent="yukon:tools:commander:group:picker:closed"
-				    		destinationFieldId="expresscom-group-id"/>
-				    </span>
-				    <span class="js-prompt-versacom-group-picker dn">
-				    	<input type="hidden" id="versacom-group-id"/>
-				    	<tags:pickerDialog type="versacomGroupPicker" id="versaComGroupPicker" 
-				    		linkType="selection" 
-				    		selectionProperty="paoName"
-				    		endEvent="yukon:tools:commander:group:picker:closed"
-				    		destinationFieldId="versacom-group-id"/>
-				    </span>
+                    <input class="js-prompt-input" type="text">
                 </td>
             </tr>
         </tbody>
@@ -240,7 +224,7 @@
         <c:forEach var="target" items="${recentTargets}">
             <c:set var="label" value="${fn:escapeXml(target.label)}"/>
             <c:set var="type" value="${target.target.target}"/>
-            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-arrow-forward'}"/>
+            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-textfield'}"/>
             <cm:dropdownOption icon="${icon}"
                 data-type="${type}"
                 data-pao-id="${target.target.paoId}"

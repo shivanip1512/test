@@ -1,0 +1,18 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== MeterDisconnect Program
+
+*Request URL* :
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/http-request.adoc[]
+
+*Response Properties* :
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/response-fields.adoc[]
+
+*Response JSON* :
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/http-response.adoc[]
+

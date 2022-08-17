@@ -2,7 +2,6 @@ package com.cannontech.services.infrastructure.service.impl;
 
 import static com.cannontech.infrastructure.model.InfrastructureWarningSeverity.*;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,13 +28,12 @@ public class GatewayDataStreamingLoadEvaluator implements InfrastructureWarningE
     
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return ImmutableSet.of(PaoType.GWY800, PaoType.GWY801, PaoType.VIRTUAL_GATEWAY);
+        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
     }
 
     @Override
     public List<InfrastructureWarning> evaluate() {
         log.debug("Running RF Gateway data streaming load evaluation");
-        final DecimalFormat decimalFormatter = new DecimalFormat("0.00");
         
         Set<RfnGateway> gateways = rfnGatewayService.getAllNonLegacyGateways();
         
@@ -48,7 +46,7 @@ public class GatewayDataStreamingLoadEvaluator implements InfrastructureWarningE
                            return new InfrastructureWarning(gwy.getPaoIdentifier(), 
                                                             InfrastructureWarningType.GATEWAY_DATA_STREAMING_LOAD,
                                                             severity,
-                                                            decimalFormatter.format(loadingPercent));
+                                                            loadingPercent);
                        })
                        .collect(Collectors.toList());
     }

@@ -33,8 +33,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -48,9 +46,7 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.base.Function;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
@@ -252,29 +248,11 @@ public class ProgramDaoImpl implements ProgramDao {
                 return sql;
             }
         };
+
         List<Integer> list = chunkingSqlTemplate.query(sqlFragmentGenerator, programIds, groupIdRowMapper);
         return list;
     }
-    
-    @Override
-    public Multimap<Integer, Integer> getGroupIdsByProgramIds(Set<Integer> programIds) {
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        HashMultimap<Integer, Integer> result = HashMultimap.create();
-        template.query(e -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DeviceId, LMGroupDeviceId");
-            sql.append("FROM LMProgramDirectGroup");
-            sql.append("WHERE DeviceId").in(e);
-            return sql;
-        }, programIds, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                result.put(rs.getInt("DeviceId"), rs.getInt("LMGroupDeviceId"));
-            }
-        });
-        return result;
-    }
-    
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByProgramIds(final Set<Integer> programIds) {

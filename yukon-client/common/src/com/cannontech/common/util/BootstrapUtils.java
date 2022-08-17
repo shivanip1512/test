@@ -31,7 +31,6 @@ public class BootstrapUtils {
 
     static {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
-        System.setProperty("org.apache.activemq.broker.jmx.createConnector", "true");
     }
 
     /**

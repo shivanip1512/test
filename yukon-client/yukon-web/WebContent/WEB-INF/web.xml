@@ -267,6 +267,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>api</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>meter</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -394,6 +400,11 @@
         <servlet-class>com.cannontech.web.spring.SpringRedirectServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <description>Returns an xml config file for log4j logging</description>
+        <servlet-name>LoggingServlet</servlet-name>
+        <servlet-class>com.cannontech.servlet.LoggingServlet</servlet-class>
+    </servlet>
     <servlet>
         <description>Contains connection objects to various servers</description>
         <servlet-name>ConnServlet</servlet-name>
@@ -660,6 +671,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>reports</servlet-name>
         <url-pattern>/reports/*</url-pattern>
     </servlet-mapping>
@@ -695,6 +711,11 @@
     </servlet-mapping>
 
     <!-- The following mappings used to be handled by the invoker servlet -->
+    <servlet-mapping>
+        <servlet-name>LoggingServlet</servlet-name>
+        <url-pattern>/servlet/LoggingServlet</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>GraphGenerator</servlet-name>
         <url-pattern>/servlet/GraphGenerator</url-pattern>

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "calccomponent.h"
+#include "ctiqueues.h"
 
-#include <stack>
+#include "calccomponent.h"
 
 class CtiCalc
 {
-    std::vector<std::unique_ptr<CtiCalcComponent>>  _components;
-    std::stack<double>   _stack;
-    CalcUpdateType       _updateType;
+    std::vector<CtiCalcComponent*>  _components;
+    CtiStack<double>     _stack;
+    PointUpdateType      _updateType;
     ULONG                _nextInterval;
     int                  _updateInterval;
     long                 _pointId, _baselineId, _baselinePercentId, _regressionPtId;
@@ -18,16 +18,13 @@ class CtiCalc
     bool                 _isBaseline;
     bool                 _reuseRegression;
 
-    struct UpdateTypeDbStrings {
-        // text from the database
-        static const std::string Periodic;
-        static const std::string AllChange;
-        static const std::string OneChange;
-        static const std::string Historical;
-        static const std::string BackfillingHistorical;
-        static const std::string PeriodicPlusUpdate;
-        static const std::string Constant;
-    };
+    // text from the database
+    static const CHAR * UpdateType_Periodic;
+    static const CHAR * UpdateType_AllChange;
+    static const CHAR * UpdateType_OneChange;
+    static const CHAR * UpdateType_Historical;
+    static const CHAR * UpdateType_PeriodicPlusUpdate;
+    static const CHAR * UpdateType_Constant;
 
     CtiTime calcTimeFromComponentTime( const CtiTime &minTime, const CtiTime &maxTime );
     bool calcTimeFromComponentTime( CtiTime &componentTime, int componentQuality, CtiTime &minTime, CtiTime &maxTime );
@@ -35,44 +32,55 @@ class CtiCalc
 
 public:
 
-    CtiCalc() = delete;
-    CtiCalc(const CtiCalc&) = delete;
-    CtiCalc& operator=(const CtiCalc&) = delete;
-    bool operator==(const CtiCalc&) = delete;
+    CtiCalc( ) :
+    _updateType(undefined), _updateInterval(-1), _pointId(-1), _valid(FALSE), _nextInterval( 1 ),
+    _pointCalcWindowEndTime( CtiTime(CtiDate(1,1,1990)) ), _calculateQuality(true), _isBaseline(false),
+    _regressionPtId(0)
+    {}
 
     CtiCalc( long pointId, const std::string &updateType, int updateInterval, const std::string &qualityFlag );
 
+    ~CtiCalc( )  
+    {  
+        cleanup( );
+    }
+
     ULONG     getNextInterval() const;
-    void      setNextInterval (int interval);
+    CtiCalc&  setNextInterval (int interval);
     int      getUpdateInterval( ) const;
     long     getRegressionComponentId() const;
     int      getComponentCount();
-    std::set<long> getComponentIDList() const;
+    std::set<long> getComponentIDList();
     long findDemandAvgComponentPointId();
 
-    long getPointId( void ) const
+    long getPointId( void )  
     {  
         return _pointId;
     }
 
-    long getBaselineId( void ) const
+    long getBaselineId( void )  
     {  
         return _baselineId;
     }
 
-    long getBaselinePercentId( void ) const
+    long getBaselinePercentId( void )  
     {  
         return _baselinePercentId;
     }
 
+    CtiCalc &operator=( CtiCalc &toCopy );
+    BOOL operator==( CtiCalc &equalTest )  
+    {  
+        return _pointId == equalTest.getPointId( );
+    }
     bool isBaselineCalc() {
         return _isBaseline;
     }
 
-    void appendComponent( std::unique_ptr<CtiCalcComponent> componentToAdd );
+    void appendComponent( CtiCalcComponent *componentToAdd );
     void cleanup( void );
     void clearComponentDependencies( void );
-    CalcUpdateType getUpdateType( void );
+    PointUpdateType getUpdateType( void );
     double calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid );
     double figureDemandAvg(long secondsInAvg);
     BOOL ready( void );

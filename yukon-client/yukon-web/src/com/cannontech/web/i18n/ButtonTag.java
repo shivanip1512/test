@@ -186,9 +186,6 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE || mode == RenderMode.LABEL) {
                 classes.append(" naked");
             }
-            if (mode == RenderMode.BUTTON_IMAGE) {
-                classes.append(" image-btn");
-            }
             if (mode == RenderMode.APPBUTTON) {
                 classes.append(" app-button");
             }
@@ -251,9 +248,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 out.write("<i class=\"icon busy\"></i>");
             }
             if (hasImage) {
-                out.write("<i class=\"icon " + icon + "\">"
-                		+ IconSvg.getIconForClass(icon).getSvg()
-                		+ "</i>");
+                out.write("<i class=\"icon " + icon + "\"></i>");
             }
             
             if (mode != RenderMode.IMAGE 

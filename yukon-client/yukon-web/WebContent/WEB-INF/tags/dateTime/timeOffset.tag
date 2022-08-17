@@ -71,13 +71,13 @@
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:set var="errorCssClass" value=""/>
                 <c:if test="${status.error}">
-                    <c:set var="wrapClass" value="${wrapClass} date-time-error"/>       
+                    <c:set var="errorCssClass" value="error"/>
                 </c:if>
+                
                 <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass}">
                     <form:input type="hidden" path="${path}"/>
                     <input id="${id}" 
                         name="${path}_inputField"
-                        type="text"
                         value="${displayValue}"
                         class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass} ${errorCssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
@@ -114,7 +114,6 @@
                 <input id="${id}" 
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}_inputField"</c:if>
                     value="${displayValue}"
-                    type="text"
                     class="js-timeOffsetPicker js-timeOffsetPickerUI timeOffsetPicker ${cssClass}"
                     <c:if test="${disabled}">disabled="true"</c:if>
                     data-step-hour="${pageScope.stepHour}"

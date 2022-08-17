@@ -11,9 +11,7 @@ import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 
 import com.cannontech.common.chart.model.ChartInterval;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
@@ -22,8 +20,6 @@ import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -376,6 +372,15 @@ public interface RawPointHistoryDao {
         BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted);
 
     /**
+     * Returns recent values. This method shouldn't be used it will be removed in the future.
+     * 
+     * @param pointId
+     * @param rows - number of values to return
+     */
+    @Deprecated
+    List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows);
+
+    /**
      * Method to get a list of point values for a given point and time period (it includes the point values for disabled paos).
      * StartDate is always exclusive, stopDate is inclusive.
      * Ordering is always timestamp asc, changeid asc
@@ -395,24 +400,8 @@ public interface RawPointHistoryDao {
      * This method returns RawPointHistory data for a list of PAOs, a given Attribute and value
      * and converting the Multimap into a Map (because there will only be one value per key).
      */
-    Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
-            Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, Integer value,
-            Set<PointQuality> excludeQualities);
-
-    /**
-     * This method returns the object consisting of record count for each PAO (paoCount) for devices reported every hour within the date range
-     * @param deviceGroup - Device group 
-     * @param dateRange - range of days in which device reported every hour  
-     * @param paoType - Set of PAO Types applicable for device Group
-     * @return DataCompletenessSummary
-     */
-    DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
-
-    /**
-     * Similar to getLimitedAttributeData, but used for "summed" data, where multiple values over the range are summed 
-     * together per pao.
-     */
-    ListMultimap<PaoIdentifier, PointValueQualityHolder> getSummedAttributeData(Iterable<? extends YukonPao> paos, 
-            Attribute attribute, ReadableRange<Instant> dateRange, boolean excludeDisabledPaos, 
+    
+    public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+            Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
             Set<PointQuality> excludeQualities);
 }

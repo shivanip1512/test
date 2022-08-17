@@ -33,12 +33,12 @@ yukon.da.updaters = (function () {
             stateColor: function (data) {
                 var result = JSON.parse(data.value),
                     box = $('.js-cc-state-updater[data-pao-id="' + result.paoId + '"]'),
-                    color = yg.colors.RED;
+                    color = '#d14836';
 
                 if (result.value.pending) {
-                    color = yg.colors.ORANGE;
+                    color = '#f09100';
                 } else if (result.value.enabled) {
-                    color = yg.colors.GREEN;
+                    color = '#009933';
                 }
 
                 box.css({

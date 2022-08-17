@@ -20,7 +20,7 @@
                 <form:hidden id="user-group-id" path="userGroupId"/>
                 
                 <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".userGroupName" path="userGroupName" inputClass="wbba"/>
+                    <tags:inputNameValue nameKey=".userGroupName" path="userGroupName"/>
                     <tags:inputNameValue nameKey=".userGroupDescription" path="userGroupDescription"/>
                 </tags:nameValueContainer2>
                 

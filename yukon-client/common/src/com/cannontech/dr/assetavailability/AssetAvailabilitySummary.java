@@ -1,7 +1,5 @@
 package com.cannontech.dr.assetavailability;
 
-import java.util.Objects;
-
 /**
  * A summary for a set of inventory, containing the number of inventory in each asset availability state.
  */
@@ -50,24 +48,5 @@ public class AssetAvailabilitySummary {
 
     public void setTotalSize(Integer totalSize) {
         this.totalSize = totalSize;
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(activeSize, inactiveSize, optedOutSize, totalSize, unavailableSize);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AssetAvailabilitySummary other = (AssetAvailabilitySummary) obj;
-        return Objects.equals(activeSize, other.activeSize) && Objects.equals(inactiveSize, other.inactiveSize)
-                && Objects.equals(optedOutSize, other.optedOutSize) && Objects.equals(totalSize, other.totalSize)
-                && Objects.equals(unavailableSize, other.unavailableSize);
     }
 }

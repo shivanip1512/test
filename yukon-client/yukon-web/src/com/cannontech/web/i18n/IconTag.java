@@ -87,9 +87,7 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
             out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
         }
 
-        out.write(">"
-        		+ IconSvg.getIconForClass(icon).getSvg()
-        		+ "</i>");
+        out.write("></i>");
 
         if (StringUtils.isNotBlank(href)) {
             out.write("</a>");

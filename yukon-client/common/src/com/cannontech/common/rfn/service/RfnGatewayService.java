@@ -145,6 +145,35 @@ public interface RfnGatewayService {
     boolean deleteGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException;
     
     /**
+     * Test the connection between Network Manager and the gateway using the given IP address,
+     * user name and password.
+     * <p>
+     * Notes: If Network Manager is currently connected to that gateway, Network Manager will
+     * disconnect from that gateway and then attempt to connect using the information given. If the
+     * connection is successful, Network Manager will disconnect from that gateway.
+     * 
+     * @return true if the connection was successful, false if the connection failed.
+     * @throws NotFoundException if a gateway with the specified identifier does not exist.
+     * @throws NmCommunicationException if there is a communication error between Yukon and Network
+     *             Manager.
+     */
+    boolean testConnection(int deviceId, String ipAddress, String username, String password) 
+            throws NmCommunicationException;
+    
+    /**
+     * Test the connection between Network Manager and the gateway using the default access level
+     * account (ADMIN).
+     * <p>
+     * Notes: If Network Manager is currently connected to that gateway, Network Manager will
+     * disconnect from that gateway first. If the connection is successful, Network Manager will
+     * disconnect from that gateway.
+     * 
+     * @return true if the connection was successful, false if the connection failed.
+     * @throws NmCommunicationException
+     */
+    boolean testConnection(int deviceId) throws NmCommunicationException;
+    
+    /**
      * Initiates a gateway "connect" action in Network Manager.
      * 
      * @return true if the gateway was connected successfully.

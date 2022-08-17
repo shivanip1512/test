@@ -4,6 +4,8 @@
 
 #include "boostutil.h"
 
+#include <boost/bind.hpp>
+
 using namespace std;
 
 namespace Cti {

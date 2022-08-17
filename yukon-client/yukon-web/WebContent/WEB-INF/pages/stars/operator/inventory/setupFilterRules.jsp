@@ -31,7 +31,7 @@
                     <span class="empty-list"><i:inline key=".noRules"/></span>
                 </c:when>
                 <c:otherwise>
-                    <table class="compact-results-table with-form-controls no-stripes">
+                    <table class="compact-results-table with-form-controls">
                         <tbody>
                             <c:forEach items="${filterModel.filterRules}" var="rule" varStatus="row">
                                 <tr>
@@ -191,7 +191,7 @@
                 </c:otherwise>
             </c:choose>
             <div class="action-area">
-                <cti:button nameKey="add" type="submit" name="addButton" classes="js-submit-on-enter" icon="icon-add"/>
+                <cti:button nameKey="add" type="submit" name="addButton" classes="js-submit-on-enter right" icon="icon-add"/>
                 <select name="ruleType" class="js-submit-on-enter fr left">
                     <c:forEach var="type" items="${ruleTypes}">
                         <option value="${type}"><cti:msg2 key="${type}"/></option>

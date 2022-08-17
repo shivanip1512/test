@@ -122,47 +122,29 @@
     <entry key="yukon.common.pao.RFN520FRX">RFN-520fRX</entry>
     <entry key="yukon.common.pao.RFN520FAXD">RFN-520fAXD</entry>
     <entry key="yukon.common.pao.RFN520FRXD">RFN-520fRXD</entry>
-    <entry key="yukon.common.pao.RFN520FAXE">RFN-520fAXe</entry>
-    <entry key="yukon.common.pao.RFN520FRXE">RFN-520fRXe</entry>
-    <entry key="yukon.common.pao.RFN520FAXED">RFN-520fAXeD</entry>
-    <entry key="yukon.common.pao.RFN520FRXED">RFN-520fRXeD</entry>
     <entry key="yukon.common.pao.RFN530FAX">RFN-530fAX</entry>
     <entry key="yukon.common.pao.RFN530FRX">RFN-530fRX</entry>
-    <entry key="yukon.common.pao.RFN530FAXE">RFN-530fAXe</entry>
-    <entry key="yukon.common.pao.RFN530FRXE">RFN-530fRXe</entry>
     
     <entry key="yukon.common.pao.RFN530S4X">RFN-530S4x</entry>
     <entry key="yukon.common.pao.RFN530S4EAX">RFN-530S4eAX</entry>
     <entry key="yukon.common.pao.RFN530S4EAXR">RFN-530S4eAXR</entry>
     <entry key="yukon.common.pao.RFN530S4ERX">RFN-530S4eRX</entry>
     <entry key="yukon.common.pao.RFN530S4ERXR">RFN-530S4eRXR</entry>
-    
-    <entry key="yukon.common.pao.CRL520FAXE">CRL-520fAXe</entry>
-    <entry key="yukon.common.pao.CRL520FAXED">CRL-520fAXeD</entry>
-    <entry key="yukon.common.pao.CRL530S4X">CRL-530S4x</entry>
-    <entry key="yukon.common.pao.CRL520FRXE">CRL-520fRXe</entry>
-    <entry key="yukon.common.pao.CRL520FRXED">CRL-520fRXeD</entry>
 
     <entry key="yukon.common.pao.RFWMETER">RFW-Meter</entry>
     <entry key="yukon.common.pao.RFW201">RFW-201</entry>
 
     <entry key="yukon.common.pao.RFG201">RFG-201</entry>
-    <entry key="yukon.common.pao.RFG301A">RFG-301A</entry>
-    <entry key="yukon.common.pao.RFG301R">RFG-301R</entry>
+    <entry key="yukon.common.pao.RFG301">RFG-301</entry>
     
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>
     <entry key="yukon.common.pao.LCR6600_RFN">LCR-6600 RFN</entry>
     <entry key="yukon.common.pao.LCR6700_RFN">LCR-6700 RFN</entry>
 
-    <entry key="yukon.common.pao.LCR6200S">LCR-6200S</entry>
     <entry key="yukon.common.pao.LCR6600S">LCR-6600S</entry>
     <entry key="yukon.common.pao.LCR6601S">LCR-6601S</entry>
 
-    <entry key="yukon.common.pao.LCR6200C">LCR-6200C</entry>
-    <entry key="yukon.common.pao.LCR6600C">LCR-6600C</entry>
-    
     <entry key="yukon.common.pao.GWY800">GWY-800</entry>
-    <entry key="yukon.common.pao.GWY801">GWY-801</entry>
     <entry key="yukon.common.pao.RFN_GATEWAY">RF Gateway</entry>
     <entry key="yukon.common.pao.VIRTUAL_GATEWAY">Virtual Gateway</entry>
 
@@ -177,7 +159,6 @@
     <entry key="yukon.common.pao.RTUWELCO">RTU-Welco</entry>
 
     <entry key="yukon.common.pao.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
-    <entry key="yukon.common.pao.LM_GROUP_EATON_CLOUD">Eaton Cloud Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_ECOBEE">ecobee Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EMETCON">Emetcon Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
@@ -197,7 +178,6 @@
     <entry key="yukon.common.pao.MACRO_GROUP">Macro Group</entry>
     <entry key="yukon.common.pao.LM_CURTAIL_PROGRAM">LM Curtail Program</entry>
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
-    <entry key="yukon.common.pao.LM_EATON_CLOUD_PROGRAM">LM Eaton Cloud Program</entry>
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
     <entry key="yukon.common.pao.LM_HONEYWELL_PROGRAM">LM Honeywell Program</entry>
     <entry key="yukon.common.pao.LM_ITRON_PROGRAM">LM Itron Program</entry>
@@ -267,7 +247,6 @@
     <entry key="yukon.common.pao.SIMPLE_SCHEDULE">Simple Schedule</entry>
     <entry key="yukon.common.pao.SYSTEM">System</entry>
     <entry key="yukon.common.pao.VIRTUAL_SYSTEM">Virtual System</entry>
-    <entry key="yukon.common.pao.VIRTUAL_METER">Virtual Meter</entry>
 
     <entry key="yukon.common.pao.WEATHER_LOCATION">Weather Location</entry>
 
@@ -286,7 +265,4 @@
     <entry key="yukon.common.pao.NEST">Nest Thermostat</entry>
     
     <entry key="yukon.common.pao.RFN_RELAY">RFN Relay</entry>
-    <entry key="yukon.common.pao.CRLY856">CRLY-856</entry>
-    
-    <entry key="yukon.common.pao.RFN530S4X_DER">RFN-530S4X-DER</entry>
 </properties>

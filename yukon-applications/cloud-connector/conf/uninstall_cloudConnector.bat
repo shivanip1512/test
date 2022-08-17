@@ -1,2 +1,0 @@
-sc delete CloudConnector
-pause

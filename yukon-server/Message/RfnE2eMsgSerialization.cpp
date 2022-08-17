@@ -51,14 +51,8 @@ NetworkManagerRequestHeader translate(const Thrift::NetworkManagerRequestHeader 
     NetworkManagerRequestHeader header;
 
     header.clientGuid = hdr.clientGuid;
-    if ( hdr.__isset.expiration )
-    {
-        header.expiration = hdr.expiration;
-    }
-    if ( hdr.__isset.groupId )
-    {
-        header.groupId    = hdr.groupId;
-    }
+    header.expiration = hdr.expiration;
+    header.groupId    = hdr.groupId;
     header.messageId  = hdr.messageId;
     header.priority   = hdr.priority;
     header.sessionId  = hdr.sessionId;
@@ -74,15 +68,9 @@ Thrift::NetworkManagerRequestHeader translate(const NetworkManagerRequestHeader 
     header.__set_clientGuid( hdr.clientGuid );
     header.__set_sessionId ( hdr.sessionId );
     header.__set_messageId ( hdr.messageId );
-    if ( hdr.groupId )
-    {
-        header.__set_groupId( *hdr.groupId );
-    }
-    header.__set_priority( hdr.priority );
-    if ( hdr.expiration )
-    {
-        header.__set_expiration( *hdr.expiration );
-    }
+    header.__set_groupId   ( hdr.groupId );
+    header.__set_priority  ( hdr.priority );
+    header.__set_expiration( hdr.expiration );
 
     //  Default all messages to expire with our session
     header.__set_lifetime  ( Thrift::NetworkManagerMessageLifetime::SESSION );

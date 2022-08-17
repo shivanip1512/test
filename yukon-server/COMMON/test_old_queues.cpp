@@ -3,6 +3,8 @@
 #include "dsm2.h"  //  for CtiOutMessage
 #include "queues.h"
 
+#include <boost/bind.hpp>
+
 BOOST_AUTO_TEST_SUITE( test_old_queues )
 
 using namespace std;

@@ -322,7 +322,7 @@ const LitePoint & CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attr
     if ( auto point = Cti::mapFindRef( _points, getPointIdByAttribute(attribute) ) )
     {
         return *point;
-    }
+    };
 
     return invalidPoint;
 }
@@ -332,7 +332,7 @@ const LitePoint & CtiCCTwoWayPoints::getPointById( long pointId ) const
     if ( auto point = Cti::mapFindRef( _points, pointId) )
     {
         return *point;
-    }
+    };
 
     return invalidPoint;
 }

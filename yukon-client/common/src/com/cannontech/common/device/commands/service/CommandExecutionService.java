@@ -70,12 +70,4 @@ public interface CommandExecutionService extends CollectionActionCancellationSer
     int execute(CollectionAction action, LinkedHashMap<String, String> inputs, DeviceCollection collection,
             String command, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
             SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
-
-    /**
-     * Sends command to porter. Creates and completes command request execution.
-     * 
-     * @throws CommandCompletionException
-     */
-    CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, CommandRequestExecution execution,
-            LiteYukonUser user);
 }

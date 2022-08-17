@@ -10,8 +10,5 @@ public interface InfrastructureEventLogService {
                                  String warningType,
                                  String severity,
                                  @Arg(ArgEnum.message) String message);
-
-    @YukonEventLog(category = "infrastructure.warning")
-    public void warningCleared(@Arg(ArgEnum.paoName) String paoName,
-                               String warningType);
+    
 }

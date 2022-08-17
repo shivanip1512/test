@@ -32,8 +32,6 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.status">Status</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoring.help">Whether or not this monitor is enabled or disabled. Note: when a monitor is disabled any violating devices are cleared out</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.notifyOnAlarmOnly">Notify On Alarms Only</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.notifyOnAlarmOnly.help">Alarms are sent quickly from the meter when the status changes, but delivery is not guaranteed. Events fill in missed alarms, are used for non-critical status changes, and have guaranteed delivery, but are only sent on the standard data reporting interval which may contain stale data. This setting is typically used in outage processing to prevent notifications on stale event data.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.enabledtrue">Enabled</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.enabledfalse">Disabled</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoringEnable">Enable</entry>

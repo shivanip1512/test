@@ -1,9 +1,9 @@
 package com.cannontech.watchdogs;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -32,7 +32,7 @@ public class NetworkManagerServiceWatcherTest {
         }
     }
 
-    @BeforeEach
+    @Before
     public void setUp() throws NoSuchMethodException, SecurityException {
         // This watcher marks NM as not optional, which is the standard case
         watcher = new NetworkManagerWatcher(new WatcherMockConfigurationSource());

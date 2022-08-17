@@ -23,33 +23,33 @@
     <ProjectGuid>{34AC0499-FECA-1BAD-5252-AE7B00075222}</ProjectGuid>
     <RootNamespace>test_rtdb</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -145,7 +145,6 @@
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/Zc:__cplusplus /await</AdditionalOptions>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -155,7 +154,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib-debug\dynpaoinfo.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib-debug\dynpaoinfo.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -197,7 +196,6 @@
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/Zc:__cplusplus /await</AdditionalOptions>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -207,7 +205,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib\dynpaoinfo.lib;..\lib\ctiprtdb.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib\dynpaoinfo.lib;..\lib\ctiprtdb.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -260,7 +258,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib-debug\dynpaoinfo.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib-debug\dynpaoinfo.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -316,7 +314,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib\dynpaoinfo.lib;..\lib\ctiprtdb.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;..\lib\dynpaoinfo.lib;..\lib\ctiprtdb.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\ctiprot.lib;..\lib\ctimsg.lib;advapi32.lib;kernel32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -340,7 +338,6 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\rtdb_test_helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON\boost_assert.cpp" />
@@ -367,16 +364,12 @@
     <ClCompile Include="test_cmd_mct420_LcdConfiguration.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_Aggregate.cpp" />
-    <ClCompile Include="test_cmd_rfn_CommStatus.cpp" />
     <ClCompile Include="test_cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="test_cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="test_cmd_rfn_DemandInterval.cpp" />
-    <ClCompile Include="test_cmd_rfn_DerPayloadDelivery.cpp" />
     <ClCompile Include="test_cmd_rfn_Individual.cpp" />
-    <ClCompile Include="test_cmd_rfn_MeterDisconnect.cpp" />
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp" />
-    <ClCompile Include="test_cmd_rfn_MeterRead.cpp" />
-    <ClCompile Include="test_cmd_rfn_Metrology.cpp" />
+    <ClCompile Include="test_cmd_rfn_Wifi.cpp" />
     <ClCompile Include="test_cmd_rf_da_dnpAddress.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_CentronLcdConfiguration.cpp">
@@ -452,8 +445,6 @@
     </ClCompile>
     <ClCompile Include="test_dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="test_dev_rfn_LgyrFocus_al.cpp" />
-    <ClCompile Include="test_dev_rf_BatteryNode.cpp" />
-    <ClCompile Include="test_dev_rf_cellular_relay.cpp" />
     <ClCompile Include="test_dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="test_dev_rfn410centron.cpp" />
@@ -487,7 +478,6 @@
     <ClCompile Include="test_pt_base.cpp">
     </ClCompile>
     <ClCompile Include="test_pt_status.cpp" />
-    <ClCompile Include="test_rfn_uom.cpp" />
     <ClCompile Include="test_rte_ccu.cpp">
     </ClCompile>
     <ClCompile Include="test_slctdev.cpp">

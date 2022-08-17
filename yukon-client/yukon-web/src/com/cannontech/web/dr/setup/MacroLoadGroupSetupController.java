@@ -78,7 +78,7 @@ public class MacroLoadGroupSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             MacroLoadGroup macroLoadGroupBase = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroupBase == null) {
@@ -100,7 +100,7 @@ public class MacroLoadGroupSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupRetrieveUrl + id);
             MacroLoadGroup macroLoadGroup = retrieveGroup(userContext, request, id, url);
             if (macroLoadGroup == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "macroLoadGroup.retrieve.error"));
@@ -145,7 +145,7 @@ public class MacroLoadGroupSetupController {
             ModelMap model) throws JsonGenerationException, JsonMappingException, IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id + "/copy");
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupCopyUrl + id);
 
             // Call Api to copy
             ResponseEntity<? extends Object> responseEntity =
@@ -153,7 +153,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(lmCopy, "lmCopy");
-                helper.populateBindingErrorForApiErrorModel(result, error, responseEntity,  "yukon.web.error.");
+                helper.populateBindingError(result, error, responseEntity);
                 model.addAttribute("lmCopy", lmCopy);
                 model.addAttribute("loadGroupId", id);
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -162,7 +162,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) responseEntity.getBody();
-                int copiedLoadGroupId = paoIdMap.get("id");
+                int copiedLoadGroupId = paoIdMap.get("paoId");
                 json.put("copiedLoadGroupId", String.valueOf(copiedLoadGroupId));
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", lmCopy.getName()));
             }
@@ -172,8 +172,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             json.put("redirectUrl", setupRedirectLink);
         } catch (RestClientException ex) {
-            log.error("Error copying macro load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName(), ex.getMessage()));
+            log.error("Error while copying load group: ", ex);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
             json.put("redirectUrl", setupRedirectLink);
         }
         response.setContentType("application/json");
@@ -202,19 +202,19 @@ public class MacroLoadGroupSetupController {
         try {
             ResponseEntity<? extends Object> response = null;
             if (macroLoadGroup.getId() == null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupCreateUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     macroLoadGroup);
             } else {
                 String url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drMacroLoadGroupUrl + "/" +  macroLoadGroup.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, Object.class,
+                    ApiURL.drMacroLoadGroupUpdateUrl + macroLoadGroup.getId());
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     macroLoadGroup);
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(macroLoadGroup, "macroLoadGroup");
-                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                result = helper.populateBindingError(result, error, response);
                 if (result.hasFieldErrors("assignedLoadGroups")) {
                     flash.setError(result.getFieldError("assignedLoadGroups"));
                 }
@@ -228,10 +228,10 @@ public class MacroLoadGroupSetupController {
                 return bindAndForward(macroLoadGroup, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
+            if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = paoIdMap.get("id");
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", macroLoadGroup.getName()));
+                int groupId = paoIdMap.get("paoId");
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", macroLoadGroup.getName()));
                 return "redirect:/dr/setup/macroLoadGroup/" + groupId;
             }
         } catch (ApiCommunicationException e) {
@@ -239,8 +239,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating macro load group: {}. Error: {}", macroLoadGroup.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", macroLoadGroup.getName(), ex.getMessage()));
+            log.error("Error creating load group: ", ex);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -252,12 +252,12 @@ public class MacroLoadGroupSetupController {
             FlashScope flash, HttpServletRequest request) {
         try {
             // Api call to delete macro load group
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drMacroLoadGroupDeleteUrl + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -265,8 +265,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting macro load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
+            log.error("Error deleting macro load group: ", ex);
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

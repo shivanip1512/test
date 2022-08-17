@@ -11,7 +11,6 @@ public class InventorySearch {
     private String lastName;
     private String workOrderNumber;
     private String altTrackingNumber;
-    private String macAddress;
     
     public String getSerialNumber() {
         return serialNumber;
@@ -69,14 +68,6 @@ public class InventorySearch {
         this.altTrackingNumber = altTrackingNumber;
     }
 
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
     public void trimFields() {
         serialNumber = StringUtils.trimToNull(serialNumber);
         meterNumber = StringUtils.trimToNull(meterNumber);
@@ -85,7 +76,6 @@ public class InventorySearch {
         lastName = StringUtils.trimToNull(lastName);
         workOrderNumber = StringUtils.trimToNull(workOrderNumber);
         altTrackingNumber = StringUtils.trimToNull(altTrackingNumber);
-        macAddress = StringUtils.trimToNull(macAddress);
     }
     
 }

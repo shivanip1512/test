@@ -1,17 +1,15 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -35,7 +33,7 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
 
         mockService = new MockLoadControlService();
@@ -104,14 +102,13 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
 
         // outputs
-        assertNotNull(outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"),
-                "No programStatuses node present.");
-        assertEquals(1,
-                outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size(),
-                "Incorrect number of programStatuses nodes.");
-        assertEquals(0,
-                outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size(),
-                "Incorrect number of programStatus nodes.");
+        Assert.assertNotNull("No programStatuses node present.",
+            outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
+        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1,
+            outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size());
+        Assert.assertEquals(
+            "Incorrect number of programStatus nodes.", 0, outputTemplate.
+            evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size());
 
         // 2 programs, one with no stop datetime
         // ==========================================================================================
@@ -128,56 +125,35 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
 
         // outputs
-        assertNotNull(outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"),
-                "No programStatuses node present.");
-        assertEquals(1,
-                outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size(),
-                "Incorrect number of programStatuses nodes.");
-        assertEquals(2,
-                outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size(),
-                "Incorrect number of programStatus nodes.");
+        Assert.assertNotNull("No programStatuses node present.",
+            outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
+        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1,
+            outputTemplate.evaluateAsNodeList("/y:currentlyActiveProgramsResponse/y:programStatuses").size());
+        Assert.assertEquals("Incorrect number of programStatus nodes.", 2,
+            outputTemplate.evaluateAsNodeList
+            ("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus").size());
 
-        assertEquals("Program1",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"),
-                "Incorrect programName.");
-        assertEquals("Active",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"),
-                "Incorrect currentStatus.");
-        assertEquals("2008-10-13T12:30:00Z",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"),
-                "Incorrect startDateTime.");
-        assertEquals("2008-10-13T21:40:01Z",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"),
-                "Incorrect stopDateTime.");
-        assertEquals("Gear1",
-                outputTemplate
-                        .evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:gearName"),
-                "Incorrect gearName.");
+        Assert.assertEquals("Incorrect programName.", "Program1",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus.", "Active",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:40:01Z",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName.", "Gear1",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:gearName"));
 
-        assertEquals("Program2",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:programName"),
-                "Incorrect programName.");
-        assertEquals("Inactive",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"),
-                "Incorrect currentStatus.");
-        assertEquals("2008-10-14T13:45:01Z",
-                outputTemplate.evaluateAsString(
-                        "/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"),
-                "Incorrect startDateTime.");
-        assertNull(
-                outputTemplate
-                        .evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"),
-                "Should not contain stopDateTime node.");
-        assertEquals("Gear2",
-                outputTemplate
-                        .evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:gearName"),
-                "Incorrect gearName.");
+        Assert.assertEquals("Incorrect programName.", "Program2",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus.", "Inactive",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-14T13:45:01Z",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"));
+        Assert.assertNull("Should not contain stopDateTime node.",
+            outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName.", "Gear2",
+            outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:gearName"));
     }
 
 }

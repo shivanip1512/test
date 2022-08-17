@@ -66,6 +66,17 @@ public interface MspObjectDao {
             String method, String userName);
 
     /**
+     * Returns a Msp ServiceLocation for the meterNo.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * 
+     * @param meter The Meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
+
+    /**
      * Returns a list of the MeterNumber(s) for the serviceLocation .
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty List<MspMeter> object is returned.

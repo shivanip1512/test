@@ -10,9 +10,9 @@
 <%@ attribute name="path" description="Spring path." %> 
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
-    <div class="button-group ${buttonGroupContainerCssClasses}">
-        <c:forEach var="item" items="${items}" varStatus="status">
-            <tags:check id="${item}_chk" path="${path}" value="${item}" key="${item}" classes="${status.first ? 'M0' : '' }"/>
+    <div class="button-group stacked ${buttonGroupContainerCssClasses}">
+        <c:forEach var="item" items="${items}">
+             <tags:check id="${item}_chk" path="${path}" value="${item}" key="${item}"/>
         </c:forEach>
     </div>
 </cti:displayForPageEditModes>

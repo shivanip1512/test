@@ -29,9 +29,4 @@ public class RfnMeterDataSimulatorStartRequest implements SimulatorRequest {
     public boolean isTest(){
         return isTest;
     }
-
-    @Override
-    public String toString() {
-        return String.format("RfnMeterDataSimulatorStartRequest [settings=%s, isTest=%s]", settings, isTest);
-    }
 }

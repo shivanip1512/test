@@ -208,7 +208,7 @@
         data-event="yukon:ami:macs:category:add">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".categoryName">
-                <input id="categoryNameText" size="30" maxlength="50" type="text"/><br/>
+                <input id="categoryNameText" size="30" maxlength="50"/><br/>
                 <div class="error dn js-category-blank"><i:inline key=".categoryName.error.blank"/></div>
             </tags:nameValue2>
         </tags:nameValueContainer2>

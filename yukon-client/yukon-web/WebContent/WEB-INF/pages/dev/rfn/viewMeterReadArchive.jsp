@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dev" page="rfnTest.viewMeterReadArchive">
+<cti:standardPage module="dev" page="rfnTest">
 
 <script type="text/javascript">
     function enableByCheckbox(valueElement, checkbox) {
@@ -16,10 +16,6 @@
         $(".optional").prop("placeholder", "optional");
     });
 </script>
-
-<style>
-    .H42 {height: 42px}
-</style>
 
     <tags:sectionContainer title="RFN Meter Read Archive Request Test">
         <form:form action="sendMeterReadArchiveRequest" method="post" modelAttribute="meterReading">
@@ -45,11 +41,11 @@
                 </tags:nameValue>
 
                 <tags:nameValue name="Manufacturer override">
-                    <form:input path="manufacturerOverride" size="20" cssClass="optional"/>
+                    <form:input path="manufacturerOverride" size="7" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Model override">
-                    <form:input path="modelOverride" size="20" cssClass="optional"/>
+                    <form:input path="modelOverride" size="7" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="UoM">
@@ -153,14 +149,14 @@
                     </form:select>
                 </tags:nameValue>
                 
-                <tags:nameValue name="Reading Time" valueClass="dif H42">
-                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}"/>
+                <tags:nameValue name="Reading Time">
+                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" />
                     <tags:check id="now" path="now" label="Now" onclick="enableByCheckbox('timestamp', 'now')"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Value">
                     <form:input id="value" path="value" size="15" cssClass="fl" disabled="${meterReading.random}" />
-                    <tags:check id="random" path="random" label="Random" classes="ML10" onclick="enableByCheckbox('value', 'random')"/>
+                    <tags:check id="random" path="random" label="Random" onclick="enableByCheckbox('value', 'random')"/>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>

@@ -9,18 +9,6 @@
     <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
     
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".cellularCapableCount">
-            <c:choose>
-                <c:when test="${cellularCount > 0}">
-                    <cti:msg2 var="viewCellDevices" key=".viewCellularDevices"/>
-                    <cti:url var="cellUrl" value="/stars/cellConnection/connectedDevices/${gateway.id}"/>
-                    <a href="${cellUrl}" title="${viewCellDevices}">${cellularCount}</a>
-                </c:when>
-                <c:otherwise>
-                    ${cellularCount}
-                </c:otherwise>
-            </c:choose>
-        </tags:nameValue2>
         <tags:nameValue2 nameKey=".wifiCapableCount">
             <c:choose>
                 <c:when test="${wifiCount > 0}">

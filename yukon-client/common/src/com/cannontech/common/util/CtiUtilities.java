@@ -1,12 +1,10 @@
 package com.cannontech.common.util;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
@@ -27,11 +25,10 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.function.Predicate;
+
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
@@ -77,10 +74,8 @@ public final class CtiUtilities {
     public static final String IMPORT_ARCHIVE_DIR = "ImportArchive";
 
     public static final String COLLECTION_ACTION_DIR = "CollectionAction";
-    public static final String CACHE_CORRELATION_DIR = "CacheCorrelation";
     public static final String NEST_DIR = "Nest";
     public static final String ITRON_DIR = "Itron";
-    public static final String DATA_EXPORT_TEMPLATES_DIR = "DataExportTemplates";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -103,9 +98,6 @@ public final class CtiUtilities {
 
     public static final int DEFAULT_ITEMS_PER_PAGE = 25;
     public static final int MAX_ITEMS_PER_PAGE = 1000;
-    public static final int MIN_ITEMS_PER_PAGE = 1;
-    public static final int DEFAULT_PAGE_NUMBER = 1;
-
 
     // image names
     public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class
@@ -372,10 +364,6 @@ public final class CtiUtilities {
         return path;
     }
 
-    public final static String getCacheCollerationDirPath() {
-        return getExportArchiveDirPath(CACHE_CORRELATION_DIR);
-    }
-    
     public final static String getCollectionActionDirPath() {
         return getExportArchiveDirPath(COLLECTION_ACTION_DIR);
     }
@@ -685,61 +673,6 @@ public final class CtiUtilities {
         }
         return "unknown";
     }
-    
-    public static Optional<String> getSystemBootTime() {
-        try {
-            var wmic = Runtime.getRuntime().exec("wmic OS GET LastBootUpTime");
-            /**
-             * Returns data in the form:
-             *     C:\dev>wmic OS GET LastBootUpTime
-             *     LastBootUpTime
-             *     
-             *     20210105061204.500000-480
-             * 
-             * Note that the TZ offset is in minutes, not hours and minutes.
-             */
-            var in = new BufferedReader(new InputStreamReader(wmic.getInputStream()));
-            return in.lines()
-                    .map(String::strip)
-                    .filter(Predicate.not(String::isEmpty))
-                    .filter(s -> Character.isDigit(s.charAt(0)))
-                    .findFirst()
-                    .flatMap(s -> {
-                        final int timestampLen = 8 + 6;  //  Date + time, no separators
-                        final int tzPosition = 22;
-
-                        if (s.length() < timestampLen) {
-                            return Optional.empty();
-                        }
-
-                        var sb = new StringBuilder(s);
-
-                        //  Ensure it is long enough to have YYYYmmddhhmmss.mmmuuu+z...
-                        if (s.length() > tzPosition) {
-                            
-                            var tzMinutes = Integer.valueOf(s.substring(tzPosition));
-                            //  Truncate off the raw TZ minutes
-                            sb.setLength(tzPosition); 
-
-                            //  Append the hours and minutes version of the TZ offset
-                            var tzOffset = String.format("%02d%02d", tzMinutes / 60, tzMinutes % 60); 
-                            sb.append(tzOffset);
-                        }
-
-                        //  Insert the separators
-                        sb.insert(12, ":")
-                          .insert(10, ":")
-                          .insert(8, " ")
-                          .insert(6, "-")
-                          .insert(4, "-");
-
-                        return Optional.of(sb.toString());
-                    });
-                    
-        } catch (IOException e) {
-            return Optional.empty();
-        }
-    }
 
     public static Throwable getRootCause(Throwable e) {
         Throwable rc = ExceptionUtils.getRootCause(e);
@@ -758,7 +691,6 @@ public final class CtiUtilities {
         for (String buildInfoKey : buildInfo.keySet()) {
             out.println(buildInfoKey + ": " + buildInfo.get(buildInfoKey));
         }
-        out.println("OS boot time: " + getSystemBootTime().orElse("<unavailable>"));
         out.println("Local IP: " + getIPAddress());
         out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
@@ -982,13 +914,5 @@ public final class CtiUtilities {
             return Integer.MIN_VALUE;
         }
         return (int) num;
-    }
-
-    /**
-     * Return Data Export Template directory path
-     */
-    public final static String getDataExportTemplatesDirPath() {
-        final String sep = System.getProperty("file.separator");
-        return StringUtils.joinWith(sep, getYukonBase(), "Server", "Config", DATA_EXPORT_TEMPLATES_DIR);
     }
 }

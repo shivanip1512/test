@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
 BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     const CtiDate date1 = CtiDate( 01, 02, 2025 ),
                   date2 = CtiDate( 14, 06, 2036 ),
@@ -417,9 +417,9 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
             "Additional Status : NO ADDITIONAL STATUS\n"
             "TOU State : Disabled\n"
             "Holidays :\n"
-            " Date 1 - 2025-02-01 (679db860)\n"
-            " Date 2 - 2036-06-14 (7cfe2cd0)\n"
-            " Date 3 - 2050-12-30 (98595ae0)";
+            " Date 1 - 02/01/2025 00:00:00\n"
+            " Date 2 - 06/14/2036 00:00:00\n"
+            " Date 3 - 12/30/2050 00:00:00";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 

@@ -2,9 +2,12 @@ package com.cannontech.support.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,17 +25,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.FileUtil;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
+import com.cannontech.tools.sftp.SftpWriter;
+import com.cannontech.tools.sftp.SftpWriter.Status;
 import com.cannontech.tools.zip.ZipWriter;
 
 public class SupportBundleServiceImpl implements SupportBundleService {
     private Logger log = YukonLogManager.getLogger(SupportBundleServiceImpl.class);
 
     private static final int PAST_BUNDLES_TO_KEEP = 5; // -1 to never delete old bundles
+    private static final String DEFAULT_FTP_USER = "yukwrite";
+    private static final String DEFAULT_FTP_PASSWORD = "P4ssw0rd";
+    private static final String DEFAULT_FTP_HOST = "sftp.cooperpowereas.net";
 
+    private ConfigurationSource configurationSource;
     private Executor executor;
     private List<SupportBundleWriter> writerList;
 
@@ -107,11 +117,27 @@ public class SupportBundleServiceImpl implements SupportBundleService {
 
     @Override
     public List<File> getBundles() {
-        return FileUtil.filterAndOrderZipFile(getBundleDir());
-    }
+        File[] allFiles = getBundleDir().listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String filename) {
+                if (filename.endsWith(".zip")) {
+                    return true;
+                }
+                return false;
+            }
+        });
 
-    public List<File> getRfBundles() {
-        return FileUtil.filterAndOrderZipFile(getRfBundleDir());
+        if (allFiles == null) {
+            return Collections.emptyList();
+        }
+
+        // sorting by date modified
+        Arrays.sort(allFiles, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return new Long(f2.lastModified()).compareTo(f1.lastModified());
+            }
+        });
+
+        return Arrays.asList(allFiles);
     }
 
     @Override
@@ -147,10 +173,6 @@ public class SupportBundleServiceImpl implements SupportBundleService {
         return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/");
     }
 
-    private File getRfBundleDir() {
-        return new File(CtiUtilities.getYukonBase() + "/Server/SupportBundles/RfNetworkData/");
-    }
-
     private String buildMetaData(ReadableInstant start, ReadableInstant stop, String custName,
                                  String comments, final Set<String> optionalWritersToInclude) {
         String eol = System.getProperty("line.separator");
@@ -182,6 +204,24 @@ public class SupportBundleServiceImpl implements SupportBundleService {
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public Status uploadViaSftp(File file) {
+        String ftpUser = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER,
+                                                       DEFAULT_FTP_USER);
+        String ftpPassword = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
+                                                           DEFAULT_FTP_PASSWORD);
+        String ftpHost = configurationSource.getString(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
+                                                       DEFAULT_FTP_HOST);
+        SftpWriter ftp = new SftpWriter(ftpUser, ftpPassword, ftpHost);
+        Status ftpStatus = ftp.sendFile(file);
+        return ftpStatus;
+    }
+
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 
     @Autowired

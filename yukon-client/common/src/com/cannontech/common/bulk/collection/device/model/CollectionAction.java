@@ -11,7 +11,6 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.INVALID_STATE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.CONFIG_NAME;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
@@ -45,8 +44,8 @@ public enum CollectionAction implements DisplayableEnum {
     DISCONNECT(CRE, getLogEntries(POINT_DATA), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     ARM(CRE, getLogEntries(POINT_DATA), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DEMAND_RESET(CRE, getLogEntries(POINT_DATA, LAST_VALUE), CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
-    SEND_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED, INVALID_STATE),
-    READ_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED, INVALID_STATE),
+    SEND_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    READ_CONFIG(CRE, getLogEntries(LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     VERIFY_CONFIG(CRE, getLogEntries(DEVICE_TYPE, CONFIG_NAME, LAST_VALUE), SUCCESS, FAILURE, UNSUPPORTED),
     CONFIGURE_DATA_STREAMING(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     READ_DATA_STREAMING_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
@@ -59,8 +58,8 @@ public enum CollectionAction implements DisplayableEnum {
     ADD_POINTS(DB, null, SUCCESS, FAILURE),
     UPDATE_POINTS(DB, null, SUCCESS, FAILURE),
     REMOVE_POINTS(DB, null, SUCCESS, FAILURE),
-    ASSIGN_CONFIG(DB, null, SUCCESS, INVALID_STATE, UNSUPPORTED, FAILURE),
-    UNASSIGN_CONFIG(DB, null, SUCCESS, INVALID_STATE, FAILURE);
+    ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
+    UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
 	
     private static List<CollectionAction> actionsWithCre = Arrays.asList(CollectionAction.values()).stream()
             .filter(action -> action.getProcess() == CollectionActionProcess.CRE)

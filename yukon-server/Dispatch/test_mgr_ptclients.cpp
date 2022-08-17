@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <boost/test/auto_unit_test.hpp>
 
 #include "mgr_ptclients.h"
 #include "tbl_pt_alarm.h"

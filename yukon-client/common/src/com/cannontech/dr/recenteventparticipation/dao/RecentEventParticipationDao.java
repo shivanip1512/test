@@ -3,7 +3,6 @@ package com.cannontech.dr.recenteventparticipation.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -19,7 +18,14 @@ public interface RecentEventParticipationDao {
     /**
      * Creates new control event associated with the specified load program & group
      */
-    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime, String externalEventId);
+    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
+
+    /**
+     * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
+     * received.
+     */
+    void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
+            ControlEventDeviceStatus receivedMessageStatus, Instant deviceReceivedTime);
 
     /**
      * Insert event information for the device (in the specified load group) for which event as sent.
@@ -65,32 +71,4 @@ public interface RecentEventParticipationDao {
      * Gets count of ControlEvents for specified date range
      */
     int getNumberOfEvents(Range<Instant> range);
-
-    /**
-     * Returns event id for group id. Row with the most recent start time is used to find the event id;
-     */
-    Integer getExternalEventId(int groupId);
-
-    /**
-     * Updates event with new time and status
-     */
-    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
-            Instant deviceReceivedTime, String failReason, Instant retryTime);
-
-    /**
-     * Returns all devices for event id and list of statuses
-     */
-    Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses);
-    
-    /**
-     * Changes result from: FAILED_WILL_RETRY to: FAILED for an event id. If event id is null changes result for all devices
-     * @return rows affected 
-     */
-    int failWillRetryDevices(Integer externalEventId);
-
-    /**
-     * Changes result from: FAILED_WILL_RETRY to: FAILED for an event id. If event id is null changes result for all devices
-     * @return rows affected 
-     */
-    int failWillRetryDevices(Integer externalEventId, String failReason);
 }

@@ -1,10 +1,9 @@
 package com.cannontech.amr.rfn.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoType;
@@ -12,9 +11,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
-import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 
 public interface RfnDeviceDao {
 
@@ -129,7 +126,7 @@ public interface RfnDeviceDao {
      */
     Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
-    RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber);
+    Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
 
     /**
      * Returns device id for rfn identifier. Cache lookup.
@@ -173,20 +170,4 @@ public interface RfnDeviceDao {
      * Returns device RfnIdentifiers by gateway ids
      */
     Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
-    /**
-     * Return RfnDeviceDescendantCountData for paoTypes.
-     */
-    RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoTypes);
-
-    /**
-     * Returns devices with the same serial number and manufacturer
-     */
-    List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer);
-
-    /**
-     * Creates or updated entry in RfnModelChange table with new and old model names
-     */
-    void updateRfnModelChange(RfnModelChange rfnModelChange);
-
-    Instant findModelChangeDataTimestamp(int deviceId);
 }

@@ -5,16 +5,15 @@ import java.util.List;
 
 public class Graph<T> {
 
-    private int pointId;
     private String seriesTitle = null;
     private String yAxis = "left";
     private List<T> chartData = null;
     private NumberFormat format = null;
     private ChartColorsEnum color = null;
     private int axisIndex;
-    private ChartLineOptions lines;
-    private ChartBarOptions bars;
-    private ChartPointOptions points;
+    private FlotLineOptions lines;
+    private FlotBarOptions bars;
+    private FlotPointOptions points;
 
     public int getAxisIndex() {
         return axisIndex;
@@ -56,43 +55,36 @@ public class Graph<T> {
         this.format = format;
     }
 
-    public ChartColorsEnum getColor() {
-        return color;
-    }
+	public ChartColorsEnum getColor() {
+		return color;
+	}
 
-    public void setColor(ChartColorsEnum color) {
-        this.color = color;
-    }
+	public void setColor(ChartColorsEnum color) {
+		this.color = color;
+	}
 
-    public ChartLineOptions getLines() {
+    public FlotLineOptions getLines() {
         return lines;
     }
 
-    public void setLines(ChartLineOptions lines) {
+    public void setLines(FlotLineOptions lines) {
         this.lines = lines;
     }
 
-    public ChartBarOptions getBars() {
+    public FlotBarOptions getBars() {
         return bars;
     }
 
-    public void setBars(ChartBarOptions bars) {
+    public void setBars(FlotBarOptions bars) {
         this.bars = bars;
     }
 
-    public ChartPointOptions getPoints() {
+    public FlotPointOptions getPoints() {
         return points;
     }
 
-    public void setPoints(ChartPointOptions points) {
+    public void setPoints(FlotPointOptions points) {
         this.points = points;
     }
 
-    public int getPointId() {
-        return pointId;
-    }
-
-    public void setPointId(int pointId) {
-        this.pointId = pointId;
-    }
 }

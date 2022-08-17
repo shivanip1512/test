@@ -2,11 +2,10 @@ package com.cannontech.common.util;
 
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import static com.cannontech.common.util.MatchStyle.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.google.common.collect.Sets;
 
 public class MatchStyleTest {
@@ -17,7 +16,7 @@ public class MatchStyleTest {
     private Set<Integer> E = Sets.newHashSet();
     
     private void validate(Set<Integer> one, MatchStyle style, Set<Integer> two, boolean expectedResult) {
-        assertEquals(expectedResult, style.matches(one, two));
+        Assert.assertEquals(expectedResult, style.matches(one, two));
     }
 
     @Test

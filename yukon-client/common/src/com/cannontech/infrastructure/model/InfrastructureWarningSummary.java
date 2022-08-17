@@ -20,8 +20,6 @@ public class InfrastructureWarningSummary {
     private int warningCcus;
     private int totalRepeaters;
     private int warningRepeaters;
-    private int totalMeters;
-    private int warningMeters;
     private Instant lastRun;
     
     private final Map<InfrastructureWarningDeviceCategory, IntSupplier> deviceCategoryTotalSuppliers = 
@@ -29,8 +27,7 @@ public class InfrastructureWarningSummary {
             InfrastructureWarningDeviceCategory.GATEWAY, this::getTotalGateways,
             InfrastructureWarningDeviceCategory.RELAY, this::getTotalRelays,
             InfrastructureWarningDeviceCategory.CCU, this::getTotalCcus,
-            InfrastructureWarningDeviceCategory.REPEATER, this::getTotalRepeaters,
-            InfrastructureWarningDeviceCategory.IPLINK_METER, this::getTotalMeters
+            InfrastructureWarningDeviceCategory.REPEATER, this::getTotalRepeaters
         );
     
     private final Map<InfrastructureWarningDeviceCategory, IntSupplier> deviceCategoryWarningSuppliers = 
@@ -38,8 +35,7 @@ public class InfrastructureWarningSummary {
             InfrastructureWarningDeviceCategory.GATEWAY, this::getWarningGateways,
             InfrastructureWarningDeviceCategory.RELAY, this::getWarningRelays,
             InfrastructureWarningDeviceCategory.CCU, this::getWarningCcus,
-            InfrastructureWarningDeviceCategory.REPEATER, this::getWarningRepeaters,
-            InfrastructureWarningDeviceCategory.IPLINK_METER, this::getWarningMeters
+            InfrastructureWarningDeviceCategory.REPEATER, this::getWarningRepeaters
         );
     
     public int getTotalDevices(InfrastructureWarningDeviceCategory category) {
@@ -114,22 +110,6 @@ public class InfrastructureWarningSummary {
         this.warningRepeaters = warningRepeaters;
     }
     
-    public int getTotalMeters() {
-        return totalMeters;
-    }
-    
-    public void setTotalMeters(int totalMeters) {
-        this.totalMeters = totalMeters;
-    }
-    
-    public int getWarningMeters() {
-        return warningMeters;
-    }
-    
-    public void setWarningMeters(int warningMeters) {
-        this.warningMeters = warningMeters;
-    }
-    
     public Instant getLastRun() {
         return lastRun;
     }
@@ -140,7 +120,7 @@ public class InfrastructureWarningSummary {
     
     /** Used in JSP **/
     public int getDevicesWithWarningsCount() {
-        return warningGateways + warningRelays + warningCcus + warningRepeaters + warningMeters;
+        return warningGateways + warningRelays + warningCcus + warningRepeaters;
     }
 
     /** Used in JSP **/
@@ -148,8 +128,7 @@ public class InfrastructureWarningSummary {
         return totalGateways - warningGateways +
                totalRelays - warningRelays +
                totalCcus - warningCcus +
-               totalRepeaters - warningRepeaters +
-               totalMeters - warningMeters;
+               totalRepeaters - warningRepeaters;
     }
     
     @Override
@@ -157,7 +136,7 @@ public class InfrastructureWarningSummary {
         return "InfrastructureWarningSummary [totalGateways=" + totalGateways + ", warningGateways=" + warningGateways
                + ", totalRelays=" + totalRelays + ", warningRelays=" + warningRelays + ", totalCcus=" + totalCcus
                + ", warningCcus=" + warningCcus + ", totalRepeaters=" + totalRepeaters + ", warningRepeaters="
-               + warningRepeaters + ", totalMeters=" + totalMeters + ", warningMeters=" + warningMeters + ", lastRun=" + lastRun + "]";
+               + warningRepeaters + ", lastRun=" + lastRun + "]";
     }
     
     public InfrastructureWarningSummary copy() {
@@ -167,12 +146,10 @@ public class InfrastructureWarningSummary {
         copy.setTotalGateways(totalGateways);
         copy.setTotalRelays(totalRelays);
         copy.setTotalRepeaters(totalRepeaters);
-        copy.setTotalMeters(totalMeters);
         copy.setWarningCcus(warningCcus);
         copy.setWarningGateways(warningGateways);
         copy.setWarningRelays(warningRelays);
         copy.setWarningRepeaters(warningRepeaters);
-        copy.setWarningMeters(warningMeters);
         return copy;
     }
 }

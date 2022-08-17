@@ -37,11 +37,9 @@
                     datatype: "json"
                 }).done(function (jsonResponse, textStatus, jqXHR) {
                     icon.removeClass("icon-accept");
-                    icon.removeClass("icon-disable");
+                    icon.removeClass("icon-delete");
                     icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
-                    $('.icon-accept').html(yg.iconSvg.iconAccept);
-                    $('.icon-disable').html(yg.iconSvg.iconDisable);
                     icon.attr("title",jsonResponse.loginStatus);
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     icon.removeClass("icon-spinner");
@@ -82,10 +80,10 @@
                                             <c:set var="cssClass" value="icon-accept" />
                                         </c:otherwise>
                                     </c:choose>
-                                    <a href="${operatorLoginUpdateUrl}" class="button toggle_status" title="${login.loginStatus}"><cti:icon icon="${cssClass}"/></a>
+                                    <a href="${operatorLoginUpdateUrl}" class="button toggle_status" title="${login.loginStatus}"><i class="icon ${cssClass}"></i></a>
                                 </c:if>
                                 <c:if test="${currentUserId == login.userID}">
-                                    <a class="button" disabled="disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><cti:icon icon="icon-accept"/></a>
+                                    <a class="button" disabled="disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i class="icon icon-accept"></i></a>
                                 </c:if>
                             </td>
                             <td>

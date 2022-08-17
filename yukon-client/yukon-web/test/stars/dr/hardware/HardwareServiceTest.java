@@ -1,15 +1,12 @@
 package stars.dr.hardware;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
@@ -31,7 +28,7 @@ public class HardwareServiceTest {
     private InventoryBaseDaoImpl inventoryBaseDao;
     private StarsSearchDao starsSearchDao;
     
-    @BeforeEach
+    @Before
     public void setUp() {
         
     	hardwareUiService = new HardwareUiServiceImpl() {
@@ -75,16 +72,16 @@ public class HardwareServiceTest {
     public void testGetHardwareMapForAccount() {
         
         ListMultimap<HardwareClass, Hardware> map = hardwareUiService.getHardwareMapForAccount(0);
-        assertNotNull(map);
-        assertTrue(!map.isEmpty(), "Map should not be empty");
+        Assert.assertNotNull(map);
+        Assert.assertTrue("Map should not be empty", !map.isEmpty());
         
         List<Hardware> switches = map.get(HardwareClass.SWITCH);
         List<Hardware> thermostats = map.get(HardwareClass.THERMOSTAT);
         List<Hardware> meters = map.get(HardwareClass.METER);
         
-        assertEquals(switches.size(), HardwareType.getForClass(HardwareClass.SWITCH).size());
-        assertEquals(thermostats.size(), HardwareType.getForClass(HardwareClass.THERMOSTAT).size());
-        assertEquals(meters.size(), HardwareType.getForClass(HardwareClass.METER).size());
+        Assert.assertEquals(switches.size(), HardwareType.getForClass(HardwareClass.SWITCH).size());
+        Assert.assertEquals(thermostats.size(), HardwareType.getForClass(HardwareClass.THERMOSTAT).size());
+        Assert.assertEquals(meters.size(), HardwareType.getForClass(HardwareClass.METER).size());
         
     }
     
@@ -100,7 +97,7 @@ public class HardwareServiceTest {
         catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             foundDuplicate = true;
         }
-        assertTrue(foundDuplicate);
+        Assert.assertTrue(foundDuplicate);
         
         possibleDuplicate.setInventoryId(0);
         foundDuplicate = false;
@@ -111,7 +108,7 @@ public class HardwareServiceTest {
         catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             foundDuplicate = true;
         }
-        assertFalse(foundDuplicate);
+        Assert.assertFalse(foundDuplicate);
     }
     
 }

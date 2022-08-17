@@ -7,16 +7,16 @@ public class WifiSuperMeterData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String apSsid;
-
+    
     private String configuredApBssid;
 
     private String connectedApBssid;
-
+    
     private WifiSecurityType securityType;
-
+    
     // A string represents an ipv6 address, e.x., "FD30:0000:0000:0001:0214:08FF:FE0A:BF91"
     // Yukon UI can display it directly without adding colons.
-    private String virtualGwIpv6Addr;
+    private String virtualGatewayIpv6Address;
 
     public String getApSsid() {
         return apSsid;
@@ -50,12 +50,12 @@ public class WifiSuperMeterData implements Serializable {
         this.securityType = securityType;
     }
 
-    public String getVirtualGwIpv6Addr() {
-        return virtualGwIpv6Addr;
+    public String getVirtualGatewayIpv6Address() {
+        return virtualGatewayIpv6Address;
     }
 
-    public void setVirtualGwIpv6Addr(String virtualGwIpv6Addr) {
-        this.virtualGwIpv6Addr = virtualGwIpv6Addr;
+    public void setVirtualGatewayIpv6Address(String virtualGatewayIpv6Address) {
+        this.virtualGatewayIpv6Address = virtualGatewayIpv6Address;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class WifiSuperMeterData implements Serializable {
         result = prime * result + ((connectedApBssid == null) ? 0 : connectedApBssid.hashCode());
         result = prime * result + ((securityType == null) ? 0 : securityType.hashCode());
         result = prime * result
-                + ((virtualGwIpv6Addr == null) ? 0 : virtualGwIpv6Addr.hashCode());
+            + ((virtualGatewayIpv6Address == null) ? 0 : virtualGatewayIpv6Address.hashCode());
         return result;
     }
 
@@ -97,10 +97,10 @@ public class WifiSuperMeterData implements Serializable {
             return false;
         if (securityType != other.securityType)
             return false;
-        if (virtualGwIpv6Addr == null) {
-            if (other.virtualGwIpv6Addr != null)
+        if (virtualGatewayIpv6Address == null) {
+            if (other.virtualGatewayIpv6Address != null)
                 return false;
-        } else if (!virtualGwIpv6Addr.equals(other.virtualGwIpv6Addr))
+        } else if (!virtualGatewayIpv6Address.equals(other.virtualGatewayIpv6Address))
             return false;
         return true;
     }
@@ -108,11 +108,11 @@ public class WifiSuperMeterData implements Serializable {
     @Override
     public String toString() {
         return String
-                .format("WifiSuperMeterData [apSsid=%s, configuredApBssid=%s, connectedApBssid=%s, securityType=%s, virtualGwIpv6Addr=%s]",
-                        apSsid,
-                        configuredApBssid,
-                        connectedApBssid,
-                        securityType,
-                        virtualGwIpv6Addr);
+            .format("WifiSuperMeterData [apSsid=%s, configuredApBssid=%s, connectedApBssid=%s, securityType=%s, virtualGatewayIpv6Address=%s]",
+                    apSsid,
+                    configuredApBssid,
+                    connectedApBssid,
+                    securityType,
+                    virtualGatewayIpv6Address);
     }
 }

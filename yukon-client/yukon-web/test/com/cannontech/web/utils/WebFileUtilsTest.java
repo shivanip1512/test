@@ -2,16 +2,15 @@ package com.cannontech.web.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertThat;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.cannontech.web.util.WebFileUtils;
@@ -34,8 +33,8 @@ public class WebFileUtilsTest {
         expectThatCsvDownloadHeaderIsSetProperly(response, fileName);
         
         List<String[]> data = readCSVData(response);
-        assertEquals(data.size(), dataRows.size() + 1);
-        assertEquals(data.get(0).length, headerRow.length);
+        assertThat(data.size(), is(equalTo(dataRows.size() + 1)));
+        assertThat(data.get(0).length, is(equalTo(headerRow.length)));
     }
 
     @Test
@@ -54,47 +53,47 @@ public class WebFileUtilsTest {
         expectThatCsvDownloadHeaderIsSetProperly(response, fileName);
         
         List<String[]> data = readCSVData(response);
-        assertEquals(data.size(), dataRows.size() + 1);
-        assertEquals(data.get(0).length, headerRow.size());
+        assertThat(data.size(), is(equalTo(dataRows.size() + 1)));
+        assertThat(data.get(0).length, is(equalTo(headerRow.size())));
     }
     
     @Test
     public void validateFileNames() {
-        assertFalse(WebFileUtils.isValidWindowsFilename(""));
-        assertFalse(WebFileUtils.isValidWindowsFilename(" "));
-        assertFalse(WebFileUtils.isValidWindowsFilename("\\"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("/"));
-        assertFalse(WebFileUtils.isValidWindowsFilename(":"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("*"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("\""));
-        assertFalse(WebFileUtils.isValidWindowsFilename("<"));
-        assertFalse(WebFileUtils.isValidWindowsFilename(">"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("|"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("contains*oneinvalid char"));
-        assertFalse(WebFileUtils.isValidWindowsFilename("contains*two*invalid chars"));
-        assertFalse(WebFileUtils.isValidWindowsFilename(" start with space"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(""));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(" "));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("\\"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("/"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(":"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("*"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("\""));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("<"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(">"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("|"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("contains*oneinvalid char"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("contains*two*invalid chars"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(" start with space"));
         
-        assertTrue(WebFileUtils.isValidWindowsFilename("mine,yours"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("."));
-        assertTrue(WebFileUtils.isValidWindowsFilename(". "));
-        assertTrue(WebFileUtils.isValidWindowsFilename("123"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("1a2B"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("My Filename"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("my_filename"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("my fav filename"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("mine%"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("mine's"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("mine#1"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("foo("));
-        assertTrue(WebFileUtils.isValidWindowsFilename(")bar"));
-        assertTrue(WebFileUtils.isValidWindowsFilename("foo(bar)"));        
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine,yours"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("."));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename(". "));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("123"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("1a2B"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("My Filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my_filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my fav filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine%"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine's"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine#1"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("foo("));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename(")bar"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("foo(bar)"));        
     }
 
     private void expectThatCsvDownloadHeaderIsSetProperly(MockHttpServletResponse response, String fileName) {
-        assertEquals(response.getHeader("Content-Type"), "application/force-download");
-        assertEquals(response.getHeader("Content-Disposition"), "attachment; filename=\"" + fileName + "\"");
+        assertThat(response.getHeader("Content-Type"), is(equalTo("application/force-download")));
+        assertThat(response.getHeader("Content-Disposition"), is(equalTo("attachment; filename=\"" + fileName + "\"")));
     }
 
     private List<String[]> readCSVData(MockHttpServletResponse response) throws Exception {

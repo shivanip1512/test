@@ -306,20 +306,6 @@
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
                         </bean>
-                        <bean class="com.cannontech.web.input.InputBase">
-                            <property name="field" value="onInterval"/>
-                            <property name="displayName" value="Include Interval Times Only"/>
-                            <property name="type">
-                                <bean class="com.cannontech.web.input.type.BooleanType"/>
-                            </property>
-                        </bean>
-                        <bean class="com.cannontech.web.input.InputBase">
-                            <property name="field" value="interval"/>
-                            <property name="displayName" value="Interval"/>
-                            <property name="type">
-                                <bean class="com.cannontech.web.input.type.StringType"/>
-                            </property>
-                        </bean>
     				</list>
     			</property>
     		</bean>

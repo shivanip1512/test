@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.google.common.collect.Lists;
@@ -81,27 +80,27 @@ public class NetworkMapFilter {
     }
     
     public enum Color {
-        GREEN(YukonColorPalette.GREEN, 1),
-        BLUE(YukonColorPalette.BLUE, 2),
-        ORANGE(YukonColorPalette.ORANGE, 3),
-        YELLOW(YukonColorPalette.YELLOW, 4),
-        WINE(YukonColorPalette.WINE, 5),
-        TEAL(YukonColorPalette.TEAL, 6),
-        LIGHT_GREEN(YukonColorPalette.SAGE, 7),
-        PURPLE(YukonColorPalette.PURPLE, 8),
-        SKY(YukonColorPalette.SKY, 9),
-        GREY(YukonColorPalette.GRAY, 10);
+        GREEN("#009933", 1),
+        BLUE("#4d90fe", 2),
+        ORANGE("#ec971f", 3),
+        YELLOW("#f0cb2f", 4),
+        WINE("#ce8799", 5),
+        TEAL("#00b2a9", 6),
+        LIGHT_GREEN("#b2c98d", 7),
+        PURPLE("#b779f4", 8),
+        SKY("#abd7e1", 9),
+        GREY("#888", 10);
         
-        private Color(YukonColorPalette color, int order) {
-            this.color = color;
+        private Color(String hexColor, int order) {
+            this.hexColor = hexColor;
             this.order = order;
         }
 
-        private final YukonColorPalette color;
+        private final String hexColor;
         private final int order;
         
         public String getHexColor() {
-            return color.getHexValue();
+            return hexColor;
         }
         
         public int getOrder() {

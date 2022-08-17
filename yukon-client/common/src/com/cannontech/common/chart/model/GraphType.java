@@ -3,19 +3,19 @@ package com.cannontech.common.chart.model;
 import org.apache.commons.lang3.StringUtils;
 
 public enum GraphType {
-    LINE ("area"), 
-    COLUMN ("column"),
+    LINE ("line"), 
+    COLUMN ("bar"),
     PIE("pie"),
     ;
     
-    private final String highChartType;
+    private final String flotType;
 
-    private GraphType(String highChartType) {
-        this.highChartType = highChartType;
+    private GraphType(String flotType) {
+        this.flotType = flotType;
     }
 
-    public String getHighChartType() {
-        return highChartType;
+    public String getFlotType() {
+        return flotType;
     }
 
     /**

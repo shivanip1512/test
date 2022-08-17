@@ -2,7 +2,6 @@ package com.cannontech.web.dr.assetavailability;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +142,6 @@ public class AssetAvailabilityController {
         
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<RfnGateway> gateways = assetAvailabilityService.getRfnGatewayList(paoIdentifier);
-        gateways.sort(Comparator.comparing(RfnGateway::getName, String.CASE_INSENSITIVE_ORDER));
         model.addAttribute("gateways", gateways);
         
         /* set Asset Availability filter help text. */
@@ -191,9 +189,9 @@ public class AssetAvailabilityController {
                     .map(d -> d.getDeviceId())
                     .collect(Collectors.toList());
                 DeviceCollection statusCollection = deviceMemoryCollectionProducer.createDeviceCollection(ids);
-                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getHexColor(), status.getFormatKey());
+                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getColor(), status.getFormatKey());
                 colorCollections.add(mapCollection);
-                mappingMap.put(status.getHexColor(), ids);
+                mappingMap.put(status.getColor(), ids);
             }
             attrs.addFlashAttribute("mappingColors", mappingMap);
             attrs.addFlashAttribute("colorCollections", colorCollections);

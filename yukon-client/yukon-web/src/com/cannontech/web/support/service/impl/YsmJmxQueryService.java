@@ -1,5 +1,10 @@
 package com.cannontech.web.support.service.impl;
 
+import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_BROKER_CONNECTION;
+import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
+
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -8,31 +13,29 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ApplicationId;
-import com.cannontech.common.util.jmx.JmxConnectorHelper;
+import com.cannontech.common.util.jmx.JmxHelper;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class YsmJmxQueryService {
 
     private static final Logger log = YukonLogManager.getLogger(YsmJmxQueryService.class);
-    @Autowired private JmxConnectorHelper helper;
 
     private JMXServiceURL messageBrokerServiceUrl;
     private JMXConnector messageBrokerJmxConnector;
     private JMXServiceURL serviceManagerServiceUrl;
     private JMXConnector serviceManagerJmxConnector;
 
-    @PostConstruct
-    public void init() {
-        messageBrokerServiceUrl = helper.getJMXServiceURL(ApplicationId.MESSAGE_BROKER);
-        serviceManagerServiceUrl = helper.getJMXServiceURL(ApplicationId.SERVICE_MANAGER);
-        messageBrokerJmxConnector = helper.getJMXConnector(ApplicationId.MESSAGE_BROKER);
-        serviceManagerJmxConnector = helper.getJMXConnector(ApplicationId.SERVICE_MANAGER);
-    }
-
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationSource config;
+    
     public Object get(ObjectName name, String attribute, JMXConnector jmxConnector, BeanTypeForJMXConnector beanType) throws Exception {
         
         try {
@@ -79,4 +82,44 @@ public class YsmJmxQueryService {
             return returnType.cast(returnObject);
         }
     }
+
+    /*
+     * JMX port for Message Broker : 1097
+     * JMX port for Service Manager Broker : 1093
+     */
+
+    @PostConstruct
+    public void init() {
+
+        String hostUri = globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
+        String serverBrokerConnection = config.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION);
+
+        try {
+            if (serverBrokerConnection != null) {
+                hostUri = StringUtils.substringBetween(serverBrokerConnection, "//", ":");
+            }
+            String messageBrokerJMXConnectionUrl = buildJmxConnectionUrl(hostUri, ApplicationId.MESSAGE_BROKER);
+            messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
+            messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
+        } catch (IOException e) {
+            log.error("Could not init jmx connection for Yukon Message Broker.");
+        }
+
+        try {
+            String clientBrokerConnection = config.getString(JMS_CLIENT_BROKER_CONNECTION);
+            if (clientBrokerConnection != null) {
+                hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
+            }
+            String serviceManagerJMXConnectionUrl = buildJmxConnectionUrl(hostUri, ApplicationId.SERVICE_MANAGER);
+            serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
+            serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
+        } catch (IOException e) {
+            log.error("Could not init jmx connection for Service Manager.");
+        }
+    }
+    
+    private String buildJmxConnectionUrl(String hostUri, ApplicationId application) {
+        return "service:jmx:rmi:///jndi/rmi://" + hostUri + ":" + JmxHelper.getApplicationJmxPort(application) + "/jmxrmi";
+    }
+
 }

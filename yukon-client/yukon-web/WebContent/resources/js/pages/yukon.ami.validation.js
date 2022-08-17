@@ -63,8 +63,9 @@ yukon.ami.validation = (function () {
          * Set page size in form inputs since form is posted via ajax
          * on any filtering changes.
          */
-        $(document).on('change', yg.selectors.pageSize, function () {
-            $('.js-page-size').val($(this).val());
+        $(document).on('click', 'a[data-page-size]', function () {
+            var size = $(this).data('pageSize');
+            $('.js-page-size').val(size);
         });
         
         $('#review-form .js-display-type').click(function (e) {
@@ -82,10 +83,9 @@ yukon.ami.validation = (function () {
         
         //save/remove actioned items
         $('#review-form').on('click','[id="saveButton"]', function (e) {
-            var urlParams ='?itemsPerPage=',
-                paging = $('.paging-area');
-            if (paging.length > 0) {
-                urlParams += paging.data('pageSize');
+            var urlParams ='?itemsPerPage=';
+            if ($('.paging-area span[data-page-size]').text().length > 0) {
+                urlParams += $('.paging-area span[data-page-size]').text();
             } else {
                 urlParams = '';
             }

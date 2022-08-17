@@ -6,11 +6,10 @@
 namespace Cti {
 namespace CalcLogic {
 
-CalcWorkerThread::CalcWorkerThread( const FunctionImpl & function )
+CalcWorkerThread::CalcWorkerThread( const Function & function )
     :   WorkerThread( function ),
         _name( function._name ),
         _isPaused( false ),
-        _isWaiting( false ),
         _pauseCount{ 0 }
 {
     // empty
@@ -48,14 +47,10 @@ size_t CalcWorkerThread::waitForResume()
 
     boost::unique_lock<boost::mutex> lock( _pauseMutex );
 
-    _isWaiting = true;
-
     while ( _isPaused )
     {
         _pauseCond.wait( lock );
     }
-
-    _isWaiting = false;
 
     return getPauseCount();
 }

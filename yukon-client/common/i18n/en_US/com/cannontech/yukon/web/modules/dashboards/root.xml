@@ -63,7 +63,7 @@
     <entry key="yukon.web.modules.dashboard.view.exception.notOwner">Unable to view dashboard {0}. You do not have access to this dashboard.</entry>
     <entry key="yukon.web.modules.dashboard.exception.deviceGroup.required">Valid Device Group selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.controlAreaOrProgramOrScenarioId.required">Valid Scenario, Control Area, or Program selection is required.</entry>
-    <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter selection is required for Meter Trend.</entry>
+    <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.trendId.required">Valid trend selection is required.</entry>
     <entry key="yukon.web.modules.dashboard.exception.trendId.notFound">The selected trend was not found.</entry>
     <!-- Add Widgets JSP -->
@@ -101,7 +101,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.name">Data Collection</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.description">Displays data collection information for a selected device group.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.name">Infrastructure Warnings</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, IPLink Meters, CCUs and Repeaters.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PAO_NOTES_SEARCH.name">Notes Search</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PAO_NOTES_SEARCH.description">Displays all Notes matching the filter values selected.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.name">Comm Channel Queue Counts</entry>
@@ -136,6 +136,7 @@
     <entry key="yukon.web.modules.dashboard.widgetCategory.ALL">All</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.AMI">AMI</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.DR">Demand Response</entry>
+    <entry key="yukon.web.modules.dashboard.widgetCategory.IVVC">Volt/Var</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.OTHER">Other</entry>
     
     <!-- Dashboard Page Types -->

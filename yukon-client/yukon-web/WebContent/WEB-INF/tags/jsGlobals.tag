@@ -34,60 +34,15 @@ var yg = {
             long_date_time: 'MMM DD hh:mm:ss A',
             long_date_time_hm: 'MMM DD hh:mm A',
             both_with_ampm: 'MM/DD/YYYY hh:mm:ss A',
-            date: 'MM/DD/YYYY',
-            date_hms_12: 'MM/DD/YYYY hh:mm:ss a'
+
         },
         phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
     
     highcharts_options: {
-        disable_credits: {
-            enabled: false
-        },
-        lang: {
-            thousandsSep: ","
-        },
         global: {
             useUTC: false,
             timezoneOffset : new Date().getTimezoneOffset()
-        },
-        chart_options: {
-            renderTo: 'chart',
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false,
-        },
-        pie_chart_options: {
-            legend: {
-                symbolPadding: -60,
-                symbolWidth: 0.001,
-                symbolHeight: 0.001,
-                symbolRadius: 0,
-                align: 'right',
-                borderWidth: 0,
-                useHTML: true,
-                layout: 'vertical',
-                verticalAlign: 'middle'
-            },
-            title: { 
-                text: null
-            },
-            tooltip: {
-                pointFormat: '<b>{point.displayPercentage}, {point.x} <cti:msg2 key="yukon.common.devices"/></b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: false
-                    },
-                    showInLegend: true,
-                    borderWidth: 0.25,
-                }
-            },
-            series_type_pie: 'pie',
-            series_type_area: 'area',
         }
     },
     
@@ -96,11 +51,8 @@ var yg = {
     // Common selectors in all of Yukon.
     selectors: {
         // Any of the paging controls (previous, next, page counts)
-        paging : '.paging-area .previous-page .button, .paging-area .next-page .button',
-        pageSize: '.paging-area .page-size .js-items-per-page'
+        paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
     },
-    
-    colors: JSON.parse('<cti:getYukonColorPaletteJson/>'),
     
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
@@ -135,34 +87,7 @@ var yg = {
         nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>',
         remove: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.ok"/>',
         confirmRemoveMessage: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.message"/>',
-        confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>',
-        noData : '<cti:msg2 key="yukon.common.chart.noData"/>',
-        exceedsDataLimit : '<cti:msg2 key="yukon.common.chart.exceedsDataLimit"/>',
-        pointNotFound : '<cti:msg2 key="yukon.common.pointNotFound"/>',
-        pointDataNotFound: '<cti:msg2 key="yukon.common.pointDataNotFound"/>',
-        settings: '<cti:msg2 key="yukon.common.settings"/>',
-        childSelected: '<cti:msg2 key="yukon.common.childSelected"/>',
-        childrenSelected: '<cti:msg2 key="yukon.common.childrenSelected"/>'
-    },
-    
-    iconSvg: {
-    	iconCloseX: '<cti:getIconSvg iconClass="icon-close-x"/>',
-    	iconMagnifier: '<cti:getIconSvg iconClass="icon-magnifier"/>',
-    	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
-    	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
-    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
-    	iconAccept: '<cti:getIconSvg iconClass="icon-accept"/>',
-    	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
-       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
-       	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
-       	iconDisable: '<cti:getIconSvg iconClass="icon-disable"/>',
-       	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
-       	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',
-       	iconExpand: '<cti:getIconSvg iconClass="icon-expand"/>',
-       	iconCollapse: '<cti:getIconSvg iconClass="icon-collapse"/>',
-       	iconTick: '<cti:getIconSvg iconClass="icon-tick"/>',
-       	iconDatabaseAdd: '<cti:getIconSvg iconClass="icon-database-add"/>',
-       	iconArrowForward: '<cti:getIconSvg iconClass="icon-arrow-forward"/>'
+        confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',

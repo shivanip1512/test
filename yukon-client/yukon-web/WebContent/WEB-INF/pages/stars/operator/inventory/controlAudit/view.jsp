@@ -9,13 +9,14 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="controlAudit">
+<cti:includeScript link="HIGH_STOCK"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.control.audit.js"/>
 
 <style>
-.badge-controlled { background-color: #2ca618; }
-.badge-uncontrolled { background-color: #e99012; }
-.badge-unknown { background-color: #0088f2; }
-.badge-unsupported { background-color: #7b8387; }
+.badge-controlled { background-color: #093; }
+.badge-uncontrolled { background-color: #fb8521; }
+.badge-unknown { background-color: #4d90fe; }
+.badge-unsupported { background-color: #888; }
 </style>
 
 <c:set var="auditId" value="${not empty audit ? audit.taskId : ''}"/>
@@ -35,8 +36,8 @@
             <c:set var="clazz" value="${empty auditId ? 'dn' : ''}"/>
             <div class="buffered progress-lg ${clazz}">
                 <span class="name"><i:inline key="yukon.common.progress"/>:&nbsp;</span>
-                <div class="progress dif vam js-progress">
-                    <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"
+                <div class="progress dib vam js-progress">
+                    <div class="progress-bar progress-bar-info progress-bar-striped active"
                          role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <span class="js-percent-text"></span>

@@ -26,14 +26,14 @@
         <div class="scroll-md">
         <c:choose>
             <c:when test="${!isDisable}"> 
-            <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix no-stripes">
+            <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix">
                 <thead>
                     <tr>
                         <th></th>
                         <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
                         <th class="relay"><i:inline key=".relay"/></th>
                         <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                        <th class="group"><i:inline key=".group"/></th>
+                        	<th class="group"><i:inline key=".group"/></th>
                         </cti:checkEnergyCompanySetting>
                     </tr>
                 </thead>
@@ -70,23 +70,21 @@
                                 </form:select>
                             </td>
                             
-                            <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
                                 <td>
                                     <c:set var="nestClass" value="${isNest ? 'js-nest-group' : ''}"/>
-                                    <c:if test="${empty loadGroups}">
-                                        <i:inline key=".groupNotApplicable"/>
-                                    </c:if>
-                                    <c:if test="${!empty loadGroups}">
-                                        <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
-                                        <form:select path="inventoryEnrollments[${status.index}].loadGroupId" 
-                                                     items="${loadGroups}"
-                                                     itemLabel="name" 
-                                                     itemValue="paoIdentifier.paoId" 
-                                                     cssClass="js-enroll-relay ${nestClass}" 
-                                                     disabled="${!enrolled}"/>
-                                    </c:if>
-                                </td>
-                            </cti:checkEnergyCompanySetting>
+        							<tags:nameValueContainer2 tableClass="stacked">
+                							<c:if test="${empty loadGroups}">
+                    							<i:inline key=".groupNotApplicable"/>
+                							</c:if>
+                							<c:if test="${!empty loadGroups}">
+                    							<c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
+                    							<form:select path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}"
+                        						itemLabel="name" itemValue="paoIdentifier.paoId" cssClass="js-enroll-relay ${nestClass}" disabled="${!enrolled}"/>
+                							</c:if>
+       								 </tags:nameValueContainer2>
+       								 </td>
+   							 	</cti:checkEnergyCompanySetting>
                             
                         </tr>
                     </c:forEach>

@@ -8,11 +8,9 @@ struct RfDa
 {
     using Bytes = std::vector<unsigned char>;
 
-    static void processRequest(
-        const E2eReplySender e2eReplySender, 
-        const e2edt_request_packet& request, 
-        const RfnIdentifier rfnIdentifier, 
-        const Messaging::Rfn::ApplicationServiceIdentifiers applicationServiceId);
+    using E2eReplySender = std::function<void(const Messaging::Rfn::E2eDataRequestMsg &, const e2edt_reply_packet &)>;
+
+    static void processRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
         
     static Bytes buildDnp3Response(const Bytes& request);
 };

@@ -14,7 +14,7 @@ Class-Path: ./
  jcpagelayout450K.jar 
  jcchart401K.jar 
  sqljdbc42.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  jaxm-runtime.jar 
  jaxm-api.jar 
  saaj.jar 

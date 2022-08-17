@@ -25,7 +25,7 @@ public class LMControlLogModel extends SystemLogModel
 	protected final int NUMBER_COLUMNS = 4;
 	
 	/** A string for the title of the data */
-	private static String title = "Load Management Control Log";
+	private static String title = "LOAD MANAGEMENT CONTROL LOG";
 
 	// MUST OVERRIDE THE COLUMM INT REFERENCES FOR GETATTRIBUTES TO WORK
 	protected final static int DATE_COLUMN = 0;

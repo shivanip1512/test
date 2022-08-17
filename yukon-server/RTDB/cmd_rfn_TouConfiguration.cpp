@@ -720,9 +720,9 @@ std::string RfnTouHolidayConfigurationCommand::decodeHoliday( const Bytes& value
 
         CtiTime holidayTime( date );
 
-        holidays[holiday_nbr] = CtiDate(date);
+        description += "\n Date " + CtiNumStr( holiday_nbr + 1 ) + " - " + holidayTime.asString();
 
-        description += "\n Date " + CtiNumStr( holiday_nbr + 1 ) + " - " + holidays[holiday_nbr].asStringISO() + " (" + CtiNumStr(date).hex() + ")";
+        holidays[holiday_nbr] = CtiDate( holidayTime );
     }
 
     validate( Condition( ! _holidays_received, ClientErrors::InvalidData )

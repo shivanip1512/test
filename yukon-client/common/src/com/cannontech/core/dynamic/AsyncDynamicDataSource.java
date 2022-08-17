@@ -128,7 +128,7 @@ public interface AsyncDynamicDataSource {
     
     long getTags(int pointId);
 
-    PointValueQualityTagHolder getPointValue(int pointId);
+    PointValueQualityHolder getPointValue(int pointId);
 
     Set<Signal> getSignals(int pointId);
 
@@ -158,5 +158,5 @@ public interface AsyncDynamicDataSource {
     /**
      * This method gets the point data for given points
      */
-    Set<? extends PointValueQualityTagHolder> getPointDataOnce(Set<Integer> pointIds);
+    Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds);
 }

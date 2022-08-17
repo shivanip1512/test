@@ -1,15 +1,14 @@
 package com.cannontech.common.pao.definition.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -40,7 +39,7 @@ public class PaoDefinitionServiceImplTest {
     private AttributeServiceImpl attributeService;
     private PointDao pointDao;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         service = new PaoDefinitionServiceImpl();
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
@@ -81,32 +80,28 @@ public class PaoDefinitionServiceImplTest {
 
         List<PointBase> actualPoints = service.createDefaultPointsForPao(device);
 
-        assertEquals(expectedPoints, actualPoints, "Default points weren't as expected");
+        assertEquals("Default points weren't as expected", expectedPoints, actualPoints);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_createDefaultPointsForPao_forUnSupportedDevice() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            device = new SimpleDevice(1, 9999999);
-        });
+        device = new SimpleDevice(1, 9999999);
     }
 
     @Test
     public void test_isPaoTypeChangeable_forSupportedDevice() {
         // Test with changeable device
-        assertTrue(service.isPaoTypeChangeable(device), "device1 is changeable");
+        assertTrue("device1 is changeable", service.isPaoTypeChangeable(device));
 
         // Test with device that is not changeable
         device = new SimpleDevice(1, DeviceTypes.MCT318L);
-        assertTrue(service.isPaoTypeChangeable(device), "device3 is not changeable");
+        assertTrue("device3 is not changeable", service.isPaoTypeChangeable(device));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_isPaoTypeChangeable_forUnupportedDevice() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            device = new SimpleDevice(1, 999999);
-            service.isPaoTypeChangeable(device);
-        });
+        device = new SimpleDevice(1, 999999);
+        service.isPaoTypeChangeable(device);
     }
 
     @Test
@@ -126,7 +121,7 @@ public class PaoDefinitionServiceImplTest {
         // Test with device that is not changeable
         device = new SimpleDevice(1, DeviceTypes.LCR6200_RFN);
         Set<PaoDefinition> actualDevices2 = service.getChangeablePaos(device);
-        assertTrue(actualDevices2.isEmpty(), "Should be empty set");
+        assertTrue("Should be empty set", actualDevices2.isEmpty());
     }
 
     @Test
@@ -151,7 +146,7 @@ public class PaoDefinitionServiceImplTest {
 
         List<PointBase> actualPoints = service.createAllPointsForPao(device);
 
-        assertEquals(expectedPoints, actualPoints, "All points weren't as expected");
+        assertEquals("All points weren't as expected", expectedPoints, actualPoints);
     }
 
 }

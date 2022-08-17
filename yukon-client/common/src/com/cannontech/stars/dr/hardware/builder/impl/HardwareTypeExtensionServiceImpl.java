@@ -2,11 +2,9 @@ package com.cannontech.stars.dr.hardware.builder.impl;
 
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -20,7 +18,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionService {
     @Autowired private DbChangeManager dbChangeManager;
-    private static final Logger log = YukonLogManager.getLogger(HardwareTypeExtensionServiceImpl.class);
+    
     private ImmutableMap<HardwareType,HardwareTypeExtensionProvider> builderMap = ImmutableMap.of();
     
     @Override
@@ -51,7 +49,6 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
         if (hardwareBuilder == null) return;
         
         hardwareBuilder.preDeleteCleanup(pao, inventoryId);
-        log.debug("Pre Delete Cleanup Complete pao:{} inventoryId:{}", pao, inventoryId);
     }
     
     @Override
@@ -61,7 +58,6 @@ public class HardwareTypeExtensionServiceImpl implements HardwareTypeExtensionSe
         if (hardwareBuilder == null) return;
         
         hardwareBuilder.deleteDevice(pao, inventoryId);
-        log.debug("Deleted device:{} inventoryId:{} hardwareBuilder:{}", pao, inventoryId, hardwareBuilder.getClass().getName());
     }
     
     @Override

@@ -1,12 +1,11 @@
 package com.cannontech.web.common.pao.service;
 
 import java.util.Comparator;
-import java.util.List;
 
 import com.cannontech.amr.meter.model.PointSortField;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.YukonPoint;
@@ -17,10 +16,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     private final String pointName;
     private final int pointId;
     private final PaoPointIdentifier paoPointIdentifier;
-    //first attribute
-    private final Attribute attribute;
-    //all attributes associated with a point
-    private final List<Attribute> allAttributes;
+    private final BuiltInAttribute attribute;
     
     public static Comparator<LiteYukonPoint> POINTNAME_COMPARATOR = new Comparator<LiteYukonPoint>() {
         @Override
@@ -78,12 +74,11 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         orderByToComparatorMap = mapBuilder.build();
     }
     
-    private LiteYukonPoint(PaoPointIdentifier paoPointId, Attribute attribute, List<Attribute> allAttributes, String name, int pointId) {
+    private LiteYukonPoint(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
         this.paoPointIdentifier = paoPointId;
         this.attribute = attribute;
         this.pointName = name;
         this.pointId = pointId;
-        this.allAttributes = allAttributes;
     }
     
     public String getPointName() {
@@ -94,7 +89,7 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         return pointId;
     }
     
-    public Attribute getAttribute() {
+    public BuiltInAttribute getAttribute() {
         return attribute;
     }
     
@@ -102,8 +97,8 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
         return paoPointIdentifier;
     }
     
-    public static LiteYukonPoint of(PaoPointIdentifier paoPointId, Attribute attribute, List<Attribute> allAttributes, String name, int pointId) {
-        return new LiteYukonPoint(paoPointId, attribute, allAttributes, name, pointId);
+    public static LiteYukonPoint of(PaoPointIdentifier paoPointId, BuiltInAttribute attribute, String name, int pointId) {
+        return new LiteYukonPoint(paoPointId, attribute, name, pointId);
     }
     
     public static Comparator<LiteYukonPoint> getComparatorForSortField(PointSortField pointSortField) {
@@ -118,14 +113,6 @@ public class LiteYukonPoint implements YukonPao, YukonPoint {
     @Override
     public PaoIdentifier getPaoIdentifier() {
         return paoPointIdentifier.getPaoIdentifier();
-    }
-
-    public List<Attribute> getAllAttributes() {
-        return allAttributes;
-    }
-    
-    public boolean isDisplayPopup() {
-        return allAttributes.size() > 1;
     }
     
 }

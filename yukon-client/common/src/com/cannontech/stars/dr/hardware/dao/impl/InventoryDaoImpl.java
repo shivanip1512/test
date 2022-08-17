@@ -884,7 +884,6 @@ public class InventoryDaoImpl implements InventoryDao {
 
         final boolean usePhone = StringUtils.isNotBlank(inventorySearch.getPhoneNumber());
         final boolean useWorkOrder = StringUtils.isNotBlank(inventorySearch.getWorkOrderNumber());
-        final boolean useMacAddress = StringUtils.isNotBlank(inventorySearch.getMacAddress());
 
         SearchResults<InventorySearchResult> results = new SearchResults<>();
 
@@ -912,13 +911,7 @@ public class InventoryDaoImpl implements InventoryDao {
             selectData.append("WOB.OrderNumber,");
         }
         selectData.append("IB.AlternateTrackingNumber");
-        if (useMacAddress) {
-            //Add , at the beginning as this query is optional.
-            selectData.append(", HWT.MacAddress,");
-            selectData.append("ZBEP.MacAddress,");
-            selectData.append("DMA.MacAddress, DMA.SecondaryMacAddress");
-        }
-
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("FROM InventoryBase IB");
         sql.append("JOIN ECToInventoryMapping IM on IM.InventoryID = IB.InventoryID");
@@ -937,12 +930,6 @@ public class InventoryDaoImpl implements InventoryDao {
         if (useWorkOrder) {
             sql.append("JOIN WorkOrderBase WOB on WOB.AccountID = CA.AccountID");
         }
-        if (useMacAddress) {
-            sql.append("LEFT JOIN HoneywellWifiThermostat HWT ON HWT.deviceId = IB.deviceId");
-            sql.append("LEFT JOIN ZBEndPoint ZBEP ON ZBEP.deviceId = IB.deviceId");
-            sql.append("LEFT JOIN DeviceMacAddress DMA ON DMA.deviceId = IB.deviceId");
-        }
-
         sql.append("WHERE");
         
         // Where clause
@@ -981,16 +968,6 @@ public class InventoryDaoImpl implements InventoryDao {
             whereClause.add(new SqlStatementBuilder("IB.AlternateTrackingNumber").startsWith(inventorySearch.getAltTrackingNumber()));
         }
         sql.append(whereClause);
-        if (useMacAddress) {
-            sql.append("AND");
-            // When MAC address is provided add this clause. As MAC address is there in 3 tables, use OR clause within the tables.
-            SqlFragmentCollection orWhereClause = SqlFragmentCollection.newOrCollection();
-            orWhereClause.add(new SqlStatementBuilder("HWT.MacAddress").contains(inventorySearch.getMacAddress()));
-            orWhereClause.add(new SqlStatementBuilder("ZBEP.MacAddress").contains(inventorySearch.getMacAddress()));
-            orWhereClause.add(new SqlStatementBuilder("DMA.MacAddress").contains(inventorySearch.getMacAddress()));
-            orWhereClause.add(new SqlStatementBuilder("DMA.SecondaryMacAddress").contains(inventorySearch.getMacAddress()));
-            sql.append(orWhereClause);
-        }
         
         int total = jdbcTemplate.queryForInt(selectCount.append(sql));
         

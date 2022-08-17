@@ -16,7 +16,6 @@ struct test_state_rfDa
 {
     std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
-    RfnDevice::RequestMsgList    requestMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
@@ -61,7 +60,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
     {
         CtiCommandParser parse("getconfig dnp address");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 

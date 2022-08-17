@@ -1,10 +1,9 @@
 package com.cannontech.web;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,12 +18,12 @@ import java.util.stream.Stream;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
-import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.system.ThirdPartyIconLibrary;
 import com.cannontech.system.ThirdPartyLibraries;
+import com.cannontech.system.ThirdPartyLibraryParser;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -51,54 +50,51 @@ public class ThirdPartyIconLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class, libraryYaml.getFilename());
+        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
         
-        if (documentedLibraries.iconLibraries != null) {
-            Map<Path, ThirdPartyIconLibrary> documentedLibrariesByProject = 
-                    Maps.uniqueIndex(documentedLibraries.iconLibraries, 
-                                     l -> Paths.get(iconBasePath, l.path)); 
+        Map<Path, ThirdPartyIconLibrary> documentedLibrariesByProject = 
+                Maps.uniqueIndex(documentedLibraries.iconLibraries, 
+                                 l -> Paths.get(iconBasePath, l.path)); 
+        
+        Set<Path> allIcons = Files.list(Paths.get(iconBasePath))
+                .flatMap(ThirdPartyIconLibraryTest::recurse)
+                .collect(Collectors.toSet());
+
+        Set<Path> thirdPartyIcons = Sets.filter(allIcons, p -> !ignoredIcons.contains(p));
+        
+        Set<Path> unknownFiles = Sets.difference(thirdPartyIcons, documentedLibrariesByProject.keySet());
+        assertTrue("Unknown icons found: " + unknownFiles, unknownFiles.isEmpty());
+
+        Set<Path> missingFiles = Sets.difference(documentedLibrariesByProject.keySet(), thirdPartyIcons);
+        assertTrue("Icons listed in thirdPartyLibraries.yaml, but missing from WebContent/WebConfig/yukon/Icons: " + missingFiles, missingFiles.isEmpty());
+        
+        MessageDigest md_md5 = MessageDigest.getInstance("MD5");
+        MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
+
+        documentedLibrariesByProject.entrySet().stream().forEach(e -> {
+            assertFalse(e.getKey() + " must have a project name", StringUtils.isEmpty(e.getValue().project));
+            assertFalse(e.getKey() + " must have a project version", StringUtils.isEmpty(e.getValue().version));
+            assertFalse(e.getKey() + " must have a project URL", StringUtils.isEmpty(e.getValue().projectUrl));
+            assertFalse(e.getKey() + " must have a license type", CollectionUtils.isEmpty(e.getValue().licenses));
+            assertFalse(e.getKey() + " must have a license URL", CollectionUtils.isEmpty(e.getValue().licenseUrls));
+            assertFalse(e.getKey() + " must have a JIRA entry", StringUtils.isEmpty(e.getValue().jira));
+            assertNotNull(e.getKey() + " must have an updated date", e.getValue().updated);
             
-            Set<Path> allIcons = Files.list(Paths.get(iconBasePath))
-                    .flatMap(ThirdPartyIconLibraryTest::recurse)
-                    .collect(Collectors.toSet());
-
-            Set<Path> thirdPartyIcons = Sets.filter(allIcons, p -> !ignoredIcons.contains(p));
+            md_md5.reset();
+            md_sha1.reset();
             
-            Set<Path> unknownFiles = Sets.difference(thirdPartyIcons, documentedLibrariesByProject.keySet());
-            assertTrue(unknownFiles.isEmpty(), "Unknown icons found: " + unknownFiles);
+            byte[] contents;
+            try {
+                contents = Files.readAllBytes(e.getKey());
+            } catch (IOException e1) {
+                throw new RuntimeException("Could not read " + e.getKey(), e1);
+            }
+            String md5 = Hex.encodeHexString(md_md5.digest(contents));
+            String sha1 = Hex.encodeHexString(md_sha1.digest(contents));
 
-            Set<Path> missingFiles = Sets.difference(documentedLibrariesByProject.keySet(), thirdPartyIcons);
-            assertTrue(missingFiles.isEmpty(), "Icons listed in thirdPartyLibraries.yaml, but missing from WebContent/WebConfig/yukon/Icons: " + missingFiles);
-            
-            MessageDigest md_md5 = MessageDigest.getInstance("MD5");
-            MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
-
-            documentedLibrariesByProject.entrySet().stream().forEach(e -> {
-                assertFalse(StringUtils.isEmpty(e.getValue().project), e.getKey() + " must have a project name");
-                assertFalse(StringUtils.isEmpty(e.getValue().version), e.getKey() + " must have a project version");
-                assertFalse(StringUtils.isEmpty(e.getValue().projectUrl), e.getKey() + " must have a project URL");
-                assertFalse(CollectionUtils.isEmpty(e.getValue().licenses), e.getKey() + " must have a license type");
-                assertFalse(CollectionUtils.isEmpty(e.getValue().licenseUrls), e.getKey() + " must have a license URL");
-                assertFalse(StringUtils.isEmpty(e.getValue().jira), e.getKey() + " must have a JIRA entry");
-                assertNotNull(e.getValue().updated, e.getKey() + " must have an updated date");
-                
-                md_md5.reset();
-                md_sha1.reset();
-                
-                byte[] contents;
-                try {
-                    contents = Files.readAllBytes(e.getKey());
-                } catch (IOException e1) {
-                    throw new RuntimeException("Could not read " + e.getKey(), e1);
-                }
-                String md5 = Hex.encodeHexString(md_md5.digest(contents));
-                String sha1 = Hex.encodeHexString(md_sha1.digest(contents));
-
-                assertEquals(e.getValue().md5, md5, "MD5 mismatch for " + e.getKey());
-                assertEquals(e.getValue().sha1, sha1, "SHA1 mismatch for " + e.getKey());
-            });
-        }
+            assertEquals("MD5 mismatch for " + e.getKey(), e.getValue().md5, md5);
+            assertEquals("SHA1 mismatch for " + e.getKey(), e.getValue().sha1, sha1);
+        });
     }
     
     private static Set<Path> buildIgnoredIconSet() {
@@ -120,7 +116,7 @@ public class ThirdPartyIconLibraryTest {
                     "QuarterSm.gif", 
                     "Setback.png", 
                     "SixthSm.gif", 
-                    "calendar.svg", 
+                    "StartCalendar.png", 
                     "StorageHeat.png", 
                     "ThirdSm.gif", 
                     "Tree1Sm.gif", 
@@ -140,21 +136,23 @@ public class ThirdPartyIconLibraryTest {
                     "green_local.png", 
                     "icon_blockcollapsed.png", 
                     "icon_blockexpanded.png", 
+                    "icons-32-disabled.png", 
+                    "icons-32.png", 
                     "information.gif", 
-                    "marker-generic.svg", 
-                    "marker-lcr-grey.svg", 
-                    "marker-meter-elec-grey.svg", 
-                    "marker-meter-gas-grey.svg", 
-                    "marker-meter-plc-elec-grey.svg", 
-                    "marker-meter-water-grey.svg", 
-                    "marker-meter-wifi-grey.svg", 
-                    "marker-plc-lcr-grey.svg", 
-                    "marker-relay-grey.svg", 
-                    "marker-relay-cell-grey.svg",
-                    "marker-thermostat-grey.svg", 
-                    "marker-transmitter-grey.svg", 
-                    "pencil.svg",
+                    "marker-generic.png", 
+                    "marker-lcr-grey.png", 
+                    "marker-meter-elec-grey.png", 
+                    "marker-meter-gas-grey.png", 
+                    "marker-meter-plc-elec-grey.png", 
+                    "marker-meter-water-grey.png", 
+                    "marker-meter-wifi-grey.png", 
+                    "marker-plc-lcr-grey.png", 
+                    "marker-relay-grey.png", 
+                    "marker-thermostat-grey.png", 
+                    "marker-transmitter-grey.png", 
+                    "pencil.png",
                     "plus-minus.png", 
+                    "relay.png", 
                     "spinner-white.gif", 
                     "spinner.gif", 
                     "time.gif", 

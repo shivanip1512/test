@@ -1,11 +1,11 @@
 #include "precompiled.h"
 
 #include "StandardControlPolicy.h"
-#include "Requests.h"
 #include "logger.h"
 
 
-namespace Cti::CapControl {
+namespace Cti           {
+namespace CapControl    {
 
 Policy::AttributeList StandardControlPolicy::getSupportedAttributes() const
 {
@@ -19,24 +19,20 @@ Policy::AttributeList StandardControlPolicy::getSupportedAttributes() const
         Attribute::ForwardBandwidth,
         Attribute::ReverseBandwidth,
         Attribute::ReverseSetPoint,
-        Attribute::ReverseFlowIndicator,
-        Attribute::PowerFlowIndeterminate,
-        Attribute::ControlPowerFlowReverse
+        Attribute::ReverseFlowIndicator
     };
 }
 
 Policy::Action StandardControlPolicy::TapUp()
 {
     return makeStandardDigitalControl( getPointByAttribute( Attribute::TapUp ),
-                                       "Raise Tap Position",
-                                       RequestType::Operate );
+                                       "Raise Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::TapDown()
 {
     return makeStandardDigitalControl( getPointByAttribute( Attribute::TapDown ),
-                                       "Lower Tap Position",
-                                       RequestType::Operate );
+                                       "Lower Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::setSetPointValue( const double newSetPoint )
@@ -68,7 +64,7 @@ Policy::Action StandardControlPolicy::setSetPointValue( const double newSetPoint
     return 
     {
         makeSignalTemplate( point.getPointId(), 0, description ),
-        makeRequestTemplate( point.getPaoId(), commandString, RequestType::Operate )
+        makeRequestTemplate( point.getPaoId(), commandString )
     };
 }
 
@@ -98,3 +94,5 @@ PointValue StandardControlPolicy::getCompleteTapPosition()
 }
 
 }
+}
+

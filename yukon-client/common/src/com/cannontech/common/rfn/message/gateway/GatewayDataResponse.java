@@ -27,15 +27,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private AppMode mode;
     
     private ConnectionType connectionType;
-    // IP address that NM will use to connect to the gateway.
     private String ipAddress;
-    // Port that NM will use to connect to the gateway.
     private String port;
-    // IP address that the gateway should use to connect to NM.
-    private String nmIpAddress;
-    // Port that the gateway should use to connect to NM.
-    private Integer nmPort;
-    
     private ConnectionStatus connectionStatus;
     private long connectionStatusTimestamp;
     private LastCommStatus lastCommStatus;
@@ -70,7 +63,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private int gwTotalNodesWithSN;
     private int gwTotalNodesWithInfo;
     private int gwTotalNodesNoInfo;
-    private float controlRate;
 
 
     @Override
@@ -219,22 +211,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.port = port;
     }
     
-    public String getNmIpAddress() {
-        return nmIpAddress;
-    }
-
-    public void setNmIpAddress(String nmIpAddress) {
-        this.nmIpAddress = nmIpAddress;
-    }
-
-    public Integer getNmPort() {
-        return nmPort;
-    }
-
-    public void setNmPort(Integer nmPort) {
-        this.nmPort = nmPort;
-    }
-    
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
     }
@@ -363,14 +339,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.ipv6PrefixSuggested = ipv6PrefixSuggested;
     }
 
-    public float getControlRate() {
-        return controlRate;
-    }
-
-    public void setControlRate(float controlRate) {
-        this.controlRate = controlRate;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -380,7 +348,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + (int) (connectionStatusTimestamp ^ (connectionStatusTimestamp >>> 32));
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
-        result = prime * result + Float.floatToIntBits(controlRate);
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -400,8 +367,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((nmIpAddress == null) ? 0 : nmIpAddress.hashCode());
-        result = prime * result + ((nmPort == null) ? 0 : nmPort.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
         result = prime * result + ((radios == null) ? 0 : radios.hashCode());
@@ -451,9 +416,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
             return false;
         }
         if (connectionType != other.connectionType) {
-            return false;
-        }
-        if (Float.floatToIntBits(controlRate) != Float.floatToIntBits(other.controlRate)) {
             return false;
         }
         if (Double.doubleToLongBits(currentDataStreamingLoading) != Double.doubleToLongBits(other.currentDataStreamingLoading)) {
@@ -522,20 +484,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
             }
         } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (nmIpAddress == null) {
-            if (other.nmIpAddress != null) {
-                return false;
-            }
-        } else if (!nmIpAddress.equals(other.nmIpAddress)) {
-            return false;
-        }
-        if (nmPort == null) {
-            if (other.nmPort != null) {
-                return false;
-            }
-        } else if (!nmPort.equals(other.nmPort)) {
             return false;
         }
         if (port == null) {
@@ -633,17 +581,17 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", name=" + name + ", hardwareVersion=" + hardwareVersion
                 + ", softwareVersion=" + softwareVersion + ", upperStackVersion=" + upperStackVersion + ", radioVersion="
                 + radioVersion + ", releaseVersion=" + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode="
-                + mode + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port=" + port + ", nmIpAddress="
-                + nmIpAddress + ", nmPort=" + nmPort + ", connectionStatus=" + connectionStatus + ", connectionStatusTimestamp="
-                + connectionStatusTimestamp + ", lastCommStatus=" + lastCommStatus + ", lastCommStatusTimestamp="
-                + lastCommStatusTimestamp + ", radios=" + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix
-                + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", superAdmin=" + superAdmin + ", admin=" + admin
-                + ", collectionSchedule=" + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl="
-                + updateServerUrl + ", updateServerLogin=" + updateServerLogin + ", maxDataStreamingCapacity="
-                + maxDataStreamingCapacity + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes="
-                + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
+                + mode + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port=" + port
+                + ", connectionStatus=" + connectionStatus + ", connectionStatusTimestamp=" + connectionStatusTimestamp
+                + ", lastCommStatus=" + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios="
+                + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested="
+                + ipv6PrefixSuggested + ", superAdmin=" + superAdmin + ", admin=" + admin + ", collectionSchedule="
+                + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl=" + updateServerUrl
+                + ", updateServerLogin=" + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
+                + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
+                + ", gwTotalReadyNodes=" + gwTotalReadyNodes + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
                 + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + ", controlRate=" + controlRate + "]";
+                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
 
 }

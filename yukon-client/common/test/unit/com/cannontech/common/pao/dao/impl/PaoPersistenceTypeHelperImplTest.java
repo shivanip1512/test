@@ -1,8 +1,6 @@
 package com.cannontech.common.pao.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -11,8 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -21,7 +19,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.annotation.YukonPao;
@@ -31,7 +29,7 @@ import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/com/cannontech/common/pao/completePao.xml")
 public class PaoPersistenceTypeHelperImplTest {
     private static final Logger log = YukonLogManager.getLogger(PaoPersistenceTypeHelperImplTest.class);
@@ -148,9 +146,9 @@ public class PaoPersistenceTypeHelperImplTest {
                     break;
                 }
             }
-            assertNotNull(noArgConstructor, className + " does not have a no-argument constructor.");
-            assertTrue(Modifier.isPublic(noArgConstructor.getModifiers()), 
-                    className + "'s no-argument constructor is not public.");
+            assertNotNull(className + " does not have a no-argument constructor.", noArgConstructor);
+            assertTrue(className + "'s no-argument constructor is not public.",
+                Modifier.isPublic(noArgConstructor.getModifiers()));
         }
     }
 }

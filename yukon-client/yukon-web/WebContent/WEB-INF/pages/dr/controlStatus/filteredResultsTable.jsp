@@ -47,11 +47,9 @@
                     <td><cti:formatDate type="BOTH" value="${controlStatus.restoreStatusTime}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="INTERACT">
+                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
                                 <cm:dropdownOption key="yukon.web.modules.dr.disconnectStatus.connect" classes="js-connect" icon="icon-connect" 
                                     data-device-id="${controlStatus.deviceId}"/>
-                            </cti:checkRolesAndProperties>
-                            <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="OWNER">
                                 <c:choose>
                                     <c:when test="${fn:contains(optedOutDevices, controlStatus.inventoryId)}">
                                         <cti:msg2 var="disconnectNotAllowed" key="yukon.web.modules.dr.disconnectStatus.disconnectNotAllowed"/>

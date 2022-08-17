@@ -2,6 +2,7 @@ package com.cannontech.web.lite;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -26,9 +27,8 @@ public class LiteWrapper
 	{
 		super();
 		
-		if( !(lBase instanceof LiteYukonPAObject) && !(lBase instanceof LitePoint) ) {
-            throw new IllegalArgumentException("LiteWrapper does not currently accept the given LiteBase object");
-        }
+		if( !(lBase instanceof LiteYukonPAObject) && !(lBase instanceof LitePoint) )
+			throw new IllegalArgumentException("LiteWrapper does not currently accept the given LiteBase object");
 
 		_setLiteBase( lBase );
 	}
@@ -96,9 +96,11 @@ public class LiteWrapper
 	{
 		int id = CtiUtilities.NONE_ZERO_ID;
 		if( (id = getParentID()) != CtiUtilities.NONE_ZERO_ID ) {
-			return YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(id).getPaoName();
+			return 
+				YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(id).getPaoName();
 		}
-        return NO_DATA;
+		else
+			return NO_DATA;
 	}
 
 	/**
@@ -109,16 +111,16 @@ public class LiteWrapper
 		if( _getLiteBase() instanceof LitePoint ) {
 			return ((LitePoint)_getLiteBase()).getPaobjectID();			
 		}
-        return CtiUtilities.NONE_ZERO_ID;
+		else
+			return CtiUtilities.NONE_ZERO_ID;
 	}
 
-	@Override
-    public String toString()
+	public String toString()
 	{
-		if( _getLiteBase() != null ) {
-            return _getLiteBase().toString();
-        }
-        return "";
+		if( _getLiteBase() != null )
+			return _getLiteBase().toString();
+		else
+			return "";
 	}
 
 	public String getDescription()
@@ -132,10 +134,11 @@ public class LiteWrapper
 		}
 		else if( _getLiteBase() instanceof LitePoint )
 		{
-		    int uomId = ((LitePoint)_getLiteBase()).getUofmID();
-		    if( uomId > UnitOfMeasure.INVALID.getId() )
+			if( ((LitePoint)_getLiteBase()).getUofmID() > UnitOfMeasure.INVALID.getId() )
 			{
-				retVal = UnitOfMeasure.getForId(uomId).toString();
+				retVal =
+					YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasure(
+						((LitePoint)_getLiteBase()).getUofmID() ).toString();
 			}
 
 		}
@@ -145,17 +148,23 @@ public class LiteWrapper
 
 	public int getItemID()
 	{
-		if( _getLiteBase() != null ) {
-            return _getLiteBase().getLiteID();
-        }
-        return 0;
+		if( _getLiteBase() != null )
+			return _getLiteBase().getLiteID();
+		else
+			return 0;
 	}
 
+	/**
+	 * @return
+	 */
 	private LiteBase _getLiteBase()
 	{
 		return liteBase;
 	}
 
+	/**
+	 * @param base
+	 */
 	private void _setLiteBase(LiteBase base)
 	{
 		liteBase = base;

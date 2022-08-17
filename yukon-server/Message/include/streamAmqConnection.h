@@ -14,8 +14,7 @@ class IM_EX_MSG StreamAmqConnection : public StreamConnection
 {
 public:
     StreamAmqConnection(const Messaging::ActiveMQ::Queues::OutboundQueue &outbound, const Messaging::ActiveMQ::Queues::InboundQueue &inbound);
-    ~StreamAmqConnection();
-    
+
     bool write(const Outbound &out, const Chrono &timeout);
     std::unique_ptr<Inbound> read(const Chrono &timeout, const HANDLE *hAbort);
 

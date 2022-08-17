@@ -13,7 +13,7 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.simulators.message.response.SmartNotificationSimulatorResponse;
 
 public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHandler {
-    private static final Logger log = YukonLogManager.getSmartNotificationsLogger(SmartNotificationSimulatorMessageHandler.class);
+    private static final Logger log = YukonLogManager.getLogger(SmartNotificationSimulatorMessageHandler.class);
     @Autowired private SmartNotificationSimulatorService smartNotificationSimulatorService;
     
     public SmartNotificationSimulatorMessageHandler() {
@@ -33,9 +33,15 @@ public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHa
                     case CLEAR_ALL_EVENTS:
                         return smartNotificationSimulatorService.clearAllEvents();
                     case CREATE_EVENTS:
-                        return smartNotificationSimulatorService.createEvents();
+                        return smartNotificationSimulatorService.createEvents(request.getWaitTime(),
+                                                                              request.getEventsPerMessage(), 
+                                                                              request.getNumberOfMessages());
+                    case SAVE_SUBSCRIPTION:
+                        return smartNotificationSimulatorService.saveSubscription(request.getSubscription(), request.getUserGroupId(), 
+                                                                                  request.isGenerateTestEmailAddresses(),
+                                                                                  request.getUserContext());
                     case START_DAILY_DIGEST:
-                        return smartNotificationSimulatorService.startDailyDigest();
+                        return smartNotificationSimulatorService.startDailyDigest(request.getDailyDigestHour());
                     default:
                         SimulatorResponseBase response = new SimulatorResponseBase(false);
                         response.setException(new Exception("Unsupported request action in a SmartNotificationSimulatorRequest: " + request.getRequestAction()));

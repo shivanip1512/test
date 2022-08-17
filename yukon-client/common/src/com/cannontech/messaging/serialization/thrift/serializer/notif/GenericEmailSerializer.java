@@ -3,8 +3,8 @@ package com.cannontech.messaging.serialization.thrift.serializer.notif;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import com.cannontech.message.notif.EmailMsg;
 import com.cannontech.message.util.Message;

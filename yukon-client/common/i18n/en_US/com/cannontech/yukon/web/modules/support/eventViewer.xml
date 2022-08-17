@@ -5,8 +5,6 @@
     <entry key="yukon.common.events.title">Events</entry>
     <entry key="yukon.common.events.columnHeader.event">Event</entry>
     <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
-    <entry key="yukon.common.events.columnHeader.date"><![CDATA[Date]]></entry>
-    <entry key="yukon.common.events.columnHeader.time"><![CDATA[Time]]></entry>
     <entry key="yukon.common.events.columnHeader.message">Message</entry>
     <entry key="yukon.common.events.noResults">No Results Found</entry>
 
@@ -43,8 +41,6 @@
     <!-- By Type -->
     <entry key="yukon.web.modules.support.eventViewer.byType.event">Event</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.dateAndTime">Date and Time</entry>
-    <entry key="yukon.web.modules.support.eventViewer.byType.date">Date</entry>
-    <entry key="yukon.web.modules.support.eventViewer.byType.time">Time</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.cancel">Cancel</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventCategories">Event Categories</entry>
     <entry key="yukon.web.modules.support.eventViewer.byType.eventType">Event Type</entry>

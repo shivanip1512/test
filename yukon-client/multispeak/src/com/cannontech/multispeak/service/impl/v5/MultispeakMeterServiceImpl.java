@@ -108,8 +108,6 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ElectricServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceState;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
-import com.cannontech.msp.beans.v5.multispeak.GasMeterExchange;
-import com.cannontech.msp.beans.v5.multispeak.GasServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
@@ -444,10 +442,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             WaterMeterExchange waterMeterExchange = (WaterMeterExchange) exchangeMeter;
                             existingMspMeter = waterMeterExchange.getExistingMeter();
                             replacementMspMeter = waterMeterExchange.getReplacementMeter();
-                        } else if(exchangeMeter instanceof GasMeterExchange) {
-                            GasMeterExchange gasMeterExchange = (GasMeterExchange) exchangeMeter;
-                            existingMspMeter = gasMeterExchange.getExistingMeter();
-                            replacementMspMeter = gasMeterExchange.getReplacementMeter();
                         }
 
                         if (existingMspMeter != null && replacementMspMeter != null) {
@@ -461,15 +455,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     existingMspMeter.getPrimaryIdentifier().getValue(), METER_EXCHANGED_STRING,
                                     mspVendor.getCompanyName());
                                 ErrorObject err =
-                                    mspObjectDao.getNotFoundErrorObject(existingMspMeter.getPrimaryIdentifier().getValue().trim(),
-                                                                        "MeterNumber", 
-                                                                        "MspMeter", 
-                                                                        METER_EXCHANGED_STRING,
-                                                                        mspVendor.getCompanyName());
+                                    mspObjectDao.getNotFoundErrorObject(
+                                        existingMspMeter.getPrimaryIdentifier().getValue().trim(),
+                                        "MeterNumber", "MspMeter", METER_EXCHANGED_STRING,
+                                        mspVendor.getCompanyName());
                                 errorObjects.add(err);
-                                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                                      METER_EXCHANGED_STRING,
-                                                                      mspVendor.getCompanyName());
+                                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
+                                    mspVendor.getCompanyName());
                                 log.error(e);
                             }
                             if (existingMeter != null) {
@@ -479,29 +471,26 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                     try {
                                         replacementMeter = checkForExistingMeterAndUpdate(replacementMspMeter,
-                                                                                          mspVendor, 
-                                                                                          METER_EXCHANGED_STRING);
+                                            mspVendor, METER_EXCHANGED_STRING);
                                     } catch (NotFoundException e) { // and NEW meter
-                                        replacementMeter = addNewMeter(replacementMspMeter, mspVendor, METER_EXCHANGED_STRING);
+                                        replacementMeter =
+                                            addNewMeter(replacementMspMeter, mspVendor, METER_EXCHANGED_STRING);
                                     }
 
-                                    addMeterToGroup(existingMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING, mspVendor);
-                                    removeFromGroup(replacementMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING, mspVendor);
+                                    addMeterToGroup(existingMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING,
+                                        mspVendor);
+                                    removeFromGroup(replacementMeter, SystemGroupEnum.INVENTORY,
+                                        METER_EXCHANGED_STRING, mspVendor);
 
                                     if (!existingMeter.isDisabled()) {// enabled
                                         existingMeter.setDisabled(true); // update local object reference
                                         deviceUpdateService.disableDevice(existingMeter);
                                         multispeakEventLogService.disableDevice(existingMeter.getMeterNumber(),
-                                                                                existingMeter, 
-                                                                                METER_EXCHANGED_STRING, 
-                                                                                mspVendor.getCompanyName());
+                                            existingMeter, METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                                     }
 
                                     updateCISDeviceClassGroup(replacementMspMeter.getPrimaryIdentifier().getValue(),
-                                                              replacementMspMeter.getDeviceClass(), 
-                                                              replacementMeter, 
-                                                              METER_EXCHANGED_STRING, 
-                                                              mspVendor);
+                                        replacementMspMeter.getDeviceClass(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
 
                                     String billingCycle = replacementMspMeter.getBillingCycle();
                                     updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
@@ -521,14 +510,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             // As Not sure which objectID could be used in error object
                             ErrorObject err =
                                 mspObjectDao.getErrorObject(exchangeMeter.getReferableID(),
-                                                            "Requires both meters(existingMeter and replacementMeter)", 
-                                                            "MspMeter",
-                                                            METER_EXCHANGED_STRING, 
-                                                            mspVendor.getCompanyName());
+                                    "Requires both meters(existingMeter and replacementMeter)", "MspMeter",
+                                    METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                             errorObjects.add(err);
-                            multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                                  METER_EXCHANGED_STRING,
-                                                                  mspVendor.getCompanyName());
+                            multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
+                                mspVendor.getCompanyName());
 
                         }
                     }
@@ -536,28 +522,22 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), 
-                                                "X Exception: (ReferableID:" + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), 
-                                                "MspMeterExchange",
-                                                METER_EXCHANGED_STRING, 
-                                                mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), "X Exception: (ReferableID:"
+                        + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), "MspMeterExchange",
+                        METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                      METER_EXCHANGED_STRING,
-                                                      mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
+                    mspVendor.getCompanyName());
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), 
-                                                "X Error: (ReferableID:" + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), 
-                                                "MspMeterExchange",
-                                                METER_EXCHANGED_STRING, 
-                                                mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), "X Error: (ReferableID:"
+                        + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), "MspMeterExchange",
+                        METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                      METER_EXCHANGED_STRING,
-                                                      mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
+                    mspVendor.getCompanyName());
                 log.error(ex);
             }
         }
@@ -905,46 +885,38 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             if (mspServiceLocation.getWaterServicePoints() != null) {
                                 mspUsagePoints.addAll(mspServiceLocation.getWaterServicePoints().getWaterServicePoint());
                             }
-                            if (mspServiceLocation.getGasServicePoints() != null) {
-                                mspUsagePoints.addAll(mspServiceLocation.getGasServicePoints().getGasServicePoint());
-                            }
                             for (MspUsagePoint servicePoint : mspUsagePoints) {
-                                ObjectID meterId = null;
+                                ObjectID meterID = null;
                                 MspMeter mspMeter = null;
                                 String billingCycle = null;
                                 if (servicePoint instanceof ElectricServicePoint) {
                                     ElectricServicePoint electricServicePoint = (ElectricServicePoint) servicePoint;
-                                    meterId = electricServicePoint.getElectricMeterID();
+                                    meterID = electricServicePoint.getElectricMeterID();
                                     mspMeter = electricServicePoint.getElectricMeter();
                                     billingCycle = electricServicePoint.getBillingCycle();
                                 } else if (servicePoint instanceof WaterServicePoint) {
                                     WaterServicePoint waterServicePoint = (WaterServicePoint) servicePoint;
-                                    meterId = waterServicePoint.getWaterMeterID();
+                                    meterID = waterServicePoint.getWaterMeterID();
                                     mspMeter = waterServicePoint.getWaterMeter();
                                     billingCycle = waterServicePoint.getBillingCycle();
-                                } else if(servicePoint instanceof GasServicePoint) {
-                                    GasServicePoint gasServicePoint = (GasServicePoint) servicePoint;
-                                    meterId = gasServicePoint.getGasMeterID();
-                                    mspMeter = gasServicePoint.getGasMeter();
-                                    billingCycle = gasServicePoint.getBillingCycle();
                                 }
 
                                 YukonMeter meter = null;
                                 // TODO probably need to update code after confirmation on actual meter field population (parent or child field)
-                                if (meterId != null) {
+                                if (meterID != null) {
                                     try {
-                                        meter = getMeterByMeterNumber(meterId.getObjectGUID());
+                                        meter = getMeterByMeterNumber(meterID.getObjectGUID());
                                         isMeterFound = true;
                                     } catch (NotFoundException e) {
-                                        if (meterId.getPrimaryIdentifier() != null) {
+                                        if (meterID.getPrimaryIdentifier() != null) {
                                             try {
-                                                meter = getMeterByMeterNumber(meterId.getPrimaryIdentifier().getValue());
+                                                meter = getMeterByMeterNumber(meterID.getPrimaryIdentifier().getValue());
                                                 isMeterFound = true;
                                             } catch (NotFoundException e1) {
-                                                multispeakEventLogService.meterNotFound(meterId.getObjectGUID(),
+                                                multispeakEventLogService.meterNotFound(meterID.getObjectGUID(),
                                                                                         SERV_LOC_CHANGED_STRING, 
                                                                                         mspVendor.getCompanyName());
-                                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterId.getObjectGUID(), 
+                                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterID.getObjectGUID(), 
                                                                                                      "MeterNumber", 
                                                                                                      "ServiceLocation",
                                                                                                       SERV_LOC_CHANGED_STRING, 
@@ -964,9 +936,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     try {
                                         meter = getMeterByMeterNumber(mspMeter.getPrimaryIdentifier().getValue());
                                     } catch (NotFoundException e) {
-                                        multispeakEventLogService.meterNotFound(mspMeter.getPrimaryIdentifier().getValue(), 
-                                                                                SERV_LOC_CHANGED_STRING,
-                                                                                mspVendor.getCompanyName());
+                                        multispeakEventLogService.meterNotFound(
+                                            mspMeter.getPrimaryIdentifier().getValue(), SERV_LOC_CHANGED_STRING,
+                                            mspVendor.getCompanyName());
                                         ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getPrimaryIdentifier().getValue(), 
                                                                                              "MeterNumber",
                                                                                              "ServiceLocation", 
@@ -1036,51 +1008,43 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                                 "GetMetersByServiceLocationIDs", 
                                                                                  SERV_LOC_CHANGED_STRING,
                                                                                  mspVendor.getCompanyName());
-                                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(),
-                                                                              paoAlias.getDisplayName() + " ServiceLocation(" + 
-                                                                              mspServiceLocation.getObjectGUID() + 
-                                                                              ") - No meters returned from vendor for location.", "ServiceLocation",
-                                                                              SERV_LOC_CHANGED_STRING, 
-                                                                              mspVendor.getCompanyName());
+                                ErrorObject err = mspObjectDao.getErrorObject(
+                                        mspServiceLocation.getObjectGUID(),
+                                        paoAlias.getDisplayName() + " ServiceLocation("
+                                            + mspServiceLocation.getObjectGUID()
+                                            + ") - No meters returned from vendor for location.", "ServiceLocation",
+                                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 errorObjects.add(err);
-                                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                                      SERV_LOC_CHANGED_STRING,
-                                                                      mspVendor.getCompanyName());
+                                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
+                                    mspVendor.getCompanyName());
                             }
                         }
                     };
                 });
             } catch (MspErrorObjectException e) {
                 errorObjects.add(e.getErrorObject());
-                multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(), 
-                                                      SERV_LOC_CHANGED_STRING,
-                                                      mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(), SERV_LOC_CHANGED_STRING,
+                    mspVendor.getCompanyName());
                 log.error(e);
             } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(),
-                                                "X Exception: (ServiceLocationID:" + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), 
-                                                "ServiceLocation",
-                                                SERV_LOC_CHANGED_STRING, 
-                                                mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), "X Exception: (ServiceLocationID:"
+                        + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), "ServiceLocation",
+                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                      SERV_LOC_CHANGED_STRING,
-                                                      mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
+                    mspVendor.getCompanyName());
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), 
-                                                "X Error: (ServiceLocationID:" + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), 
-                                                "ServiceLocation",
-                                                SERV_LOC_CHANGED_STRING, 
-                                                mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), "X Error: (ServiceLocationID:"
+                        + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), "ServiceLocation",
+                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), 
-                                                      SERV_LOC_CHANGED_STRING,
-                                                      mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
+                    mspVendor.getCompanyName());
                 log.error(ex);
             }
         }
@@ -1700,7 +1664,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             log.info("Sending EndDeviceStatesNotification (" + responseUrl + "): Meter Number " + meter.toString()
                 + " EndDeviceStateType: " + endDeviceState.getDeviceState().getValue());
 
-            notClient.endDeviceStatesNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, endDeviceStatesNotification);
+            notClient.endDeviceStatesNotification(mspVendor, responseUrl, endDeviceStatesNotification);
 
             List<ErrorObject> errObjects = new ArrayList<>();
             errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -2088,23 +2052,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             List<CDStateChange> cdStateChange = arrayOfCDStateChange.getCDStateChange();
             CDStateChange stateChange = new CDStateChange();
             CDDeviceIdentifier cdDeviceIdentifier = new CDDeviceIdentifier();
-            PaoType paoType = yukonMeter.getPaoIdentifier().getPaoType();
-            MeterID meterId = new MeterID();
-            meterId.setMeterName(yukonMeter.getMeterNumber());
-            meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-            
-            if (paoType.isWaterMeter()) {
-                meterId.setServiceType(ServiceKind.WATER);
-            }
-            else if (paoType.isGasMeter()) {
-                meterId.setServiceType(ServiceKind.GAS);
-            }
-            else {
-                meterId.setServiceType(ServiceKind.ELECTRIC);
-            }
-            
-            meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-            cdDeviceIdentifier.setMeterID(meterId);
+            MeterID meterID = new MeterID();
+            meterID.setMeterName(yukonMeter.getMeterNumber());
+            meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+            meterID.setServiceType(ServiceKind.ELECTRIC);
+            meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+            cdDeviceIdentifier.setMeterID(meterID);
             stateChange.setCDDeviceIdentifier(cdDeviceIdentifier);
             LoadActionCode loadActionCode = new LoadActionCode();
             loadActionCode.setValue(loadActionCodeKind);
@@ -2112,7 +2065,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             cdStateChange.add(stateChange);
             cdStatesChangedNotification.setArrayOfCDStateChange(arrayOfCDStateChange);
             cdStatesChangedNotification.setTransactionID(transactionId);
-            notClient.cdStatesChangedNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, cdStatesChangedNotification);
+            notClient.cdStatesChangedNotification(mspVendor, responseUrl, cdStatesChangedNotification);
             multispeakEventLogService.notificationResponse("CDStatesChangedNotification", transactionId,
                 yukonMeter.getMeterNumber(), loadActionCodeKind.value(), -1, responseUrl);
 
@@ -2203,7 +2156,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                     // Get a new updater object for the current value
                     MeterReadUpdater meterReadUpdater =
-                        meterReadProcessingService.buildMeterReadUpdater(attribute, value, pao.getPaoType());
+                        meterReadProcessingService.buildMeterReadUpdater(attribute, value);
                     // if the map is empty, place the updater into it
                     MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
                     while (oldValue != null) {
@@ -2249,7 +2202,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         meterReadingsNotification.setTransactionID(transactionID);
                         log.info("Sending MeterReadingsNotification (" + responseUrl + "): Meter Number "
                             + meterRead.getReferableID());
-                        notClient.meterReadingsNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, meterReadingsNotification);
+                        notClient.meterReadingsNotification(mspVendor, responseUrl, meterReadingsNotification);
 
                         List<ErrorObject> errObjects = new ArrayList<>();
                         errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -2361,7 +2314,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     arrayOfFormattedBlock.getFormattedBlock().add(formattedBlock);
                     formattedBlockNotification.setArrayOfFormattedBlock(arrayOfFormattedBlock);
                     try {
-                        notClient.formattedBlockNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, formattedBlockNotification);
+                        notClient.formattedBlockNotification(mspVendor, responseUrl, formattedBlockNotification);
 
                         List<ErrorObject> errObjects = new ArrayList<>();
                         errObjects = multispeakFuncs.getErrorObjectsFromResponse();

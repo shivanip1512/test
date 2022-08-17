@@ -4,22 +4,13 @@
 #include "msg_pcreturn.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_demandFreeze.h"
-#include "config_data_rfn.h"
 
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
-#include <boost/algorithm/cxx11/all_of.hpp>
-
-namespace Cti {
-    //  defined in pil/test_main.cpp
-    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
-}
-
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
 using namespace std;
-using Cti::Test::makeInmessReply;
 
 struct Test_PilServer : Cti::Pil::PilServer
 {
@@ -32,7 +23,6 @@ struct Test_PilServer : Cti::Pil::PilServer
     {}
 
     using PilServer::handleRfnDeviceResult;
-    using PilServer::handleInMessageResult;
     using PilServer::analyzeWhiteRabbits;
     using RequestQueue = PilServer::RequestQueue;
 
@@ -58,59 +48,24 @@ struct Test_PilServer : Cti::Pil::PilServer
         return {};
     }
 
-    std::list<std::unique_ptr<CtiMessage>> vgList, retList;
-    std::list<std::unique_ptr<OUTMESS>> outList;
+    boost::ptr_vector<CtiMessage> vgList, retList;
 
-    void submitOutMessages(CtiDeviceBase::OutMessageList& outList_) override
-    {
-        for( auto msg : outList_ )
-        {
-            outList.emplace_back(msg);
-        }
-    }
-        
     void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, Cti::ConnectionHandle connectionHandle) override
     {
-        for( auto msg : vgList_ )
+        for( CtiMessage *msg : vgList_ )
         {
-            vgList.emplace_back(msg);
+            vgList.push_back(msg);
         }
 
-        for( auto msg : retList_ )
+        for( CtiMessage *msg : retList_ )
         {
-            retList.emplace_back(msg);
-        }
-    }
-
-    void sendRequests(CtiDeviceBase::CtiMessageList& vgList_, CtiDeviceBase::CtiMessageList& retList_, CtiDeviceBase::OutMessageList& outList_, Cti::ConnectionHandle connectionHandle) override
-    {
-        for( auto msg : vgList_ )
-        {
-            vgList.emplace_back(msg);
-        }
-
-        for( auto msg : retList_ )
-        {
-            retList.emplace_back(msg);
-        }
-
-        for( auto msg : outList_ )
-        {
-            outList.emplace_back(msg);
+            retList.push_back(msg);
         }
     }
 };
 
-const auto isExpectMoreReturnMsgFor(int id)
-{
-    return [id](const std::unique_ptr<CtiMessage>& msg) {
-        auto retMsg = dynamic_cast<CtiReturnMsg*>(msg.get());
 
-        return retMsg
-            && retMsg->ExpectMore()
-            && retMsg->UserMessageId() == id;
-    };
-}
+
 
 struct pilEnvironment
 {
@@ -127,7 +82,7 @@ struct pilEnvironment
 };
 
 
-BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_expectMore)
+BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
 {
     Test_PilServer pilServer;
 
@@ -158,352 +113,13 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_expectMore)
     BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
 
     {
-        auto retMsg = dynamic_cast<CtiReturnMsg*>(pilServer.retList.front().get());
+        CtiReturnMsg &retMsg = dynamic_cast<CtiReturnMsg &>(pilServer.retList.front());
 
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
-        BOOST_CHECK(retMsg->ExpectMore());
+        BOOST_CHECK_EQUAL(retMsg.ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
+        BOOST_CHECK(retMsg.ExpectMore());
     }
 
     BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(11235, handle));
-}
-
-
-BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_putconfig_verify_on_putconfig_install_success)
-{
-    Test_PilServer pilServer;
-    constexpr auto UserMessageId = 11235;
-    const Cti::ConnectionHandle handle { 55441 };
-
-    CtiDeviceManager::ptr_type dev = pilServer.dev_mgr.getDeviceByID(123);
-
-    BOOST_REQUIRE(dev);
-
-    CtiDeviceSingle* devSingle = dynamic_cast<CtiDeviceSingle*>(dev.get());
-
-    BOOST_REQUIRE(devSingle);
-
-    devSingle->incrementGroupMessageCount(UserMessageId, handle);
-
-    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(UserMessageId, handle));
-
-    Cti::Pil::RfnDeviceRequest::Parameters parameters;
-
-    parameters.deviceId = 123;
-    parameters.userMessageId = UserMessageId;
-    parameters.connectionHandle = handle;
-    parameters.commandString = "putconfig install bananaphone";
-
-    pilServer.handleRfnDeviceResult({
-        { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
-        { { "This was a triumph. I'm making a note here: HUGE SUCCESS." } } });
-
-    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
-
-    auto retList_itr = pilServer.retList.cbegin();
-
-    {
-        auto reqMsg = dynamic_cast<CtiRequestMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(reqMsg);
-
-        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
-    }
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a triumph. I'm making a note here: HUGE SUCCESS.");
-        BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
-    }
-
-    BOOST_CHECK_EQUAL(0, devSingle->getGroupMessageCount(UserMessageId, handle));
-}
-
-
-BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult_no_putconfig_verify_on_putconfig_install_failure)
-{
-    Test_PilServer pilServer;
-    constexpr auto UserMessageId = 11235;
-    const Cti::ConnectionHandle handle { 55441 };
-
-    CtiDeviceManager::ptr_type dev = pilServer.dev_mgr.getDeviceByID(123);
-
-    BOOST_REQUIRE(dev);
-
-    CtiDeviceSingle* devSingle = dynamic_cast<CtiDeviceSingle*>(dev.get());
-
-    BOOST_REQUIRE(devSingle);
-
-    devSingle->incrementGroupMessageCount(UserMessageId, handle);
-
-    BOOST_CHECK_EQUAL(1, devSingle->getGroupMessageCount(UserMessageId, handle));
-
-    Cti::Pil::RfnDeviceRequest::Parameters parameters;
-
-    parameters.deviceId = 123;
-    parameters.userMessageId = UserMessageId;
-    parameters.connectionHandle = handle;
-    parameters.commandString = "putconfig install bananaphone";
-
-    pilServer.handleRfnDeviceResult({
-        { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
-        { { "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.", ClientErrors::Abnormal } } });
-
-    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
-
-    auto retList_itr = pilServer.retList.cbegin();
-
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "This was a failure. I'm making a note here: HUGE DUMPSTER FIRE.");
-        BOOST_CHECK_EQUAL(retMsg->Status(), 1);
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
-    }
-
-    BOOST_CHECK_EQUAL(0, devSingle->getGroupMessageCount(UserMessageId, handle));
-}
-
-
-BOOST_AUTO_TEST_CASE(test_handleInMessageResult_getconfig_install_all_verify_mcts)
-{
-    for( const auto DeviceId : {
-        Cti::Test::test_DeviceManager::MCT410CL_ID,
-        Cti::Test::test_DeviceManager::MCT410CD_ID,
-        Cti::Test::test_DeviceManager::MCT410FL_ID,
-        Cti::Test::test_DeviceManager::MCT410FD_ID,
-        Cti::Test::test_DeviceManager::MCT420CL_ID,
-        Cti::Test::test_DeviceManager::MCT420CD_ID,
-        Cti::Test::test_DeviceManager::MCT420FL_ID,
-        Cti::Test::test_DeviceManager::MCT420FD_ID,
-        Cti::Test::test_DeviceManager::MCT430S4_ID,
-        Cti::Test::test_DeviceManager::MCT470_ID } )
-    {
-        BOOST_TEST_CONTEXT("Device ID: " + std::to_string(DeviceId))
-        {
-            Test_PilServer pilServer;
-
-            constexpr auto UserMessageId = 11235;
-            const Cti::ConnectionHandle handle{ 55441 };
-
-            auto config = boost::make_shared<Cti::Test::test_DeviceConfig>();
-            Cti::Test::Override_ConfigManager overrideConfigManager(config);
-
-            Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
-
-            CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
-            reqMsg.setConnectionHandle(handle);
-            reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
-
-            pilServer.executeRequest(&reqMsg);
-
-            BOOST_CHECK(pilServer.vgList.empty());
-
-            BOOST_REQUIRE( ! pilServer.outList.empty());
-            
-            //  outList may have additions as we iterate over it
-            for( auto out_itr = pilServer.outList.cbegin(); out_itr != pilServer.outList.cend(); )
-            {
-                pilServer.handleInMessageResult(makeInmessReply(**out_itr++));
-            }
-
-            BOOST_REQUIRE_GT(pilServer.retList.size(), 1);
-            {
-                BOOST_CHECK(std::all_of(
-                    pilServer.retList.cbegin(),
-                    --pilServer.retList.cend(),  //  All but the last entry
-                    isExpectMoreReturnMsgFor(UserMessageId)));
-
-                auto verifyReqMsg = dynamic_cast<CtiRequestMsg*>(pilServer.retList.back().get());
-
-                BOOST_REQUIRE(verifyReqMsg);
-                BOOST_CHECK_EQUAL(verifyReqMsg->CommandString(), "putconfig install all verify");
-                BOOST_CHECK_EQUAL(verifyReqMsg->UserMessageId(), UserMessageId);
-            }
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_rfnExpectMore)
-{
-    Test_PilServer pilServer;
-
-    constexpr auto DeviceId = 501;
-    constexpr auto UserMessageId = 11235;
-    const Cti::ConnectionHandle handle { 55441 };
-
-    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
-
-    BOOST_REQUIRE(dev);
-
-    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
-
-    BOOST_REQUIRE(devRfBatteryNode);
-
-    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
-    msg.rfnIdentifier.manufacturer = "Croctober";
-    msg.rfnIdentifier.model = "7";
-    msg.rfnIdentifier.serialNumber = "2020";
-    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
-    msg.recordingInterval = 60;
-    msg.reportingInterval = 360;
-
-    devRfBatteryNode->channelConfigReplyMsg = msg;
-
-    CtiRequestMsg reqMsg(DeviceId, "getconfig install all", UserMessageId);
-    reqMsg.setConnectionHandle(handle);
-    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
-
-    pilServer.executeRequest(&reqMsg);
-
-    BOOST_REQUIRE_EQUAL(2, pilServer.retList.size());
-    auto retList_itr = pilServer.retList.cbegin();
-
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK(retMsg->ExpectMore());
-    }
-    {
-        auto reqMsg = dynamic_cast<const CtiRequestMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(reqMsg);
-
-        BOOST_CHECK_EQUAL(reqMsg->CommandString(), "putconfig install all verify");
-        BOOST_CHECK_EQUAL(reqMsg->getConnectionHandle(), handle);
-        BOOST_CHECK_EQUAL(reqMsg->UserMessageId(), UserMessageId);
-    }
-}
-
-
-BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifyFailure)
-{
-    Test_PilServer pilServer;
-    auto cfg = boost::make_shared<Cti::Test::test_DeviceConfig>();
-    Cti::Test::Override_ConfigManager overrideConfigManager { cfg };
-
-    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds, "86400");
-    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds, "1800");
-
-    constexpr auto DeviceId = 501;
-    constexpr auto UserMessageId = 11235;
-    const Cti::ConnectionHandle handle{ 55441 };
-
-    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
-
-    BOOST_REQUIRE(dev);
-
-    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
-
-    BOOST_REQUIRE(devRfBatteryNode);
-
-    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
-    msg.rfnIdentifier.manufacturer = "Croctober";
-    msg.rfnIdentifier.model = "7";
-    msg.rfnIdentifier.serialNumber = "2020";
-    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
-    msg.recordingInterval = 60;
-    msg.reportingInterval = 360;
-
-    devRfBatteryNode->channelConfigReplyMsg = msg;
-
-    CtiRequestMsg reqMsg(DeviceId, "putconfig install all verify", UserMessageId);
-    reqMsg.setConnectionHandle(handle);
-    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
-
-    pilServer.executeRequest(&reqMsg);
-
-    BOOST_REQUIRE_EQUAL(3, pilServer.retList.size());
-    auto retList_itr = pilServer.retList.cbegin();
-
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
-        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config Reporting Interval did not match. Config: 86400, Meter: 360");
-    }
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
-        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config Recording Interval did not match. Config: 1800, Meter: 60");
-    }
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
-        BOOST_CHECK_EQUAL(retMsg->Status(), 219);
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config all is NOT current.");
-    }
-}
-
-
-BOOST_AUTO_TEST_CASE(test_rfnBatteryNode_verifySuccess)
-{
-    Test_PilServer pilServer;
-    auto cfg = boost::make_shared<Cti::Test::test_DeviceConfig>();
-    Cti::Test::Override_ConfigManager overrideConfigManager{ cfg };
-
-    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds, "86400");
-    cfg->insertValue(Cti::Config::RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds, "1800");
-
-    constexpr auto DeviceId = 501;
-    constexpr auto UserMessageId = 11235;
-    const Cti::ConnectionHandle handle{ 55441 };
-
-    auto dev = pilServer.dev_mgr.getDeviceByID(DeviceId);
-
-    BOOST_REQUIRE(dev);
-
-    auto devRfBatteryNode = dynamic_cast<Cti::Test::test_RfBatteryNodeDevice*>(dev.get());
-
-    BOOST_REQUIRE(devRfBatteryNode);
-
-    Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage msg;
-    msg.rfnIdentifier.manufacturer = "Croctober";
-    msg.rfnIdentifier.model = "7";
-    msg.rfnIdentifier.serialNumber = "2020";
-    msg.replyCode = Cti::Messaging::Rfn::RfnGetChannelConfigReplyMessage::SUCCESS;
-    msg.recordingInterval = 1800;
-    msg.reportingInterval = 86400;
-
-    devRfBatteryNode->channelConfigReplyMsg = msg;
-
-    CtiRequestMsg reqMsg(DeviceId, "putconfig install all verify", UserMessageId);
-    reqMsg.setConnectionHandle(handle);
-    reqMsg.setSOE(97);  //  prevents us from attempting DB access by calling SystemLogIdGen()
-
-    pilServer.executeRequest(&reqMsg);
-
-    BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
-    auto retList_itr = pilServer.retList.cbegin();
-
-    {
-        auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList_itr++->get());
-
-        BOOST_REQUIRE(retMsg);
-        
-        BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
-        BOOST_CHECK_EQUAL(retMsg->Status(), 0);
-        BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config all is current.");
-    }
 }
 
 

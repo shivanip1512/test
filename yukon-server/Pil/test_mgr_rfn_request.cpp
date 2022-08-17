@@ -6,44 +6,44 @@
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_LoadProfile.h"
 
-#include "cmd_rfn_MeterProgramming.h"
-#include "mgr_meter_programming.h"
-#include "MeterProgramStatusArchiveRequestMsg.h"
-
-#include "message_test_helpers.h"
 #include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"
 
-namespace Cti {
-    std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId);
-}
-namespace Cti::Messaging::Rfn {
-    std::ostream& operator<<(std::ostream& os, const ProgrammingStatus s) {
-        return os << "[ProgrammingStatus " << as_underlying(s) << "]";
-    }
-}
+BOOST_AUTO_TEST_SUITE( test_mgr_rfn_request )
 
 using Cti::Messaging::Rfn::E2eDataRequestMsg;
-using Cti::Messaging::Rfn::MeterProgramStatusArchiveRequestMsg;
-using Cti::Messaging::Rfn::ProgrammingStatus;
+
+struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
+{
+    std::vector<Request> messages;
+
+    Indication::Callback indicationHandler;
+
+    void setE2eDtHandler(Indication::Callback callback) override
+    {
+        indicationHandler = callback;
+    }
+
+    void serializeAndQueue(const Request &req, const Cti::Messaging::Rfn::ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout) override
+    {
+        messages.push_back(req);
+
+        Confirm ack;
+        ack.rfnIdentifier = req.rfnIdentifier;
+        ack.error = ClientErrors::None;
+
+        callback(ack);  //  call the confirm callback immediately
+    }
+};
 
 struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 {
     Cti::Test::test_DeviceManager devMgr;
 
-    std::vector<MeterProgramStatusArchiveRequestMsg> mpsArchiveMsgs;
-
-    bool e2eServerDisabled = false;
-
     test_RfnRequestManager() 
         :   RfnRequestManager { devMgr }
     {
-    }
-
-    void initializeActiveMQHandlers() override
-    {
-        // prevent the RFN broadcast request ActiveMQ handlers from initializing
     }
 
     struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
@@ -57,59 +57,33 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 
     } e2e;
 
-    //  These call our private E2E object with an overridden outbound ID
     EndpointMessage handleE2eDtIndication(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId) override
     {
         return e2e.handleIndication(payload, endpointId);
     }
-    Bytes createE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const Token token) override
+    Bytes createE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
         return e2e.createRequest(payload, endpointId, token);
     }
-    Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const Token token) override
+    Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
         return e2e.createBlockContinuation(blockSize, blockNum, endpointId, token);
     }
-    Bytes createE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const Token token) override
+    Bytes createE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
         return e2e.createPost(payload, endpointId, token);
     }
-    Bytes createE2eDtPut(const Bytes& payload, const Cti::RfnIdentifier endpointId) override
-    {
-        return e2e.createPut(payload, endpointId);
-    }
-    
-    //  this intercepts/captures the MeterProgramStatus archive request messages
-    void sendMeterProgramStatusUpdate(MeterProgramStatusArchiveRequestMsg msg) override
-    {
-        mpsArchiveMsgs.emplace_back(std::move(msg));
-    }
-
-    bool isE2eServerDisabled() const override
-    {
-        return e2eServerDisabled;
-    }
 };
-
-struct test_fixture
-{
-    test_RfnRequestManager mgr;
-
-    Cti::Test::Override_E2eMessenger overrideE2eMessenger;
-    Cti::Test::test_E2eMessenger* e2e;
-
-    Cti::Test::Override_MeterProgrammingManager overrideMeterProgrammingManager;
-
-    test_fixture() {
-        //  shorthand reference
-        e2e = overrideE2eMessenger.testMessenger;
-    }
-};
-
-BOOST_FIXTURE_TEST_SUITE(test_mgr_rfn_request, test_fixture)
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 {
+    //  a handle for our reference
+    test_E2eMessenger *e2e = new test_E2eMessenger;
+
+    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
+
+    test_RfnRequestManager mgr;
+
     mgr.e2e.id = 0x7301;
 
     mgr.start();
@@ -244,6 +218,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 {
+    //  a handle for our reference
+    test_E2eMessenger *e2e = new test_E2eMessenger;
+
+    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
+
+    test_RfnRequestManager mgr;
+
     mgr.e2e.id = 0x7301;
 
     mgr.start();
@@ -318,7 +299,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
 BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
+
+    //  a handle for our reference
+    test_E2eMessenger *e2e = new test_E2eMessenger;
+
+    Cti::Messaging::Rfn::gE2eMessenger.reset(e2e);
+
+    test_RfnRequestManager mgr;
 
     const CtiTime now   { CtiDate(25, 7, 2018), 10, 17 };
     const CtiTime begin { CtiDate(18, 7, 2018),  0,  0 };
@@ -491,134 +479,5 @@ BOOST_AUTO_TEST_CASE(test_cmd_rfn_blockContinuation)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_meter_programming_progress)
-{
-    Cti::Test::Override_DynamicPaoInfoManager overrideDpi;
-
-    const Cti::RfnIdentifier rfnId{ "JIMMY", "JOHNS", "TURKEY TOM" };
-    const std::string guid = "4ba2c048-c933-4bf1-b225-25d3d97e5557";
-
-    mgr.e2e.id = 0x7301;
-
-    mgr.start();
-
-    //  Set the device as uploading
-    auto rfnDevice = mgr.devMgr.getDeviceByRfnIdentifier(rfnId);
-    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
-    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
-
-    //  Helper lambda to create and send the indication, then tick the manager
-    const auto ingestInbound = [e2e=this->e2e, &mgr=this->mgr, rfnId](Cti::Test::byte_str inboundPayload) {
-        Cti::Messaging::Rfn::E2eMessenger::Indication indication;
-
-        indication.rfnIdentifier = rfnId;
-        indication.payload.assign(inboundPayload.begin(), inboundPayload.end());
-
-        e2e->indicationHandler(indication);
-
-        mgr.tick();
-    };
-
-    //  Initial request
-    ingestInbound(
-        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
-        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
-        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37");
-
-    {
-        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
-
-        BOOST_REQUIRE_EQUAL(results.size(), 1);
-
-        const auto& result = results[0];
-
-        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
-        BOOST_CHECK_EQUAL(0, result.error);
-        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
-        //BOOST_CHECK_EQUAL("", result.timeStamp);
-    }
-
-    //  Next block request
-    ingestInbound(
-        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
-        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
-        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37 c1 16");
-
-    {
-        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
-
-        BOOST_REQUIRE_EQUAL(results.size(), 1);
-
-        const auto& result = results[0];
-
-        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
-        BOOST_CHECK_EQUAL(0, result.error);
-        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
-        //BOOST_CHECK_EQUAL("", result.timeStamp);
-    }
-
-    //  Repeat block request
-    ingestInbound(
-        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
-        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
-        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37 c1 16");
-
-    //  Repeated update message
-    {
-        auto results = std::exchange(mgr.mpsArchiveMsgs, {});
-
-        BOOST_REQUIRE_EQUAL(results.size(), 1);
-
-        const auto& result = results[0];
-
-        BOOST_CHECK_EQUAL("R" + guid, result.configurationId);
-        BOOST_CHECK_EQUAL(0, result.error);
-        BOOST_CHECK_EQUAL(rfnId, result.rfnIdentifier);
-        BOOST_CHECK_EQUAL(ProgrammingStatus::Uploading, result.status);  //  Uploading
-        //BOOST_CHECK_EQUAL("", result.timeStamp);  //  Can't check updated timestamp since it uses system_clock at the moment
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_meter_programming_e2e_server_disabled)
-{
-    Cti::Test::Override_DynamicPaoInfoManager overrideDpi;
-
-    const Cti::RfnIdentifier rfnId{ "JIMMY", "JOHNS", "TURKEY TOM" };
-    const std::string guid = "4ba2c048-c933-4bf1-b225-25d3d97e5557";
-
-    mgr.e2e.id = 0x7301;
-    mgr.e2eServerDisabled = true;
-
-    mgr.start();
-
-    //  Set the device as uploading
-    auto rfnDevice = mgr.devMgr.getDeviceByRfnIdentifier(rfnId);
-    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
-    rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
-
-    //  Helper lambda to create and send the indication, then tick the manager
-    const auto ingestInbound = [e2e = this->e2e, &mgr = this->mgr, rfnId](Cti::Test::byte_str inboundPayload) {
-        Cti::Messaging::Rfn::E2eMessenger::Indication indication;
-
-        indication.rfnIdentifier = rfnId;
-        indication.payload.assign(inboundPayload.begin(), inboundPayload.end());
-
-        e2e->indicationHandler(indication);
-
-        mgr.tick();
-    };
-
-    //  Initial request
-    ingestInbound(
-        "42 01 e7 6e e9 a8 bd 00 6d 65  74 65 72 50 72 6f 67 72 61 6d "
-        "73 0d 17 34 62 61 32 63 30 34  38 2d 63 39 33 33 2d 34 62 66 "
-        "31 2d 62 32 32 35 2d 32 35 64  33 64 39 37 65 35 35 35 37");
-
-    //  No response, no programming update
-    BOOST_CHECK_EQUAL(true, mgr.mpsArchiveMsgs.empty());
-    BOOST_CHECK_EQUAL(true, e2e->messages.empty());
-}
-
 BOOST_AUTO_TEST_SUITE_END()
+

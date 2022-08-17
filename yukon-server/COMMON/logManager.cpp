@@ -159,6 +159,7 @@ void LogManager::setOwnerInfo(const compileinfo_t &ownerinfo)
 {
     _ownerInfo._project = ownerinfo.project;
     _ownerInfo._version = ownerinfo.version;
+    _ownerInfo._details = ownerinfo.details;
     _ownerInfo._date    = ownerinfo.date;
 }
 

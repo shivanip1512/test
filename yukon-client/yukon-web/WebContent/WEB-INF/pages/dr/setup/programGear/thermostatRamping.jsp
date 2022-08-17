@@ -53,16 +53,53 @@
                                     ${coolBtnLbl}
                                 </c:when>
                                 <c:otherwise>
-                                    <i:inline key="yukon.common.none"/>
+                                    <i:inline key="yukon.common.none.choice"/>
                                 </c:otherwise>
                             </c:choose>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".tempMeasureUnit">
-                        <tags:radioButtonGroup items="${units}" path="fields.tempMeasureUnit" viewModeKey="${programGear.fields.tempMeasureUnit}"/>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <c:forEach var="unit" items="${units}" varStatus="status">
+                                <c:choose>
+                                    <c:when test="${status.index == 0}">
+                                        <c:set var="css" value="left yes ML0"/>
+                                    </c:when>
+                                    <c:when test="${status.index == fn:length(units)-1}">
+                                        <c:set var="css" value="right yes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="css" value="middle yes"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <tags:radio path="fields.tempMeasureUnit" value="${unit}" classes="${css}" key=".${unit}" />
+                            </c:forEach>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.tempMeasureUnit}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".setpoint">
-                        <tags:radioButtonGroup items="${setpoints}" path="fields.setpoint" viewModeKey="${programGear.fields.setpoint}" inputCssClass="js-setpoint-input"/>
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <c:forEach var="setpoint" items="${setpoints}" varStatus="status">
+                                <c:choose>
+                                    <c:when test="${status.index == 0}">
+                                        <c:set var="css" value="left yes ML0"/>
+                                    </c:when>
+                                    <c:when test="${status.index == fn:length(units)-1}">
+                                        <c:set var="css" value="right yes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="css" value="middle yes"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <tags:radio path="fields.setpoint" value="${setpoint}" classes="${css}"
+                                            key=".${setpoint}" inputClass="js-setpoint-input"/>
+                            </c:forEach>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <i:inline key=".${programGear.fields.setpoint}"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".minValue">
                         <tags:input path="fields.minValue"/>

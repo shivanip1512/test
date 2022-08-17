@@ -1,18 +1,16 @@
 package com.cannontech.stars.dr.optout.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.easymock.EasyMockSupport;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -94,7 +92,7 @@ public class OptOutServiceTest extends EasyMockSupport {
         }
     };
     
-    @BeforeEach
+    @Before
     public void setup() {
         optOutService = new OptOutServiceImpl();
         ReflectionTestUtils.setField(optOutService, "rolePropertyDao", rolePropertyDaoMock);
@@ -103,26 +101,24 @@ public class OptOutServiceTest extends EasyMockSupport {
     @Test
     public void testSingleQuoteJson() {
         List<OptOutLimit> optOutList = optOutService.findCurrentOptOutLimit(new LiteYukonGroup(5));
-        assertEquals(optOutList.size(), 1);
-        assertEquals(optOutList.get(0).getLimit(), 2);
-        assertEquals((int)optOutList.get(0).getStartMonth(), 4);
-        assertEquals((int)optOutList.get(0).getStopMonth(), 10);
+        Assert.assertEquals(optOutList.size(), 1);
+        Assert.assertEquals(optOutList.get(0).getLimit(), 2);
+        Assert.assertEquals((int)optOutList.get(0).getStartMonth(), 4);
+        Assert.assertEquals((int)optOutList.get(0).getStopMonth(), 10);
     }
 
     @Test
     public void testSuperfluousJson() {
         List<OptOutLimit> optOutList = optOutService.findCurrentOptOutLimit(new LiteYukonGroup(6));
-        assertEquals(optOutList.size(), 1);
-        assertEquals(optOutList.get(0).getLimit(), 2);
-        assertEquals((int)optOutList.get(0).getStartMonth(), 4);
-        assertEquals((int)optOutList.get(0).getStopMonth(), 10);
+        Assert.assertEquals(optOutList.size(), 1);
+        Assert.assertEquals(optOutList.get(0).getLimit(), 2);
+        Assert.assertEquals((int)optOutList.get(0).getStartMonth(), 4);
+        Assert.assertEquals((int)optOutList.get(0).getStopMonth(), 10);
     }
 
-    @Test
+    @Test(expected=RuntimeException.class)
     public void testMissingInfoJson() {
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            optOutService.findCurrentOptOutLimit(new LiteYukonGroup(7));
-        });
+        optOutService.findCurrentOptOutLimit(new LiteYukonGroup(7));
     }
 
     /**
@@ -133,8 +129,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StartMonthBeforeStopMonth() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Two, centralTimeZone, residentialGroup_One);
         
-        assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
     /**
@@ -145,8 +141,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_One() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_One, centralTimeZone, residentialGroup_One);
         
-        assertEquals(dateTimeFormmater.parseDateTime("11/1/2011").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2011").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
     
     /**
@@ -157,8 +153,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Two() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Three, centralTimeZone, residentialGroup_One);
         
-        assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("04/1/2013").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2013").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
     /**
@@ -169,8 +165,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Five() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Four, centralTimeZone, residentialGroup_Four);
         
-        assertEquals(dateTimeFormmater.parseDateTime("10/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("10/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
     
     /**
@@ -181,8 +177,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Six() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Five, centralTimeZone, residentialGroup_Four);
         
-        assertEquals(dateTimeFormmater.parseDateTime("10/1/2010").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("10/1/2011").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2010").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2011").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
     /**
@@ -193,8 +189,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Four() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Four, centralTimeZone, residentialGroup_One);
         
-        assertEquals(dateTimeFormmater.parseDateTime("11/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("04/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
     
     
@@ -206,8 +202,8 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StartMonthBeforeStopMonth_PartialLimit() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Two, centralTimeZone, residentialGroup_Two);
         
-        assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
-        assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
     /**
@@ -218,7 +214,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_PartialLimit_One() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_One, centralTimeZone, residentialGroup_Two);
         
-        assertNull(findOptOutLimitInterval);
+        Assert.assertNull(findOptOutLimitInterval);
     }
     
     /**
@@ -229,7 +225,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_PartialLimit_Two() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Three, centralTimeZone, residentialGroup_Two);
         
-        assertNull(findOptOutLimitInterval);
+        Assert.assertNull(findOptOutLimitInterval);
     }
 
     /**
@@ -240,27 +236,21 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_NoLimits() {
         OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_One, centralTimeZone, residentialGroup_Three);
         
-        assertNull(findOptOutLimitInterval);
+        Assert.assertNull(findOptOutLimitInterval);
     }
     
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testFindOptOutLimitInterval_nullIntersectingDate() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            optOutService.findOptOutLimitInterval(null, centralTimeZone, residentialGroup_One);
-        });
+        optOutService.findOptOutLimitInterval(null, centralTimeZone, residentialGroup_One);
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testFindOptOutLimitInterval_nullDateTimeZone() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            optOutService.findOptOutLimitInterval(date_One, null, residentialGroup_One);
-        });
+        optOutService.findOptOutLimitInterval(date_One, null, residentialGroup_One);
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testFindOptOutLimitInterval_nullResidentialGroup() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            optOutService.findOptOutLimitInterval(date_One, centralTimeZone, null);
-        });
+        optOutService.findOptOutLimitInterval(date_One, centralTimeZone, null);
     }
 }

@@ -9,7 +9,6 @@ import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionTerminate;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -64,7 +63,7 @@ public interface CollectionActionDao {
     List<Integer> getAllOldCollectionActionIds(DateTime retentionDate);
 
     /**
-     * Loads collection actions from db that didn't complete. Used to terminate CRE collection actions.
+     * Loads collection actions from db that didn't complete
      */
-    List<CollectionActionTerminate> loadIncompeteResultsFromDb();
+    List<CollectionActionResult> loadIncompeteResultsFromDb();
 }

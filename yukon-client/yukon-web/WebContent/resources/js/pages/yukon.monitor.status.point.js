@@ -20,7 +20,6 @@ yukon.StatusPointMonitor = (function () {
             row.find('.js-row-prev-state').attr('name', 'processors[' + index + '].prevState');
             row.find('.js-row-next-state').attr('name', 'processors[' + index + '].nextState');
             row.find('.js-row-action-type').attr('name', 'processors[' + index + '].actionType');
-            row.find('.js-row-notify-on-alarm-only').attr('name', 'processors[' + index + '].notifyOnAlarmOnly');
             row.find('.js-remove').removeAttr('id');
         },
         

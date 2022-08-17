@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
-[Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #] [per Interval|Load Profile]
+[Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #]
 Examples: 
 Net kWh OR Net Delivered kWh 
 Received kWh Rate A 
@@ -10,10 +10,10 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="518"/>
+        <analog offset="394"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="107"/>
+        <status offset="101"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -176,36 +176,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="50" type="Analog">
         <name>Delivered kVArh</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="51" type="Analog">
-        <name>Delivered kVArh (Quadrant 1)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="52" type="Analog">
-        <name>Delivered kVArh (Quadrant 1) (Rate A kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="53" type="Analog">
-        <name>Delivered kVArh (Quadrant 1) (Rate B kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="54" type="Analog">
-        <name>Delivered kVArh (Quadrant 1) (Rate C kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="55" type="Analog">
-        <name>Delivered kVArh (Quadrant 1) (Rate D kVArh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
@@ -1064,31 +1034,31 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="245" type="Analog">
-        <name>kVAh (Quadrants 1 2 4)</name>
+        <name>kVAh Lagging</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="246" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate A kVAh)</name>
+        <name>kVAh Lagging Rate A</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="247" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate B kVAh)</name>
+        <name>kVAh Lagging Rate B</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="248" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate C kVAh)</name>
+        <name>kVAh Lagging Rate C</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="249" type="Analog">
-        <name>kVAh (Quadrants 1 2 4) (Rate D kVAh)</name>
+        <name>kVAh Lagging Rate D</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
@@ -1124,31 +1094,31 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="255" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4)</name>
+        <name>Peak kVA Lagging</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="256" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) (Rate A kVA)</name>
+        <name>Peak kVA Lagging Rate A</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="257" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) (Rate B kVA)</name>
+        <name>Peak kVA Lagging Rate B</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="258" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) (Rate C kVA)</name>
+        <name>Peak kVA Lagging Rate C</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="259" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) (Rate D kVA)</name>
+        <name>Peak kVA Lagging Rate D</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
@@ -1211,6 +1181,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Sum Peak kVAr</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="270" type="Analog">
+        <name>Delivered Peak kVA</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
     <point offset="271" type="Analog">
@@ -1950,678 +1926,8 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="394" type="Analog">
         <name>RSSI</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1"/>
         <unitofmeasure value="DBM"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="395" type="Analog">
-        <name>Delivered kWh Rate A per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="396" type="Analog">
-        <name>Delivered kWh Rate B per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="397" type="Analog">
-        <name>Delivered kWh Rate C per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="398" type="Analog">
-        <name>Delivered kWh Rate D per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="399" type="Analog">
-        <name>Received kWh Rate A per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="400" type="Analog">
-        <name>Received kWh Rate B per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="401" type="Analog">
-        <name>Received kWh Rate C per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="402" type="Analog">
-        <name>Received kWh Rate D per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="403" type="Analog">
-        <name>Net kWh Rate A per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="404" type="Analog">
-        <name>Net kWh Rate B per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="405" type="Analog">
-        <name>Net kWh Rate C per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="406" type="Analog">
-        <name>Net kWh Rate D per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="407" type="Analog">
-        <name>Sum kWh Rate A per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="408" type="Analog">
-        <name>Sum kWh Rate B per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="409" type="Analog">
-        <name>Sum kWh Rate C per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="410" type="Analog">
-        <name>Sum kWh Rate D per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KWH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="411" type="Analog">
-        <name>Average Power Factor Frozen</name>
-        <multiplier value="1.0"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="420" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVA</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="421" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVA Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="422" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVA Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="423" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVA Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="424" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVA Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="425" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVAr</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="426" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVAr Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="427" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVAr Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="428" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVAr Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="429" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kVAr Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="430" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kW</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="431" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kW Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="432" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kW Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="433" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kW Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="434" type="Analog">
-        <name>Coincident Power Factor at Delivered Peak kW Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="435" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVA</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="436" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVA Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="437" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVA Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="438" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVA Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="439" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVA Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="440" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVAr</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="441" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVAr Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="442" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVAr Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="443" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVAr Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="444" type="Analog">
-        <name>Coincident Power Factor at Received Peak kVAr Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="445" type="Analog">
-        <name>Coincident Power Factor at Received Peak kW</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="446" type="Analog">
-        <name>Coincident Power Factor at Received Peak kW Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="447" type="Analog">
-        <name>Coincident Power Factor at Received Peak kW Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="448" type="Analog">
-        <name>Coincident Power Factor at Received Peak kW Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="449" type="Analog">
-        <name>Coincident Power Factor at Received Peak kW Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="450" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVA</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="451" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVA Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="452" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVA Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="453" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVA Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="454" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVA Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="455" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVAr</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="456" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVAr Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="457" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVAr Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="458" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVAr Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="459" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kVAr Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="460" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kW Rate A</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="461" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kW Rate B</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="462" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kW Rate C</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="463" type="Analog">
-        <name>Coincident Power Factor at Sum Peak kW Rate D</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="464" type="Analog">
-        <name>Delivered kW Rate A Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="465" type="Analog">
-        <name>Delivered kW Rate B Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="466" type="Analog">
-        <name>Delivered kW Rate C Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="467" type="Analog">
-        <name>Delivered kW Rate D Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="468" type="Analog">
-        <name>Received kW Rate A Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="469" type="Analog">
-        <name>Received kW Rate B Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="470" type="Analog">
-        <name>Received kW Rate C Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="471" type="Analog">
-        <name>Received kW Rate D Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="472" type="Analog">
-        <name>Net kW Rate A Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="473" type="Analog">
-        <name>Net kW Rate B Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="474" type="Analog">
-        <name>Net kW Rate C Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="475" type="Analog">
-        <name>Net kW Rate D Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="476" type="Analog">
-        <name>Sum kW Rate A Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="477" type="Analog">
-        <name>Sum kW Rate B Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="478" type="Analog">
-        <name>Sum kW Rate C Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="479" type="Analog">
-        <name>Sum kW Rate D Load Profile</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KW"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="480" type="Analog">
-        <name>Delivered Peak kVA (Quadrants 1 2) (Rate A kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="481" type="Analog">
-        <name>Delivered Peak kVA (Quadrants 1 2) (Rate B kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="482" type="Analog">
-        <name>Delivered Peak kVA (Quadrants 1 2) (Rate C kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="483" type="Analog">
-        <name>Delivered Peak kVA (Quadrants 1 2) (Rate D kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="489" type="Analog">
-        <name>kVAh (Quadrants 2 3 4)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>    
-    <point offset="490" type="Analog">
-        <name>kVAh (Quadrants 2 3 4) (Rate A kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="491" type="Analog">
-        <name>kVAh (Quadrants 2 3 4) (Rate B kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="492" type="Analog">
-        <name>kVAh (Quadrants 2 3 4) (Rate C kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="493" type="Analog">
-        <name>kVAh (Quadrants 2 3 4) (Rate D kVAh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="494" type="Analog">
-        <name>Minimum Power Factor</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="495" type="Analog">
-        <name>Minimum Power Factor Frozen</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="PF"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="496" type="Analog">
-        <name>Sum Peak kVAr Frozen</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="497" type="Analog">
-        <name>Delivered Peak kVAr Frozen</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="498" type="Analog">
-        <name>Delivered Peak kVAr Frozen (Rate A kVAr)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="499" type="Analog">
-        <name>Delivered Peak kVAr Frozen (Rate B kVAr)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="500" type="Analog">
-        <name>Delivered Peak kVAr Frozen (Rate C kVAr)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="501" type="Analog">
-        <name>Delivered Peak kVAr Frozen (Rate D kVAr)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVAR"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="502" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) Frozen</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="503" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) Frozen (Rate A kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="504" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) Frozen (Rate B kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="505" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) Frozen (Rate C kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="506" type="Analog">
-        <name>Peak kVA (Quadrants 1 2 4) Frozen (Rate D kVA)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="507" type="Analog">
-        <name>Delivered kVAh per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="508" type="Analog">
-        <name>Received kVAh per Interval</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="509" type="Analog">
-        <name>kVA (Quadrants 1 2 4)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="510" type="Analog">
-        <name>Sum Peak kVA Frozen</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVA"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="511" type="Analog">
-        <name>Received kVArh (Quadrant 4)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="512" type="Analog">
-        <name>Received kVArh (Quadrant 4) (Rate A kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="513" type="Analog">
-        <name>Received kVArh (Quadrant 4) (Rate B kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="514" type="Analog">
-        <name>Received kVArh (Quadrant 4) (Rate C kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="515" type="Analog">
-        <name>Received kVArh (Quadrant 4) (Rate D kVArh)</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="KVARH"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="516" type="Analog">
-        <name>RSRP</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DBM"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="517" type="Analog">
-        <name>RSRQ</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DB"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="518" type="Analog">
-        <name>SINR</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DB"/>
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -2636,7 +1942,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
             <components>
                 <component point="Blink Count"/>
                 <component point="Outage Count"/>
-                <component point="Blink Restore Count"/>
             </components>
         </calculation>
     </point>
@@ -3120,36 +2425,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Meter Programming"/>
     </point>
-    <point offset="102" type="Status">
-        <name>Ultra Capacitor Bad</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="103" type="Status">
-        <name>Blink Reported</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="104" type="Status">
-        <name>Cellular Connection Failed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="105" type="Status">
-        <name>Cellular Modem Disabled</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="106" type="Status">
-        <name>Cellular Sim Card Inserted Removed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="107" type="Status">
-        <name>Cellular APN Changed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
@@ -3157,7 +2432,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Comm Status State"/>
     </point>
 </points>

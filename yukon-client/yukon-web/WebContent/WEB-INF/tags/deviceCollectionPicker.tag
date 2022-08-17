@@ -131,7 +131,7 @@
         <input type="hidden" class="js-device-collection-inputs" data-ids name="idList.ids">
         
         <div id="${id}-id-container"></div>
-        <tags:pickerDialog id="${id}IdPicker" type="dataExportPicker" multiSelectMode="true" linkType="none"
+        <tags:pickerDialog id="${id}IdPicker" type="devicePicker" multiSelectMode="true" linkType="none"
              container="${id}-id-container"/>
     </div>
     
@@ -191,7 +191,7 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".selectDataFile">
                     <tags:file name="fileUpload.dataFile"/>
-                    <div class="progress dif dn" style="width: 120px;">
+                    <div class="progress dib dn" style="width: 120px;">
                         <div class="progress-bar" style="width: 0%"></div>
                     </div>
                 </tags:nameValue2>

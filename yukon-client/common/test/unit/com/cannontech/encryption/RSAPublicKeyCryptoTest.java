@@ -1,7 +1,5 @@
 package com.cannontech.encryption;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -16,7 +14,8 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.cannontech.encryption.impl.RSAPublicKeyCrypto;
 
@@ -47,7 +46,7 @@ public class RSAPublicKeyCryptoTest  {
         // the computed cipher bytes against known cipher bytes since it changes
         // every time.
 
-        assertEquals(false, Arrays.equals(preComputedPlainTextBytes, computedCipherBytes));
+        Assert.assertEquals(false, Arrays.equals(preComputedPlainTextBytes, computedCipherBytes));
     }
     
     @Test
@@ -59,7 +58,7 @@ public class RSAPublicKeyCryptoTest  {
         byte[] computedPlainBytes = RSAPublicKeyCrypto.decrypt(preComputedCipherTextBytes, privateKey);
 
         // Testing the known plain text to the computed plain text using the precomputed private key.
-        assertEquals(true, Arrays.equals(preComputedPlainTextBytes, computedPlainBytes));
+        Assert.assertEquals(true, Arrays.equals(preComputedPlainTextBytes, computedPlainBytes));
     }
     
     @Test
@@ -80,11 +79,11 @@ public class RSAPublicKeyCryptoTest  {
         computedData = RSAPublicKeyCrypto.decrypt(encryptedData,keys.getPrivate());
 
         // Make sure something changed, that we wern't just passing around the same data
-        assertEquals(false, Arrays.equals(encryptedData,computedData));
-        assertEquals(false, Arrays.equals(encryptedData,knownData));
+        Assert.assertEquals(false, Arrays.equals(encryptedData,computedData));
+        Assert.assertEquals(false, Arrays.equals(encryptedData,knownData));
 
         // Make sure we got plain text back.
-        assertEquals(true, Arrays.equals(knownData,computedData));
+        Assert.assertEquals(true, Arrays.equals(knownData,computedData));
     }
     
 }

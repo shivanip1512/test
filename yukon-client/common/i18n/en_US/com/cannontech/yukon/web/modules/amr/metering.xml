@@ -104,11 +104,8 @@
     <entry key="yukon.web.widgets.accountInformationWidget.name">Name</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.dba">DBA</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.custNumber">Customer Number</entry>
-    <entry key="yukon.web.widgets.accountInformationWidget.custId">Customer ID</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.acctNumber">Account Number</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.siteNumber">Site Number</entry>
-    <entry key="yukon.web.widgets.accountInformationWidget.facilityId">Facility ID</entry>
-    <entry key="yukon.web.widgets.accountInformationWidget.facilityName">Facility Name</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.mapLocation">Map Location</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.address">Address</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.phoneNumber">Home Phone</entry>
@@ -171,31 +168,33 @@
     <entry key="yukon.web.widgets.configWidget.meterProgramming">Meter Programming</entry>
     <entry key="yukon.web.widgets.configWidget.currentMeterProgram">Current Program</entry>
     <entry key="yukon.web.widgets.configWidget.program.label">Program</entry>
-    <entry key="yukon.web.widgets.configWidget.assignedConfiguration">Assigned Configuration</entry>
-    <entry key="yukon.web.widgets.configWidget.changeConfiguration">Change Configuration</entry>
-    <entry key="yukon.web.widgets.configWidget.remove.label">Remove</entry>
-    <entry key="yukon.web.widgets.configWidget.change.label">Change</entry>
-    <entry key="yukon.web.widgets.configWidget.change.labelBusy">Changing</entry>
-    <entry key="yukon.web.widgets.configWidget.upload.label">Upload</entry>
-    <entry key="yukon.web.widgets.configWidget.uploadSent">Configuration Upload has been sent. Please allow time for a response to be received.</entry>
-    <entry key="yukon.web.widgets.configWidget.validate.label">Validate</entry>
-    <entry key="yukon.web.widgets.configWidget.validateSent">Configuration Validation has been requested. Please allow time for a response to be received.</entry>
+    <entry key="yukon.web.widgets.configWidget.currentConfiguration">Current Configuration</entry>
+    <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configuration</entry>
+    <entry key="yukon.web.widgets.configWidget.unassign.label">Unassign</entry>
+    <entry key="yukon.web.widgets.configWidget.unassign.labelBusy">Unassigning</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.label">Assign</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.labelBusy">Assigning</entry>
+    <entry key="yukon.web.widgets.configWidget.send.label">Send</entry>
+    <entry key="yukon.web.widgets.configWidget.send.labelBusy">Sending</entry>
+    <entry key="yukon.web.widgets.configWidget.read.label">Read</entry>
+    <entry key="yukon.web.widgets.configWidget.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.label">Verify</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.labelBusy">Verifying</entry>
+    <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     <entry key="yukon.web.widgets.configWidget.dataStreaming">Data Streaming</entry>
     <entry key="yukon.web.widgets.configWidget.currentDataStreaming">Current Data Streaming</entry>
     <entry key="yukon.web.widgets.configWidget.dataStreamingConfiguration">Data Streaming Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.action">Action</entry>
-    <entry key="yukon.web.widgets.configWidget.status">Status</entry>
-    <entry key="yukon.web.widgets.configWidget.uploadPopup.title">Upload Device Configuration</entry>
-    <entry key="yukon.web.widgets.configWidget.uploadPopup.message">Device Configuration has been changed to ''{0}'' for device ''{1}'', would you like to Upload the Configuration to the device?</entry>
-    <entry key="yukon.web.widgets.configWidget.actionsDisabledMessage">Actions are disabled while Status is In Progress</entry>
-    <entry key="yukon.web.widgets.configWidget.actionInProgress">Action not allowed while Status is In Progress.</entry>
-    <entry key="yukon.web.widgets.configWidget.noConfig.message">
-        There is no Device Configuration created for this device type yet. Please create one from Device Configuration page.
-    </entry>
-    <!-- Used in outOfSync.jsp -->
-    <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
+
+    <!-- configWidget/configWidgetResult.jsp -->
     <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
-    <entry key="yukon.web.widgets.configWidget.viewLastError">View Last Error</entry>
+    <entry key="yukon.web.widgets.configWidget.fail">Failed</entry>
+    <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
+    <entry key="yukon.web.widgets.configWidget.sendResult">Send Result</entry>
+    <entry key="yukon.web.widgets.configWidget.readResult">Read Result</entry>
+    <entry key="yukon.web.widgets.configWidget.sendConfigSuccess">Config Sent Successfully</entry>
+    <entry key="yukon.web.widgets.configWidget.sendConfigFail">Failed</entry>
+    <entry key="yukon.web.widgets.configWidget.readSentSuccess">Read Performed Successfully</entry>
 
     <!-- touWidget/render.jsp -->
     <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>

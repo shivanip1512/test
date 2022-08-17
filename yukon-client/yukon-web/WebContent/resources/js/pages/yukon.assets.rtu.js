@@ -43,22 +43,18 @@ yukon.assets.rtu = (function() {
                     childPointsDiv.addClass('dn');
                     icon.removeClass('icon-collapse');
                     icon.addClass('icon-expand');
-                    icon.html(yg.iconSvg.iconExpand);
                 } else {
                     $.ajax({ url: yukon.url('/stars/rtu/child/' + paoId + '/points') })
                     .done(function (details) {
                         pointsDiv.html(details);
                         icon.removeClass('icon-expand');
                         icon.addClass('icon-collapse');
-                        icon.html(yg.iconSvg.iconCollapse);
                     });
                 }
             });
             
-            if ($('#tcp-comm-ports').exists()) {
-                tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
-            }
-           
+            tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
+            
             /** User change comm channel dropdown value */
             $('#comm-port').on('change', updateCommPortFields);
             updateCommPortFields();

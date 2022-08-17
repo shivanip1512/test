@@ -18,20 +18,14 @@ yukon.smart.notifications = (function () {
         var type = popup.find('.js-type').val(),
             deviceDataMonitor = type === $(".js-event-type-ddm").val(),
             assetImport = type === $(".js-event-type-asset-import").val(),
-            meterDisconnect = type === $(".js-event-type-meter-dr").val(),
-            eatonCloudDR = type === $('.js-event-type-eaton-cloud-dr').val();
+            meterDisconnect = type === 'METER_DR';
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('.js-import-result').toggleClass('dn', !assetImport);
-        if (meterDisconnect || eatonCloudDR) {
+        if (meterDisconnect) {
             popup.find('.js-frequency').val('IMMEDIATE');
         }
-        if (eatonCloudDR) {
-            popup.find('.js-detail').val('SUMMARY');
-        }
-        popup.find('.js-frequency').prop('disabled', meterDisconnect || eatonCloudDR);
-        popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect && !eatonCloudDR);
-        popup.find('.js-detail').prop('disabled', eatonCloudDR);
-        popup.find('.js-detail-hidden').prop('disabled', !eatonCloudDR);
+        popup.find('.js-frequency').prop('disabled', meterDisconnect);
+        popup.find('.js-frequency-hidden').prop('disabled', !meterDisconnect);
         updateFrequencyFields(popup);
         /* We need to disable these fields even if it is hidden to prevent this value for 
          * being passed to the controller as a subscription parameter to be saved to the DB.*/
@@ -85,7 +79,7 @@ yukon.smart.notifications = (function () {
                 event.message = eventMessageSpan.html() + " - " + message;
             }
             
-            event.timestamp = event.timestamp.millis ? event.timestamp.millis : event.timestamp;
+            event.timestamp = event.timestamp.millis;
             //change the timezone if needed
             var row = $('.js-event-' + event.id),
                 timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
@@ -238,6 +232,10 @@ yukon.smart.notifications = (function () {
                 var form = $('#filter-form');
                 var data = form.serialize();
                 window.location = yukon.url('/notifications/download?' + data);
+            });
+            
+            $(document).on('click', '.js-notifications-help', function (ev) {
+                $('.js-user-message').removeClass('dn');
             });
             
             initializeSmartNotificationsTable();

@@ -34,50 +34,47 @@ bool CtiLMProgramConstraintChecker::checkConstraints(ULONG proposed_gear,
                                                      CtiTime proposed_start,
                                                      CtiTime proposed_stop)
 {
-    bool constraints_violated = false;
-    constraints_violated |= !checkManualProgramConstraints(proposed_start, proposed_stop);
-    constraints_violated |= !checkGroupConstraints(proposed_gear, proposed_start, proposed_stop);
-
-    return !constraints_violated;
+    bool ret_val = true;
+    ret_val = (checkManualProgramConstraints(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkGroupConstraints(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    return ret_val;
 }
 
 bool CtiLMProgramConstraintChecker::checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool constraints_violated = false;
-    constraints_violated |= !checkSeason(proposed_start, proposed_stop);
-    constraints_violated |= !checkWeekDays(proposed_start, proposed_stop);
-    constraints_violated |= !checkMasterActive();
-    constraints_violated |= !checkControlWindows(proposed_start, proposed_stop);
-    constraints_violated |= !checkProgramControlWindows(proposed_start, proposed_stop);
-    constraints_violated |= !checkNotifyActiveOffset(proposed_start);
+    bool ret_val = true;
+    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMasterActive() && ret_val);
+    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkNotifyActiveOffset(proposed_start) && ret_val);
 
-    return !constraints_violated;
+    return ret_val;
 }
 
 bool CtiLMProgramConstraintChecker::checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool constraints_violated = false;
-    constraints_violated |= !checkSeason(proposed_start, proposed_stop);
-    constraints_violated |= !checkWeekDays(proposed_start, proposed_stop);
-    constraints_violated |= !checkMasterActive();
-    constraints_violated |= !checkControlWindows(proposed_start, proposed_stop);
+    bool ret_val = true;
+    ret_val = (checkSeason(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkWeekDays(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMasterActive() && ret_val);
+    ret_val = (checkControlWindows(proposed_start, proposed_stop) && ret_val);
 
-    return !constraints_violated;
+    return ret_val;
 }
 
 bool CtiLMProgramConstraintChecker::checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop)
 {
-    bool constraints_violated = false;
-    constraints_violated |= !checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop);
-    constraints_violated |= !checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop);
-    constraints_violated |= !checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop);
-    constraints_violated |= !checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop);
-    constraints_violated |= !checkMinActivateTime(proposed_start, proposed_stop);
-    constraints_violated |= !checkMinRestartTime(proposed_start);
-    constraints_violated |= !checkMaxDailyOps();
-    constraints_violated |= !checkMaxActivateTime(proposed_start, proposed_stop);
-
-    return !constraints_violated;
+    bool ret_val = true;
+    ret_val = (checkMaxHoursDaily(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursMonthly(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursSeasonal(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMaxHoursAnnually(proposed_gear, proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMinActivateTime(proposed_start, proposed_stop) && ret_val);
+    ret_val = (checkMinRestartTime(proposed_start) && ret_val);
+    ret_val = (checkMaxDailyOps() && ret_val);
+    ret_val = (checkMaxActivateTime(proposed_start, proposed_stop) && ret_val);
+    return ret_val;
 }
 
 /*
@@ -402,13 +399,13 @@ bool CtiLMProgramConstraintChecker::checkMinActivateTime(CtiTime proposed_start,
     ULONG run_time = proposed_stop.seconds() - proposed_start.seconds();
     if( !(run_time >= _lm_program.getMinActivateTime()) )
     {
-        double numSeconds = (double)_lm_program.getMinActivateTime();
+        double numHours = (double)_lm_program.getMinActivateTime()/60.0/60.0;
 
-        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numSeconds) + " seconds.";
+        string result = "Load groups might be controlled less than their minimum activate time, which is " + CtiNumStr(numHours) + " hours.";
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_D_ControlledLessThanMinimum,
-                                                            numSeconds));
+                                                            numHours));
 
         return false;
     }
@@ -753,24 +750,6 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         }
     }
 
-    return true;
-}
-
-bool CtiLMProgramConstraintChecker::checkProgramControlWindows(CtiTime proposed_start, CtiTime proposed_stop)
-{
-    //Ecobee DR Events must start and end on the same calendar day
-    if (_lm_program.controlNotAllowedToSpanMidnight())
-    {
-        if (!(proposed_start.date() == proposed_stop.date()))
-        {
-            string result = "Program control window should not span midnight.";
-            _results.push_back(result);
-
-            _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_NP_ControlWindowSpansMidnight));
-
-            return false;
-        }
-    }   
     return true;
 }
 
@@ -1296,25 +1275,26 @@ bool CtiLMGroupConstraintChecker::checkDurationConstraint(LONG current_duration,
     return true;
 }
 
-bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG proposed_gear, CtiTime proposed_stop)
+bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds)
 {
     bool ret_val = true;
     CtiLMProgramDirectGear* currentGearObject = _lm_program.getCurrentGearObject();
 
-    if( proposed_stop > _lm_program.getDirectStopTime() )
+    if( proposed_stop_seconds > _lm_program.getDirectStopTime().seconds() )
     {
         CtiTime currentStopTime = _lm_program.getDirectStopTime();
+        CtiTime proposedStop    = CtiTime(proposed_stop_seconds);
 
         string result = "Gear change does not support extending the stop time. Current stop time: ";
         result += currentStopTime.asString();
         result += " Requested stop time: ";
-        result += proposed_stop.asString();
+        result += proposedStop.asString();
         result += " You cannot override this constraint error.";
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_TT_CannotExtendStopTime,
                                                             currentStopTime,
-                                                            proposed_stop));
+                                                            proposedStop));
 
         ret_val = false;
     }

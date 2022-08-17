@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigHelper;
 
 /**
  * Class to create Http message sender with SSL settings.
@@ -31,17 +30,17 @@ public class HttpComponentsMessageSenderWithSSL extends HttpComponentsMessageSen
     
     private HttpClient httpClient(int timeout) {
         try {
+            
             RequestConfig config = RequestConfig.custom()
-                                                .setConnectTimeout(timeout)
-                                                .setConnectionRequestTimeout(timeout)
-                                                .setSocketTimeout(timeout)
-                                                .build();
+                    .setConnectTimeout(timeout)
+                    .setConnectionRequestTimeout(timeout)
+                    .setSocketTimeout(timeout)
+                    .build();
 
-            HttpClient httpClient = HttpClientBuilder.create().setSSLSocketFactory(sslConnectionSocketFactory())
-                                                              .setDefaultRequestConfig(config)
-                                                              .setMaxConnTotal(MasterConfigHelper.getConfiguration().getInteger("MSP_HTTP_TOTAL_CONNECTIONS", 20))
-                                                              .setMaxConnPerRoute(MasterConfigHelper.getConfiguration().getInteger("MSP_HTTP_NUMBER_OF_CONNECTIONS_PER_ROUTE", 2))
-                                                              .addInterceptorFirst(new RemoveSoapHeadersInterceptor()).build();
+            HttpClient httpClient =
+                HttpClientBuilder.create().setSSLSocketFactory(sslConnectionSocketFactory())
+                .setDefaultRequestConfig(config)
+                .addInterceptorFirst(new RemoveSoapHeadersInterceptor()).build();
 
             return httpClient;
         } catch (Exception e) {

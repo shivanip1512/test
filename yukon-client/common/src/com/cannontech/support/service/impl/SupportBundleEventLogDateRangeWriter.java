@@ -28,9 +28,8 @@ public class SupportBundleEventLogDateRangeWriter extends AbstractSupportBundleW
     @Override
     public void addToZip(final ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventLogId, EventType, EventTime, String1, String2, String3, String4, String5, String6, Int7, Int8, Int9, Int10, Date11, Date12");
+        sql.append("SELECT *");
         sql.append("FROM EventLog");
-        sql.append("JOIN EventLogType ON EventLog.EventTypeId=EventLogType.EventTypeId");
         sql.append("WHERE EventTime").gte(start);
         sql.append("  AND EventTime").lte(stop);
 

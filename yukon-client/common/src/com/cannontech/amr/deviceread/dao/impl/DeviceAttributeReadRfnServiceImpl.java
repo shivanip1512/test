@@ -1,8 +1,6 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,13 +24,11 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
-import com.cannontech.amr.rfn.service.RfnMeterReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -45,8 +41,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.util.RfnFeature;
-import com.cannontech.common.rfn.util.RfnFeatureHelper;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -58,7 +53,6 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -69,7 +63,6 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadRfnServiceImpl.class);
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnMeterReadService rfnMeterReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private AttributeService attributeService;
@@ -106,12 +99,12 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         initiateRead(points, new RfnStrategyCallback(callback, execution));
     }
 
-    private class RfnStrategyCallback implements DeviceAttributeReadCallback {
+    private class RfnStrategyCallback implements DeviceAttributeReadCallback{
        
-        private Set<PaoIdentifier> errors = Sets.newConcurrentHashSet();
-        private AtomicInteger completionCounter = new AtomicInteger(1);
-        private DeviceAttributeReadCallback callback;
-        private CommandRequestExecution execution;
+        Set<PaoIdentifier> errors = Sets.newConcurrentHashSet();
+        AtomicInteger completionCounter = new AtomicInteger(1);
+        DeviceAttributeReadCallback callback;
+        CommandRequestExecution execution;
         public RfnStrategyCallback(DeviceAttributeReadCallback callback, CommandRequestExecution execution) {
             this.callback = callback;
             this.execution = execution;
@@ -155,10 +148,6 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         public void setCompletionCounter(int completionCounter) {
             this.completionCounter = new AtomicInteger(completionCounter);
         }
-
-        public CommandRequestExecution getExecution() {
-            return execution;
-        }
     }
     
     @Override
@@ -170,7 +159,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     private void sendMeterRequests(List<RfnMeter> meters, final DeviceAttributeReadCallback delegateCallback) {
         final AtomicInteger pendingRequests = new AtomicInteger(meters.size());
         for (final RfnMeter meter : meters) {
-            var meterCallback = getMeterReadCallback(meter, delegateCallback, pendingRequests);
+            RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> meterCallback = getCallback(meter, delegateCallback, pendingRequests);
             rfnMeterReadService.send(meter, meterCallback);
         }
     }
@@ -199,16 +188,12 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
     }
     
     //Use for RFN meters
-    private RfnMeterReadCompletionCallback getMeterReadCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
-        return new RfnMeterReadCompletionCallback() {
+    private RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> getCallback(final YukonDevice device, final DeviceAttributeReadCallback delegateCallback, final AtomicInteger pendingRequests) {
+        RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback = new RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType>() {
 
             @Override
-            public void receivedData(Iterable<PointData> values) {
-                if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
-                    asyncDynamicDataSource.putValues(values);
-                }
-                values.forEach(value -> 
-                    delegateCallback.receivedValue(device.getPaoIdentifier(), value));
+            public void receivedData(PointValueHolder value) {
+                delegateCallback.receivedValue(device.getPaoIdentifier(), value);
             }
             
             @Override
@@ -244,6 +229,8 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
                 }
             }
         };
+        
+        return callback;
     }
     
     //Use for RFN disconnect statuses
@@ -355,14 +342,12 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         }
     }
     
-    private void initiateRead(Iterable<PaoMultiPointIdentifier> points, RfnStrategyCallback strategyCallback) {
-        List<RfnMeter> rfnMeters = new ArrayList<>();
-        List<RfnMeter> rfnDisconnectMeters = Lists.newArrayList();
-        List<RfnDevice> rfnDevices = Lists.newArrayList();
-        Set<Integer> allDeviceIds = new HashSet<>();
+    private void initiateRead(Iterable<PaoMultiPointIdentifier> points,  RfnStrategyCallback strategyCallback){
+        List<RfnMeter> rfnMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
+        List<RfnMeter> rfnDisconnectMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
+        List<RfnDevice> rfnDevices = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
         
         for (PaoMultiPointIdentifier pointIdentifier: points) {
-            allDeviceIds.add(pointIdentifier.getPao().getPaoId());
             if (pointIdentifier.getPao().getPaoType().isMeter()) {
                 RfnMeter rfnMeter = meterDao.getRfnMeterForId(pointIdentifier.getPao().getPaoId());
                 if (containsOnlyDisconnectStatus(pointIdentifier)) {
@@ -390,14 +375,15 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         if(!rfnDisconnectMeters.isEmpty()){
             completionCounter ++;
         }
-
-        log.debug("RF strategy meters: {} RF Devices: {} RF Disconnect Meters: {} CompletionCounter: {}", rfnMeters.size(),
-                rfnDevices.size(), rfnDisconnectMeters.size(), completionCounter);
+        
+        if (log.isDebugEnabled()) {
+            log.debug(getStrategy() + " Strategy initiateRead");
+            log.debug("rfnMeter:" + rfnMeters);
+            log.debug("rfnDevices:" + rfnDevices);
+            log.debug("completionCounter:" + completionCounter);
+        }
                 
         strategyCallback.setCompletionCounter(completionCounter);
-       
-        commandRequestExecutionResultDao.saveExecutionRequest(strategyCallback.getExecution().getId(), allDeviceIds);
-        
         sendMeterRequests(rfnMeters, strategyCallback);        
         sendMeterDisconnectQueries(rfnDisconnectMeters, strategyCallback);
         sendDeviceRequests(rfnDevices, devicePointIds, strategyCallback);

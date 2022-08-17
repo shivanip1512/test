@@ -1,102 +1,80 @@
 package com.cannontech.common.pao.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.model.GPS;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class LocationServiceImplTest {
 
     LocationServiceImpl impl = new LocationServiceImpl();
 
-    @Test
+    @Test()
     public void testIsValidLatitudeandLongitude() {
         GPS gps = ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00), Double.toString(160.00));
-        assertTrue( gps != null, "isValidLocationFormat valid, valid");
-        assertTrue(gps.getLatitude() == 85.00, "Latitude valid : valid");
-        assertTrue(gps.getLongitude() == 160.00, "Longitude valid : valid");
+        assertTrue("isValidLocationFormat valid, valid", gps != null);
+        assertTrue("Latitude valid : valid", gps.getLatitude() == 85.00);
+        assertTrue("Longitude valid : valid", gps.getLongitude() == 160.00);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitude_forString() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", "xyz", Double.toString(160.00));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", "xyz", Double.toString(160.00));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitude_forNaN() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN),
-                    Double.toString(160.00));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN),
+            Double.toString(160.00));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitude_forNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", null, Double.toString(160.00));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", null, Double.toString(160.00));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLongitude_forString() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00), "xyz");
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00), "xyz");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLongitude_forNaN() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00),
-                    Double.toString(Double.NaN));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00),
+            Double.toString(Double.NaN));
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLongitude_forNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00), null);
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(85.00), null);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitudeandLongitude_forString() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", "xyz", "xyz");
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", "xyz", "xyz");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitudeandLongitude_forNaN() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN),
-                    Double.toString(Double.NaN));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN),
+            Double.toString(Double.NaN));
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitudeandLongitude_forNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", null, null);
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", null, null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitudeandLongitude_forNaNandNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN), null);
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat", Double.toString(Double.NaN), null);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidLatitudeandLongitude_forNullandNaN() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat",null, Double.toString(Double.NaN));
-        });
+        ReflectionTestUtils.invokeMethod(impl, "getValidLocationFormat",null, Double.toString(Double.NaN));
     }
 }

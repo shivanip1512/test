@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <type_traits>
 
 namespace Cti {
 
@@ -54,12 +53,6 @@ public:
         }
     }
 };
-
-template<class Enum>
-constexpr std::underlying_type_t<Enum> as_underlying(Enum value)
-{
-    return static_cast<std::underlying_type_t<Enum>>(value);
-}
 
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
@@ -240,28 +233,20 @@ int clamp(int input)
 namespace Logging {
 namespace Set {
 
-template<typename Logger, typename Val, typename = 
-    std::enable_if_t<
-        //  enable for ostreams and StreamBuffer/Sink
-        (std::is_base_of_v<Logger, std::ostream> 
-            || std::is_same_v<Logger, StreamBuffer> 
-            || std::is_same_v<Logger, StreamBufferSink>)
-        //  enable for all integral types and string (not floats/doubles)    
-        && (std::is_integral_v<Val> || std::is_same_v<Val, std::string>)>>
-inline Logger& operator<<(Logger& logger, const std::set<Val> &set)
+inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long_set)
 {
     logger << "{";
-    if( set.empty() )
+    if( long_set.empty() )
     {
         logger << "<empty>";
     }
     else
     {
-        auto itr = set.begin();
+        auto itr = long_set.begin();
 
         logger << *itr;
 
-        while( ++itr != set.end() )
+        while( ++itr != long_set.end() )
         {
             logger << "," << *itr;
         }

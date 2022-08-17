@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.model.LocationData;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.location.Origin;
@@ -66,9 +64,4 @@ public interface PaoLocationDao {
      * Returns locations for devices linked to gateways that do not have locations
      */
     List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds);
-
-    /**
-     * Returns locations data for all paoTypes based on index.
-     */
-    List<LocationData> getLocationDetailForPaoType(Iterable<PaoType> paoTypes, int startIndex, int endIndex);
 }

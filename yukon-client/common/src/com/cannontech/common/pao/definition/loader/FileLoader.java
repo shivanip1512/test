@@ -40,6 +40,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.loader.jaxb.CommandType;
@@ -51,6 +53,7 @@ import com.cannontech.common.pao.definition.loader.jaxb.OverridePointInfo;
 import com.cannontech.common.pao.definition.loader.jaxb.OverrideTag;
 import com.cannontech.common.pao.definition.loader.jaxb.Overrides;
 import com.cannontech.common.pao.definition.loader.jaxb.Pao;
+import com.cannontech.common.pao.definition.loader.jaxb.PaoTypes;
 import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation;
 import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation.Components.Component;
@@ -659,20 +662,42 @@ public class FileLoader {
     private Overrides loadOverrideFile(Resource deviceDefinitionXsd) {
         Overrides overrides = null;
         boolean isValidSchema = false;
-        try (InputStream inputStream = new FileInputStream(overrideFile)) {
-            validateXmlSchema(inputStream, deviceDefinitionXsd.getURL());
-            isValidSchema = true;
-        } catch (IOException | SAXException | ParserConfigurationException e) {
-            log.error("Unable to validate schema for " + OVERRIDE_FILE_LOCATION, e);
-        }
-        if (isValidSchema) {
+        if (ClientSession.isRemoteSession()) {
+            RemoteLoginSession remoteSession = ClientSession.getRemoteLoginSession();
+            try (InputStream inputStream =
+                remoteSession.getInputStreamForUrl("/common/config/deviceDefinition", true)) {
+                validateXmlSchema(inputStream, deviceDefinitionXsd.getURL());
+                isValidSchema = true;
+            } catch (IOException | SAXException | ParserConfigurationException e) {
+                log.error("Unable to validate schema (remote session) for " + OVERRIDE_FILE_LOCATION, e);
+            }
+            if (isValidSchema) {
+                try (InputStream inputStream =
+                    remoteSession.getInputStreamForUrl("/common/config/deviceDefinition", true)) {
+                    log.info("Parsing (remote session) " + OVERRIDE_FILE_LOCATION);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Overrides.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    overrides = (Overrides) unmarshaller.unmarshal(inputStream);
+                } catch (IOException | JAXBException e) {
+                    log.error("Unable to parse (remote session) " + OVERRIDE_FILE_LOCATION, e);
+                }
+            }
+        } else {
             try (InputStream inputStream = new FileInputStream(overrideFile)) {
-                log.info("Parsing " + OVERRIDE_FILE_LOCATION);
-                JAXBContext jaxbContext = JAXBContext.newInstance(Overrides.class);
-                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                overrides = (Overrides) unmarshaller.unmarshal(inputStream);
-            } catch (IOException | JAXBException e) {
-                log.error("Unable to parse " + OVERRIDE_FILE_LOCATION, e);
+                validateXmlSchema(inputStream, deviceDefinitionXsd.getURL());
+                isValidSchema = true;
+            } catch (IOException | SAXException | ParserConfigurationException e) {
+                log.error("Unable to validate schema for " + OVERRIDE_FILE_LOCATION, e);
+            }
+            if (isValidSchema) {
+                try (InputStream inputStream = new FileInputStream(overrideFile)) {
+                    log.info("Parsing " + OVERRIDE_FILE_LOCATION);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Overrides.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    overrides = (Overrides) unmarshaller.unmarshal(inputStream);
+                } catch (IOException | JAXBException e) {
+                    log.error("Unable to parse " + OVERRIDE_FILE_LOCATION, e);
+                }
             }
         }
         return overrides;

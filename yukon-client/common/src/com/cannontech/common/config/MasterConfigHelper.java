@@ -75,7 +75,20 @@ public class MasterConfigHelper {
         return localConfig;
     }
 
+    public static ConfigurationSource getRemoteConfiguration() {
+        ConfigurationSource config =
+                ClientSession.getRemoteLoginSession().getReconnectingInteceptorProxy(ConfigurationSource.class,
+                    "/remote/MasterConfig");
+        log.debug("MasterConfigMap loaded");
+        return config;
+    }
+   
     public static ConfigurationSource getConfiguration() {
+        if (ClientSession.isRemoteSession()) {
+            log.debug("Returning remote config");
+            return getRemoteConfiguration();
+        }
+
         log.debug("Returning local config");
         return getLocalConfiguration();
     }    

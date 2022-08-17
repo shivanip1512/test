@@ -9,6 +9,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
@@ -48,7 +50,7 @@ public class AssetReportController {
     @Autowired private AssetReportService assetReportService;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private DateFormattingService dateFormatting;
-   
+    
     private Logger log = YukonLogManager.getLogger(AssetReportController.class);
     private static final String[] header = new String[] {
         "SERIAL_NUMBER",
@@ -90,15 +92,12 @@ public class AssetReportController {
 
         int ecId = ecDao.getEnergyCompany(user).getId();
         BlockingQueue<AssetReportDevice> queue = new ArrayBlockingQueue<AssetReportDevice>(100000);
-       
+        AtomicBoolean isCompleted = new AtomicBoolean(false);
         String date = dateFormatting.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         String fileName = "AssetsDeviceReport_" + date + ".csv";
-        
-        int dequeueCount = 0;
-        List<Integer> ids = Lists.transform(collection.getList(), YukonInventory.TO_INVENTORY_ID);
-        int assetSize = ids.size();
-        queueDevices(ids, ecId, queue);
-      
+
+        queueDevices(collection, ecId, queue, isCompleted);
+
         resp.setContentType("text/csv");
         resp.setHeader("Content-Type", "application/force-download");
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
@@ -107,10 +106,9 @@ public class AssetReportController {
              CSVWriter csvWriter = new CSVWriter(writer);) {
             csvWriter.writeNext(header);
             while (true) {
-                if (dequeueCount != assetSize) {
+                if (!isCompleted.compareAndSet(true, false)) {
                     if (!queue.isEmpty()) {
                         AssetReportDevice device = queue.take();
-                        dequeueCount++;
                         if (device != null) {
                             List<String> row = Lists.newArrayList();
                             row.add(device.getSerialNumber());
@@ -154,9 +152,11 @@ public class AssetReportController {
         return assetReportService.getAssetReportDevices(ecId, ids);
     }
 
-    private void queueDevices(List<Integer> ids, int ecId, BlockingQueue<AssetReportDevice> queue) {
+    private void queueDevices(InventoryCollection collection, int ecId, BlockingQueue<AssetReportDevice> queue,
+            AtomicBoolean isCompleted) {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(new DataQueuer(ecId, ids, queue));
+        List<Integer> ids = Lists.transform(collection.getList(), YukonInventory.TO_INVENTORY_ID);
+        executorService.submit(new DataQueuer(ecId, ids, queue, isCompleted));
     }
 
     /**
@@ -166,16 +166,18 @@ public class AssetReportController {
         BlockingQueue<AssetReportDevice> queue;
         int ecId;
         List<Integer> assetIds;
-       
-        DataQueuer(int ecId, List<Integer> ids, BlockingQueue<AssetReportDevice> queue) {
+        AtomicBoolean isCompleted;
+
+        DataQueuer(int ecId, List<Integer> ids, BlockingQueue<AssetReportDevice> queue, AtomicBoolean isCompleted) {
             this.queue = queue;
+            this.isCompleted = isCompleted;
             this.assetIds = ids;
             this.ecId = ecId;
         }
 
         @Override
         public void run() {
-            assetReportService.queueAssetReportDevices(ecId, assetIds, queue);
+            assetReportService.queueAssetReportDevices(ecId, assetIds, queue, isCompleted);
         }
     }
 

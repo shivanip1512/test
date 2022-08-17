@@ -1,7 +1,6 @@
 package com.cannontech.common.stream;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -100,14 +99,6 @@ public final class StreamUtils {
              (map, object) -> map.put(classifier.apply(object), object), 
              (map1, map2) -> { map1.putAll(map2); return map1; }
         );
-    }
-    
-    /**
-     * Returns a Collector that creates a Map<K,V> out of a Stream<Map.Entry<K,V>>.
-     * Avoids repeating Collectors.toMap(Entry::getKey, Entry::getValue) in multiple places.
-     */
-    public static final <K,V> Collector<Entry<K,V>,?,Map<K,V>> entriesToMap() {
-        return Collectors.toMap(Entry::getKey, Entry::getValue);
     }
     
     /**

@@ -14,7 +14,6 @@ import com.cannontech.msp.beans.v5.oa_server.GetMethods;
 import com.cannontech.msp.beans.v5.oa_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.oa_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.oa_server.PingURL;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -43,7 +42,7 @@ public class OAClient implements IOAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -59,7 +58,7 @@ public class OAClient implements IOAClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
 
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();

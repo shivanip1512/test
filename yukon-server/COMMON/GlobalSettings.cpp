@@ -14,9 +14,7 @@
 /** Public string accessor. */
 static CtiMutex g_mux;
 
-namespace Cti {
-
-namespace {
+namespace Detail {
 
 template <typename T>
 using SettingNamesFor = std::map<T, std::string>;
@@ -33,8 +31,7 @@ static const SettingNamesFor<Integers> IntegerNames{
     { Integers::MaxInactivityDuration, "MAX_INACTIVITY_DURATION" },
     { Integers::ProducerWindowSize,    "PRODUCER_WINDOW_SIZE" },
     { Integers::MaxLogFileSize,        "MAX_LOG_FILE_SIZE" },
-    { Integers::LogRetentionDays,      "LOG_RETENTION_DAYS" },
-    { Integers::FdrDnpSlaveApplicationFragmentSize, "FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE" } };
+    { Integers::LogRetentionDays,      "LOG_RETENTION_DAYS" } };
 
 static const SettingNamesFor<Booleans> BooleanNames{ /* empty */ };
 
@@ -48,6 +45,7 @@ IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;
 
 /** Private constructor for the getSingleton process */
 IM_EX_CTIBASE GlobalSettings::GlobalSettings() {
+    reloadImpl();
 }
 
 /** Private static singleton constructor.  Reads settings from database. */
@@ -58,7 +56,6 @@ IM_EX_CTIBASE GlobalSettings& GlobalSettings::getSingleton()
     if( ! gGlobalSettings )
     {
         gGlobalSettings.reset( new GlobalSettings() );
-        gGlobalSettings->reload();
     }
     return *gGlobalSettings;
 }
@@ -72,7 +69,7 @@ IM_EX_CTIBASE std::string GlobalSettings::getString( const Strings setting, std:
 /** Private string accessor that initializes the singleton. */
 IM_EX_CTIBASE std::string GlobalSettings::getStringImpl( const Strings setting, std::string default )
 {
-    if( const auto name = Cti::mapFind(StringNames, setting) )
+    if( const auto name = Cti::mapFind(Detail::StringNames, setting) )
     {
         if( const auto value = Cti::mapFind( _settingMap, *name ) )
         {
@@ -92,7 +89,7 @@ IM_EX_CTIBASE int GlobalSettings::getInteger( const Integers setting, int defaul
 /** Private int accessor that initializes the singleton. */
 IM_EX_CTIBASE int GlobalSettings::getIntegerImpl( const Integers setting, int default )
 {
-    if( const auto name = Cti::mapFind(IntegerNames, setting) )
+    if( const auto name = Cti::mapFind(Detail::IntegerNames, setting) )
     {
         if( const auto value = Cti::mapFind(_settingMap, *name) )
         {
@@ -112,7 +109,7 @@ IM_EX_CTIBASE bool GlobalSettings::getBoolean( const Booleans setting, bool defa
 /** Private bool accessor that initializes the singleton. */
 IM_EX_CTIBASE bool GlobalSettings::getBooleanImpl( const Booleans setting, bool default )
 {
-    if( const auto name = Cti::mapFind(BooleanNames, setting) )
+    if( const auto name = Cti::mapFind(Detail::BooleanNames, setting) )
     {
         if( const auto value = Cti::mapFind(_settingMap, *name) )
         {
@@ -159,6 +156,4 @@ IM_EX_CTIBASE void GlobalSettings::reloadImpl()
 
     CTILOCKGUARD(CtiMutex, guard, g_mux);
     _settingMap.swap(_tempMap);
-}
-
 }

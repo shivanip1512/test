@@ -144,10 +144,6 @@ class IM_EX_PROT IDLC : public Wrap
         MaximumFramingSeekLength = 260,
     };
 
-protected:
-
-    void clearSequenceNumbers( Test::use_in_unit_tests_only & );
-
 public:
 
     IDLC();

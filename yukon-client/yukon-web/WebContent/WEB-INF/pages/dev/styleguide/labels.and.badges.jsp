@@ -13,8 +13,8 @@
 </style>
 
 <p class="description">
-    Yukon uses <a target="_blank" href="http://getbootstrap.com/components/#labels">bootstrap's</a> labels and badges. As of Boostrap v4, labels are no longer supported. We were using labels extensively within Yukon, so labels are now defined within Yukon stylesheets. 
-    Labels and badges are useful for adding usability through coloring text when appropriate.
+    Yukon uses <a target="_blank" href="http://getbootstrap.com/components/#labels">bootstrap's</a> labels and badges. 
+    They are useful for adding usablity through coloring text when appropriate.
 </p>
 
 <h2>Labels</h2>

@@ -179,7 +179,7 @@ public class ListController {
                 listDefinitions.remove(YukonDefinition.DEV_TYPE_NON_YUKON_METER);
             }
         }
-
+        
         if (!configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
             //Used to remove the Nest Thermostat from the Admin EC > Lists > Device Type YUK-19820
             listDefinitions.remove(YukonDefinition.DEV_TYPE_NEST_THERMOSTAT);

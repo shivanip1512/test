@@ -19,7 +19,5 @@ public interface AssignedProgramDao {
     Map<Integer, Integer> getProgramIdsByAssignedProgramIds(Iterable<Integer> assignedProgramIds);
     
     int getHighestProgramOrder(int applianceCategoryId);
-
-    AssignedProgram getByDeviceId(int deviceId);
     
 }

@@ -5,8 +5,7 @@
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.meterProgramming">
 
-    <cti:url var="programSummaryPage" value="/amr/meterProgramming/summary"/>
-    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.meterProgramming" deviceCollection="${deviceCollection}" noteTextArguments="${programSummaryPage}">
+    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.meterProgramming" deviceCollection="${deviceCollection}">
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">

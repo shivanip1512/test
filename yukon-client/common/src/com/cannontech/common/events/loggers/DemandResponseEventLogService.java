@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -171,93 +170,5 @@ public interface DemandResponseEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr")
     public void seasonalControlHistoryReset(@Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupCreated(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupUpdated(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupDeleted(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.scenario")
-    public void scenarioCreated(@Arg(ArgEnum.scenarioName) String scenarioName,
-            @Arg(ArgEnum.loadProgramNames) String loadProgramNames,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.scenario")
-    public void scenarioUpdated(@Arg(ArgEnum.scenarioName) String scenarioName,
-            @Arg(ArgEnum.loadProgramNames) String loadProgramNames,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.scenario")
-    public void scenarioDeleted(@Arg(ArgEnum.scenarioName) String scenarioName,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.controlArea")
-    public void controlAreaCreated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerNames) String triggerNames,
-            @Arg(ArgEnum.loadProgramNames) String loadProgramNames, @Arg(ArgEnum.startTime) String startTime, @Arg(ArgEnum.stopTime) String stopTime,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.controlArea")
-    public void controlAreaUpdated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerNames) String triggerNames,
-            @Arg(ArgEnum.loadProgramNames) String loadProgramNames, @Arg(ArgEnum.startTime) String startTime, @Arg(ArgEnum.stopTime) String stopTime,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.controlArea")
-    public void controlAreaDeleted(@Arg(ArgEnum.controlAreaName) String controlAreaName,
-            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
-    public void programConstraintCreated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
-    public void programConstraintUpdated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
-    public void programConstraintDeleted(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) LiteYukonUser userName);
-    
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
-    public void loadProgramCreated(@Arg(ArgEnum.programName) String programName,
-                                   @Arg(ArgEnum.paoType) PaoType programType,
-                                   @Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                   @Arg(ArgEnum.gearName) String gearNames,
-                                   @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
-                                   @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
-    public void loadProgramUpdated(@Arg(ArgEnum.programName) String programName,
-                                   @Arg(ArgEnum.paoType) PaoType programType,
-                                   @Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                   @Arg(ArgEnum.gearName) String gearNames,
-                                   @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
-                                   @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
-    public void loadProgramDeleted(@Arg(ArgEnum.programName) String programName,
-                                   @Arg(ArgEnum.paoType) PaoType programType,
-                                   @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
-    public void gearCreated(@Arg(ArgEnum.gearName) String gearName,
-                            @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
-                            @Arg(ArgEnum.programName) String programName,
-                            @Arg(ArgEnum.gearNumber) Integer gearNumber,
-                            @Arg(ArgEnum.username) LiteYukonUser userName);
-
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
-    public void gearDeleted(@Arg(ArgEnum.gearName) String gearName,
-                            @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
-                            @Arg(ArgEnum.programName) String programName,
-                            @Arg(ArgEnum.gearNumber) Integer gearNumber,
-                            @Arg(ArgEnum.username) LiteYukonUser userName);
-
 }

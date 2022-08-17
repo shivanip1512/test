@@ -8,9 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.jms.ConnectionFactory;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -63,7 +67,10 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-
+    
+    //@Autowired by setter
+    private JmsTemplate jmsTemplate;
+    
     private ImmutableMap<HardwareStrategyType, LmHardwareCommandStrategy> strategies = ImmutableMap.of();
     
     @Autowired
@@ -363,7 +370,13 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             }
         }
     }
-
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
+    }
+    
     private Map<HardwareType, Set<Integer>> getHardwareTypeToInventoryIdsMap( Set<Integer> inventoryIds,  Map<Integer, HardwareSummary> hardwareSummary){
         Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds = new EnumMap<HardwareType, Set<Integer>>(HardwareType.class);
         for (int inventoryId : inventoryIds) {

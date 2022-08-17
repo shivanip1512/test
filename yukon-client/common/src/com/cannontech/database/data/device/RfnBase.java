@@ -7,7 +7,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.rfn.service.RfnDeviceDeletionMessageService;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -53,17 +52,10 @@ public abstract class RfnBase extends DeviceBase {
     
     @Override
     public void delete() throws SQLException {
-        PaoType paoType = getPaoType();
-        
-        // Sending a request to NM to delete the device
-        RfnDeviceDeletionMessageService rfnDeviceDeletionMessageService = YukonSpringHook.getBean("rfnDeviceDeletionMessageService", RfnDeviceDeletionMessageService.class);
-        if(!paoType.isRfGateway()) {
-            rfnDeviceDeletionMessageService.sendRfnDeviceDeletionRequest(getPAObjectID());
-        }
-
         getRfnAddress().delete();
+        
         /** Clean up stars tables */
-       
+        PaoType paoType = getPaoType();
         if (paoType.isRfn() && !paoType.isMeter()) {
             HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
             InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
@@ -117,7 +109,7 @@ public abstract class RfnBase extends DeviceBase {
         return rfnAddress;
     }
 
-    public void setRfnAddress(RfnAddress rfnAddress) {
-        this.rfnAddress = rfnAddress;
+    public void setRfnAddress(RfnAddress rfmAddress) {
+        this.rfnAddress = rfmAddress;
     }
 }

@@ -11,6 +11,7 @@ import javax.xml.soap.SOAPMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import com.cannontech.common.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
@@ -27,7 +28,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
-import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -81,16 +81,19 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             // the YukonMultispeakMsgHeader will be built with "dummy" values for userId and pwd fields. The
             // expectation is that getMultispeakVendorFromHeader will replace these values with the correct
             // values from the other vendor once it is loaded.
-            getHeader(header, "unauthorized", "unauthorized");
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                MultispeakDefines.MSP_APPNAME_YUKON);
+            getHeader(header, mspVendor);
+
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
-    
-    public SoapHeaderElement getHeader(SoapHeader header, String outUserName, String outPassword) throws SOAPException {
+
+    public SoapHeaderElement getHeader(SoapHeader header, MultispeakVendor mspVendor) throws SOAPException {
 
         YukonMultispeakMsgHeader yukonMspMsgHeader =
-            new YukonMultispeakMsgHeader(outUserName, outPassword, version().getVersion());
+            new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword(), version().getVersion());
         QName qname = new QName(version().namespace, "MultiSpeakMsgHeader");
         SoapHeaderElement headerElement = header.addHeaderElement(qname);
         headerElement.addAttribute(new QName("Version"), yukonMspMsgHeader.getVersion());
@@ -461,5 +464,4 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V3;
     }
-    
 }

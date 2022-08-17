@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Nest
+
+*Request Parameter* :
+
+include::{snippets}/NestLoadGroupSetupApiControllerTest/Test_LmNest_Update/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/NestLoadGroupSetupApiControllerTest/Test_LmNest_Update/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/NestLoadGroupSetupApiControllerTest/Test_LmNest_Update/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/NestLoadGroupSetupApiControllerTest/Test_LmNest_Update/http-response.adoc[]

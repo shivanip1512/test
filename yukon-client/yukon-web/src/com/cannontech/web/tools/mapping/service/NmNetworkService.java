@@ -1,10 +1,5 @@
 package com.cannontech.web.tools.mapping.service;
 
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.geojson.FeatureCollection;
-
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.node.NodeComm;
@@ -13,6 +8,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
+import com.cannontech.web.tools.mapping.model.Parent;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 public interface NmNetworkService {
 
@@ -27,9 +25,10 @@ public interface NmNetworkService {
      * NM searches for the battery node's parent first, then finds the parent's primary route and returns that as the
      * battery node's primary route.
      * 
-     * @throws NmCommunicationException 
+     * @return Route - device route and first device without location
+     * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
+    Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
 
     /**
      * Asks NM for the device neighbors.
@@ -41,18 +40,21 @@ public interface NmNetworkService {
      * If all the neighbor devices received from NM have no location information in Yukon, empty list is returned.
      * 
      * @return Neighbors - neighbor list and list of neighbor devices without location
-     * @throws NmCommunicationException 
+     * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    List<Pair<RfnDevice, FeatureCollection>> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
+    Neighbors getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
 
     /**
      * Asks NM for the parent information.
      * 
-     * If NM returns a parent device that Yukon doesn't have created, the device will be created.
+     * If NM returns a parent device that Yukon doesn't have created, the device will be created, NmNetworkException will be thrown
+     * since Yukon doesn't have a location information.
+     * If NM returns "no parent" NmNetworkException will be thrown.
+     * If the parent device has no location information in Yukon NmNetworkException will be thrown.
      * 
-     * @throws NmCommunicationException 
+     * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    Pair<RfnDevice, FeatureCollection> getParent(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
+    Parent getParent(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
     
     /**
      * Returns a network map representation (legend and a list of devices by color).

@@ -3,11 +3,6 @@ package com.cannontech.common.smartNotification.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.logging.log4j.Level;
 
 /**
  * Contains one to many related SmartNotificationMessageParameters objects.
@@ -66,55 +61,7 @@ public class SmartNotificationMessageParametersMulti implements Serializable {
     
     @Override
     public String toString() {
-        ToStringBuilder tsb = getLogMsg();
-        tsb.append("messageParameters", messageParameters);
-        return tsb.toString();
-    }
-
-    private ToStringBuilder getLogMsg() {
-        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        tsb.appendSuper(super.toString());
-        tsb.append("sendAllInOneEmail", sendAllInOneEmail);
-        tsb.append("intervalMinutes", intervalMinutes);
-        return tsb;
-    }
-    
-    public String loggingString(Level level) {
-        ToStringBuilder tsb = getLogMsg();
-        tsb.append("messageParameters", messageParameters.stream()
-                .map(p -> p.loggingString(level))
-                .collect(Collectors.joining(",")));
-        return tsb.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + intervalMinutes;
-        result = prime * result + ((messageParameters == null) ? 0 : messageParameters.hashCode());
-        result = prime * result + (sendAllInOneEmail ? 1231 : 1237);
-        return result;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        SmartNotificationMessageParametersMulti other = (SmartNotificationMessageParametersMulti) obj;
-        if (intervalMinutes != other.intervalMinutes)
-            return false;
-        if (messageParameters == null) {
-            if (other.messageParameters != null)
-                return false;
-        } else if (!messageParameters.equals(other.messageParameters))
-            return false;
-        if (sendAllInOneEmail != other.sendAllInOneEmail)
-            return false;
-        return true;
+        return "SmartNotificationMessageParametersMulti[sendAllInOneEmail=" + sendAllInOneEmail + " event total="
+            + messageParameters.size() + "]";
     }
 }

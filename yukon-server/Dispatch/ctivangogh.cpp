@@ -1759,7 +1759,7 @@ void CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 // In the event that a GlobalSetting has been updated, reload GlobalSettings.
                 if (resolveDBCategory(aChg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
                 {
-                    Cti::GlobalSettings::reload();
+                    GlobalSettings::reload();
 
                     doutManager.reloadSettings();
                 }
@@ -4278,28 +4278,21 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
 
             if(currpttags != pttags)    // Is the difference in the point tags?
             {
-                if( tagmask & (TAG_DISABLE_POINT_BY_POINT | TAG_DISABLE_CONTROL_BY_POINT) )
-                {
-                    addnl += string("Point tags: ") + (pttags_cnt > currpttags_cnt ? " point disable" : " point enable");
+                addnl += string("Point tags: ") + (pttags_cnt > currpttags_cnt ? " point disable" : " point enable");
 
-                    if( ! updatePointStaticTables(point.getPointID(), pttags, tagmask, user, Multi) )
-                    {
-                        CTILOG_ERROR(dout, "Could not update point static table");
-                    }
-                    else
-                    {
-                        CTILOG_INFO(dout, "Updated point enablement status on point ID " << point.getID());
-                    }
+                if( ! updatePointStaticTables(point.getPointID(), pttags, tagmask, user, Multi) )
+                {
+                    CTILOG_ERROR(dout, "Could not update point static table");
                 }
                 else
                 {
-                    CTILOG_DEBUG(dout, "No static point enablement database update required for point ID " << point.getID());
+                    CTILOG_INFO(dout, "Updated point enablement status on point ID " << point.getID());
                 }
             }
             else
             {
                 CTILOG_DEBUG(dout, "No point enablement change on point ID " << point.getID());
-            }            
+            }
 
             if(currdvtags != dvtags)    // Is the difference in the device tags?
             {

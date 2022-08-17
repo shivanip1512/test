@@ -1,8 +1,6 @@
 package com.cannontech.common.util;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,8 +10,9 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.user.SystemUserContext;
@@ -39,10 +38,10 @@ public class FormattingTemplateProcessorTest {
        
        String result = tp.process(template, data);
        
-       assertEquals(expectedResult, result);
+       Assert.assertEquals(expectedResult, result);
    }
    
-    @AfterEach
+    @After
     public void tearDown() {
     	Locale.setDefault(Locale.US);
     }
@@ -78,7 +77,7 @@ public class FormattingTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        assertEquals(expectedResult, result);
+        Assert.assertEquals(expectedResult, result);
     }
     
     @Test
@@ -108,7 +107,7 @@ public class FormattingTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        assertEquals("Tom Mack was born 3/7/1978", result);
+        Assert.assertEquals("Tom Mack was born 3/7/1978", result);
     }
     
     @Test
@@ -126,7 +125,7 @@ public class FormattingTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        assertEquals("Tom Mack's favorite days are 3/7/78, 3/25/80", result);
+        Assert.assertEquals("Tom Mack's favorite days are 3/7/78, 3/25/80", result);
     }
     
     @Test
@@ -144,6 +143,6 @@ public class FormattingTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        assertEquals("Tom Mack's favorite days are\n  3/7/78\n  3/25/80", result);
+        Assert.assertEquals("Tom Mack's favorite days are\n  3/7/78\n  3/25/80", result);
     }
 }

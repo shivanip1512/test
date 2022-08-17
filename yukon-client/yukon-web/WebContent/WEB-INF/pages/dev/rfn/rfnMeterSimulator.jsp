@@ -2,32 +2,39 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<cti:standardPage module="dev" page="rfnTest.rfnMeterSimulator">
+<cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
     <cti:tabs>
-        <cti:msg2 key=".data.title" var="rfnMeterDataSimulatorTitle"/>
-        <cti:tab title="${rfnMeterDataSimulatorTitle}">
+        <cti:tab title="RFN Meter Simulator">
             <div class="column-12-12 clearfix">
                 <div class="column one">
                     <form id='formData'">
                         <cti:csrfToken />
-                        <tags:sectionContainer2 nameKey="rfnMeterSimulator.data">
+                        <cti:msg2 key="modules.dev.rfnMeterSimulator.helpText" var="helpText"/>
+                        <tags:sectionContainer2 nameKey="rfnMeterSimulator">
                             <div id='rfnMeterForm'>
                                 <tags:nameValueContainer2>
-                                    <tags:nameValue2 nameKey=".rfnMeterType">
+                                    <tags:nameValue2 nameKey=".rfnMeterSimulator.rfnMeterType">
                                         <tags:selectWithItems path="currentSettings.paoType"
                                             items="${paoTypes}" id="pao-type"
                                             defaultItemLabel="ALL RFN Type" defaultItemValue="ALL RFN Type" />
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".data.duplicates">
+                                    <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
                                          <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".data.recordingInterval">
-                                    <tags:simpleSelect items="${rfnMeterRecordingIntervals}" name="recordingInterval" itemLabelKey="formatKey" selectedItem="${selectedRecordingInterval}"/>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".data.reportingInterval">
-                                    <tags:simpleSelect items="${rfnMeterReportingIntervals}" name="reportingInterval" itemLabelKey="formatKey" selectedItem="${selectedReportingInterval}"/>
+                                    <tags:nameValue2 nameKey=".rfnMeterDataSimulator.reportingInterval">
+                                    <select name="reportingInterval">
+                                        <c:forEach var="reportingInterval" items="${rfnMeterReportingIntervals}">
+                                            <c:choose>
+                                                <c:when test="${selectedReportingInterval.equals(reportingInterval)}">
+                                                    <option value="${reportingInterval}" selected="selected"><cti:msg2 key="${reportingInterval}"/></option>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <option value="${reportingInterval}"><cti:msg2 key="${reportingInterval}"/></option>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
+                                    </select>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </div>
@@ -44,10 +51,10 @@
                                 </div>
                             </div>
                         </tags:sectionContainer2>
-                        <tags:sectionContainer2 nameKey="rfnMeterSimulator.data.test">
+                        <tags:sectionContainer2 nameKey="rfnMeterSimulatorTest">
                             <div id='rfnMeterForm'>
                                 <tags:nameValueContainer2>
-                                    <tags:nameValue2 nameKey=".deviceId">
+                                    <tags:nameValue2 nameKey=".rfnMeterSimulator.deviceId">
                                         <input id="deviceId"" name="deviceId"" type="text" value=${currentSettings.deviceId}> 
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
@@ -61,7 +68,7 @@
                 </div>
         
                 <div id="taskStatusDiv" class="column two nogutter">
-                    <tags:sectionContainer2 nameKey="data.status">
+                    <tags:sectionContainer title="Rfn Meter Simulator Status">
                         <div id="taskStatusMessage"></div>
                         <div>
                             <div>
@@ -83,13 +90,12 @@
                                 Last Injection Time: <span id="status-last-injection-time">${dataSimulatorStatus.lastInjectionTime}</span>
                             </div>
                         </div>
-                    </tags:sectionContainer2>
+                    </tags:sectionContainer>
                 </div>
             </div>
         </cti:tab>
     
-        <cti:msg2 key=".readAndControl.title" var="rfnReadAndControlSimulatorTitle"/>
-        <cti:tab title="${rfnReadAndControlSimulatorTitle}">
+        <cti:tab title="RFN Read and Control Simulator">
         
             <div id="read-simulator-popup" class="dn" data-title="Read Simulator Parameters" data-width="800">
                 <tags:nameValueContainer tableClass="natural-width">
@@ -151,7 +157,7 @@
                 </tags:nameValueContainer>
             </div>
         
-            <table class="compact-results-table no-stripes">
+            <table class="compact-results-table">
                 <thead>
                     <tr>
                         <th>Data Type</th>
@@ -161,7 +167,7 @@
                     </tr>
                 </thead>
                 <tfoot></tfoot>
-                <tags:sectionContainer2 nameKey="rfnMeterSimulator.readAndControl">
+                <tags:sectionContainer2 nameKey="rfnMeterReadAndControlMeterSimulator" helpText="yukon.web.modules.dev.rfnMeterReadAndControlMeterSimulator.helpText">
                     <tr>
                         <form action="startMetersReadRequest" method="POST">
                             <cti:csrfToken/>
@@ -333,36 +339,6 @@
                     
                 </tags:sectionContainer2>
             </table>
-        </cti:tab>
-        
-        <cti:msg2 key=".deviceConfig.title" var="rfnMeterDeviceConfigSimulatorTitle"/>
-        <cti:tab title="${rfnMeterDeviceConfigSimulatorTitle}">
-            <c:if test="${!empty fieldSimulatorError}">
-                <tags:alertBox>${fieldSimulatorError}</tags:alertBox>
-            </c:if>
-            <c:if test="${!empty fieldSimulatorSettings}">
-                <tags:sectionContainer2 nameKey="rfnMeterSimulator.deviceConfig">
-                    <div class="column-12-12 clearfix">
-                        <div class="column one">
-                            <form:form action="configureFieldSimulator" method="post" modelAttribute="fieldSimulatorSettings">
-                                <cti:csrfToken/>
-                                <tags:nameValueContainer2>
-                                    <tags:nameValue2 nameKey=".deviceConfig.deviceGroup" nameColumnWidth="120px">
-                                        <cti:list var="group"><cti:item value="${fieldSimulatorSettings.deviceGroup}"/></cti:list>
-                                        <tags:deviceGroupPicker inputName="deviceGroup" inputValue="${group}"/>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".deviceConfig.failureRate" nameColumnWidth="120px">
-                                        <tags:input path="deviceConfigFailureRate"/>
-                                    </tags:nameValue2>
-                                </tags:nameValueContainer2>
-                                <div class="page-action-area">
-                                    <cti:button nameKey="configure" type="submit"/>
-                                </div>
-                            </form:form>
-                        </div>
-                    </div>
-                </tags:sectionContainer2>
-            </c:if>
         </cti:tab>
     </cti:tabs>
     

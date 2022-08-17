@@ -74,7 +74,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	public final static String ANNUAL_CONTROL_STRING= "Annual";
 
 	/** A string for the title of the data */
-	private static String title = "Load Group Accounting";
+	private static String title = "LOAD GROUP ACCOUNTING";
 	
 	/**
 	 * A flag to show all ActiveRestore types

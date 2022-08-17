@@ -1,12 +1,12 @@
 #include "precompiled.h"
 
 #include "IncrementingKeepAlivePolicy.h"
-#include "Requests.h"
 
 extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
 
-namespace Cti::CapControl {
+namespace Cti           {
+namespace CapControl    {
     
 IncrementingKeepAlivePolicy::IncrementingKeepAlivePolicy( AutoBlock autoBlock )
     :   _autoBlockBehavior( autoBlock )
@@ -25,7 +25,7 @@ Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes() cons
     };
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAliveValue , std::chrono::seconds regulatorTimeout)
+Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAliveValue )
 {
 // Ignore incoming parameter...
 
@@ -41,13 +41,12 @@ Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAlive
     {
         if ( getOperatingMode() == RemoteMode )
         {
-            bool sendAutoBlock = needsAutoBlockEnable( regulatorTimeout );
+            bool sendAutoBlock = needsAutoBlockEnable();
 
             if ( sendAutoBlock )
             {
                 actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::AutoBlockEnable ),
-                                                                  "Auto Block Enable",
-                                                                  RequestType::Heartbeat ) );
+                                                                  "Auto Block Enable" ) );
             }
             else
             {
@@ -70,8 +69,7 @@ Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
     Actions actions;
 
     actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::Terminate ),
-                                                      KeepAliveText,
-                                                      RequestType::Heartbeat ) );
+                                                      KeepAliveText ) );
 
     return actions;
 }
@@ -83,7 +81,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), EnableRemoteControlText ),
-                          PorterRequest::none() );
+                          nullptr );
 
     return actions;
 }
@@ -95,7 +93,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
-                          PorterRequest::none() );
+                          nullptr );
 
     return actions;
 }
@@ -127,39 +125,9 @@ catch ( UninitializedPointValue & )
     return 0;      // can't read value -- send default of 0
 }
 
-bool IncrementingKeepAlivePolicy::needsAutoBlockEnable(std::chrono::seconds regulatorTimeout)
+bool IncrementingKeepAlivePolicy::needsAutoBlockEnable()
 try
 {
-    const CtiTime now;
-    const CtiTime thresholdTime = now - regulatorTimeout;
-
-    const auto autoRemoteControlAttribute = getCompleteValueByAttribute(Attribute::AutoRemoteControl);
-    const auto autoBlockEnableAttribute   = getCompleteValueByAttribute(Attribute::AutoBlockEnable);
-
-    const auto isGoodQuality = [](int q) { return (q == ManualQuality || q == NormalQuality); };
-
-    if (autoRemoteControlAttribute.timestamp < thresholdTime)
-    {
-        CTILOG_ERROR(dout, "The time on this Auto Remote Control attribute is outdated");
-        return false;
-    }
-    if (!isGoodQuality(autoRemoteControlAttribute.quality))
-    {
-        CTILOG_ERROR(dout, "The point quality on this Auto Remote Control attribute is invalid, it is neither set to Manual nor Normal Quality");
-        return false;
-    }
-
-    if (autoBlockEnableAttribute.timestamp < thresholdTime)
-    {
-        CTILOG_ERROR(dout, "The time on this Auto Block Enable attribute is outdated");
-        return false;
-    }
-    if (!isGoodQuality(autoBlockEnableAttribute.quality))
-    {
-        CTILOG_ERROR(dout, "The point quality on this Auto Block Enable attribute is invalid, it is neither set to Manual nor Normal Quality");
-        return false;
-    }
-
     return _autoBlockBehavior == AutoBlock::Send && getValueByAttribute( Attribute::AutoBlockEnable ) == 0.0;
 }
 catch ( UninitializedPointValue & )
@@ -168,3 +136,5 @@ catch ( UninitializedPointValue & )
 }
 
 }
+}
+

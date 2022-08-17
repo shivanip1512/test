@@ -134,7 +134,7 @@ public void retrieve() throws java.sql.SQLException {
 		setIpAddress( (String) results[0] );
 		setSocketPortNumber( (Integer) results[1] );
 		setEncodingType(EncodingType.valueOf((String) results[2]));
-		setEncodingKey(((String)results[3]).trim());
+		setEncodingKey((String)results[3]);
 	}
 
 }

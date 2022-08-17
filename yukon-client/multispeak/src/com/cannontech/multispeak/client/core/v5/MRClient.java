@@ -15,7 +15,6 @@ import com.cannontech.msp.beans.v5.mr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.mr_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.mr_server.PingURL;
 import com.cannontech.msp.beans.v5.mr_server.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -43,7 +42,7 @@ public class MRClient implements IMRClient {
             PingURL pingURL = objectFactory.createPingURL();
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
@@ -59,7 +58,7 @@ public class MRClient implements IMRClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();
                 if (arrayOfString != null) {

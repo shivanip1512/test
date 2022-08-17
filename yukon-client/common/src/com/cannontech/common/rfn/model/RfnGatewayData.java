@@ -50,11 +50,6 @@ public final class RfnGatewayData {
     private final int gwTotalNodesNoInfo;
     private final String ipv6Prefix;
     private final String ipv6PrefixSuggested;
-    private final float controlRate;
-    // IP address that the gateway should use to connect to NM.
-    private String nmIpAddress;
-    // Port that the gateway should use to connect to NM.
-    private Integer nmPort;
     
     public RfnGatewayData(GatewayDataResponse dataResponse, String name) {
         
@@ -91,9 +86,6 @@ public final class RfnGatewayData {
         gwTotalNodesNoInfo = dataResponse.getGwTotalNodesNoInfo();
         ipv6Prefix = dataResponse.getIpv6Prefix();
         ipv6PrefixSuggested = dataResponse.getIpv6PrefixSuggested();
-        controlRate = dataResponse.getControlRate();
-        nmIpAddress = dataResponse.getNmIpAddress();
-        nmPort = dataResponse.getNmPort();
     }
     
     /** Private constructor for builder */
@@ -106,8 +98,7 @@ public final class RfnGatewayData {
                            short routeColor, String updateServerUrl, Authentication updateServerLogin,
                            double currentDataStreamingLoading, double maxDataStreamingLoading, int gwTotalNodes,
                            int gwTotalReadyNodes, int gwTotalNotReadyNodes, int gwTotalNodesWithSN, 
-                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo, String ipv6Prefix, String ipv6PrefixSuggested,
-                           float controlRate, String nmIpAddress, Integer nmPort) {
+                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo, String ipv6Prefix, String ipv6PrefixSuggested) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -140,9 +131,6 @@ public final class RfnGatewayData {
         this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
         this.ipv6Prefix = ipv6Prefix;
         this.ipv6PrefixSuggested = ipv6PrefixSuggested;
-        this.controlRate = controlRate;
-        this.nmIpAddress = nmIpAddress;
-        this.nmPort = nmPort;
     }
     
     public String getName() {
@@ -312,18 +300,6 @@ public final class RfnGatewayData {
         return null;
     }
 
-    public float getControlRate() {
-        return controlRate;
-    }
-
-    public String getNmIpAddress() {
-        return nmIpAddress;
-    }
-
-    public Integer getNmPort() {
-        return nmPort;
-    }
-
     @Override
     public String toString() {
         return "RfnGatewayData [name=" + name + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
@@ -339,8 +315,7 @@ public final class RfnGatewayData {
                + ", gwTotalNodes=" + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
                + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
                + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo
-               + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", controlRate=" + controlRate 
-               +" , nmIpAddress=" + nmIpAddress +", nmPort=" + nmPort +"]";
+               + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + "]";
     }
 
     @Override
@@ -382,8 +357,6 @@ public final class RfnGatewayData {
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
         result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
         result = prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
-        result = prime * result + ((nmIpAddress == null) ? 0 : nmIpAddress.hashCode());
-        result = prime * result + ((nmPort == null) ? 0 : nmPort.hashCode());
         return result;
     }
 
@@ -568,20 +541,6 @@ public final class RfnGatewayData {
         } else if (!ipv6PrefixSuggested.equals(other.ipv6PrefixSuggested)) {
             return false;
         }
-        if (nmIpAddress == null) {
-            if (other.nmIpAddress != null) {
-                return false;
-            }
-        } else if (!nmIpAddress.equals(other.nmIpAddress)) {
-            return false;
-        }
-        if (nmPort == null) {
-            if (other.nmPort != null) {
-                return false;
-            }
-        } else if (!nmPort.equals(other.nmPort)) {
-            return false;
-        }
         return true;
     }
 
@@ -619,9 +578,6 @@ public final class RfnGatewayData {
         private int gwTotalNodesNoInfo;
         private String ipv6Prefix;
         private String ipv6PrefixSuggested;
-        private float controlRate;
-        private String nmIpAddress;
-        private Integer nmPort;
         
         public RfnGatewayData build() {
             
@@ -631,8 +587,7 @@ public final class RfnGatewayData {
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
                                       updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading,
                                       gwTotalNodes, gwTotalReadyNodes, gwTotalNotReadyNodes, gwTotalNodesWithSN,
-                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo, ipv6Prefix, ipv6PrefixSuggested, controlRate, 
-                                      nmIpAddress, nmPort);
+                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo, ipv6Prefix, ipv6PrefixSuggested);
             
         }
         
@@ -670,9 +625,6 @@ public final class RfnGatewayData {
             gwTotalNodesNoInfo = oldData.gwTotalNodes;
             ipv6Prefix = oldData.getIpv6Prefix();
             ipv6PrefixSuggested = oldData.getIpv6PrefixSuggested();
-            controlRate = oldData.getControlRate();
-            nmIpAddress = oldData.getNmIpAddress();
-            nmPort = oldData.getNmPort();
             return this;
         }
         
@@ -823,21 +775,6 @@ public final class RfnGatewayData {
 
         public Builder gwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
             this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
-            return this;
-        }
-
-        public Builder controlRate(float controlRate) {
-            this.controlRate = controlRate;
-            return this;
-        }
-        
-        public Builder nmIpAddress(String nmIpAddress) {
-            this.nmIpAddress = nmIpAddress;
-            return this;
-        }
-
-        public Builder nmPort(Integer nmPort) {
-            this.nmPort = nmPort;
             return this;
         }
     }

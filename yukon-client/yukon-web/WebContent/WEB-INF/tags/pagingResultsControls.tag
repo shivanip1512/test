@@ -19,17 +19,63 @@
 <div class="compact-results-paging clearfix ${classes}">
     <div class="paging-area" data-current-page="${result.currentPage}" data-page-size="${result.count}">
         <c:if test="${adjustPageCount == 'true'}">
-            <tags:pageSizeControl count="${result.count}" hundreds="${hundreds}" thousands="${thousands}"/>
+            <span class="fl page-size">
+                <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;
+                <c:if test="${!thousands}">
+                    <tags:itemsPerPage result="${result}" itemsPerPage="10"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="25"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="50"/>&nbsp;
+                    <c:if test="${hundreds}">
+                        <tags:itemsPerPage result="${result}" itemsPerPage="100"/>&nbsp;
+                    </c:if>
+                </c:if>
+                <c:if test="${thousands}">
+                    <tags:itemsPerPage result="${result}" itemsPerPage="250"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="500"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="1000"/>&nbsp;
+                </c:if>
+            </span>
         </c:if>
+        <span class="fl previous-page">
+            <c:choose>
+                <c:when test="${result.previousNeeded}">
+                    <button class="button naked">
+                        <i class="icon icon-resultset-previous-gray"></i>
+                        <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
+                    </button>
+                </c:when>
+                <c:otherwise>
+                    <button class="button naked fade-half" disabled="disabled">
+                        <i class="icon icon-resultset-previous-gray"></i>
+                        <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
+                    </button>
+                </c:otherwise>
+            </c:choose>
+        </span>
         <span class="fl page-num-text">
             <cti:list var="arguments">
-                <cti:item value="${result.hitCount > 0 ? result.startIndex + 1 : 0}"/>
+                <cti:item value="${result.startIndex + 1}"/>
                 <cti:item value="${result.endIndex}"/>
                 <cti:item value="${result.hitCount}"/>
             </cti:list>
             <i:inline key="yukon.common.paging.viewing" arguments="${arguments}"/>
         </span>
-        <tags:pageNextPrevControls previousNeeded="${result.previousNeeded}" nextNeeded="${result.nextNeeded}"/>
+        <span class="fl next-page">
+            <c:choose>
+                <c:when test="${result.nextNeeded}">
+                    <button class="button naked">
+                        <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
+                        <i class="icon icon-resultset-next-gray"></i>
+                    </button>
+                </c:when>
+                <c:otherwise>
+                    <button class="button naked fade-half" disabled="disabled">
+                        <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
+                        <i class="icon icon-resultset-next-gray"></i>
+                    </button>
+                </c:otherwise>
+            </c:choose>
+        </span>
     </div>
 </div>
 </c:if>

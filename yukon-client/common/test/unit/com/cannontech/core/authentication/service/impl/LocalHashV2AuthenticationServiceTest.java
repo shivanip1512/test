@@ -1,11 +1,10 @@
 package com.cannontech.core.authentication.service.impl;
 
 import static org.easymock.EasyMock.createNiceMock;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.UsersEventLogService;
@@ -20,7 +19,7 @@ public class LocalHashV2AuthenticationServiceTest {
     private MockYukonUserPasswordDao singleUserPasswordDao;
     private LiteYukonUser someUser;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         service = new LocalHashV2AuthenticationService();
         UsersEventLogService usersEventLogService = createNiceMock(UsersEventLogService.class);
@@ -32,13 +31,13 @@ public class LocalHashV2AuthenticationServiceTest {
 
     @Test
     public void testLogin() {
-        assertTrue(service.login(someUser, INITIAL_PASSWORD), "Login failed when it should have succeeded");
-        assertFalse(service.login(someUser, "not the right password"), "Login succeeded when it should have failed");
+        assertTrue("Login failed when it should have succeeded", service.login(someUser, INITIAL_PASSWORD));
+        assertFalse("Login succeeded when it should have failed", service.login(someUser, "not the right password"));
 
         // change password
         service.setPassword(someUser, "new pass", someUser);
-        assertFalse(service.login(someUser, "not the right password"), "Login succeeded when it should have failed");
-        assertTrue(service.login(someUser, "new pass"), "Login failed when it should have succeeded");
+        assertFalse("Login succeeded when it should have failed", service.login(someUser, "not the right password"));
+        assertTrue("Login failed when it should have succeeded", service.login(someUser, "new pass"));
     }
 
     @Test
@@ -46,12 +45,12 @@ public class LocalHashV2AuthenticationServiceTest {
         // attempt change with correct password
         service.setPassword(someUser, "deadman", someUser);
 
-        assertFalse(service.login(someUser, "wrong password"), "Login succeeded when it should have failed");
-        assertTrue(service.login(someUser, "deadman"), "Login failed when it should have succeeded");
+        assertFalse("Login succeeded when it should have failed", service.login(someUser, "wrong password"));
+        assertTrue("Login failed when it should have succeeded", service.login(someUser, "deadman"));
 
         service.setPassword(someUser, "Algebra Geometry Banana", someUser);
 
-        assertFalse(service.login(someUser, "deadman"), "Login succeeded when it should have failed");
-        assertTrue(service.login(someUser, "Algebra Geometry Banana"), "Login failed when it should have succeeded");
+        assertFalse("Login succeeded when it should have failed", service.login(someUser, "deadman"));
+        assertTrue("Login failed when it should have succeeded", service.login(someUser, "Algebra Geometry Banana"));
     }
 }

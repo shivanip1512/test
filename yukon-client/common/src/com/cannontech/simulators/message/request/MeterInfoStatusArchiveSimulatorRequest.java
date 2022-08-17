@@ -51,11 +51,4 @@ public class MeterInfoStatusArchiveSimulatorRequest implements SimulatorRequest 
     public Instant getTimestamp() {
         return timestamp;
     }
-
-    @Override
-    public String toString() {
-        return String.format("MeterInfoStatusArchiveSimulatorRequest [rfnIdentifiers=%s, meterConfigurationId=%s, "
-                + "disconnectStatus=%s, timestamp=%s]",
-                rfnIdentifiers, meterConfigurationId, disconnectStatus, timestamp);
-    }
 }

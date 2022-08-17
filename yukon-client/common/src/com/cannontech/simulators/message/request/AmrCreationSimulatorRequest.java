@@ -23,9 +23,4 @@ public class AmrCreationSimulatorRequest implements SimulatorRequest {
     public DevAmr getDevAmr() {
         return devAmr;
     }
-
-    @Override
-    public String toString() {
-        return String.format("AmrCreationSimulatorRequest [devAmr=%s]", devAmr);
-    }
 }

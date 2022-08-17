@@ -8,7 +8,7 @@
 <cti:msgScope paths="yukon.web.modules.dr.setup.controlScenario">
     <h3 class="dib"><i:inline key=".assignedPrograms.title"/></h3>
     <div class="bordered-div oa" style="height:90%">
-        <table id="js-assigned-programs-table" class="compact-results-table dashed no-stripes">
+        <table id="js-assigned-programs-table" class="compact-results-table dashed">
             <thead>
                 <tr>
                     <th width="5%"/>
@@ -30,8 +30,8 @@
                             <td><dt:timeOffset path="allPrograms[${status.count-1}].startOffsetInMinutes"/></td>
                             <td><dt:timeOffset path="allPrograms[${status.count-1}].stopOffsetInMinutes"/></td>
                             <td class="wbba">
-                                <tags:selectWithItems items="${program.gears}" path="allPrograms[${status.count-1}].gears[0].gearNumber"
-                                                      itemLabel="gearName" itemValue="gearNumber"/>
+                                <tags:selectWithItems items="${program.gears}" path="allPrograms[${status.count-1}].gears[0].id"
+                                                      itemLabel="name" itemValue="id"/>
                             </td>
                         </tr>
                     </c:forEach>

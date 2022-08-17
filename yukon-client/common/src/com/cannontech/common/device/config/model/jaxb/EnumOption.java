@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="GasRecordingInterval"/>
  *     &lt;enumeration value="GasReportingInterval"/>
  *     &lt;enumeration value="CBCHeartbeatMode"/>
- *     &lt;enumeration value="RegulatorInstallOrientation"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -131,9 +130,7 @@ public enum EnumOption {
     @XmlEnumValue("GasReportingInterval")
     GAS_REPORTING_INTERVAL("GasReportingInterval"),
     @XmlEnumValue("CBCHeartbeatMode")
-    CBC_HEARTBEAT_MODE("CBCHeartbeatMode"),
-    @XmlEnumValue("RegulatorInstallOrientation")
-    REGULATOR_INSTALL_ORIENTATION("RegulatorInstallOrientation");
+    CBC_HEARTBEAT_MODE("CBCHeartbeatMode");
     private final String value;
 
     EnumOption(String v) {

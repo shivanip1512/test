@@ -7,7 +7,6 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
-import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
@@ -16,10 +15,9 @@ public interface EventLogUIService {
     /**
      * This method converts an event log search result from a byType into a data grid (List<List<String>>),
      * which is used to display the results to the web page and the csv file.
-     * argumentIndexes shall contain the index of expected/applicable arguments in the searchResult.resultList.
+     * 
      */
-    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult,
-                                                   List<Integer> argumentIndexes,
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, 
                                                    YukonUserContext userContext) ;
 
     /**
@@ -44,7 +42,8 @@ public interface EventLogUIService {
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
-                                                         PagingParameters paging,
+                                                         Integer start,
+                                                         Integer pageCount,
                                                          String filterText,
                                                          YukonUserContext userContext);
 

@@ -539,7 +539,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
                 if (i != 0)
                 {
-                    str_cmd += " " + date.asStringMDY();
+                    str_cmd += " " + date.asStringUSFormat();
                 }
 
                 CtiCommandParser parse(str_cmd);
@@ -687,7 +687,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct440_getvalue_outage)
     {
-        const auto tz_override = Cti::Test::set_to_central_timezone();
+        Cti::Test::set_to_central_timezone();
 
         mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         10300);
         //  SSPEC revision does not matter for the MCT-440 outage decode

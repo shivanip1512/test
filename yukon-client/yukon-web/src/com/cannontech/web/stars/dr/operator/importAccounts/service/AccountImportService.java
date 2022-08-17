@@ -16,7 +16,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-import jakarta.mail.internet.InternetAddress;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -653,17 +653,6 @@ public class AccountImportService {
                                 result.custFileErrors++;
                                 String[] value = result.getCustLines().get(lineNoKey);
                                 value[1] = "[line: " + lineNo + " error: Device Vendor UserId cannot be empty for Honeywell Device]";
-                                result.getCustLines().put(lineNoKey, value);
-                                addToLog(lineNoKey, value, importLog);
-                                continue;
-                            }
-                        }
-
-                        if (HardwareType.valueOf(deviceType.getYukonDefID()).isEatonCloud()) {
-                            if (hwFields[ImportFields.IDX_GUID].trim().length() == 0) {
-                                result.custFileErrors++;
-                                String[] value = result.getCustLines().get(lineNoKey);
-                                value[1] = "[line: " + lineNo + " error: GUID cannot be empty for Eaton Cloud Device]";
                                 result.getCustLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
@@ -1457,9 +1446,6 @@ public class AccountImportService {
         }
         if (colIdx[result.COL_SERIAL_NO] >= 0 && colIdx[result.COL_SERIAL_NO] < columns.length) {
             fields[ImportFields.IDX_SERIAL_NO] = columns[ colIdx[result.COL_SERIAL_NO] ];
-        }
-        if (colIdx[result.COL_GUID] >= 0 && colIdx[result.COL_GUID] < columns.length ) {
-            fields[ImportFields.IDX_GUID] = columns[ colIdx[result.COL_GUID] ];
         }
         if (colIdx[result.COL_DEVICE_TYPE] >= 0 && colIdx[result.COL_DEVICE_TYPE] < columns.length) {
             fields[ImportFields.IDX_DEVICE_TYPE] = columns[ colIdx[result.COL_DEVICE_TYPE] ];

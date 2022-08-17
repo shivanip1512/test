@@ -44,7 +44,11 @@
 
   <bean id="stateGroupDao" class="com.cannontech.core.dao.impl.StateGroupDaoImpl"/>
   <bean id="tagDao" class="com.cannontech.core.dao.impl.TagDaoImpl"/>
-  <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl"/>
+  <bean id="unitMeasureDao" class="com.cannontech.core.dao.impl.UnitMeasureDaoCache">
+    <property name="delegate">
+      <bean class="com.cannontech.core.dao.impl.UnitMeasureDaoImpl"/>
+    </property>
+  </bean>
   <bean id="yukonImageDao" class="com.cannontech.core.image.dao.impl.YukonImageDaoImpl"/>
   <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl"/>
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl"/>
@@ -57,7 +61,6 @@
   <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl"/>
 
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl"/>
-  
   <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl"/>
   
   <bean id="pointDataPruningDaoImpl" class="com.cannontech.maintenance.task.dao.impl.PointDataPruningDaoImpl"/>
@@ -125,7 +128,4 @@
   
   <bean class="com.cannontech.common.pao.notes.dao.impl.PaoNotesDaoImpl"/>
   <bean class="com.cannontech.common.pao.notes.service.impl.PaoNotesServiceImpl"/>
-  <bean class="com.cannontech.system.GlobalSettingTypeValidators"/>
-  
-  <bean class="com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudDataReadServiceImpl "/>
 </beans>

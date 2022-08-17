@@ -12,7 +12,6 @@ public class NotifLMControlMsg extends Message {
 	public static final int ADJUSTING_CONTROL_NOTIFICATION = 3;
     public static final int FINISHING_CONTROL_NOTIFICATION = 4;
     public static final int SCHEDULING_NOTIFICATION = 5;
-    public static final int CANCELATION = 6;
 	
 	public int[] notifGroupIds = new int[0];
 	public int notifType;

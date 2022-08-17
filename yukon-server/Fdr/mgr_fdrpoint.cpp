@@ -241,80 +241,73 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 
     while( rdr() )
     {
-        try 
+        rdr[0] >> pointID;
+        rdr[1] >> translation;
+        rdr[2] >> destination;
+        rdr[3] >> direction;
+        rdr[4] >> tmp;
+        rdr[5] >> pointOffset;
+        rdr[6] >> paoID;
+        if(!rdr[7].isNull())
         {
-            rdr[0] >> pointID;
-            rdr[1] >> translation;
-            rdr[2] >> destination;
-            rdr[3] >> direction;
-            rdr[4] >> tmp;
-            rdr[5] >> pointOffset;
-            rdr[6] >> paoID;
-            if(!rdr[7].isNull())
-            {
-                rdr[7]    >> multiplier;
-            }
-            else
-            {
-                rdr[9]    >> multiplier;
-            }
-            if(!rdr[8].isNull())
-            {
-                rdr[8]  >> dataOffset;
-            }
-            else
-            {
-                rdr[10]    >> dataOffset;
-            }
-
-
-            std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
-
-            if( itr != fdrPtrMap.end() )
-                fdrPtr = (*itr).second;
-            else
-                fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
-
-            if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
-            {
-                fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
-                fdrPtr->setPaoID(paoID);
-                fdrPtr->setPointOffset(pointOffset);
-
-                if((fdrPtr->getPointType() == AnalogPointType) ||
-                    (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
-                    (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
-                    (fdrPtr->getPointType() == CalculatedPointType))
-                {
-                    fdrPtr->setMultiplier(multiplier);
-                    fdrPtr->setOffset (dataOffset);
-                }
-
-                // set controllable
-                if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
-                    direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) ||
-                    direction == string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT))
-                {
-                    fdrPtr->setControllable (true);
-                }
-
-                CtiFDRDestination tmpDestination (fdrPtr->getPointID(), translation, destination);
-                fdrPtr->getDestinationList().push_back(tmpDestination);
-                fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
-            }
-            else
-            {
-                /**********************
-                * add the current destination to the list
-                ***********************
-                */
-                CtiFDRDestination tmpDestination (fdrPtr->getPointID(), translation, destination );
-                fdrPtr->getDestinationList().push_back(tmpDestination);
-            }
+            rdr[7]    >> multiplier;
         }
-        catch(...)
+        else
         {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "DB load failed for the point with pointId: " << pointID);
+            rdr[9]    >> multiplier;
+        }
+        if(!rdr[8].isNull())
+        {
+            rdr[8]  >> dataOffset;
+        }
+        else
+        {
+            rdr[10]    >> dataOffset;
+        }
+
+
+        std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
+
+        if( itr != fdrPtrMap.end() )
+            fdrPtr = (*itr).second;
+        else
+            fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
+
+        if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
+        {
+            fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
+            fdrPtr->setPaoID(paoID);
+            fdrPtr->setPointOffset(pointOffset);
+
+            if((fdrPtr->getPointType() == AnalogPointType) ||
+               (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
+               (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
+               (fdrPtr->getPointType() == CalculatedPointType))
+            {
+                fdrPtr->setMultiplier(multiplier);
+                fdrPtr->setOffset (dataOffset);
+            }
+
+            // set controllable
+            if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
+               direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) ||
+               direction == string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT))
+            {
+                fdrPtr->setControllable (true);
+            }
+
+            CtiFDRDestination tmpDestination (fdrPtr->getPointID(), translation, destination);
+            fdrPtr->getDestinationList().push_back(tmpDestination);
+            fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
+        }
+        else
+        {
+            /**********************
+            * add the current destination to the list
+            ***********************
+            */
+            CtiFDRDestination tmpDestination (fdrPtr->getPointID(), translation, destination );
+            fdrPtr->getDestinationList().push_back(tmpDestination);
         }
     }
 

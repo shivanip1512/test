@@ -23,8 +23,9 @@
     <entry key="yukon.web.modules.support.support.allLogs">View All Logs</entry>
     <entry key="yukon.web.modules.support.support.dbInfo.title">Database Info</entry>
     <entry key="yukon.web.modules.support.support.rma">Energy Automation Solutions RMA</entry>
-    <entry key="yukon.web.modules.support.support.rma.link">https://www.eaton.com/us/en-us/forms/power-systems/energy-automation-solutions-rma.html</entry>
-
+    <entry key="yukon.web.modules.support.support.rma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/eas-rma.html</entry>
+    <entry key="yukon.web.modules.support.support.utilityProRma">UtilityPRO RMA</entry>
+    <entry key="yukon.web.modules.support.support.utilityProRma.link">http://www.cooperindustries.com/content/public/en/power_systems/resources/request_forms/warranty_request/utilitypro-rma.html</entry>
     <entry key="yukon.web.modules.support.supportSite.title">Support Website</entry>
     <entry key="yukon.web.modules.support.supportSite.link">http://My.Eaton.com</entry>
 
@@ -69,6 +70,7 @@
     <entry key="yukon.web.modules.support.logTail.change.label">Change</entry>
     <entry key="yukon.web.modules.support.logTail.pause.label">Pause</entry>
     <entry key="yukon.web.modules.support.logTail.resume.label">Resume</entry>
+    <entry key="yukon.web.modules.support.logTail.msgError.logUpdateFailed">An error was encountered or you may have logged out and this page is no longer updating.</entry>
 
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
@@ -159,16 +161,7 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.userGroupTableCsvSource">UserGroup To RoleGroups</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.globalSettingTableCsvSource">Global Settings</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.storedProcedureLogTableCsvSource">Stored Procedure Log</entry>
-    
-    <entry key="yukon.web.modules.support.rfSupportBundle.title">RF Network Data Collection</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.dateRange">Date From</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.note">It is recommended to run RF Network Data Collection outside of normal business hours.</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.success">RF Network Data Collection completed successfully.</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.dateRange.helpText">RF Network Data Collection will collect data 14 days from the selected date.</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.failed">RF Network Data Collection request failed</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.timeout">RF Network Data Collection request timeout</entry>
-    <entry key="yukon.web.modules.support.rfSupportBundle.started">RF Network Data Collection request is in progress. This could take more than 15 minutes to complete.</entry>
-    
+
     <entry key="yukon.web.startOver.testMessage">Test "startOver"</entry>
 
     <entry key="yukon.web.modules.support.localization.searchResults.title">Search Results for "{0}"</entry>
@@ -485,11 +478,6 @@
     <entry key="yukon.web.modules.support.systemHealth.metric.status.WARN">Warning</entry>
     <entry key="yukon.web.modules.support.systemHealth.metric.status.ERROR">Error</entry>
     
-    <!-- system performance metrics view.jsp  -->
-    <entry key="yukon.web.modules.support.systemPerformanceMetrics.pageName">System Performance Metrics</entry>
-    <entry key="yukon.web.modules.support.systemPerformanceMetrics.chart">Chart</entry>
-    
-    
     <!-- system health detail.jsp -->
     <entry key="yukon.web.modules.support.systemHealth.detail.pageName">{0}</entry>
     <entry key="yukon.web.modules.support.systemHealth.detail.pageDescription">{0}</entry>
@@ -505,5 +493,5 @@
     <entry key="yukon.web.modules.support.thirdPartyLibraries.sourceCredits.title">Source Credits</entry>
     <entry key="yukon.web.modules.support.thirdPartyLibraries.library">Library</entry>
     <entry key="yukon.web.modules.support.thirdPartyLibraries.license">License</entry>
-
+    
 </properties>

@@ -3,6 +3,5 @@
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
         <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="1-4096"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
 </pao>

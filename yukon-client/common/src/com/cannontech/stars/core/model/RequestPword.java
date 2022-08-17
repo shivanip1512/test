@@ -3,7 +3,7 @@ package com.cannontech.stars.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.mail.internet.InternetAddress;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 

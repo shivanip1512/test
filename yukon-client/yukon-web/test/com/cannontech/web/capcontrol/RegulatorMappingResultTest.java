@@ -1,13 +1,10 @@
 package com.cannontech.web.capcontrol;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.model.RegulatorPointMappingResult;
@@ -22,7 +19,7 @@ public class RegulatorMappingResultTest {
     private RegulatorMappingResult partialSuccessResult;
     private RegulatorMappingResult failResult;
     
-    @BeforeEach
+    @Before
     public void init() {
         
         YukonPao regulatorPao = new YukonPao() {
@@ -69,30 +66,30 @@ public class RegulatorMappingResultTest {
     
     @Test
     public void test_completion() {
-        assertFalse(successResult.isComplete(), "Result is complete before complete() method is called.");
+        Assert.assertFalse("Result is complete before complete() method is called.", successResult.isComplete());
         successResult.complete();
-        assertTrue(successResult.isComplete(), "Result is incomplete after complete() method is called. ");
+        Assert.assertTrue("Result is incomplete after complete() method is called. ", successResult.isComplete());
     }
     
     @Test
     public void test_deviceResults() {
-        assertEquals(RegulatorMappingResultType.INCOMPLETE, 
-                            partialSuccessResult.getType(),
-                            "Result should be INCOMPLETE before complete() method call.");
+        Assert.assertEquals("Result should be INCOMPLETE before complete() method call.", 
+                            RegulatorMappingResultType.INCOMPLETE, 
+                            partialSuccessResult.getType());
         
         successResult.complete();
         partialSuccessResult.complete();
         failResult.complete();
         
-        assertEquals(RegulatorMappingResultType.SUCCESSFUL, 
-                            successResult.getType(),
-                            "Incorrect result when all points are successful.");
-        assertEquals(RegulatorMappingResultType.PARTIALLY_SUCCESSFUL, 
-                            partialSuccessResult.getType(),
-                            "Incorrect result when points are a mix of success and fail.");
-        assertEquals(RegulatorMappingResultType.FAILED, 
-                            failResult.getType(),
-                            "Incorrect result when all points are failed.");
+        Assert.assertEquals("Incorrect result when all points are successful.", 
+                            RegulatorMappingResultType.SUCCESSFUL, 
+                            successResult.getType());
+        Assert.assertEquals("Incorrect result when points are a mix of success and fail.", 
+                            RegulatorMappingResultType.PARTIALLY_SUCCESSFUL, 
+                            partialSuccessResult.getType());
+        Assert.assertEquals("Incorrect result when all points are failed.", 
+                            RegulatorMappingResultType.FAILED, 
+                            failResult.getType());
     }
     
     @Test
@@ -103,21 +100,21 @@ public class RegulatorMappingResultTest {
         
         RegulatorPointMappingResult successVolt = successResults.get(RegulatorPointMapping.VOLTAGE);
         RegulatorPointMappingResult successTapDown = successResults.get(RegulatorPointMapping.TAP_DOWN);
-        assertEquals(RegulatorPointMappingResult.SUCCESS, successVolt, "Incorrect result type for point.");
-        assertEquals(RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, successTapDown, "Incorrect result type for point.");
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS, successVolt);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, successTapDown);
         
         RegulatorPointMappingResult partSuccessFwdBand = partialSuccessResults.get(RegulatorPointMapping.FORWARD_BANDWIDTH);
         RegulatorPointMappingResult partSuccessKeepAlive = partialSuccessResults.get(RegulatorPointMapping.KEEP_ALIVE);
         RegulatorPointMappingResult partSuccessVolt = partialSuccessResults.get(RegulatorPointMapping.VOLTAGE);
         RegulatorPointMappingResult partSuccessTapUp = partialSuccessResults.get(RegulatorPointMapping.TAP_UP);
-        assertEquals(RegulatorPointMappingResult.SUCCESS, partSuccessFwdBand, "Incorrect result type for point.");
-        assertEquals(RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, partSuccessKeepAlive, "Incorrect result type for point.");
-        assertEquals(RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, partSuccessVolt, "Incorrect result type for point.");
-        assertEquals(RegulatorPointMappingResult.NO_POINTS_FOUND, partSuccessTapUp, "Incorrect result type for point.");
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS, partSuccessFwdBand);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, partSuccessKeepAlive);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, partSuccessVolt);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.NO_POINTS_FOUND, partSuccessTapUp);
         
         RegulatorPointMappingResult failAutoRemoteControl = failResults.get(RegulatorPointMapping.AUTO_REMOTE_CONTROL);
         RegulatorPointMappingResult failFwdBand = failResults.get(RegulatorPointMapping.FORWARD_BANDWIDTH);
-        assertEquals(RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, failAutoRemoteControl, "Incorrect result type for point.");
-        assertEquals(RegulatorPointMappingResult.NO_POINTS_FOUND, failFwdBand, "Incorrect result type for point.");
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, failAutoRemoteControl);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.NO_POINTS_FOUND, failFwdBand);
     }
 }

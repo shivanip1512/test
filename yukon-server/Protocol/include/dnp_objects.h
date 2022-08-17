@@ -118,7 +118,7 @@ public:
     template<class T>
     static ObjectBlockPtr makeRangedBlock(std::map<unsigned, std::unique_ptr<const T>> objects);
     template<class T>
-    static std::vector<ObjectBlockPtr> makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects, const size_t maximumObjectBlockSize);
+    static std::vector<ObjectBlockPtr> makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects);
 
     static ObjectBlockPtr makeNoIndexNoRange  (int group, int variation);
 
@@ -126,8 +126,6 @@ public:
     static ObjectBlockPtr makeLongIndexedBlock(ObjectPtr obj, unsigned index);
 
     static ObjectBlockPtr makeQuantityBlock   (ObjectPtr obj);
-
-    static ObjectBlockPtr makeLongIndexedBlockForObjects( std::vector<std::pair<unsigned, ObjectPtr>> objs );
 
     enum
     {

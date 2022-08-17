@@ -5,10 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
-import org.pentaho.reporting.engine.classic.core.ElementAlignment;
-import org.pentaho.reporting.engine.classic.core.ReportHeader;
-import org.pentaho.reporting.engine.classic.core.elementfactory.LabelElementFactory;
-import org.pentaho.reporting.libraries.base.util.FloatDimension;
+import org.jfree.report.ElementAlignment;
+import org.jfree.report.ReportHeader;
+import org.jfree.report.elementfactory.LabelElementFactory;
+import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.report.ColumnLayoutData;

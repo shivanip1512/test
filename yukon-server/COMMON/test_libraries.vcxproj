@@ -23,32 +23,32 @@
     <ProjectGuid>{E84A1D50-2FE1-49AE-BFBD-D78E6B4AD387}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>testlibraries</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -98,20 +98,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOOST)\include;$(OPENSSL)\include;$(YAML_CPP)\include;..\Resource\include;.\include</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>..\bin\test_libraries.exe</Command>
@@ -123,17 +122,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BOOST_ALL_DYN_LINK;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(BOOST)\include;$(OPENSSL)\include;$(YAML_CPP)\include;..\Resource\include;.\include</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>..\bin-debug\test_libraries.exe</Command>
@@ -145,7 +143,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -154,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>..\bin-debug\test_libraries.exe</Command>
@@ -168,7 +166,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -180,7 +178,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>..\bin\test_libraries.exe</Command>

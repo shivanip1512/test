@@ -1,19 +1,18 @@
 package com.cannontech.common.pao;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map.Entry;
-import java.util.Properties;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
@@ -28,6 +27,231 @@ public class PaoTypeTest {
 
     private static final ApplicationContext ctx = new ClassPathXmlApplicationContext();
     private static final Resource paoDisplayResource = ctx.getResource("classpath:com/cannontech/yukon/common/pao.xml");
+    
+    private static final ImmutableSet<PaoType> allTypes =
+            ImmutableSet.of(PaoType.CCU710A,
+                            PaoType.CCU711,
+                            PaoType.CCU721,
+                            PaoType.TCU5000,
+                            PaoType.TCU5500,
+                            PaoType.LCU415,
+                            PaoType.LCULG,
+                            PaoType.LCU_ER,
+                            PaoType.LCU_T3026,
+                            PaoType.RDS_TERMINAL,
+                            PaoType.SNPP_TERMINAL,
+                            PaoType.TAPTERMINAL,
+                            PaoType.TNPP_TERMINAL,
+                            PaoType.WCTP_TERMINAL,
+                            PaoType.SERIES_5_LMI,
+                            PaoType.RTC,
+                            PaoType.DIGIGATEWAY,
+                            PaoType.REPEATER,
+                            PaoType.REPEATER_800,
+                            PaoType.REPEATER_801,
+                            PaoType.REPEATER_850,
+                            PaoType.REPEATER_902,
+                            PaoType.REPEATER_921,
+                            PaoType.ALPHA_A1,
+                            PaoType.ALPHA_A3,
+                            PaoType.ALPHA_PPLUS,
+                            PaoType.DR_87,
+                            PaoType.FOCUS,
+                            PaoType.FULCRUM,
+                            PaoType.KV,
+                            PaoType.KVII,
+                            PaoType.LANDISGYRS4,
+                            PaoType.QUANTUM,
+                            PaoType.SENTINEL,
+                            PaoType.SIXNET,
+                            PaoType.TRANSDATA_MARKV,
+                            PaoType.VECTRON,
+                            PaoType.IPC430S4E,
+                            PaoType.IPC430SL,
+                            PaoType.IPC420FD,
+                            PaoType.IPC410FL,
+                            PaoType.DAVISWEATHER,
+                            PaoType.DCT_501,
+                            PaoType.LCR3102,
+                            PaoType.LMT_2,
+                            PaoType.ZIGBEE_ENDPOINT,
+                            PaoType.MCTBROADCAST,
+                            PaoType.MCT210,
+                            PaoType.MCT213,
+                            PaoType.MCT240,
+                            PaoType.MCT248,
+                            PaoType.MCT250,
+                            PaoType.MCT310,
+                            PaoType.MCT310CT,
+                            PaoType.MCT310ID,
+                            PaoType.MCT310IDL,
+                            PaoType.MCT310IL,
+                            PaoType.MCT310IM,
+                            PaoType.MCT318,
+                            PaoType.MCT318L,
+                            PaoType.MCT360,
+                            PaoType.MCT370,
+                            PaoType.MCT410CL,
+                            PaoType.MCT410FL,
+                            PaoType.MCT410GL,
+                            PaoType.MCT410IL,
+                            PaoType.MCT420CL,
+                            PaoType.MCT420CD,
+                            PaoType.MCT420FL,
+                            PaoType.MCT420FD,
+                            PaoType.MCT430A,
+                            PaoType.MCT430A3,
+                            PaoType.MCT430S4,
+                            PaoType.MCT430SL,
+                            PaoType.MCT440_2131B,
+                            PaoType.MCT440_2132B,
+                            PaoType.MCT440_2133B,
+                            PaoType.MCT470,
+                            PaoType.RFN410FL,
+                            PaoType.RFN410FX,
+                            PaoType.RFN410FD,
+                            PaoType.RFN420FL,
+                            PaoType.RFN420FX,
+                            PaoType.RFN420FD,
+                            PaoType.RFN420FRX,
+                            PaoType.RFN420FRD,
+                            PaoType.RFN410CL,
+                            PaoType.RFN420CL,
+                            PaoType.RFN420CD,
+                            PaoType.WRL420CL,
+                            PaoType.WRL420CD,
+                            PaoType.RFN430A3D,
+                            PaoType.RFN430A3T,
+                            PaoType.RFN430A3K,
+                            PaoType.RFN430A3R,
+                            PaoType.RFN430KV,
+                            PaoType.RFN430SL0,
+                            PaoType.RFN430SL1,
+                            PaoType.RFN430SL2,
+                            PaoType.RFN430SL3,
+                            PaoType.RFN430SL4,
+//                            PaoType.RFN440_2131T,
+                            PaoType.RFN440_2131TD,
+//                            PaoType.RFN440_2132T,
+                            PaoType.RFN440_2132TD,
+//                            PaoType.RFN440_2133T,
+                            PaoType.RFN440_2133TD,
+                            PaoType.RFN510FL,
+                            PaoType.RFN520FAX,
+                            PaoType.RFN520FRX,
+                            PaoType.RFN520FAXD,
+                            PaoType.RFN520FRXD,
+                            PaoType.RFN530FAX,
+                            PaoType.RFN530FRX,
+                            PaoType.RFN530S4X,
+                            PaoType.RFN530S4EAX,
+                            PaoType.RFN530S4EAXR,
+                            PaoType.RFN530S4ERX,
+                            PaoType.RFN530S4ERXR,
+                            PaoType.RFWMETER,
+                            PaoType.RFW201,
+                            PaoType.RFG201,
+                            PaoType.RFG301,
+                            PaoType.LCR6200_RFN,
+                            PaoType.LCR6600_RFN,
+                            PaoType.LCR6700_RFN,
+                            PaoType.LCR6600S,
+                            PaoType.LCR6601S,
+                            PaoType.ION_7700,
+                            PaoType.ION_8300,
+                            PaoType.ION_7330,
+                            PaoType.RTM,
+                            PaoType.RTU_DART,
+                            PaoType.RTU_DNP,
+                            PaoType.RTUILEX,
+                            PaoType.RTU_MODBUS,
+                            PaoType.RTUWELCO,
+                            PaoType.LM_GROUP_DIGI_SEP,
+                            PaoType.LM_GROUP_ECOBEE,
+                            PaoType.LM_GROUP_HONEYWELL,
+                            PaoType.LM_GROUP_ITRON,
+                            PaoType.LM_GROUP_NEST,
+                            PaoType.LM_GROUP_EMETCON,
+                            PaoType.LM_GROUP_EXPRESSCOMM,
+                            PaoType.LM_GROUP_RFN_EXPRESSCOMM,
+                            PaoType.LM_GROUP_GOLAY,
+                            PaoType.LM_GROUP_MCT,
+                            PaoType.LM_GROUP_POINT,
+                            PaoType.LM_GROUP_RIPPLE,
+                            PaoType.LM_GROUP_SA305,
+                            PaoType.LM_GROUP_SA205,
+                            PaoType.LM_GROUP_SADIGITAL,
+                            PaoType.LM_GROUP_VERSACOM,
+                            PaoType.MACRO_GROUP,
+                            PaoType.LM_GROUP_METER_DISCONNECT,
+                            PaoType.LM_CURTAIL_PROGRAM,
+                            PaoType.LM_DIRECT_PROGRAM,
+                            PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
+                            PaoType.LM_SEP_PROGRAM,
+                            PaoType.LM_ECOBEE_PROGRAM,
+                            PaoType.LM_HONEYWELL_PROGRAM,
+                            PaoType.LM_ITRON_PROGRAM,
+                            PaoType.LM_METER_DISCONNECT_PROGRAM,
+                            PaoType.LM_NEST_PROGRAM,
+                            PaoType.LM_CONTROL_AREA,
+                            PaoType.LM_SCENARIO,
+                            PaoType.CAPBANK,
+                            PaoType.CAPBANKCONTROLLER,
+                            PaoType.CBC_EXPRESSCOM,
+                            PaoType.CBC_7010,
+                            PaoType.CBC_7020,
+                            PaoType.CBC_7022,
+                            PaoType.CBC_7023,
+                            PaoType.CBC_7024,
+                            PaoType.CBC_7011,
+                            PaoType.CBC_7012,
+                            PaoType.CBC_8020,
+                            PaoType.CBC_8024,
+                            PaoType.CBC_DNP,
+                            PaoType.CBC_LOGICAL,
+                            PaoType.CBC_FP_2800,
+                            PaoType.CAP_CONTROL_SUBBUS,
+                            PaoType.CAP_CONTROL_FEEDER,
+                            PaoType.CAP_CONTROL_AREA,
+                            PaoType.CAP_CONTROL_SPECIAL_AREA,
+                            PaoType.CAP_CONTROL_SUBSTATION,
+                            PaoType.LOAD_TAP_CHANGER,
+                            PaoType.GANG_OPERATED,
+                            PaoType.PHASE_OPERATED,
+                            PaoType.FAULT_CI,
+                            PaoType.NEUTRAL_MONITOR,
+                            PaoType.ROUTE_CCU,
+                            PaoType.ROUTE_TCU,
+                            PaoType.ROUTE_LCU,
+                            PaoType.ROUTE_MACRO,
+                            PaoType.ROUTE_VERSACOM,
+                            PaoType.ROUTE_TAP_PAGING,
+                            PaoType.ROUTE_WCTP_TERMINAL,
+                            PaoType.ROUTE_SERIES_5_LMI,
+                            PaoType.ROUTE_RTC,
+                            PaoType.ROUTE_SNPP_TERMINAL,
+                            PaoType.ROUTE_TNPP_TERMINAL,
+                            PaoType.ROUTE_RDS_TERMINAL,
+                            PaoType.LOCAL_DIRECT,
+                            PaoType.LOCAL_SHARED,
+                            PaoType.LOCAL_RADIO,
+                            PaoType.LOCAL_DIALUP,
+                            PaoType.TSERVER_DIRECT,
+                            PaoType.TCPPORT,
+                            PaoType.UDPPORT,
+                            PaoType.TSERVER_SHARED,
+                            PaoType.TSERVER_RADIO,
+                            PaoType.TSERVER_DIALUP,
+                            PaoType.LOCAL_DIALBACK,
+                            PaoType.DIALOUT_POOL,
+                            PaoType.SCRIPT,
+                            PaoType.SIMPLE_SCHEDULE,
+                            PaoType.SYSTEM,
+                            PaoType.VIRTUAL_SYSTEM,
+                            PaoType.RFN_GATEWAY,
+                            PaoType.GWY800,
+                            PaoType.VIRTUAL_GATEWAY,
+                            PaoType.RFN_RELAY);
     
     private static final ImmutableSet<PaoType> nonCbcTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -131,28 +355,20 @@ public class PaoTypeTest {
                         PaoType.RFN430SL2,
                         PaoType.RFN430SL3,
                         PaoType.RFN430SL4,
+//                        PaoType.RFN440_2131T,
                         PaoType.RFN440_2131TD,
+//                        PaoType.RFN440_2132T,
                         PaoType.RFN440_2132TD,
+//                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
                         PaoType.RFN510FL,
                         PaoType.RFN520FAX,
                         PaoType.RFN520FRX,
                         PaoType.RFN520FAXD,
                         PaoType.RFN520FRXD,
-                        PaoType.RFN520FAXE,
-                        PaoType.RFN520FRXE,
-                        PaoType.RFN520FAXED,
-                        PaoType.RFN520FRXED,
-                        PaoType.CRL520FAXE,
-                        PaoType.CRL520FAXED,
-                        PaoType.CRL520FRXE,
-                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
-                        PaoType.RFN530FAXE,
-                        PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
-                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -161,16 +377,12 @@ public class PaoTypeTest {
                         PaoType.RFWMETER,
                         PaoType.RFW201,
                         PaoType.RFG201,
-                        PaoType.RFG301A,
-                        PaoType.RFG301R,
+                        PaoType.RFG301,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.ION_7700,
                         PaoType.ION_8300,
                         PaoType.ION_7330,
@@ -197,11 +409,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -250,7 +460,6 @@ public class PaoTypeTest {
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
                         PaoType.VIRTUAL_SYSTEM,
-                        PaoType.VIRTUAL_METER,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
@@ -258,16 +467,13 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856,
-                        PaoType.RFN530S4X_DER);
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -301,11 +507,8 @@ public class PaoTypeTest {
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.RTM,
                         PaoType.RTU_DART,
                         PaoType.RTU_DNP,
@@ -329,11 +532,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -403,7 +604,6 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.RFN_1200,
                         PaoType.HONEYWELL_9000,
@@ -411,8 +611,7 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -483,28 +682,20 @@ public class PaoTypeTest {
                         PaoType.RFN430SL2,
                         PaoType.RFN430SL3,
                         PaoType.RFN430SL4,
+//                        PaoType.RFN440_2131T,
                         PaoType.RFN440_2131TD,
+//                        PaoType.RFN440_2132T,
                         PaoType.RFN440_2132TD,
+//                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
                         PaoType.RFN510FL,
                         PaoType.RFN520FAX,
                         PaoType.RFN520FRX,
                         PaoType.RFN520FAXD,
                         PaoType.RFN520FRXD,
-                        PaoType.RFN520FAXE,
-                        PaoType.RFN520FRXE,
-                        PaoType.RFN520FAXED,
-                        PaoType.RFN520FRXED,
-                        PaoType.CRL520FAXE,
-                        PaoType.CRL520FAXED,
-                        PaoType.CRL520FRXE,
-                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
-                        PaoType.RFN530FAXE,
-                        PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
-                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -513,16 +704,12 @@ public class PaoTypeTest {
                         PaoType.RFWMETER,
                         PaoType.RFW201,
                         PaoType.RFG201,
-                        PaoType.RFG301A,
-                        PaoType.RFG301R,
+                        PaoType.RFG301,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.ION_7700,
                         PaoType.ION_8300,
                         PaoType.ION_7330,
@@ -549,11 +736,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -616,7 +801,6 @@ public class PaoTypeTest {
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
                         PaoType.VIRTUAL_SYSTEM,
-                        PaoType.VIRTUAL_METER,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
@@ -624,16 +808,13 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856,
-                        PaoType.RFN530S4X_DER);
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -718,28 +899,20 @@ public class PaoTypeTest {
                         PaoType.RFN430SL2,
                         PaoType.RFN430SL3,
                         PaoType.RFN430SL4,
+//                        PaoType.RFN440_2131T,
                         PaoType.RFN440_2131TD,
+//                        PaoType.RFN440_2132T,
                         PaoType.RFN440_2132TD,
+//                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
                         PaoType.RFN510FL,
                         PaoType.RFN520FAX,
                         PaoType.RFN520FRX,
                         PaoType.RFN520FAXD,
                         PaoType.RFN520FRXD,
-                        PaoType.RFN520FAXE,
-                        PaoType.RFN520FRXE,
-                        PaoType.RFN520FAXED,
-                        PaoType.RFN520FRXED,
-                        PaoType.CRL520FAXE,
-                        PaoType.CRL520FAXED,
-                        PaoType.CRL520FRXE,
-                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
-                        PaoType.RFN530FAXE,
-                        PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
-                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -748,16 +921,12 @@ public class PaoTypeTest {
                         PaoType.RFWMETER,
                         PaoType.RFW201,
                         PaoType.RFG201,
-                        PaoType.RFG301A,
-                        PaoType.RFG301R,
+                        PaoType.RFG301,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.RTM,
                         PaoType.RTU_DART,
                         PaoType.RTU_DNP,
@@ -781,11 +950,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -848,7 +1015,6 @@ public class PaoTypeTest {
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
                         PaoType.VIRTUAL_SYSTEM,
-                        PaoType.VIRTUAL_METER,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
@@ -856,16 +1022,13 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856,
-                        PaoType.RFN530S4X_DER);
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -969,28 +1132,20 @@ public class PaoTypeTest {
                         PaoType.RFN430SL2,
                         PaoType.RFN430SL3,
                         PaoType.RFN430SL4,
+//                        PaoType.RFN440_2131T,
                         PaoType.RFN440_2131TD,
+//                        PaoType.RFN440_2132T,
                         PaoType.RFN440_2132TD,
+//                        PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
                         PaoType.RFN510FL,
                         PaoType.RFN520FAX,
                         PaoType.RFN520FRX,
                         PaoType.RFN520FAXD,
                         PaoType.RFN520FRXD,
-                        PaoType.RFN520FAXE,
-                        PaoType.RFN520FRXE,
-                        PaoType.RFN520FAXED,
-                        PaoType.RFN520FRXED,
-                        PaoType.CRL520FAXE,
-                        PaoType.CRL520FAXED,
-                        PaoType.CRL520FRXE,
-                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
-                        PaoType.RFN530FAXE,
-                        PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
-                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -999,16 +1154,12 @@ public class PaoTypeTest {
                         PaoType.RFWMETER,
                         PaoType.RFW201,
                         PaoType.RFG201,
-                        PaoType.RFG301A,
-                        PaoType.RFG301R,
+                        PaoType.RFG301,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.ION_7700,
                         PaoType.ION_8300,
                         PaoType.ION_7330,
@@ -1029,11 +1180,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -1096,7 +1245,6 @@ public class PaoTypeTest {
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
                         PaoType.VIRTUAL_SYSTEM,
-                        PaoType.VIRTUAL_METER,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
@@ -1104,16 +1252,13 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856,
-                        PaoType.RFN530S4X_DER);
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1217,28 +1362,20 @@ public class PaoTypeTest {
                         PaoType.RFN430SL2,
                         PaoType.RFN430SL3,
                         PaoType.RFN430SL4,
-                        PaoType.RFN440_2131TD,
-                        PaoType.RFN440_2132TD,
+//                      PaoType.RFN440_2131T,
+                      PaoType.RFN440_2131TD,
+//                      PaoType.RFN440_2132T,
+                      PaoType.RFN440_2132TD,
+//                      PaoType.RFN440_2133T,
                         PaoType.RFN440_2133TD,
                         PaoType.RFN510FL,
                         PaoType.RFN520FAX,
                         PaoType.RFN520FRX,
                         PaoType.RFN520FAXD,
                         PaoType.RFN520FRXD,
-                        PaoType.RFN520FAXE,
-                        PaoType.RFN520FRXE,
-                        PaoType.RFN520FAXED,
-                        PaoType.RFN520FRXED,
-                        PaoType.CRL520FAXE,
-                        PaoType.CRL520FAXED,
-                        PaoType.CRL520FRXE,
-                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
-                        PaoType.RFN530FAXE,
-                        PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
-                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -1246,16 +1383,12 @@ public class PaoTypeTest {
                         PaoType.RFWMETER,
                         PaoType.RFW201,
                         PaoType.RFG201,
-                        PaoType.RFG301A,
-                        PaoType.RFG301R,
+                        PaoType.RFG301,
                         PaoType.LCR6200_RFN,
                         PaoType.LCR6600_RFN,
                         PaoType.LCR6700_RFN,
-                        PaoType.LCR6200S,
                         PaoType.LCR6600S,
                         PaoType.LCR6601S,
-                        PaoType.LCR6200C,
-                        PaoType.LCR6600C,
                         PaoType.ION_7700,
                         PaoType.ION_8300,
                         PaoType.ION_7330,
@@ -1282,11 +1415,9 @@ public class PaoTypeTest {
                         PaoType.LM_GROUP_SA205,
                         PaoType.LM_GROUP_SADIGITAL,
                         PaoType.LM_GROUP_VERSACOM,
-                        PaoType.LM_GROUP_EATON_CLOUD,
                         PaoType.MACRO_GROUP,
                         PaoType.LM_CURTAIL_PROGRAM,
                         PaoType.LM_DIRECT_PROGRAM,
-                        PaoType.LM_EATON_CLOUD_PROGRAM,
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
@@ -1337,7 +1468,6 @@ public class PaoTypeTest {
                         PaoType.SIMPLE_SCHEDULE,
                         PaoType.SYSTEM,
                         PaoType.VIRTUAL_SYSTEM,
-                        PaoType.VIRTUAL_METER,
                         PaoType.WEATHER_LOCATION,
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
@@ -1345,16 +1475,13 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.GWY801,
                         PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
-                        PaoType.RFN_RELAY,
-                        PaoType.CRLY856,
-                        PaoType.RFN530S4X_DER);
+                        PaoType.RFN_RELAY);
     
     private static final ImmutableSet<PaoType> nonItronTypes = 
             ImmutableSet.of(
@@ -1467,20 +1594,9 @@ public class PaoTypeTest {
                 PaoType.RFN520FRX,
                 PaoType.RFN520FAXD,
                 PaoType.RFN520FRXD,
-                PaoType.RFN520FAXE,
-                PaoType.RFN520FRXE,
-                PaoType.RFN520FAXED,
-                PaoType.RFN520FRXED,
-                PaoType.CRL520FAXE,
-                PaoType.CRL520FAXED,
-                PaoType.CRL520FRXE,
-                PaoType.CRL520FRXED,
                 PaoType.RFN530FAX,
                 PaoType.RFN530FRX,
-                PaoType.RFN530FAXE,
-                PaoType.RFN530FRXE,
                 PaoType.RFN530S4X,
-                PaoType.CRL530S4X,
                 PaoType.RFN530S4EAX,
                 PaoType.RFN530S4EAXR,
                 PaoType.RFN530S4ERX,
@@ -1489,14 +1605,10 @@ public class PaoTypeTest {
                 PaoType.LCR6200_RFN,
                 PaoType.LCR6600_RFN,
                 PaoType.LCR6700_RFN,
-                PaoType.LCR6200C,
-                PaoType.LCR6600C,
                 PaoType.RFN_GATEWAY,
                 PaoType.GWY800,
-                PaoType.GWY801,
                 PaoType.VIRTUAL_GATEWAY,
                 PaoType.RFN_RELAY,
-                PaoType.CRLY856,
                 PaoType.ION_7700,
                 PaoType.ION_8300,
                 PaoType.ION_7330,
@@ -1523,11 +1635,9 @@ public class PaoTypeTest {
                 PaoType.LM_GROUP_SA205,
                 PaoType.LM_GROUP_SADIGITAL,
                 PaoType.LM_GROUP_VERSACOM,
-                PaoType.LM_GROUP_EATON_CLOUD,
                 PaoType.MACRO_GROUP,
                 PaoType.LM_CURTAIL_PROGRAM,
                 PaoType.LM_DIRECT_PROGRAM,
-                PaoType.LM_EATON_CLOUD_PROGRAM,
                 PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                 PaoType.LM_SEP_PROGRAM,
                 PaoType.LM_ECOBEE_PROGRAM,
@@ -1590,7 +1700,6 @@ public class PaoTypeTest {
                 PaoType.SIMPLE_SCHEDULE,
                 PaoType.SYSTEM,
                 PaoType.VIRTUAL_SYSTEM,
-                PaoType.VIRTUAL_METER,
                 PaoType.WEATHER_LOCATION,
                 PaoType.RFN_1200,
                 PaoType.ECOBEE_SMART_SI,
@@ -1603,64 +1712,126 @@ public class PaoTypeTest {
                 PaoType.HONEYWELL_THERMOSTAT,
                 PaoType.RFW201,
                 PaoType.RFG201,
-                PaoType.RFG301A,
-                PaoType.RFG301R,
-                PaoType.NEST,
-                PaoType.RFN530S4X_DER);
+                PaoType.RFG301,
+                PaoType.NEST);
     
-    private void validatePredicate(Predicate<PaoType> classification, ImmutableSet<PaoType> others, String set) {
-        var violations = Arrays.stream(PaoType.values())
-                               .filter(type -> classification.test(type) == others.contains(type))
-                               .collect(Collectors.toList());
-        
-        var upperSet = StringUtils.capitalize(set);
-        
-        assertTrue(violations.isEmpty(), "PaoTypes: " + violations + 
-                " should exist in either the Set PaoType." + set + " or PaoTypeTest.non" + upperSet + " and not both.");
-    }
-
     @Test
     public void testIsMeter() {
-        validatePredicate(PaoType::isMeter, nonMeterTypes, "meterTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isMeter() && !nonMeterTypes.contains(type)) ||
+                ( type.isMeter() &&  nonMeterTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.meterTypes or PaoTypeTest.nonMeterTypes and not both.");
+        }
     }
     
     @Test
     public void testIsCbc() {
-        validatePredicate(PaoType::isCbc, nonCbcTypes, "cbcTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isCbc() && !nonCbcTypes.contains(type)) ||
+                ( type.isCbc() &&  nonCbcTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.cbcTypes or PaoTypeTest.nonCbcTypes and not both.");
+        }
     }
     
     @Test
     public void testIsMct() {
-        validatePredicate(PaoType::isMct, nonMctTypes, "mctTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isMct() && !nonMctTypes.contains(type)) ||
+                ( type.isMct() &&  nonMctTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.mctTypes or PaoTypeTest.nonMctTypes and not both.");
+        }
     }
     
     @Test
     public void testIsIed() {
-        validatePredicate(PaoType::isIed, nonIedTypes, "iedTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isIed() && !nonIedTypes.contains(type)) ||
+                ( type.isIed() &&  nonIedTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.iedTypes or PaoTypeTest.nonIedTypes and not both.");
+        }
     }
     
     @Test
     public void testIsRtu() {
-        validatePredicate(PaoType::isRtu, nonRtuTypes, "rtuTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isRtu() && !nonRtuTypes.contains(type)) ||
+                ( type.isRtu() &&  nonRtuTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.rtuTypes or PaoTypeTest.nonRtuTypes and not both.");
+        }
     }
     
     @Test
     public void testIsPort() {
-        validatePredicate(PaoType::isPort, nonPortTypes, "portTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isPort() && !nonPortTypes.contains(type)) ||
+                 (type.isPort() && nonPortTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) +
+                 " should exist in either Set PaoTypes.portTypes or PaotTypeTest.nonPortTypes and not both.");
+        }
     }
     
     @Test
     public void testIsItron() {
-        validatePredicate(PaoType::isItron, nonItronTypes, "itronTypes");
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        for (PaoType type : PaoType.values()) {
+            if ((!type.isItron() && !nonItronTypes.contains(type)) ||
+                (type.isItron() && nonItronTypes.contains(type))) {
+                illegalTypes.add(type);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) +
+                 " should exist in either Set PaoTypes.itronTypes or PaoTypeTest.nonItronTypes and not both.");
+        }
     }
     
     @Test
     public void testGetPaoTypeId() {
+        Iterator<PaoType> deviceIter = allTypes.iterator();
         Set<PaoType> illegalTypes = Sets.newHashSet();
-        for (PaoType type : PaoType.values()) {
-            String deviceString = type.getDbString();
-            if (type.getDeviceTypeId() != (PaoType.getPaoTypeId(deviceString))) {
-                illegalTypes.add(type);
+        PaoType nextElement = null;
+        String deviceString = null;
+        
+        while (deviceIter.hasNext()) {
+            nextElement = deviceIter.next();
+            deviceString = nextElement.getDbString();
+            if (nextElement.getDeviceTypeId() != (PaoType.getPaoTypeId(deviceString))) {
+                illegalTypes.add(nextElement);
             }  
         }
         if (!illegalTypes.isEmpty()) {
@@ -1670,30 +1841,45 @@ public class PaoTypeTest {
     }
     
     @Test
+    public void testGetPaoTypeString() {
+        Iterator<PaoType> deviceIter = allTypes.iterator();
+        Set<PaoType> illegalTypes = Sets.newHashSet();
+        PaoType nextElement = null;
+        Integer deviceId = null;
+        
+        while (deviceIter.hasNext()) {
+            nextElement = deviceIter.next();
+            deviceId = nextElement.getDeviceTypeId();
+            if (!nextElement.getDbString().equals(PaoType.getPaoTypeString(deviceId))) {
+                illegalTypes.add(nextElement);
+            }
+        }
+        if (!illegalTypes.isEmpty()) {
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) +
+                 " does not match PaoType Strings.");
+        }
+    }
+ 
+    @Test
     public void testInternationalization() {
+        SAXBuilder builder = new SAXBuilder();
+        builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         try {
-            var paoNames = new Properties();
-            paoNames.loadFromXML(paoDisplayResource.getInputStream());
+            Map<String, String> paoNames =
+                    builder.build(paoDisplayResource.getInputStream())
+                           .getRootElement()
+                           .getChildren("entry")
+                           .stream()
+                           .collect(Collectors.toMap(e -> e.getAttribute("key").getValue(), 
+                                                     Element::getText));
             
             Arrays.stream(PaoType.values())
                     .map(PaoType::getFormatKey)
                     .forEach(formatKey -> 
-                        assertNotNull(paoNames.get(formatKey), "Missing i18n key for " + formatKey));
+                        assertNotNull("Missing i18n key for " + formatKey, paoNames.get(formatKey)));
 
-        } catch (IOException e) {
+        } catch (JDOMException | IOException e) {
             fail("Unexpected exception: " + e);
         }
-    }
-    
-    @Test
-    public void testUniqueDeviceType() {
-        var collisions = 
-                Arrays.stream(PaoType.values())
-                      .collect(Collectors.groupingBy(PaoType::getDeviceTypeId))
-                      .entrySet().stream()
-                      .filter(entry -> entry.getValue().size() != 1)
-                      .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        
-        Assertions.assertTrue(collisions.isEmpty(), "Found devicetype collisions: " + collisions);
     }
 }

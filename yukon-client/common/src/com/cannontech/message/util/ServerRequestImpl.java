@@ -90,7 +90,6 @@ public class ServerRequestImpl implements ServerRequest
                 wait(timeout);
             }
             catch(InterruptedException ie) {
-                log.warn("Server request wait was interrupted.", ie);
             }
             finally {
                 //Make sure to remove us or else there will be a leak!
@@ -111,7 +110,6 @@ public class ServerRequestImpl implements ServerRequest
         /* (non-Javadoc)
          * @see com.cannontech.message.util.ServerRequest#messageReceived(com.cannontech.message.util.MessageEvent)
          */
-        @Override
         public synchronized void messageReceived(MessageEvent e) {
             Message msg = e.getMessage();
             if(msg instanceof ServerResponseMsg) {
@@ -122,7 +120,7 @@ public class ServerRequestImpl implements ServerRequest
                 if(responseMsg.getId() == _requestMsg.getId() ) {
                     _responseMsg = responseMsg;
                     log.debug("Received matching response");
-                    notifyAll(); //score! we found matching response, let the blocked thread know
+                    notify(); //score! we found matching response, let the blocked thread know
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -135,7 +133,6 @@ public class ServerRequestImpl implements ServerRequest
     /* (non-Javadoc)
      * @see com.cannontech.message.util.ServerRequest#makeServerRequest(com.cannontech.yukon.IServerConnection, com.cannontech.message.util.Message)
      */
-    @Override
     public ServerResponseMsg makeServerRequest(IServerConnection conn, Message msg) {
         return makeServerRequest(conn,msg,DEFAULT_TIMEOUT);
     }
@@ -143,7 +140,6 @@ public class ServerRequestImpl implements ServerRequest
 	/* (non-Javadoc)
      * @see com.cannontech.message.util.ServerRequest#makeServerRequest(com.cannontech.yukon.IServerConnection, com.cannontech.message.util.Message, long)
      */
-    @Override
     public ServerResponseMsg makeServerRequest(IServerConnection conn, Message msg, long timeout) {
         int reqId = nextClientMessageID();
         ServerRequestMsg reqMsg = new ServerRequestMsg();

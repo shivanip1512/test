@@ -753,18 +753,6 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
     }
 }
 
-std::size_t CtiLMControlAreaTrigger::getMemoryConsumption() const
-{
-    std::size_t sz = sizeof( *this );
-
-    sz  += dynamic_sizeof( _triggertype )
-        +  dynamic_sizeof( _projectiontype );
-
-    // the array allocation - the projection points are in the array by value
-    sz += _projectionpointentriesqueue.capacity() * sizeof( CtiLMProjectionPointEntry );
-
-    return sz;
-}
 
 
 /* Public Static members */

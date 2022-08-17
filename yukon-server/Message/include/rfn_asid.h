@@ -20,7 +20,6 @@ enum class ApplicationServiceIdentifiers : unsigned char
     //E2EAP_SNMP       = 10,
     E2EAP_DNP3         = 11,
     E2EAP_DataStreaming = 12,
-    E2EAP_DER           = 0x0d,
     BulkMessageHandler = 0xFE,
 };
 
@@ -50,11 +49,6 @@ namespace {
     bool isAsid_DataStreaming(const ASIDs asid)
     {
         return asid == ASIDs::E2EAP_DataStreaming;
-    }
-
-    bool isAsid_Der(const ASIDs asid)
-    {
-        return asid == ASIDs::E2EAP_DER;
     }
 
     StreamBufferSink& operator<<(StreamBufferSink& sb, ASIDs asid)

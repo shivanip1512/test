@@ -15,7 +15,6 @@
 <%-- see popupTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="triggerElement" %>
-<%@ attribute name="loadDataOnTrigger" type="java.lang.Boolean" description="If true, load data only when triggerElement is clicked."%>
 <%@ attribute name="highlightNodePath" %>
 <%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
 <%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
@@ -74,7 +73,6 @@
              treeCss="/resources/js/lib/dynatree/skin/device.group.css"
              treeParameters="{onSelect:recordNameValue_${id}}"
              triggerElement="${triggerElement}"
-             loadDataOnTrigger="${loadDataOnTrigger}"
              highlightNodePath="${pageScope.highlightNodePath}"
              dataJson="${dataJson}"
              dataUrl="${dataUrl}"

@@ -1,12 +1,11 @@
 package com.cannontech.core.roleproperties;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -61,23 +60,19 @@ public class YukonRolePropertyTest {
     /**
      * Verifies that user that with no Hierarchy Permission role property has no access.
      */
-    @Test
+    @Test(expected = NotAuthorizedException.class)
     public void checkNotInRole() {
-        Assertions.assertThrows(NotAuthorizedException.class, () -> {
-            rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.VIEW,
-                    MockRolePropertyDaoImpl.LEVEL_UNKNOWN_USER);
-        });
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.VIEW,
+            MockRolePropertyDaoImpl.LEVEL_UNKNOWN_USER);
     }
 
     /**
      * Verifies that user with an "VIEW" level doesn't have access to "UPDATE" functionality.
      */
-    @Test
+    @Test(expected = NotAuthorizedException.class)
     public void verifyRestrictedAccessToUpdate() {
-        Assertions.assertThrows(NotAuthorizedException.class, () -> {
-            rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE,
-                    MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
-        });
+        rolePropertyDaoMock.verifyLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE,
+            MockRolePropertyDaoImpl.LEVEL_RESTRICTED_USER);
     }
 
     /**

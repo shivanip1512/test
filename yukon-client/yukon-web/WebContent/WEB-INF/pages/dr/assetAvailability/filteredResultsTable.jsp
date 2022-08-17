@@ -53,19 +53,18 @@
                 </td>
                 <td><i:inline key="${assetAvailabilitySearchResult.type}"/></td>
                 <td>
-                    <c:choose>
-                        <c:when test="${assetAvailabilitySearchResult.gatewayId > 0}">
-                            <cti:paoDetailUrl paoId="${assetAvailabilitySearchResult.gatewayId}" newTab="true">
-                                ${fn:escapeXml(assetAvailabilitySearchResult.gatewayName)}
-                            </cti:paoDetailUrl>
-                        </c:when>
-                        <c:when test="${assetAvailabilitySearchResult.type.isRf()}">
-                            <i:inline key="yukon.common.unknown"/>
-                        </c:when>
-                    </c:choose>
+                <cti:paoDetailUrl paoId="${assetAvailabilitySearchResult.gatewayId}" newTab="true">${fn:escapeXml(assetAvailabilitySearchResult.gatewayName)}</cti:paoDetailUrl>
                 </td>
-                <td><cti:formatDate type="BOTH" value="${assetAvailabilitySearchResult.lastComm}"/></td>
-                <td><cti:formatDate type="BOTH" value="${assetAvailabilitySearchResult.lastRun}"/></td>
+                <td>
+                    <cti:formatDate type="BOTH" value="${assetAvailabilitySearchResult.lastComm}" 
+                                    var="lastCommunitation"/>
+                    ${lastCommunitation}
+                </td>
+                <td>
+                    <cti:formatDate type="BOTH" value="${assetAvailabilitySearchResult.lastRun}" 
+                                    var="lastRun"/>
+                    ${lastRun}
+                </td>
                 <td>
                     <cm:dropdown icon="icon-cog">
                         <c:if test="${assetAvailabilitySearchResult.deviceId != 0}"> 

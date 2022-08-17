@@ -8,6 +8,5 @@ public enum EncryptionKeyType {
     ExpresscomOneWay, 
     Honeywell,
     Ecobee,
-    Itron,
-    EcobeeZeus
+    Itron
 }

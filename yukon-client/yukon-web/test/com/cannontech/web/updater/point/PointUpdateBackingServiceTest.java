@@ -1,8 +1,6 @@
 package com.cannontech.web.updater.point;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,8 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.easymock.IAnswer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -26,7 +25,7 @@ public class PointUpdateBackingServiceTest {
     final Set<Integer> unregisteredPoints = new HashSet<>();
     private final int cacheMaxSize = 5000;
 
-    @BeforeEach
+    @Before
     public void setup() {
         unregisteredPoints.clear();
         AsyncDynamicDataSource asyncDataSourceMock = createNiceMock(AsyncDynamicDataSource.class);
@@ -55,9 +54,10 @@ public class PointUpdateBackingServiceTest {
         int numberShouldHaveUnregistered = (numberPoints - cacheMaxSize);
         int numberUnregistered = unregisteredPoints.size();
 
-        assertTrue(numberUnregistered >= numberShouldHaveUnregistered, 
+        Assert.assertTrue(
             "PointUpdateBackingService failed to unregister the points it removed from the cache. Should have unregistered "
-                + numberShouldHaveUnregistered + " but was " + numberUnregistered + ".");
+                + numberShouldHaveUnregistered + " but was " + numberUnregistered + ".",
+            numberUnregistered >= numberShouldHaveUnregistered);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class PointUpdateBackingServiceTest {
         });
 
         if(!errors.isEmpty()) {
-            fail("Exception thrown in a thread: " + errors.get(0));
+            Assert.fail("Exception thrown in a thread: " + errors.get(0));
         }
     }
 

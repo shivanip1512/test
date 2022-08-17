@@ -28,7 +28,35 @@
 <cti:includeScript link="/resources/js/pages/yukon.dr.ecobee.js"/>
 
     <div class="column-12-12">
-        <div class="column one nogutter" id="sync-issues" data-report-id="${report.reportId}" data-empty-key="<cti:msg2 key=".issues.none"/>">
+        <div class="column one">
+            <tags:sectionContainer2 nameKey="dataDownloads" id="data-downloads">
+                <table class="js-data-downloads name-value-table with-form-controls ${fn:length(downloads) <= 0 ? 'dn' : ''}" id="downloads-table">
+                    <thead></thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach items="${downloads}" var="entry">
+                            <c:set var="key" value="${entry.key}"/>
+                            <c:set var="download" value="${entry.value}"/>
+                            <%@ include file="download.row.jsp" %>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <span class="empty-list ${fn:length(downloads) > 0 ? 'dn' : ''}"><i:inline key=".download.none"/></span>
+                <div class="action-area">
+                    <cti:button nameKey="requestRuntimeReport" data-popup="#ecobee-download-popup" 
+                                classes="js-request-runtime-report" icon="icon-report-go"/>
+                    <div data-dialog 
+                        id="ecobee-download-popup"
+                        data-url="ecobee/download/settings" 
+                        data-load-event="yukon_dr_ecobee_download_settings_load"
+                        data-event="yukon_dr_ecobee_download_start" 
+                        data-width="600" 
+                        data-title="<cti:msg2 key=".download.title"/>" 
+                        class="dn"></div>
+                </div>
+            </tags:sectionContainer2>
+        </div>
+        <div class="column two nogutter" id="sync-issues" data-report-id="${report.reportId}" data-empty-key="<cti:msg2 key=".issues.none"/>">
             <tags:sectionContainer2 nameKey="issues" arguments="${fn:length(report.errors)}">
                 <c:choose>
                     <c:when test="${fn:length(report.errors) > 0}">
@@ -39,20 +67,8 @@
                                 <tfoot></tfoot>
                                 <tbody>
                                     <c:forEach items="${report.errors}" var="issue">
-                                        <c:choose>
-                                            <c:when test="${issue.errorType == 'MISLOCATED_DEVICE' && empty fn:trim(issue.correctPath)}">
-                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}.unenroll" 
-                                                    arguments="${issue.arguments}"/>
-                                            </c:when>
-                                            <c:when test="${issue.errorType == 'MISLOCATED_DEVICE' && empty fn:trim(issue.currentPath)}">
-                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}.enroll" 
-                                                    arguments="${issue.arguments}"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" 
-                                                    arguments="${issue.arguments}"/>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <cti:msg2 var="explanation" key="${issue.errorType.detailKey}" 
+                                            arguments="${issue.arguments}"/>
                                         <tr data-error-id="${issue.errorId}" data-explanation="${fn:escapeXml(explanation)}">
                                             <td><i:inline key="${issue.errorType.formatKey}" arguments="${issue.arguments}"/></td>
                                             <td>

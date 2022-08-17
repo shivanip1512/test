@@ -45,10 +45,6 @@ yukon.dr.assetDetails = (function() {
             _aaDiv = $('.js-asset-availability');
 
             $(document).on('click', '#pingButton', _pingDevices);
-            
-            $(document).on('click', '.js-asset-availability-data-pie', function () {
-                yukon.assetAvailability.pieChart.showDetailsPage(_assetId, $('.js-asset-availability-pie-chart-summary'));
-            });
 
             if (_aaDiv.length) {
                 yukon.ui.block(_aaDiv);
@@ -58,23 +54,6 @@ yukon.dr.assetDetails = (function() {
                     }
                 }).done(function(data) {
                     _aaDiv.html(data);
-                    if ($("#js-asset-availability-summary").exists()) {
-                        var chart = $('.js-asset-availability-pie-chart-summary'),
-                            data = yukon.fromJson('#js-asset-availability-summary');
-                        yukon.assetAvailability.pieChart.buildChart(chart, data, true);
-                        $('input[name=statuses]').each(function() {
-                            var statusButton = $(this);
-                            if (!statusButton.prop("checked")) {
-                                var legendItems = chart.highcharts().series[0].data;
-                                for (var i = 0; i < legendItems.length; i++) {
-                                    if (statusButton.val() == legendItems[i].filter) {
-                                        legendItems[i].setVisible(false, false);
-                                    }
-                                }
-                            }
-                        });
-                        chart.highcharts().redraw();
-                    }
                     yukon.ui.unblock(_aaDiv);
                 });
             }

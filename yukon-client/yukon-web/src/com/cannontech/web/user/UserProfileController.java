@@ -86,6 +86,7 @@ public class UserProfileController {
     @Autowired private ContactDtoValidator contactDtoValidator;
     @Autowired private CustomerDao customerDao;
 
+    private static final int pageEventRowCount = 10;
     private static final String baseKey = "yukon.web.modules.user.profile.";
 
     /**
@@ -109,6 +110,14 @@ public class UserProfileController {
         model.addAttribute("eventTypes", SmartNotificationEventType.values());
 
         return "profile.jsp";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/activityStream/{startIndex}.html")
+    public String loadActivityStream(@PathVariable Integer startIndex, ModelMap model, LiteYukonUser user) {
+
+        startIndex = startIndex < 0 ? 0 : startIndex;
+        profileHelper.setupActivityStream(model, user, startIndex, pageEventRowCount);
+        return "activityStreamSection.jsp";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/profile/edit")

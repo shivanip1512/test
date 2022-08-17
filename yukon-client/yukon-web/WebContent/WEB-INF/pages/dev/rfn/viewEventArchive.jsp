@@ -5,29 +5,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dev" page="rfnTest.viewEventArchive">
+<cti:standardPage module="dev" page="rfnTest">
 
     <script type="text/javascript">
-        function showEventSpecificInfo() {
-            var eventType = $('.js-event-type').val()
-            if (eventType === 'CELLULAR_APN_CHANGED') {
-                yukon.ui.alertWarning('Random APN will be generated.');
-            } else {
-                yukon.ui.removeAlerts();
-                $('#remoteMeterConfiguration').toggle(eventType === 'REMOTE_METER_CONFIGURATION_FAILURE'
-                    || eventType === 'REMOTE_METER_CONFIGURATION_FINISHED');
-                $('#dnp3AddressChanged').toggle(eventType === 'DNP3_ADDRESS_CHANGED');
-            }
-        }
         $(document).ready(function() {
             $('.js-sendEventArchive').click(function() {
                 $('#eventForm').submit();
             });
             $(".optional").prop("placeholder", "optional");
-            $('.js-event-type').change(function() {
-                showEventSpecificInfo();
-            })
-            showEventSpecificInfo();
         });
     </script>
 
@@ -54,7 +39,7 @@
                 </tags:nameValue>
                 
                 <tags:nameValue name="Event Type">
-                    <form:select cssClass="js-event-type" path="rfnConditionType" items="${rfnConditionTypes}"/>
+                    <form:select path="rfnConditionType" items="${rfnConditionTypes}"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Num Events Per Meter">
@@ -88,7 +73,7 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer>
 
-            <tags:sectionContainer id="remoteMeterConfiguration" title="Included only for REMOTE_METER_CONFIGURATION_FAILURE/FINISHED">
+            <tags:sectionContainer title="Included only for REMOTE_METER_CONFIGURATION_FAILED">
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".dataType.METER_CONFIGURATION_ID" path="meterConfigurationId" />
                     <tags:nameValue2 nameKey=".dataType.METER_STATUS_CODE">
@@ -107,58 +92,19 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer>
-
-            <tags:sectionContainer id="dnp3AddressChanged" title="Included only for DNP3_ADDRESS_CHANGED">
-                <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".dataType.OLD_DNP3_ADDRESS" path="oldDnp3Address" />
-                    <tags:inputNameValue nameKey=".dataType.NEW_DNP3_ADDRESS" path="newDnp3Address" />
-                </tags:nameValueContainer2>
-            </tags:sectionContainer>
-
-            <tags:sectionContainer title="Event Start Time">
-                <ul>
-                    <li>Leaving Event Start Time blank will default it to 60 seconds before the event is sent</li>
-                    <li>Enter a value of -1 to simulate a RESTORE event from a meter with "old" firmware (doesn't include this meta-data)</li>
-                    <li>The page load (<cti:formatDate type="TIME" value="${event.timestamp}"/>) time in milliseconds: ${event.timestampAsMillis}</li>
-                    <li>60 seconds prior to page load is: ${event.timestampAsMillis - 60000}</li>
-                </ul>
-            </tags:sectionContainer>
+            <br>
+            <div>Outage Start Time helper info:</div>
+            <ul>
+                <li>-Leaving this field blank above will default it to 60 seconds from now</li>
+                <li>-Enter a value of -1 to simulate a RESTORE event from a meter with "old" firmware (doesn't include this meta-data)</li>
+                <li>-The current (<cti:formatDate type="TIME" value="${event.timestamp}"/>) time in milliseconds: ${event.timestampAsMillis}</li>
+                <li>-60 seconds less than this is: ${event.timestampAsMillis - 60000}</li>
+            </ul>
 
             <div class="page-action-area">
                 <cti:button nameKey="send" classes="js-blocker js-sendEventArchive"/>
             </div>
-            
         </form:form>
     </tags:sectionContainer2>
-            
-    <br/><br/>
-    <tags:sectionContainer title="Send Outage/Restore Events">
-        <span>This Simulator will Send Outage/Restore Events to the selected Device Group, x Milliseconds apart. Select whether Outage or Restore will be the first message sent or if the first message should be random. Events sent are logged in Webserver_RfnComms.</span>
-        <br/><br/>
-        <form:form action="sendOutageRestore" method="post" modelAttribute="restoreOutageEvent">
-             <cti:csrfToken/>
-            <tags:nameValueContainer>
-                <tags:nameValue name="Device Group" nameColumnWidth="220px">
-                     <cti:list var="group"><cti:item value="${deviceGroup}"/></cti:list>
-                    <tags:deviceGroupPicker inputName="deviceGroup" inputValue="${group}"/>
-                </tags:nameValue>
-                <tags:nameValue name="Milliseconds" nameColumnWidth="220px">
-                    <tags:input path="milliseconds"/>
-                </tags:nameValue>
-                <tags:nameValue name="First Message" nameColumnWidth="220px">
-                    <tags:selectWithItems path="firstEvent" items="${outageRestoreEventTypes}"/>
-                </tags:nameValue>
-                <tags:nameValue name="Random Outage/Restore First" nameColumnWidth="220px">
-                    <tags:checkbox path="firstEventRandom"/>
-                </tags:nameValue>
-            </tags:nameValueContainer>
-            
-            <div class="page-action-area">
-                <button type="submit">Send Outage/Restore</button>
-            </div>
-        
-        </form:form>
-    
-    </tags:sectionContainer>   
     
 </cti:standardPage>

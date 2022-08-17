@@ -18,8 +18,8 @@ struct TimeParts
     unsigned hour, minute, second;
 };
 
-IM_EX_CTIBASE std::optional<TimeParts> parseTimeString(std::string time_str);
+IM_EX_CTIBASE boost::optional<TimeParts> parseTimeString(std::string time_str);
 
-IM_EX_CTIBASE std::optional<std::chrono::seconds> parseDurationString(const std::string duration_str);
+IM_EX_CTIBASE boost::optional<std::chrono::duration<double>> parseDurationString(const std::string duration);
 
 }

@@ -87,12 +87,8 @@
                     <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </c:when>
                 <c:otherwise>
-                   <%  try { %>
-                     <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-                   <%  } catch (Exception e) { %>
-                     <cti:msg2 key="widgets.errorWithinWidget"/>
-                   <%  } %>
-                </c:otherwise>    
+                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                </c:otherwise>
             </c:choose>
         </div>
         <tags:boxContainer title="${containerTitle}"
@@ -108,29 +104,25 @@
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">
-    	<div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
-             <c:choose>
-                 <c:when test="${!authorized}">
-                     <cti:msg2 key="widgets.notAuthorized"/>
-                 </c:when>
-                 <c:when test="${beanInst.lazyLoad}">
-                     <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-                 </c:when>
-                 <c:otherwise>
-		            <%  try { %>
-		                <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-		            <%  } catch (Exception e) { %>
-		                <cti:msg2 key="widgets.errorWithinWidget"/>
-		            <%  } %>
-            	</c:otherwise>  
-             </c:choose>
-         </div>
         <tags:sectionContainer title="${containerTitle}" 
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
                 helpText="${pageScope.helpText}"
                 helpUrl="${pageScope.helpUrl}"
                 showHelpIcon="${pageScope.showHelpIcon}">
+            <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
+                <c:choose>
+                    <c:when test="${!authorized}">
+                        <cti:msg2 key="widgets.notAuthorized"/>
+                    </c:when>
+                    <c:when test="${beanInst.lazyLoad}">
+                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    </c:when>
+                    <c:otherwise>
+                        <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </tags:sectionContainer>
     </c:if>
 </div>

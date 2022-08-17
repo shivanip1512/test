@@ -149,7 +149,7 @@
                                                 </span>
                                                 <div class="js-progress-bar progress-bar-container progress-sm dn">
                                                     <div class="progress">
-                                                        <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"></div>
+                                                        <div class="progress-bar progress-bar-info progress-bar-striped active"></div>
                                                     </div>
                                                 </div>
                                                 <span class="js-progress-text percent-value dn"></span>
@@ -174,7 +174,7 @@
                                                     <c:set var="clazz" value="${task.complete ? 'dn' : ''}"/>
                                                     <div class="js-progress-bar progress-bar-container progress-sm ${clazz}">
                                                         <div class="progress">
-                                                            <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"
+                                                            <div class="progress-bar progress-bar-info progress-bar-striped active"
                                                             style="width: ${task.completedItems / task.totalItems * 100}%"></div>
                                                         </div>
                                                     </div>

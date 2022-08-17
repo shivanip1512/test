@@ -59,8 +59,4 @@ public interface LoadGroupDao {
      * @return the ID of the program that contains the specified group.
      */
     public int getProgramIdByGroupId(int lmGroupId);
-    /**
-     * @return the multiple IDs of the program that contains the specified group for multiple enrollment.
-     */
-    public List<Integer> getProgramIdsByGroupId(int lmGroupId);
 }

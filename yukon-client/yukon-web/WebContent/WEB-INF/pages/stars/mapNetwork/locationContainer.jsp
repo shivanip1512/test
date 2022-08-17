@@ -12,16 +12,15 @@
 <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
 <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
 
-
-<cti:url var="helpTextUrl" value="/stars/mapNetwork/loadHelpText"/>
-<tags:sectionContainer2 nameKey="location" helpUrl="${helpTextUrl}" helpWidth="710">
+<cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
+<tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
     <div style="height:500px">
         <div id="map-network-container" style="height:100%;width:100%;background:white;">
             <%@ include file="locationInput.jspf"%>
             <c:if test="${!empty coordinates.latitude && displayInfrastructure}">
                 <span class="fr js-infrastructure">
                     <c:set var="labelWidth" value="${!empty infrastructureLabelWidth ? infrastructureLabelWidth : '150px'}"/>
-                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}" triggerButtonClasses="MR0">
+                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
                         <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                         <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
                         <cm:criteriaOption classes="js-all-routes js-all-routes-map-network" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
@@ -61,10 +60,10 @@
                         <cti:msg2 var="hybrid" key="yukon.web.components.button.hybrid.label"/>
                         <cti:button renderMode="buttonImage" title="${map}" data-layer="mqosm" icon="icon-map" classes="on"/>
                         <cti:button renderMode="buttonImage" title="${satellite}" data-layer="mqsat" icon="icon-map-sat"/>
-                        <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb" classes="MR0"/>
+                        <cti:button renderMode="buttonImage" title="${hybrid}" data-layer="hybrid" icon="icon-map-hyb"/>
                     </div>
                     <cti:msg2 var="elevation" key="yukon.web.components.button.elevation.label"/>
-                    <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer MR5"/>
+                    <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
                 </div>
             </div>
             <div style="padding-top:40px">

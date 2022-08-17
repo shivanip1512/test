@@ -1132,7 +1132,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     //I hate to use a smart pointer in this way, however our check for 0 should have been done above
     //and the smart pointer will have a life as long as the checker, so we should be ok.
-    CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime());
+    CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime().seconds());
     bool passed_check = false;
 
     switch( _controlMsg->getCommand() )
@@ -1152,11 +1152,14 @@ void CtiLMManualControlRequestExecutor::Execute()
         switch( _controlMsg->getConstraintCmd() )
         {
         case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
-            passed_check = checker.checkConstraints( _controlMsg->getStartGear()-1, startTime, stopTime );
+            passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
+                                                         startTime.seconds(),
+                                                         stopTime.seconds());
+
 
             if( controlArea != NULL )
             {
-                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime, stopTime, CtiDate::now());
+                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now());
             }
 
             if( response != NULL )
@@ -1194,8 +1197,8 @@ void CtiLMManualControlRequestExecutor::Execute()
             // Fix up program control window if necessary
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
-            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime, stopTime) &&
-                checker.checkControlAreaControlWindows(*controlArea, startTime, stopTime, CtiDate::now()) )
+            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
+                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now()) )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
                 controlReason = "Manual Start Command";
@@ -1277,9 +1280,11 @@ void CtiLMManualControlRequestExecutor::Execute()
             switch( _controlMsg->getConstraintCmd() )
             {
             case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
-                passed_check = checker.checkConstraints( _controlMsg->getStartGear()-1, startTime, stopTime );
+                passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
+                                                             startTime.seconds(),
+                                                             stopTime.seconds());
 
-                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime );
+                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds());
 
                 if( response != NULL )
                 {
@@ -1299,7 +1304,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
             case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
             case CtiLMManualControlRequest::USE_CONSTRAINTS:
-                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime ) )
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds()) )
                 {
                     {
                         const CtiLMProgramDirect &directProgram = static_cast<const CtiLMProgramDirect &>(*program);
@@ -1581,13 +1586,6 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         else
         {
             lmProgramDirect->setNotifyInactiveTime(gInvalidCtiTime);
-        }
-
-        // If start time is set to something > now then it is scheduled (notification may have gone out) but it has not started
-        // so we may need a cancel message.
-        if( lmProgramDirect->getDirectStartTime() > CtiTime::now() ) 
-        {
-            lmProgramDirect->notifyGroupsOfCancelIfScheduled();
         }
 
         lmProgramDirect->setNotifyActiveTime(gInvalidCtiTime);

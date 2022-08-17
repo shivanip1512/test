@@ -64,14 +64,9 @@
                                         <td>
                                             <div class="button-group fr wsnw oh">
                                                 <cti:url var="editUrl" value="/notifications/subscription/${subId}/edit"/>
-                                                <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
-                                                <div id="edit-popup-${subId}"
-                                                     data-dialog class="dn js-smart-notifications-popup"
-                                                     data-event="yukon:notifications:save"
-                                                     data-title="<cti:msg2 key=".editPopup.title"/>"
-                                                     data-url="${editUrl}" data-load-event="yukon:notifications:load"
-                                                     data-width="600"
-                                                     data-help-text="${helpText}"></div>
+                                                <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup"
+                                                    data-event="yukon:notifications:save" data-title="<cti:msg2 key=".editPopup.title"/>"
+                                                    data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
                                                 <cti:button renderMode="buttonImage" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
                                                 <cti:button id="unsubscribe-${subId}" renderMode="buttonImage" icon="icon-cross"
                                                         data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove"/>
@@ -94,14 +89,9 @@
             <cti:url var="createUrl" value="/notifications/subscription/popup/${type}">
                 <cti:param name="monitorId" value="${monitorId}"/>
             </cti:url>
-            <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
-            <div id="create-popup-${type}" 
-                 data-dialog class="dn js-smart-notifications-popup"
-                 data-event="yukon:notifications:save" 
-                 data-title="<cti:msg2 key=".createPopup.title"/>"
-                 data-url="${createUrl}" data-load-event="yukon:notifications:load" 
-                 data-width="600"
-                 data-help-text="${helpText}"></div>
+            <div id="create-popup-${type}" data-dialog class="dn js-smart-notifications-popup"
+                data-event="yukon:notifications:save" data-title="<cti:msg2 key=".createPopup.title"/>"
+                data-url="${createUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
             <cti:button icon="icon-add" data-popup="#create-popup-${type}" nameKey="add"/>
         </div>
     

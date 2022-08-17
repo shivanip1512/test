@@ -30,7 +30,7 @@ extern Serialization::MessageFactory<Rfn::E2eMsg>        e2eMessageFactory;
 extern Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory;
 
 E2eMessenger::E2eMessenger() :
-    _timeoutProcessor{ WorkerThread::Function([this]{ processTimeouts(); }).name("E2eMessenger timeout processor") }
+    _timeoutProcessor{ [this]{ processTimeouts(); } }
 {
     // empty
 }
@@ -137,6 +137,8 @@ void E2eMessenger::setE2eDtHandler(Indication::Callback callback)
             {
                 handleNetworkManagerResponseMsg(md.msg, md.type);
             });
+
+    ActiveMQConnectionManager::start();
 }
 
 
@@ -238,24 +240,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 return (*_dataStreamingCallback)(ind);
             }
-
-            if ( isAsid_Der(asid) )
-            {
-                if( ! _derCallback )
-                {
-                    CTILOG_WARN(dout, "WARNING - DER ASID " << asid << " unhandled, no callback registered");
-                    return;
-                }
-
-                Indication ind;
-
-                ind.rfnIdentifier = indicationMsg->rfnIdentifier;
-                ind.payload       = indicationMsg->payload;
-                ind.asid          = indicationMsg->applicationServiceId;
-
-                return (*_derCallback)(ind);
-            }
-
+            
             CTILOG_WARN(dout, "WARNING - unknown ASID " << asid << " unhandled");
         }
     }
@@ -404,7 +389,7 @@ E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, con
     E2eDataRequestMsg msg;
 
     msg.applicationServiceId = asid;
-    msg.highPriority  = as_underlying(req.priorityClass);
+    msg.highPriority  = req.priority > 7;
     msg.rfnIdentifier = req.rfnIdentifier;
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;

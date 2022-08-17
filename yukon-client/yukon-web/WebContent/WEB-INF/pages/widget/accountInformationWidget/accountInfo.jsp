@@ -13,7 +13,6 @@
 	});
 </script>
 <c:set var="V3" value="<%= MultiSpeakVersion.V3.getVersion()%>"/>
-<c:set var="V4" value="<%= MultiSpeakVersion.V4.getVersion()%>"/>
 <c:choose>
     <c:when test="${!hasVendorId}">
         <i:inline key=".noVendor" />
@@ -23,9 +22,6 @@
             <c:when test="${multiSpeakVersion.version == V3}">
                 <%@ include file="accountInfoPartial.jspf"%>
             </c:when>
-            <c:when test="${multiSpeakVersion.version == V4}">
-                <%@ include file="accountInfoPartialV4.jspf"%>
-            </c:when>
             <c:otherwise>
                 <%@ include file="accountInfoPartialV5.jspf"%>
             </c:otherwise>
@@ -34,11 +30,6 @@
             <c:choose>
                 <c:when test="${multiSpeakVersion.version == V3}">
                     <a href="javascript:void(0);" id="cisDetailsLink" class="fl"><i:inline key=".viewDetails" /></a>
-                </c:when>
-                <c:when test="${multiSpeakVersion.version == V4}">
-                    <cti:url var="cisDetailsUrlV4" value="/multispeak/viewCISDetailsV4/${deviceId}" />
-                    <a target="_blank" href="${cisDetailsUrlV4}" id="cisDetailsLink" class="fl"><i:inline
-                            key=".viewDetails" /></a>
                 </c:when>
                 <c:otherwise>
                     <cti:url var="cisDetailsUrl" value="/multispeak/viewCISDetails/${deviceId}" />

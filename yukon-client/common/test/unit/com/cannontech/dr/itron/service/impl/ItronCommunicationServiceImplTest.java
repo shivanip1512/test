@@ -1,14 +1,13 @@
 package com.cannontech.dr.itron.service.impl;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.system.GlobalSettingType;
@@ -18,7 +17,7 @@ public class ItronCommunicationServiceImplTest {
     private static ItronCommunicationServiceImpl itronCommunicationServiceImplTest;
     final int keepDays = 365;
     
-    @BeforeEach
+    @Before
     public void init() {
           itronCommunicationServiceImplTest = new ItronCommunicationServiceImpl();
           
@@ -60,8 +59,8 @@ public class ItronCommunicationServiceImplTest {
             }
         }
         boolean undeletedFile = (actualYoungFilesLeft >= expectedYoungFilesLeft);
-        assertEquals(expectedOldFilesLeft, actualOldFilesLeft, "Old files unsuccessfully deleted");
-        assertEquals(true, undeletedFile, "Young files left undeleted");
+        Assert.assertEquals("Old files unsuccessfully deleted", expectedOldFilesLeft, actualOldFilesLeft);
+        Assert.assertEquals("Young files left undeleted", true, undeletedFile);
         youngText.delete();
     }
 }

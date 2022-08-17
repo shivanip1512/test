@@ -15,7 +15,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.pentaho.reporting.engine.classic.core.modules.output.csv.CSVQuoter;
+import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -41,7 +41,9 @@ import com.google.common.collect.Lists;
 /**
  * Created on Dec 15, 2003
  *
- * Base Class for Report data models.   
+ * Base Class for Report data models.  Implements the required AbstractTableModel
+ * for use with the JFreeReport API.
+ 
  * Extending classes must initialize these ReportModelBase fields:
  *   String[] columnNames - table column names
  *   Class[] columnTypes  - table column class type.

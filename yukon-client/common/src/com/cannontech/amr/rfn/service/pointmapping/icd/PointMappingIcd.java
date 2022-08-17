@@ -49,17 +49,11 @@ public class PointMappingIcd {
     @JsonProperty("RFN-500 Node in Landis & Gyr S4e and S4x")
     public List<Named<ModelPointDefinition>> lgyrS4_rfn500;
 
-    @JsonProperty("RFN-500 Node in L & G Focus AX (with Advanced Metrology)")
-    public List<Named<ModelPointDefinition>> lgyrFocusAx_rfn500;
-
-    @JsonProperty("RFN-500 Node in L & G Focus AXe (with Advanced Metrology)")
-    public List<Named<ModelPointDefinition>> lgyrFocusAxe_rfn500;
+    @JsonProperty("RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)")
+    public List<Named<ModelPointDefinition>> lgyrFocusAxRx_rfn500;
 
     @JsonProperty("Next Gen Water Node")
     public List<Named<WaterNodePointDefinition>> nextGenWaterNode;
-
-    @JsonProperty("Gas Node")
-    public List<Named<ModelPointDefinition>> gasNode;
 
     @JsonProperty("Metric IDs")
     public Map<Integer, MetricDefinition> metricIds;

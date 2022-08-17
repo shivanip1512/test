@@ -1,14 +1,14 @@
 package com.cannontech.common.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
+import junit.framework.Assert;
+
+import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -50,19 +50,19 @@ public class ChunkingSqlTemplateTest {
         
         int expectedChunkListSize = 3;
         int resultChunkListSize = resultList.size();
-        assertEquals(expectedChunkListSize, resultChunkListSize, "incorrect sized chunk List");
+        Assert.assertEquals("incorrect sized chunk List", expectedChunkListSize, resultChunkListSize);
         
         String chunkedList1String = Arrays.toString(chunkedList1.toArray());
         String resultString1 = resultList.get(0);
-        assertEquals(chunkedList1String, resultString1, "incorrect subList elements in first chunk");
+        Assert.assertEquals("incorrect subList elements in first chunk", chunkedList1String, resultString1);
         
         String chunkedList2String = Arrays.toString(chunkedList2.toArray());
         String resultString2 = resultList.get(1);
-        assertEquals(chunkedList2String, resultString2, "incorrect subList elements in second chunk");
+        Assert.assertEquals("incorrect subList elements in second chunk", chunkedList2String, resultString2);
 
         String chunkedList3String = Arrays.toString(chunkedList3.toArray());
         String resultString3 = resultList.get(2);
-        assertEquals(chunkedList3String, resultString3, "incorrect subList elements in third chunk");
+        Assert.assertEquals("incorrect subList elements in third chunk", chunkedList3String, resultString3);
     }
     
     @Test
@@ -77,7 +77,7 @@ public class ChunkingSqlTemplateTest {
             }
         }, fullSizeList);
         
-        assertEquals(11, result);
+        Assert.assertEquals(11, result);
     }
 
     /**

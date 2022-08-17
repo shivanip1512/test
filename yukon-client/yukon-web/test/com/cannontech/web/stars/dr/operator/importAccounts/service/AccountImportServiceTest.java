@@ -1,14 +1,14 @@
 package com.cannontech.web.stars.dr.operator.importAccounts.service;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -20,7 +20,7 @@ public class AccountImportServiceTest {
     AccountImportService accountService = new AccountImportService();
     AccountImportResult results;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         PrintWriter importLog = new PrintWriter(System.out, true);
         ReflectionTestUtils.setField(accountService, "importLog", importLog);
@@ -36,9 +36,9 @@ public class AccountImportServiceTest {
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, false);
 
-        assertTrue(isNest, "Is nest thermostat ");
-        assertTrue(results.custFileErrors == 1, "Customer Error count ");
-        assertTrue((results.getCustLines().get(1)[1].contains("Cannot import Nest device type")), "Nest Error ");
+        assertTrue("Is nest thermostat ", isNest);
+        assertTrue("Customer Error count ", results.custFileErrors == 1);
+        assertTrue("Nest Error ", (results.getCustLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
     @Test
@@ -50,9 +50,9 @@ public class AccountImportServiceTest {
 
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, true);
-        assertTrue(isNest, "Is nest thermostat ");
-        assertTrue(results.hwFileErrors == 1, "Customer Error count ");
-        assertTrue((results.getHwLines().get(1)[1].contains("Cannot import Nest device type")), "Nest Error ");
+        assertTrue("Is nest thermostat ", isNest);
+        assertTrue("Customer Error count ", results.hwFileErrors == 1);
+        assertTrue("Nest Error ", (results.getHwLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
     @Test
@@ -64,9 +64,9 @@ public class AccountImportServiceTest {
 
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, false);
-        assertFalse(isNest, "Is nest thermostat ");
-        assertFalse(results.custFileErrors == 1, "Hardware Error count ");
-        assertFalse((results.getCustLines().get(1)[1].contains("Cannot import Nest device type")), "Nest Error ");
+        assertFalse("Is nest thermostat ", isNest);
+        assertFalse("Hardware Error count ", results.custFileErrors == 1);
+        assertFalse("Nest Error ", (results.getCustLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
     @Test
@@ -78,9 +78,9 @@ public class AccountImportServiceTest {
 
         boolean isNest =
             ReflectionTestUtils.invokeMethod(accountService, "isNestDevice", entry, results, 1, hwFile, true);
-        assertFalse(isNest, "Is nest thermostat ");
-        assertFalse(results.hwFileErrors == 1, "Hardware Error count ");
-        assertFalse((results.getHwLines().get(1)[1].contains("Cannot import Nest device type")), "Nest Error ");
+        assertFalse("Is nest thermostat ", isNest);
+        assertFalse("Hardware Error count ", results.hwFileErrors == 1);
+        assertFalse("Nest Error ", (results.getHwLines().get(1)[1].contains("Cannot import Nest device type")));
     }
 
     private void setCustomerData() {

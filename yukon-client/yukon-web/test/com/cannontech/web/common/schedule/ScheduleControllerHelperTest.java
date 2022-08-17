@@ -1,6 +1,7 @@
 package com.cannontech.web.common.schedule;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import java.util.Locale;
 import java.util.Map;
@@ -9,7 +10,7 @@ import javax.servlet.ServletException;
 
 import org.easymock.EasyMock;
 import org.joda.time.DateTimeZone;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -92,7 +93,7 @@ public class ScheduleControllerHelperTest {
     public void test_getJobState() throws Exception {
         setMockData(getJob());
         JobState state = scheduleControllerHelperTest.getJobState(job.getId());
-        assertEquals(state, JobState.RUNNING);
+        assertThat(state, equalTo(JobState.RUNNING));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class ScheduleControllerHelperTest {
         setMockData(getJob());
         Map<String, Object> json =
             scheduleControllerHelperTest.startJob(job.getId(), job.getCronString(), job.getUserContext());
-        assertEquals(json.size(), 0);
+        assertThat(json.size(), equalTo(0));
     }
 
     @Test
@@ -108,7 +109,7 @@ public class ScheduleControllerHelperTest {
         setMockData(getDeletedJob());
         Map<String, Object> json =
             scheduleControllerHelperTest.startJob(job.getId(), job.getCronString(), job.getUserContext());
-        assertEquals(json.get("error"), "Edit Deleted Job");
+        assertThat(json.get("error"), equalTo("Edit Deleted Job"));
     }
 
     @Test
@@ -120,7 +121,7 @@ public class ScheduleControllerHelperTest {
         } catch (ServletException e) {
             e.printStackTrace();
         }
-        assertEquals(json, null);
+        assertThat(json, equalTo(null));
     }
 
     @Test
@@ -132,7 +133,7 @@ public class ScheduleControllerHelperTest {
         } catch (ServletException e) {
             e.printStackTrace();
         }
-        assertEquals(json.get("error"), "Edit Deleted Job");
+        assertThat(json.get("error"), equalTo("Edit Deleted Job"));
     }
 
 }

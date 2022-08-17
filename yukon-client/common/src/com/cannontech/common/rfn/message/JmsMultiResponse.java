@@ -2,8 +2,6 @@ package com.cannontech.common.rfn.message;
 
 import java.io.Serializable;
 
-import org.apache.logging.log4j.Level;
-
 /**
  * Interface for responses to a JMS request, where each request may have multiple responses. The number of expected
  * responses does not need to be known at the time of request.
@@ -26,10 +24,5 @@ public interface JmsMultiResponse extends Serializable {
      * </code>
      */
     public int getSegmentNumber();
-
-    /**
-     * Return string to log based on logging level
-     */
-    public String loggingString(Level level);
     
 }

@@ -9,7 +9,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.search.lucene.criteria.CategoryAndClassFilteredPaoPicker;
-import com.cannontech.web.search.lucene.criteria.PaoTypeFilteredPaoPicker;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -66,9 +65,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = UserPicker.class, name = "USER_PICKER"),
     @JsonSubTypes.Type(value = DatabasePaoPicker.class, name = "DATABASE_PAO_PICKER"),
     @JsonSubTypes.Type(value = CategoryAndClassFilteredPaoPicker.class, name = "CATEGORY_AND_CLASS_FILTERED_PAO_PICKER"),
-    @JsonSubTypes.Type(value = PaoTypeFilteredPaoPicker.class, name = "PAO_TYPE_FILTERED_PAO_PICKER"),
-    @JsonSubTypes.Type(value = PointGroupControlDevicePicker.class, name = "POINT_GROUP_PICKER"),
-    @JsonSubTypes.Type(value = GatewayNMIPAddressPortPicker.class, name = "GATEWAY_NM_IP_ADDRESS_PORT_PICKER")
+    @JsonSubTypes.Type(value = PointGroupControlDevicePicker.class, name = "POINT_GROUP_PICKER")
     })
 public interface Picker<T> {
 

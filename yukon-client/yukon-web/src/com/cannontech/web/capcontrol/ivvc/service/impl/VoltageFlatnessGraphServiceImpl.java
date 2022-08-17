@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.RegulatorPointMapping;
-import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
-import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -39,6 +35,7 @@ import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.GraphIntervalRounding;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -58,10 +55,8 @@ import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
@@ -90,9 +85,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
-    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
-    @Autowired private IvvcHelper ivvcHelper;
-
+    
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
     
     private int bucketResolution;
@@ -133,15 +126,20 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private VfGraph buildSubBusGraph(YukonUserContext userContext, int subBusId) {
         LiteYukonUser yukonUser = userContext.getYukonUser();
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(yukonUser);
+        List<VfLine> lines = Lists.newArrayList();
         List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
         VfGraph graph = new VfGraph();
         VfGraphSettings settings = buildSubBusGraphSettings(subBusId, cache, userContext);
         graph.setSettings(settings);
         
-        //Build A line for each feeder on the bus.
-        List<Feeder> feeders = cache.getFeedersBySubBus(subBusId);
-        List<VfLine> feederLines = buildLineDataForFeeders(graph.getSettings(), userContext, cache, zones, feeders);
-        graph.setLines(feederLines);
+        //Build A line for each zone on the bus.
+        for (Zone zone : zones) {
+            List<VfLine> zoneLines = buildLineDataForZone(graph.getSettings(), userContext, cache, 
+                                                          zone);
+            lines.addAll(zoneLines);
+        }
+        
+        graph.setLines(lines);
         setSubBusGraphLineLegendVisibility(graph);
         addYAxisLimitsToSettings(graph, userContext);
         
@@ -200,14 +198,15 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	private VfGraph buildZoneGraph(YukonUserContext userContext, int zoneId) {
         LiteYukonUser yukonUser = userContext.getYukonUser();
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(yukonUser);
+        List<VfLine> lines = Lists.newArrayList();
         Zone zone = zoneService.getZoneById(zoneId);
         VfGraph graph = new VfGraph();
         VfGraphSettings settings = buildZoneGraphSettings(zoneId, cache, userContext);
         graph.setSettings(settings);
         
-        List<Feeder> feeders = cache.getFeedersBySubBus(zone.getSubstationBusId());
-        List<VfLine> feederLines = buildLineDataForFeeders(graph.getSettings(), userContext, cache, Arrays.asList(zone), feeders);
-        graph.setLines(feederLines);
+        List<VfLine> zoneLines = buildLineDataForZone(graph.getSettings(), userContext, cache, zone);
+        lines.addAll(zoneLines);
+        graph.setLines(lines);
 
         addYAxisLimitsToSettings(graph, userContext);
 
@@ -262,7 +261,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         String zoneTransitionDataLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel");
         String zoneLineColorNoPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase");
         String zonePointColorIgnoredPoints = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints");
-        String zonePointColorNoFeederPoints = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorNoFeederPoints");
         boolean showZoneTransitionTextBusGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph"));
         boolean showZoneTransitionTextZoneGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph"));
         String graphTitle = name + " " + graphWidgetLabel;
@@ -281,8 +279,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                                 showZoneTransitionTextZoneGraph,
                                 zoneTransitionDataLabel,
                                 balloonDistanceText,
-                                zonePointColorIgnoredPoints,
-                                zonePointColorNoFeederPoints);
+                                zonePointColorIgnoredPoints);
         return graphSettings;
     }
 
@@ -456,175 +453,99 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         long time = getLargestPointTime(allGraphPoints);
         return time;
     }
-    
-    private List<VfLine> buildLineDataForFeeders(VfGraphSettings settings, YukonUserContext userContext, CapControlCache cache, 
-                                                List<Zone> zones, List<Feeder> feeders) {
+
+	private List<VfLine> buildLineDataForZone(VfGraphSettings settings, YukonUserContext userContext, 
+	                                          CapControlCache cache, Zone zone) {
         List<VfLine> lines = Lists.newArrayList();
+        List<VfPoint> points = Lists.newArrayList();
         List<VfPoint> ignoredPoints = Lists.newArrayList();
-        List<VfPoint> noFeederPoints = Lists.newArrayList();
-        
-        if (feeders.isEmpty()) {
-            //add an empty feeder so points still get added to the graph
-            feeders.add(new Feeder());
+        List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
+        List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
+        double graphStartPosition = getGraphStartPositionForZone(zone);
+
+        for (RegulatorToZoneMapping regulatorToZone: zone.getRegulators()) {
+            //Add the regulator (three for a threePhaseZone)
+            VfPoint regulatorGraphPoint = getRegulatorVfPoint(settings, userContext, regulatorToZone, 
+                                                              zone.getName(), graphStartPosition);
+            points.add(regulatorGraphPoint);
+        }
+
+        //Add the cap banks
+        for (CapBankToZoneMapping bankToZone : banksToZone) {
+            Map<Integer, Phase> bankPoints = zoneService.getMonitorPointsForBankAndPhase(bankToZone.getDeviceId());
+            for (Entry<Integer, Phase> entrySet : bankPoints.entrySet()) {
+        		VfPoint graphPoint = getCapBankToZoneVfPoint(settings, userContext, cache, bankToZone, 
+        		                                             entrySet.getKey(), entrySet.getValue(), 
+        		                                             zone.getName(), graphStartPosition);
+                points.add(graphPoint);
+            }
+        }
+
+        //Add the additional points
+        for (PointToZoneMapping pointToZone : pointsToZone) {
+            VfPoint graphPoint = getPointToZoneVfPoint(settings, userContext, pointToZone, zone.getName(), 
+                                                       graphStartPosition);
+            points.add(graphPoint);
         }
         
-        for (Feeder feeder : feeders) {
-            List<VfPoint> points = Lists.newArrayList();
-            for (Zone zone : zones) {
-                List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
-                List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
-                List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zone.getId());
-                double graphStartPosition = getGraphStartPositionForZone(zone);
-
-                for (RegulatorToZoneMapping regulatorToZone: zone.getRegulators()) {
-                    VfPoint regulatorGraphPoint = getRegulatorVfPoint(settings, userContext, regulatorToZone, 
-                                                                      zone.getName(), graphStartPosition);
-                    checkForStrategyOverride(regulatorGraphPoint, infos, userContext);
-                    regulatorGraphPoint.setFeederId(feeder.getCcId());
-                    //Add the regulator (three for a threePhaseZone)
-                    //if the zone is the parent zone add the regulator points to all feeders or if the regulator point is assigned to the current feeder add the point
-                    if (zone.getParentId() == null) {
-                        points.add(regulatorGraphPoint);
-                    } else if (regulatorToZone.getFeederId() != null && regulatorToZone.getFeederId().equals(feeder.getCcId())) {
-                        points.add(regulatorGraphPoint);
-                    } else {
-                        if (regulatorToZone.getFeederId() == null) {
-                            if (!noFeederPoints.contains(regulatorGraphPoint)) {
-                                noFeederPoints.add(regulatorGraphPoint);
-                            }
-                        }
-                    }
-                }
-
-                //Add the cap banks
-                for (CapBankToZoneMapping bankToZone : banksToZone) {
-                    //check if capbank is associated with feeder
-                    CapBankDevice capBank = cache.getCapBankDevice(bankToZone.getDeviceId());
-                    if (capBank.getParentID() == feeder.getCcId()) {
-                        Map<Integer, Phase> bankPoints = zoneService.getMonitorPointsForBankAndPhase(bankToZone.getDeviceId());
-                        for (Entry<Integer, Phase> entrySet : bankPoints.entrySet()) {
-                            VfPoint graphPoint = getCapBankToZoneVfPoint(settings, userContext, cache, bankToZone, 
-                                                                         entrySet.getKey(), entrySet.getValue(), 
-                                                                         zone.getName(), graphStartPosition);
-                            checkForStrategyOverride(graphPoint, infos, userContext);
-                            graphPoint.setFeederId(feeder.getCcId());
-                            points.add(graphPoint);
-                        }
-                    }
-                }
-
-                //Add the additional points
-                for (PointToZoneMapping pointToZone : pointsToZone) {
-                    VfPoint graphPoint = getPointToZoneVfPoint(settings, userContext, pointToZone, zone.getName(), 
-                                                               graphStartPosition);
-                    checkForStrategyOverride(graphPoint, infos, userContext);
-                    if (pointToZone.getFeederId() == null) {
-                        if (!noFeederPoints.contains(graphPoint)) {
-                            noFeederPoints.add(graphPoint);
-                        }
-                    } else {
-                        if (pointToZone.getFeederId().equals(feeder.getCcId())) {
-                            graphPoint.setFeederId(feeder.getCcId());
-                            points.add(graphPoint);
-                        }
-                    }
-                }
-            }
-            
-
-            Map<Phase, List<VfPoint>> phasePointsMap = Maps.newHashMap();
-            for (Phase phase : Phase.values()) {
-                phasePointsMap.put(phase, new ArrayList<VfPoint>());
-            }
-            
-            for (VfPoint vfPoint: points) {
-                if (vfPoint.isIgnore()){
-                    if (!ignoredPoints.contains(vfPoint)) {
-                        ignoredPoints.add(vfPoint);
+        Map<Phase, List<VfPoint>> phasePointsMap = Maps.newHashMap();
+        for (Phase phase : Phase.values()) {
+            phasePointsMap.put(phase, new ArrayList<VfPoint>());
+        }
+        
+        for (VfPoint vfPoint: points) {
+            if (vfPoint.isIgnore()){
+                ignoredPoints.add(vfPoint);
+            } else {
+                Phase pointPhase = vfPoint.getPhase();
+                if(pointPhase == Phase.ALL) {
+                    // Point isn't on a phase? Add it to all phases
+                    for (Phase enumPhase : Phase.getRealPhases()) {
+                        phasePointsMap.get(enumPhase).add(vfPoint);
                     }
                 } else {
-                    Phase pointPhase = vfPoint.getPhase();
-                    if(pointPhase == Phase.ALL) {
-                        // Point isn't on a phase? Add it to all phases
-                        for (Phase enumPhase : Phase.getRealPhases()) {
-                            phasePointsMap.get(enumPhase).add(vfPoint);
-                        }
-                    } else {
-                        phasePointsMap.get(pointPhase).add(vfPoint);
-                    }
+                    phasePointsMap.get(pointPhase).add(vfPoint);
                 }
-            }
-
-            boolean haveShownLine = false;
-            for (Phase phase: Phase.getRealPhases()) {
-                List<VfPoint> phasePointList = phasePointsMap.get(phase);
-                if (!phasePointList.isEmpty() && pointsContainPhase(phasePointList, phase)) {
-                    haveShownLine = true;
-                    Collections.sort(phasePointList, positionOrderer);
-                    VfLineSettings lineSettings = getLineSettingsForPhase(settings, phase);
-                    String phaseString = settings.getPhaseString(phase);
-                    VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, feeder.getCcName(), 
-                                                   phase, lineSettings, phasePointList);
-                    phaseLine.setFeederId(feeder.getCcId());
-                    lines.add(phaseLine);
-                }
-            }
-            
-            List<VfPoint> phaseAPoints = phasePointsMap.get(Phase.A);
-            if (haveShownLine == false && !phaseAPoints.isEmpty()) {
-                //Using phase A points here since all three phases contain our "no phase" points
-                Collections.sort(phaseAPoints, positionOrderer);
-                VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting(settings);
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
-                VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, feeder.getCcName(), Phase.ALL, 
-                                                noPhaseLineSettings, phaseAPoints);
-                noPhaseLine.setFeederId(feeder.getCcId());
-                lines.add(noPhaseLine);
             }
         }
 
+        boolean haveShownLine = false;
+        for (Phase phase: Phase.getRealPhases()) {
+            List<VfPoint> phasePointList = phasePointsMap.get(phase);
+            if (!phasePointList.isEmpty() && pointsContainPhase(phasePointList, phase)) {
+                haveShownLine = true;
+                Collections.sort(phasePointList, positionOrderer);
+                VfLineSettings lineSettings = getLineSettingsForPhase(settings, phase);
+                String phaseString = settings.getPhaseString(phase);
+                VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, zone.getName(), 
+                                               phase, lineSettings, phasePointList);
+                lines.add(phaseLine);
+            }
+        }
+        
+        List<VfPoint> phaseAPoints = phasePointsMap.get(Phase.A);
+        if (haveShownLine == false && !phaseAPoints.isEmpty()) {
+            //Using phase A points here since all three phases contain our "no phase" points
+            Collections.sort(phaseAPoints, positionOrderer);
+            VfLineSettings noPhaseLineSettings = getNoPhaseLineSetting(settings);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, zone.getName(), Phase.ALL, 
+                                            noPhaseLineSettings, phaseAPoints);
+            lines.add(noPhaseLine);
+        }
         
         //Add Ignored Points separately so we don't get a line
         for (VfPoint ignoredPoint : ignoredPoints) {
             VfLineSettings ignoredPointLineSettings = getIgnoredPointsLineSetting(settings);
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String ignoredLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.ignoredPoints");
-            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), ignoredLabel, "", null, 
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), ignoredLabel, zone.getName(), null, 
                                             ignoredPointLineSettings, Arrays.asList(ignoredPoint));
             lines.add(noPhaseLine);
         }
         
-        //Add points not associated with a feeder separately so we don't get a line
-        for (VfPoint noFeederPoint : noFeederPoints) {
-            VfLineSettings noFeederPointLineSettings = getNoFeederPointsLineSetting(settings);
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String noFeederLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.noFeeder");
-            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), noFeederLabel, "", null, 
-                                            noFeederPointLineSettings, Arrays.asList(noFeederPoint));
-            lines.add(noPhaseLine);
-        }
-        
         return lines;
-    }
-    
-    private void checkForStrategyOverride(VfPoint vfPoint, List<VoltageLimitedDeviceInfo> infos, YukonUserContext userContext) {
-
-        Optional<VoltageLimitedDeviceInfo> voltageInfo = infos.stream()
-                .filter(info -> info.getPointId() == vfPoint.getPointId()).findFirst();
-        if (voltageInfo.isPresent()) {
-            VoltageLimitedDeviceInfo info = voltageInfo.get();
-            if (info.isOverrideStrategy()) {
-                vfPoint.setOverrideStrategy(info.isOverrideStrategy());
-                vfPoint.setLowerLimit(info.getLowerLimit());
-                vfPoint.setUpperLimit(info.getUpperLimit());
-                //add tooltip text
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                String overrideStategyText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.strategyOverrideText", info.getLowerLimit(), info.getUpperLimit());
-                String description = vfPoint.getDescription() + overrideStategyText;
-                vfPoint.setDescription(description);
-            }
-        }
     }
 	
 	private boolean pointsContainPhase(List<VfPoint> points, Phase phase) {
@@ -682,20 +603,18 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         YukonPao regulatorPao = paoDao.getYukonPao(paoId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(regulatorPao);
         PointValueQualityHolder pointValue;
-
         if (isRegulator) {
             LitePoint regulatorPoint = getRegulatorVoltagePoint(paoId);
             if (regulatorPoint == null) {
                 throw new IllegalUseOfAttribute("Voltage point not found on regulator: " + paoId);
             }
             pointValue = asyncDynamicDataSource.getPointValue(regulatorPoint.getLiteID());
-            pointId = regulatorPoint.getLiteID();
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
-        
-        boolean badQualityOrOutdated = ivvcHelper.isBadQualityOrOutdated(pointValue);
-        if (badQualityOrOutdated) {
+        //Display Bad Data Quality points as Ignored
+        PointQuality quality = pointValue.getPointQuality();
+        if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
             ignore = true;
         }
                 
@@ -707,7 +626,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         String phaseString = settings.getPhaseString(phase);
         String description = getBalloonText(settings, userContext, pointValueString, phaseString, 
                                             pointName, nameString, timestamp, zoneName, distanceString, BooleanUtils.toStringTrueFalse(ignore));
-        VfPoint graphPoint = new VfPoint(pointId, description, zoneName, phase, isRegulator, xPosition, 
+        VfPoint graphPoint = new VfPoint(description, zoneName, phase, isRegulator, xPosition, 
                                          pointValue.getValue(), ignore);
         return graphPoint;
     }
@@ -723,19 +642,16 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         zone = StringUtils.defaultIfEmpty(zone, "");
         distance = StringUtils.defaultIfEmpty(distance, "");
         ignore = StringUtils.defaultIfEmpty(ignore,  "");
-
-        String escapedZone = StringEscapeUtils.escapeXml11(zone);
-        String escapedPaoName = StringEscapeUtils.escapeXml11(paoName);
-        String escapedPointName = StringEscapeUtils.escapeXml11(pointName);
-
+        
         if (!distance.isEmpty()) {
             String balloonDistanceText = settings.getBalloonDistanceText();
             distance = balloonDistanceText + distance;
         }
-
+        
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String balloonText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
-                value, phase, escapedPointName, escapedPaoName, timeStamp, escapedZone, distance, ignore);
+        String balloonText = messageSourceAccessor.
+            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
+                       value, phase, pointName, paoName, timeStamp, zone, distance, ignore);
         return balloonText;
     }
     
@@ -756,13 +672,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private VfLineSettings getIgnoredPointsLineSetting(VfGraphSettings settings) {
         String zonePointColorIgnoredPoints = settings.getZonePointColorIgnoredPoints();
         VfLineSettings lineSetting = new VfLineSettings(zonePointColorIgnoredPoints,
-                                                        true, true, true, false, true);
-        return lineSetting;
-    }
-    
-    private VfLineSettings getNoFeederPointsLineSetting(VfGraphSettings settings) {
-        String zonePointColorNoFeederPoints = settings.getZonePointColorNoFeederPoints();
-        VfLineSettings lineSetting = new VfLineSettings(zonePointColorNoFeederPoints,
                                                         true, true, true, false, true);
         return lineSetting;
     }

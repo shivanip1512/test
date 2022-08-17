@@ -1,7 +1,5 @@
 package com.cannontech.dr.nest.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -10,9 +8,11 @@ import java.util.Date;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoType;
@@ -23,9 +23,12 @@ import com.cannontech.dr.nest.model.v3.CustomerEnrollment;
 import com.cannontech.yukon.IDatabaseCache;
 public class NestServiceImplTest {
     
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+    
     NestServiceImpl impl;
     
-    @BeforeEach
+    @Before
     public void init() {
         impl = new NestServiceImpl();
     }
@@ -39,7 +42,7 @@ public class NestServiceImplTest {
         Date stopTime = cal.getTime();
         String expectedDurationStr = "7200s";
         String actualDurationStr = impl.createDurationStr(startTime, stopTime);
-        assertEquals(expectedDurationStr, actualDurationStr);
+        Assert.assertEquals(expectedDurationStr, actualDurationStr);
     }
     
     @Test
@@ -67,9 +70,9 @@ public class NestServiceImplTest {
         int expectedSeconds2hrsAfterInt = 7200;
         int expectedSeconds5hrsAfterInt = 14400;
         
-        assertEquals(expectedSecondNullInt, actualSecondsNullInt);
-        assertEquals(expectedSeconds2hrsAfterInt, actualSeconds2hrsAfterInt);
-        assertEquals(expectedSeconds5hrsAfterInt, actualSeconds5hrsAfterInt);
+        Assert.assertEquals(expectedSecondNullInt, actualSecondsNullInt);
+        Assert.assertEquals(expectedSeconds2hrsAfterInt, actualSeconds2hrsAfterInt);
+        Assert.assertEquals(expectedSeconds5hrsAfterInt, actualSeconds5hrsAfterInt);
     }
 
     @Test
@@ -83,11 +86,11 @@ public class NestServiceImplTest {
         customerValidAltTracking.setAltTrackingNumber("647");
         
         CustomerEnrollment actualCustomerEnrollment = impl.createEnrollment(customerValidAltTracking, accountNumber);
-        assertEquals("647", actualCustomerEnrollment.getCustomerId());
+        Assert.assertEquals("647", actualCustomerEnrollment.getCustomerId());
         
-        Assertions.assertThrows(NestException.class, () -> {
-            impl.createEnrollment(customerNoAltTracking, accountNumber);
-        });
+        exception.expect(NestException.class);
+        impl.createEnrollment(customerNoAltTracking, accountNumber);
+        
     }
     
     @Test
@@ -97,9 +100,9 @@ public class NestServiceImplTest {
         LiteCustomer customerNoneAltTracking = new LiteCustomer();
         customerNoneAltTracking.setAltTrackingNumber("(none)");
         
-        Assertions.assertThrows(NestException.class, () -> {
-            impl.createEnrollment(customerNoneAltTracking, accountNumber);
-        });
+        exception.expect(NestException.class);
+        impl.createEnrollment(customerNoneAltTracking, accountNumber);
+        
     }
     
     @Test
@@ -117,9 +120,8 @@ public class NestServiceImplTest {
         EasyMock.replay(dbCache);
         ReflectionTestUtils.setField(impl, "dbCache", dbCache);
         
-        Assertions.assertThrows(NestException.class, () -> {
-            impl.getNestGroupForProgram(groupOf2, programId);
-        });
+        exception.expect(NestException.class);
+        impl.getNestGroupForProgram(groupOf2, programId);
     }
     
     @Test
@@ -136,9 +138,8 @@ public class NestServiceImplTest {
         EasyMock.replay(dbCache);
         ReflectionTestUtils.setField(impl, "dbCache", dbCache);
         
-        Assertions.assertThrows(NestException.class, () -> {
-            impl.getNestGroupForProgram(groupEmpty, programId);
-        });
+        exception.expect(NestException.class);
+        impl.getNestGroupForProgram(groupEmpty, programId);
     }
     
     @Test
@@ -158,6 +159,6 @@ public class NestServiceImplTest {
 
         LiteYukonPAObject actual = impl.getNestGroupForProgram(groupOf1, programId);
         
-        assertEquals(lyp, actual);
+        Assert.assertEquals(lyp, actual);
     }
 }

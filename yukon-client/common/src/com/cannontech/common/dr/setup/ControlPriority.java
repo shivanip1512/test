@@ -9,10 +9,10 @@ import com.google.common.collect.ImmutableMap;
 
 
 public enum ControlPriority implements DisplayableEnum {
-    DEFAULT(3),
+    DEFAULT(1),
     MEDIUM(2),
-    HIGH(1),
-    HIGHEST(0);
+    HIGH(3),
+    HIGHEST(4);
     
     private Integer controlPriorityValue;
     

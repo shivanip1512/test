@@ -3,6 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:msgScope paths="modules.tools.configs.summary">
+<div class="scroll-md">
     <c:choose>
         <c:when test="${details.size() > 0}">
             <table id="history-table" class="compact-results-table" data-sortable>
@@ -41,6 +42,7 @@
             </tr>
         </c:otherwise>
     </c:choose>
+</div>
 </cti:msgScope>
 
     

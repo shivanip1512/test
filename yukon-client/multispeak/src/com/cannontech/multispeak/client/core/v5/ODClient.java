@@ -18,7 +18,6 @@ import com.cannontech.msp.beans.v5.od_server.PingURLResponse;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.client.core.v5.IODClient;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -45,7 +44,7 @@ public class ODClient implements IODClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OD_Server_STR));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -61,7 +60,7 @@ public class ODClient implements IODClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OD_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();
                 if (arrayOfString != null) {

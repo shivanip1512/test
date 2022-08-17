@@ -11,14 +11,12 @@
         <tag name="OUTAGE"/>
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <pointInfos>
         <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>

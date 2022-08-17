@@ -11,7 +11,7 @@ struct NoKeepAlivePolicy : KeepAlivePolicy
 {
     AttributeList getSupportedAttributes() const override;
 
-    Actions SendKeepAlive( const long keepAliveValue, std::chrono::seconds regulatorTimeout) override;
+    Actions SendKeepAlive( const long keepAliveValue ) override;
 
     Actions StopKeepAlive() override;
 

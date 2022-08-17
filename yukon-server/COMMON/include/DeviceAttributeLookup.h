@@ -34,8 +34,6 @@ public:
     static void AddUnknownAttribute( const DeviceTypes      deviceType,
                                      const std::string &    attributeName );
 
-    static void AddUnknownDeviceType( std::string typeString );
-
     static boost::optional<PointTypeOffset> Lookup( const DeviceTypes    deviceType,
                                                     const Attribute &    attribute );
 
@@ -46,12 +44,10 @@ public:
     using DeviceAttributeNameMap = std::multimap<DeviceTypes, std::string>;
 
     static DeviceAttributeNameMap GetUnknownDeviceAttributes();
-    static std::set<std::string> GetUnknownDeviceTypes();
 
 private:
 
     static DeviceAttributeNameMap _unknownAttributes;
-    static std::set<std::string> _unknownDeviceTypes;
 
     struct AttributeMappingInfo
     {

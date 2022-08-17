@@ -2,7 +2,6 @@
 
 #include "dev_mct.h"
 #include "cmd_rfn.h"
-#include "rfn_identifier.h"
 
 #include <boost/tuple/tuple.hpp>
 
@@ -17,19 +16,6 @@ struct test_MctDevice : Cti::Devices::MctDevice
     using Cti::Devices::MctDevice::ReadDescriptor;
     using Cti::Devices::MctDevice::value_locator;
 };
-
-namespace Cti {
-
-std::ostream& operator<<(std::ostream& o, const ConnectionHandle& ch)
-{
-    return o << ch.toString();
-}
-
-std::ostream& operator<<(std::ostream& os, const RfnIdentifier rfnId) {
-    return os << rfnId.toString();
-}
-
-}
 
 namespace std {
 

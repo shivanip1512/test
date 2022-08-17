@@ -14,7 +14,7 @@ import com.google.common.collect.Iterables;
  * This class is responsible for loading and managing smart notification intervals.
  */
 public final class Intervals {
-    private static final Logger log = YukonLogManager.getSmartNotificationsLogger(Intervals.class);
+    private static final Logger log = YukonLogManager.getLogger(Intervals.class);
     private final Set<Integer> intervals = new TreeSet<>();
 
     public Intervals(String intervalStr, String defaultIntervalStr) {
@@ -62,25 +62,20 @@ public final class Intervals {
      * @return The next interval value after the specified current value, if the current value is less than the last
      * value in the series. Otherwise, the last value is returned.
      */
-    public int getNextInterval(int currentInterval) {
+    public Integer getNextInterval(int currentInterval) {
         Set<Integer> allIntervals = new TreeSet<>(intervals);
         allIntervals.removeIf(interval -> interval <= currentInterval);
         if (allIntervals.isEmpty()) {
-            return Iterables.getLast(intervals).intValue();
+            return Iterables.getLast(intervals);
         } else {
-            return allIntervals.iterator().next().intValue();
+            return allIntervals.iterator().next();
         }
     }
     
     /**
      * Get the first interval value in the series.
      */
-    public int getFirstInterval() {
-        return intervals.iterator().next().intValue();
-    }
-    
-    @Override
-    public String toString() {
-        return intervals.toString();
+    public Integer getFirstInterval() {
+        return intervals.iterator().next();
     }
 }

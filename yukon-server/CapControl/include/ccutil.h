@@ -33,6 +33,16 @@ enum CapControlType
     MonitorPoint
 };
 
+
+enum BankOperationType
+{
+    BankOperation_Open,
+    BankOperation_Close,
+    BankOperation_Flip,
+    BankOperation_Unknown
+};
+
+
 enum ReservedPointOffsets
 {
     Offset_EstimatedVarLoad                     = 1,
@@ -62,6 +72,14 @@ enum Phase
 Phase       resolvePhase( const std::string & p );
 std::string desolvePhase( const Phase & p );
 
+BankOperationType resolveOperationTypeForPointId(const std::string &commandString, CtiCCCapBank & bank);
+
+std::unique_ptr<CtiRequestMsg> createBankOpenRequest (const CtiCCCapBank &capBank);
+std::unique_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank);
+std::unique_ptr<CtiRequestMsg> createBankFlipRequest (const CtiCCCapBank &capBank);
+
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString);
+CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString, const std::string& user);
 bool isQualityOk(unsigned quality);
 
 extern const std::set<int> ClosedStates;

@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LoadGroupItron;
-import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
 public class LoadGroupItronValidator extends LoadGroupSetupValidator<LoadGroupItron> {
-    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
+    @Autowired private LMValidatorHelper lmValidatorHelper;
     public LoadGroupItronValidator() {
         super(LoadGroupItron.class);
     }
@@ -25,12 +25,12 @@ public class LoadGroupItronValidator extends LoadGroupSetupValidator<LoadGroupIt
 
         // Validation for virtual RelayId field.
 
-        yukonApiValidationUtils.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
-            "Virtual Relay Id");
+        lmValidatorHelper.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
+            "Virtual RelayId ");
 
         if (!errors.hasFieldErrors("virtualRelayId")) {
-            yukonApiValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 8, true);
+            YukonValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 8, true);
         }
 
     }
-}       
+}

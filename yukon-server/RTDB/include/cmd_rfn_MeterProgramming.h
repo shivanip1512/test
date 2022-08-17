@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cmd_rfn_Individual.h"
+#include <map>
 
 namespace Cti::Devices::Commands {
 
@@ -32,8 +33,6 @@ namespace Cti::Devices::Commands {
         std::string getCommandName() const override;
 
         bool isPost() const override;
-
-        std::string getGuid() const;
 
         static std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response);
 

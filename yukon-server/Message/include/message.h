@@ -14,8 +14,6 @@ class CtiMessage;    // Forward reference...
 
 typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
 
-IM_EX_MSG std::size_t calculateMemoryConsumption( const CtiMessage * m );
-
 /******************************************************************************
  *  This is a base class which comprises an executable (Dispatch-able) message
  *  type.
@@ -76,32 +74,27 @@ public:
    // Adjust the time to now.
    void resetTime();
 
-   std::string toString() const override;
+   virtual std::string toString() const override;
    std::string typeString() const;
 
    virtual bool isValid();
-
-   // This is the 'object representation' size
-   virtual std::size_t getFixedSize() const     { return sizeof( *this ); }
-   // This is any additional data that is allocated from free store memory
-   virtual std::size_t getVariableSize() const;
 };
 
 
 // This will be used to sort these things in a CtiQueue.
 namespace std
 {
-    template <> struct greater<const CtiMessage*>
+  template <> struct greater<CtiMessage*>
+  {
+    bool operator()(CtiMessage const* p1, CtiMessage const* p2)
     {
-        bool operator()(CtiMessage const* p1, CtiMessage const* p2)
-        {
-            if(!p1)
-                return true;
-            if(!p2)
-                return false;
-            return *p1 > *p2;
-        }
-    };
+      if(!p1)
+        return true;
+      if(!p2)
+        return false;
+      return *p1 > *p2;
+    }
+  };
 };
 
 

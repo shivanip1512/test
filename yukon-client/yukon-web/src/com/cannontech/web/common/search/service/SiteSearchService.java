@@ -19,8 +19,8 @@ public interface SiteSearchService {
 
     /**
      * This should be called on any search string before using it in a search to clean the string of any special
-     * Lucene characters except : (used in MAC Address format). This is available as a separate method (instead of just happening
-     * inside search) so the user can report the actual string searched on.
+     * Lucene characters.  This is available as a separate method (instead of just happening inside search) so the
+     * user can report the actual string searched on.
      */
     String sanitizeQuery(String query);
 

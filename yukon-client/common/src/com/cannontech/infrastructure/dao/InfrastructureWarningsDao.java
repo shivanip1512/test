@@ -29,9 +29,9 @@ public interface InfrastructureWarningsDao {
     public List<InfrastructureWarning> getWarnings();
     
     /**
-     * Retrieve the current infrastructure warnings for the specified categories of devices and whether to return only high severity warnings.
+     * Retrieve the current infrastructure warnings for the specified categories of devices.
      */
-    public List<InfrastructureWarning> getWarnings(Boolean highSeverityOnly, InfrastructureWarningDeviceCategory... categories);
+    public List<InfrastructureWarning> getWarnings(InfrastructureWarningDeviceCategory... categories);
     
     /**
      * Get a summary of the current warnings and devices, by device categories.

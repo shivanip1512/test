@@ -30,6 +30,9 @@ public interface ItronEventLogService {
     public void addProgram(@Arg(ArgEnum.programName) String programName, 
                            Long programId);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
+    public void addMacAddressToGroup(@Arg(ArgEnum.macAddress) String macAddress,
+                                     @Arg(ArgEnum.loadGroupName) String groupName);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.itron")
     public void getGroupIdFromItron(@Arg(ArgEnum.loadGroupName) String groupName);

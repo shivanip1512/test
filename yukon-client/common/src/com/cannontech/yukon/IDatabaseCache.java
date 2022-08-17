@@ -186,5 +186,9 @@ public interface IDatabaseCache {
 
     void releaseUserContactMap();
 
+    List<Integer> getDevicesByCommPort(int portId);
+
+    List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+
     Map<Integer, LiteYukonImage> getImages();
 }

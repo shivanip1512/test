@@ -67,7 +67,7 @@
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.staleDataTime">Duration required for data to be considered stale.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.staleDataUpdate">How to update stale data value.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.unitOfMeasure">Unit of measure for this point's value.</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.validValues.unitOfMeasure">KW, KWH, KVA, KVAR, KVAH, KVARH, KVOLTS, KQ, AMPS, COUNTS, DEGREES, DOLLARS, DOLLAR_CHAR, FEET, GALLONS, GAL_PM, GAS_CFT, HOURS, LEVELS, MINUTES, MW, MWH, MVA, MVAR, MVAH, MVARH, OPS, PF, PERCENT, PERCENT_CHAR, PSI, SECONDS, TEMP_F, TEMP_C, VARS, VOLTS, VOLTAMPS, VA, CUBIC_FEET, WATTS, HZ, VOLTS_V2H, AMPS_V2H, TAP, MILES, MS, PPM, MPH, INCHES, KPH, MILIBARS, KH_H, M_S, KV, UNDEF, CUBIC_METERS, MEGABYTES, DBM, THERMS, CCF</entry>
+    <entry key="yukon.web.modules.tools.bulk.pointImport.validValues.unitOfMeasure">KW, KWH, KVA, KVAR, KVAH, KVARH, KVOLTS, KQ, AMPS, COUNTS, DEGREES, DOLLARS, DOLLAR_CHAR, FEET, GALLONS, GAL_PM, GAS_CFT, HOURS, LEVELS, MINUTES, MW, MWH, MVA, MVAR, MVAH, MVARH, OPS, PF, PERCENT, PERCENT_CHAR, PSI, SECONDS, TEMP_F, TEMP_C, VARS, VOLTS, VOLTAMPS, VA, CUBIC_FEET, WATTS, HZ, VOLTS_V2H, AMPS_V2H, TAP, MILES, MS, PPM, MPH, INCHES, KPH, MILIBARS, KH_H, M_S, KV, UNDEF, CUBIC_METERS, MEGABYTES, DBM</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.multiplier">Multiplier applied to the raw point value.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.dataOffset">The data offset of the point.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.meterDials">The number of meter dials for the point.</entry>

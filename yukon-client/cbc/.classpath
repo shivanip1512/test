@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" path="test/unit"/>
 	<classpathentry kind="src" path="/tdc"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>

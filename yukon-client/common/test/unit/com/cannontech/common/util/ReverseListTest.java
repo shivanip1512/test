@@ -1,12 +1,12 @@
 package com.cannontech.common.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ReverseListTest {
     Integer[] arrayA = {1,2,3,4,5};
@@ -14,7 +14,7 @@ public class ReverseListTest {
     Integer[] arrayB = {5,4,3,2,1};
     List<Integer> listB = Arrays.asList(arrayB);
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
     }
 

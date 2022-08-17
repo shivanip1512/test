@@ -260,14 +260,10 @@ LONG CtiLMProgramBase::getMaxHoursAnnually() const
 /*---------------------------------------------------------------------------
     getMinActivateTime
 
-    Returns the minimum activate time of the program in seconds
+    Returns the minimum activate time of the program in minutes
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramBase::getMinActivateTime() const
 {
-    if (isEcobeeProgram())
-    {
-        return std::max<LONG>(_minactivatetime, 300);    // Ecobee Program must run at least 5 minutes
-    }
 
     return _minactivatetime;
 }
@@ -406,22 +402,6 @@ const std::vector<CtiLMProgramControlWindow*>& CtiLMProgramBase::getLMProgramCon
 BOOL CtiLMProgramBase::getManualControlReceivedFlag() const
 {
     return _manualcontrolreceivedflag;
-}
-
-/*---------------------------------------------------------------------------
-   controlNotAllowedToSpanMidnight
-
-   Checks if the Program is allowed to control over midnight
-   Checking for Ecobee Programs afn
----------------------------------------------------------------------------*/
-bool CtiLMProgramBase::controlNotAllowedToSpanMidnight() const
-{
-    return isEcobeeProgram();
-}
-
-bool CtiLMProgramBase::isEcobeeProgram() const
-{
-    return getPAOTypeString() == "ECOBEE PROGRAM";
 }
 
 /*---------------------------------------------------------------------------
@@ -1262,26 +1242,6 @@ void CtiLMProgramBase::setLastUser(const string& user)
 // Sets the origin of the change, only used by LMProgramDirect
 void CtiLMProgramBase::setOrigin(const std::string& origin)
 {
-}
-
-std::size_t CtiLMProgramBase::getMemoryConsumption() const
-{
-    // This will return the dynamically allocated size only.  The fixed size will be added in in the
-    //  derived child classes.
-
-    std::size_t  sz =  dynamic_sizeof( _paocategory )
-                    +  dynamic_sizeof( _paoclass )
-                    +  dynamic_sizeof( _paoname )
-                    +  dynamic_sizeof( _paoTypeString )
-                    +  dynamic_sizeof( _paodescription )
-                    +  dynamic_sizeof( _controltype )
-                    +  dynamic_sizeof( _constraintname )
-                    +  dynamic_sizeof( _availableweekdays );
-
-    sz += _lmprogramcontrolwindows.capacity() * sizeof( CtiLMProgramControlWindow* );
-    sz += _lmprogramcontrolwindows.size() * sizeof( CtiLMProgramControlWindow );
-
-    return sz;
 }
 
 // Static Members

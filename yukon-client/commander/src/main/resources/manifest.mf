@@ -6,7 +6,7 @@ Class-Path: ./
  jradius-client.jar 
  yukonappserver.jar 
  sqljdbc42.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 

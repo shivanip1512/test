@@ -15,7 +15,6 @@
     description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node. Either dataJson or dataUrl is required."%>
 <%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
-<%@ attribute name="loadDataOnTrigger" type="java.lang.Boolean" description="If true, load data only when triggerElement is clicked."%>
 <%@ attribute name="scrollToHighlighted" type="java.lang.Boolean"%>
 
 <cti:includeScript link="JQUERY_TREE" />
@@ -76,13 +75,9 @@
             minExpandLevel: 2,    //prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
             onPostInit: function(isReloading, isError) {
                 //show the initially selected item
-
-                if (initially_select) {        
+                if (initially_select) {                     
                     this.selectKey(initially_select);
-                    var node = this.getNodeByKey(initially_select);
-                    if (node) {
-                        node.makeVisible();
-                    }
+                    this.getNodeByKey(initially_select).makeVisible();
                     <c:if test="${not empty pageScope.scrollToHighlighted and scrollToHighlighted}">
                         this.activateKey(initially_select);
                     </c:if>
@@ -97,18 +92,16 @@
                 }
             },
             
-            <c:if test="${!loadDataOnTrigger}">
-                <c:choose>
-                    <c:when test="${not empty pageScope.dataUrl}">
-                        initAjax: {
-                    	    url: '${pageScope.dataUrl}',
-                    	},
-                    </c:when>
-                    <c:otherwise>
-                        children: data,
-                    </c:otherwise>
-            	</c:choose>
-        	</c:if>
+            <c:choose>
+                <c:when test="${not empty pageScope.dataUrl}">
+                    initAjax: {
+                	    url: '${pageScope.dataUrl}',
+                	},
+                </c:when>
+                <c:otherwise>
+                    children: data,
+                </c:otherwise>
+        	</c:choose>
     
             <c:choose>
                 <c:when test="${not empty pageScope.multiSelect and multiSelect}">

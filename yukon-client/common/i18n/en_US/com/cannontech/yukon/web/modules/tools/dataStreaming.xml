@@ -22,7 +22,12 @@
     <!-- DATA STREAMING SUMMARY PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.summary.pageName">Data Streaming Summary</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.pageDescription">Data Streaming Summary</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gatewayLoading">Loading</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filterSection.title">Search Criteria</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gateway">Gateway(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gatewayLoading">Gateway Loading</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.configuration">Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.attributes">Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.maxLessThanMinError">Gateway Loading maximum percent must be greater than minimum.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results">Selected Results</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.devices">Devices</entry>
@@ -35,24 +40,7 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.exportFileName">DataStreamingSummary</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError">Connection to server failed during download. Please try again.</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.detail.helpTitle">Data Streaming Summary Help</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.detail.helpText"><![CDATA[
-        The Data Streaming Summary page displays the devices currently configured for Data Streaming throughout the system.<br/>
-        The following filters can be applied to the results:
-        <ul>
-            <li><b>Gateway(s)</b> – Select one to many gateways or All Gateways.
-            <li><b>Loading</b> – Enter a min and max gateway loading percentage.
-            <li><b>Configuration OR Attribute/Interval</b> – Select a Data Streaming Configuration OR select one to many Attributes and an Interval.
-        </ul>
-        The resulting devices will display in the table.<br/>
-        There are options to Configure Data Streaming, Remove Data Streaming or do a Collection Action on the resulting collection of devices.<br/>
-    ]]></entry>
-
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.gateways">All Gateways</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.configuration">All Configurations</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.attributes">All Attributes</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.interval">All Intervals</entry>
-
+    
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageDescription">Data Streaming Discrepancies</entry>

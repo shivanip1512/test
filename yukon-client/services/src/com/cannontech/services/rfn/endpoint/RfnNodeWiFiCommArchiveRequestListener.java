@@ -8,10 +8,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -20,14 +22,12 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeConnectionState;
 import com.cannontech.common.rfn.message.node.NodeWiFiComm;
+import com.cannontech.common.rfn.message.node.NodeWiFiCommStatus;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
@@ -38,24 +38,18 @@ import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
 @ManagedResource
 public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcessor {
+    private static final Logger log = YukonLogManager.getLogger(RfnNodeWiFiCommArchiveRequestListener.class);
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    private Logger log = YukonLogManager.getRfnLogger();
-    private YukonJmsTemplate jmsTemplate;
-
-    @PostConstruct
-    public void init() {
-        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_NODE_WIFI_COMM_ARCHIVE);
-    }
+    private JmsTemplate jmsTemplate;
+    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     
     // map of RF WiFi Comm Status to Yukon CommStatusState state group
-    private static Map<NodeConnectionState, CommStatusState> commStatusMapping = 
-            Map.of(NodeConnectionState.NOT_ACTIVE, CommStatusState.DISCONNECTED,
-                   NodeConnectionState.ACTIVE, CommStatusState.CONNECTED);
+    private static Map<NodeWiFiCommStatus, CommStatusState> commStatusMapping = 
+            Map.of(NodeWiFiCommStatus.NOT_ACTIVE, CommStatusState.DISCONNECTED,
+                   NodeWiFiCommStatus.ACTIVE, CommStatusState.CONNECTED);
 
     @Override
     public void process(Object obj, String processor) {
@@ -68,7 +62,9 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnNodeWiFiCommArchiveRequest request) {
-        log.info("<<< {}", request.toString());
+        if (rfnCommsLog.isEnabled(Level.INFO)) {
+            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
+        }
         queueHandler.add(this, request);
     }
 
@@ -135,7 +131,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         pointData.setValue(value);
         pointData.setTime(timestamp);
         pointData.setType(point.getPointType());
-        pointData.setTagsPointMustArchive(false);
+        pointData.setTagsPointMustArchive(true);
         return pointData;
     }
 
@@ -146,16 +142,23 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         if (!referenceIds.isEmpty()) {
             RfnNodeWiFiCommArchiveResponse response = new RfnNodeWiFiCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
-            log.info(">>> {}", response.toString());
-            jmsTemplate.convertAndSend(response);
+            log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_WIFI_COMM_ARCHIVE.getResponseQueue().get().getName(), response);
         }
     }
 
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+    }
+ 
     /**
      * Returns the CommStatusState for the corresponding NodeWiFiCommStatus.
      * @throws NoSuchElementException
      */
-    private static CommStatusState getForWifiCommStatus(NodeConnectionState nodeWiFiCommStatus) throws NoSuchElementException {
+    private static CommStatusState getForWifiCommStatus(NodeWiFiCommStatus nodeWiFiCommStatus) throws NoSuchElementException {
         return Optional.ofNullable(commStatusMapping.get(nodeWiFiCommStatus)).orElseThrow();
     }
 }

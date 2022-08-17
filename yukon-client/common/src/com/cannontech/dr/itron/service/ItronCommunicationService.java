@@ -12,6 +12,7 @@ import com.cannontech.dr.itron.service.impl.RecentEventParticipationItronData;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
 public interface ItronCommunicationService {
+
     /**
      * Use to add individual HAN devices. The add device API
      * allows a utility to provide self-service capability to their
@@ -23,9 +24,8 @@ public interface ItronCommunicationService {
     /**
      * Request the secondary (LCR) mac address for a device, given the primary (ESI) mac address.
      * If a secondary mac is found, it will be saved to use in data parsing.
-     * @return True if the secondary mac was found, otherwise false.
      */
-    boolean findAndSaveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress);
+    void saveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress);
     
     /**
      * Use to create and add a service point, which can include customer's
@@ -93,26 +93,7 @@ public interface ItronCommunicationService {
      */
     RecentEventParticipationItronData sendDREventForGroup(int yukonGroupId, int dutyCycleType, int dutyCyclePercent, int dutyCyclePeriod, int criticality,
             boolean rampIn, boolean rampOut, Duration controlDuration);
-    
-    /**
-     * Create an Itron group with the specified name if it doesn't already exist, then add the specified devices to the
-     * group.
-     * @return The ID of the updated group.
-     */
-    public long createOrUpdateItronGroup(String groupName, List<Integer> deviceIds);
-    
-    /** 
-     * Ask Itron to request data from devices for all Itron groups. This is an asynchronous operation, and we are not 
-     * told when or if Itron actually carries it out.
-     */
-    void updateDeviceLogsForAllGroups();
-    
-    /** 
-     * Ask Itron to request data from the specified Itron group. This is an asynchronous operation, and we are 
-     * not told when or if Itron actually carries it out. 
-     */
-    void updateDeviceLogsForItronGroup(long itronGroupId);
-    
+
     /**
      * Downloads devices logs for all devices from itron, copies and zips the files to ExportArchive/Itron
      */
@@ -121,5 +102,5 @@ public interface ItronCommunicationService {
     /**
      * Downloads devices logs for an itron device group, copies and zips the files to ExportArchive/Itron
      */
-    ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, long itronGroupId);
+    ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId);
 }

@@ -1,22 +1,17 @@
 package com.cannontech.common.pao.dao.impl;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -33,7 +28,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 /**
  * This unit test uses an in-memory H2 database to test PaoPersistenceDaoImpl.
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/com/cannontech/common/daoTestContext.xml",
     "/com/cannontech/common/pao/completePao.xml"})
 @DirtiesContext
@@ -55,7 +50,7 @@ public class PaoPersistenceDaoImplTest {
     private PaoDao paoDao;
     private UserPageDao userPageDao;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         paoPersistenceDao = new PaoPersistenceDaoImpl(paoPersistenceTypeHelper);
 
@@ -80,13 +75,13 @@ public class PaoPersistenceDaoImplTest {
         expect(paoDao.getNextPaoId()).andReturn(expectedPaoIdentifier.getPaoId());
         replay(paoDao);
 
-        assertNull(pao.getPaoIdentifier(), "paoIdentifier should start out null");
+        assertNull("paoIdentifier should start out null", pao.getPaoIdentifier());
         paoPersistenceDao.createPao(pao, PaoType.WEATHER_LOCATION);
-        assertEquals(expectedPaoIdentifier, pao.getPaoIdentifier(), "did not update paoIdentifier properly");
+        assertEquals("did not update paoIdentifier properly", expectedPaoIdentifier, pao.getPaoIdentifier());
 
         CompleteWeatherLocation fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteWeatherLocation.class);
         assertFalse(fromDb == pao);
-        assertEquals(pao, fromDb, "retreived PAO differs from saved one");
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
 
     @Test
@@ -106,7 +101,7 @@ public class PaoPersistenceDaoImplTest {
 
         CompleteDevice fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteDevice.class);
         assertFalse(fromDb == pao);
-        assertEquals(pao, fromDb, "retreived PAO differs from saved one");
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
     
     @Test
@@ -126,7 +121,7 @@ public class PaoPersistenceDaoImplTest {
 
         CompleteDevice fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteDevice.class);
         assertFalse(fromDb == pao);
-        assertEquals(pao, fromDb, "retreived PAO differs from saved one");
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
     
     @Test
@@ -146,7 +141,7 @@ public class PaoPersistenceDaoImplTest {
 
         CompleteDevice fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteDevice.class);
         assertFalse(fromDb == pao);
-        assertEquals(pao, fromDb, "retreived PAO differs from saved one");
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
 
     @Test
@@ -166,8 +161,8 @@ public class PaoPersistenceDaoImplTest {
         paoPersistenceDao.createPao(pao, PaoType.CBC_7020);
 
         CompleteTwoWayCbc fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteTwoWayCbc.class);
-        assertFalse(fromDb == pao, "unit test has same object instances");
-        assertEquals(pao, fromDb, "retreived PAO differs from saved one");
+        assertFalse("unit test has same object instances", fromDb == pao);
+        assertEquals("retreived PAO differs from saved one", pao, fromDb);
     }
 
     @Test
@@ -189,21 +184,21 @@ public class PaoPersistenceDaoImplTest {
         CompleteTwoWayCbc pao1 = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteTwoWayCbc.class);
         CompleteTwoWayCbc pao2 = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteTwoWayCbc.class);
 
-        assertFalse(pao1 == pao2, "unit test has same object instances");
-        assertEquals(pao1, pao2, "retreived PAOs differ");
+        assertFalse("unit test has same object instances", pao1 == pao2);
+        assertEquals("retreived PAOs differ", pao1, pao2);
 
         pao1.setPaoName("new pao name");
         paoPersistenceDao.updatePao(pao1);
         CompleteTwoWayCbc fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteTwoWayCbc.class);
-        assertEquals(pao1, fromDb, "retreived PAO differs from updated one");
+        assertEquals("retreived PAO differs from updated one", pao1, fromDb);
 
         pao1.setSerialNumber(7523);
         pao1.setAlarmInhibit(false);
-        assertNotEquals(pao1, fromDb, "modificatiin to POJO failed");
+        assertNotEquals("modificatiin to POJO failed", pao1, fromDb);
 
         paoPersistenceDao.updatePao(pao1);
         fromDb = paoPersistenceDao.retreivePao(expectedPaoIdentifier, CompleteTwoWayCbc.class);
-        assertEquals(pao1, fromDb, "retreived PAO differs from updated one");
+        assertEquals("retreived PAO differs from updated one", pao1, fromDb);
     }
 
     private int countRows(String tableName, String idColumn, int id) {
@@ -222,16 +217,16 @@ public class PaoPersistenceDaoImplTest {
 
         PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(weatherLocationPaoId_delete, PaoType.WEATHER_LOCATION);
 
-        assertEquals(0, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete), "pao already exists");
+        assertEquals("pao already exists", 0, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete));
 
         expect(paoDao.getNextPaoId()).andReturn(expectedPaoIdentifier.getPaoId());
         replay(paoDao);
         paoPersistenceDao.createPao(pao, PaoType.WEATHER_LOCATION);
 
-        assertEquals(1, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete), "pao not written");
+        assertEquals("pao not written", 1, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete));
 
         paoPersistenceDao.deletePao(expectedPaoIdentifier);
-        assertEquals(0, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete), "pao still exists");
+        assertEquals("pao still exists", 0, countRows("YukonPaobject", "PaobjectId", weatherLocationPaoId_delete));
     }
 
     public void testDeletePao_CBC_7020() {
@@ -245,37 +240,37 @@ public class PaoPersistenceDaoImplTest {
 
         PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(cbc7020PaoId_delete, PaoType.CBC_7020);
 
-        assertEquals(0, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete), "YukonPaobject already exists");
-        assertEquals(0, countRows("Device", "DeviceId", cbc7020PaoId_delete), "Device already exists");
-        assertEquals(0, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete), "DeviceAddress already exists");
-        assertEquals(0,countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete),
-                "DeviceDirectCommSettings already exists");
-        assertEquals(0, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete), "DeviceWindow already exists");
+        assertEquals("YukonPaobject already exists", 0, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete));
+        assertEquals("Device already exists", 0, countRows("Device", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceAddress already exists", 0, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceDirectCommSettings already exists", 0,
+            countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceWindow already exists", 0, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete));
         // DevicesCanRate? :-)
-        assertEquals(0, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete), "DeviceScanRate already exists");
-        assertEquals(0, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete), "DeviceCBC already exists");
+        assertEquals("DeviceScanRate already exists", 0, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceCBC already exists", 0, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete));
 
         expect(paoDao.getNextPaoId()).andReturn(expectedPaoIdentifier.getPaoId());
         replay(paoDao);
         paoPersistenceDao.createPao(pao, PaoType.CBC_7020);
 
-        assertEquals(1, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete), "pao not written");
-        assertEquals(1, countRows("Device", "DeviceId", cbc7020PaoId_delete), "Device not written");
-        assertEquals(1, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete), "DeviceAddress not written");
-        assertEquals(1, countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete),
-                "DeviceDirectCommSettings not written");
-        assertEquals(1, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete), "DeviceWindow not written");
-        assertEquals(1, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete), "DeviceScanRate not written");
-        assertEquals(1, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete), "DeviceCBC not written");
+        assertEquals("pao not written", 1, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete));
+        assertEquals("Device not written", 1, countRows("Device", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceAddress not written", 1, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceDirectCommSettings not written", 1,
+            countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceWindow not written", 1, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceScanRate not written", 1, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceCBC not written", 1, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete));
 
         paoPersistenceDao.deletePao(expectedPaoIdentifier);
-        assertEquals(0, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete), "pao still exists");
-        assertEquals(0, countRows("Device", "DeviceId", cbc7020PaoId_delete), "Device still exists");
-        assertEquals(0, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete), "DeviceAddress still exists");
-        assertEquals(0, countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete),
-                "DeviceDirectCommSettings still exists");
-        assertEquals(0, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete), "DeviceWindow still exists");
-        assertEquals(0, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete), "DeviceScanRate still exists");
-        assertEquals(0, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete), "DeviceCBC still exists");
+        assertEquals("pao still exists", 0, countRows("YukonPaobject", "PaobjectId", cbc7020PaoId_delete));
+        assertEquals("Device still exists", 0, countRows("Device", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceAddress still exists", 0, countRows("DeviceAddress", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceDirectCommSettings still exists", 0,
+            countRows("DeviceDirectCommSettings", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceWindow still exists", 0, countRows("DeviceWindow", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceScanRate still exists", 0, countRows("DeviceScanRate", "DeviceId", cbc7020PaoId_delete));
+        assertEquals("DeviceCBC still exists", 0, countRows("DeviceCBC", "DeviceId", cbc7020PaoId_delete));
     }
 }

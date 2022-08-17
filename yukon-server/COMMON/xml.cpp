@@ -289,14 +289,7 @@ void parseXmlFiles( const std::string & yukonBase )
 
         for ( const auto & pao : paos )
         {
-            if( const auto deviceType = resolvePaoIdXmlType(pao.paoType) )
-            {
-                DeviceConfigDescription::AddCategoriesForDeviceType( *deviceType, pao.configCategories );
-            }
-            else
-            {
-                DeviceConfigDescription::AddUnknownDeviceType(pao.paoType);
-            }
+            DeviceConfigDescription::AddCategoriesForDeviceType( resolvePaoIdXmlType( pao.paoType ), pao.configCategories );
         }
 
         // load the device attribute lookup
@@ -307,59 +300,44 @@ void parseXmlFiles( const std::string & yukonBase )
 
             for ( const auto & point : pao.pointInfo ) 
             {
-                if ( point.attributeList.empty() )
+                if ( point.attributeList.size() > 0 )
                 {
-                    continue;
-                }
+                    // need to build up the complete point file key from the pao key and the point file name info 
 
-                // need to build up the complete point file key from the pao key and the point file name info 
+                    const std::string & paoKey = resourceIndex.left.at( index );
 
-                const std::string & paoKey = resourceIndex.left.at( index );
+                    // want the directory name here -- truncate at the first '\' then add in the rest of the key
 
-                // want the directory name here -- truncate at the first '\' then add in the rest of the key
+                    std::string pointFile( paoKey.begin(), std::find( paoKey.begin(), paoKey.end(), '\\' ) );
+                    pointFile += "\\\\points\\\\" + boost::algorithm::to_lower_copy( pao.pointFileName );
 
-                std::string pointFile( paoKey.begin(), std::find( paoKey.begin(), paoKey.end(), '\\' ) );
-                pointFile += "\\\\points\\\\" + boost::algorithm::to_lower_copy( pao.pointFileName );
+                    int pointFileIndex = resourceIndex.right.at( pointFile );
 
-                int pointFileIndex = resourceIndex.right.at( pointFile );
+                    const auto & pointsForPao = points[ pointFileIndex - RC_POINT_START_ID ];
 
-                const auto & pointsForPao = points[ pointFileIndex - RC_POINT_START_ID ];
+                    auto pointItr = boost::range::find_if( pointsForPao.pointInfo, 
+                            [ & ]( const PointInfoCollection::PointInfo & p ) 
+                            { 
+                                return point.pointName == p.name; 
+                            } );
 
-                auto pointItr = boost::range::find_if( pointsForPao.pointInfo, 
-                        [ & ]( const PointInfoCollection::PointInfo & p ) 
-                        { 
-                            return point.pointName == p.name; 
-                        } );
-
-                if ( pointItr == pointsForPao.pointInfo.end() )
-                {
-                    continue;
-                }
-
-                const auto devType = resolvePaoIdXmlType(pao.paoType);
-
-                if( ! devType )
-                {
-                    DeviceAttributeLookup::AddUnknownDeviceType(pao.paoType);
-                    continue;
-                }
-
-                if( devType == TYPE_NONE )
-                {
-                    continue;
-                }
-
-                for ( const auto & attributeName : point.attributeList )
-                {
-                    try
+                    if ( pointItr != pointsForPao.pointInfo.end() )
                     {
-                        const auto& attribute = Attribute::Lookup( attributeName );
+                        DeviceTypes devType = resolvePaoIdXmlType( pao.paoType );
 
-                        DeviceAttributeLookup::AddRelation( *devType, attribute, pointItr->type, pointItr->offset );
-                    }
-                    catch( const AttributeNotFound&)
-                    {
-                        DeviceAttributeLookup::AddUnknownAttribute( *devType, attributeName );
+                        for ( const auto & attributeName : point.attributeList )
+                        {
+                            try
+                            {
+                                const auto& attribute = Attribute::Lookup( attributeName );
+
+                                DeviceAttributeLookup::AddRelation( devType, attribute, pointItr->type, pointItr->offset );
+                            }
+                            catch( const AttributeNotFound&)
+                            {
+                                DeviceAttributeLookup::AddUnknownAttribute( devType, attributeName );
+                            }
+                        }
                     }
                 }
             }

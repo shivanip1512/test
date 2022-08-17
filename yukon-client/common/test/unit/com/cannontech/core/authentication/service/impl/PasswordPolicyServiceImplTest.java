@@ -1,15 +1,14 @@
 package com.cannontech.core.authentication.service.impl;
 
 import static com.cannontech.core.roleproperties.YukonRoleProperty.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.cannontech.core.roleproperties.YukonRole.*;
 
 import java.util.List;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
@@ -104,21 +103,21 @@ public class PasswordPolicyServiceImplTest {
 
         // Checking policy rules
         List<PolicyRule> policyRules = passwordPolicyService.getPolicyRules(USER_ONE);
-        assertEquals(expectedPolicyRules, policyRules);
+        Assert.assertEquals(expectedPolicyRules, policyRules);
 
         // Checking password policy
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_ONE);
-        assertEquals(Duration.standardMinutes(6), passwordPolicy.getLockoutDuration());
-        assertEquals(3, passwordPolicy.getLockoutThreshold());
-        assertEquals(Duration.standardDays(20), passwordPolicy.getMaxPasswordAge());
-        assertEquals(Duration.standardDays(1), passwordPolicy.getMinPasswordAge());
-        assertEquals(6, passwordPolicy.getMinPasswordLength());
-        assertEquals(3, passwordPolicy.getPasswordHistory());
-        assertEquals(2, passwordPolicy.getPasswordQualityCheck());
+        Assert.assertEquals(Duration.standardMinutes(6), passwordPolicy.getLockoutDuration());
+        Assert.assertEquals(3, passwordPolicy.getLockoutThreshold());
+        Assert.assertEquals(Duration.standardDays(20), passwordPolicy.getMaxPasswordAge());
+        Assert.assertEquals(Duration.standardDays(1), passwordPolicy.getMinPasswordAge());
+        Assert.assertEquals(6, passwordPolicy.getMinPasswordLength());
+        Assert.assertEquals(3, passwordPolicy.getPasswordHistory());
+        Assert.assertEquals(2, passwordPolicy.getPasswordQualityCheck());
 
-        assertTrue(UnitTestUtil.withinOneSecond(new Duration(EIGHTEEN_HOURS_AGO, Instant.now()),
+        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(EIGHTEEN_HOURS_AGO, Instant.now()),
                                                        passwordPolicy.getPasswordAge(USER_ONE_AUTH_INFO)));
-        assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
+        Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
 
     }
 
@@ -129,20 +128,20 @@ public class PasswordPolicyServiceImplTest {
 
         // Checking policy rules
         List<PolicyRule> policyRules = passwordPolicyService.getPolicyRules(USER_TWO);
-        assertEquals(expectedPolicyRules, policyRules);
+        Assert.assertEquals(expectedPolicyRules, policyRules);
 
         // Checking password policy
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_TWO);
-        assertEquals(Duration.standardMinutes(120), passwordPolicy.getLockoutDuration());
-        assertEquals(10, passwordPolicy.getLockoutThreshold());
-        assertEquals(Duration.standardDays(15), passwordPolicy.getMaxPasswordAge());
-        assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
-        assertEquals(9, passwordPolicy.getMinPasswordLength());
-        assertEquals(10, passwordPolicy.getPasswordHistory());
-        assertEquals(1, passwordPolicy.getPasswordQualityCheck());
-        assertTrue(UnitTestUtil.withinOneSecond(new Duration(TWO_DAYS_AGO, Instant.now()),
+        Assert.assertEquals(Duration.standardMinutes(120), passwordPolicy.getLockoutDuration());
+        Assert.assertEquals(10, passwordPolicy.getLockoutThreshold());
+        Assert.assertEquals(Duration.standardDays(15), passwordPolicy.getMaxPasswordAge());
+        Assert.assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
+        Assert.assertEquals(9, passwordPolicy.getMinPasswordLength());
+        Assert.assertEquals(10, passwordPolicy.getPasswordHistory());
+        Assert.assertEquals(1, passwordPolicy.getPasswordQualityCheck());
+        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(TWO_DAYS_AGO, Instant.now()),
                                                        passwordPolicy.getPasswordAge(USER_TWO_AUTH_INFO)));
-        assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
+        Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
 
     }
 
@@ -152,20 +151,20 @@ public class PasswordPolicyServiceImplTest {
 
         // Checking policy rules
         List<PolicyRule> policyRules = passwordPolicyService.getPolicyRules(USER_NO_POLICY);
-        assertEquals(expectedPolicyRules, policyRules);
+        Assert.assertEquals(expectedPolicyRules, policyRules);
 
         // Checking password policy
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_NO_POLICY);
-        assertEquals(Duration.ZERO, passwordPolicy.getLockoutDuration());
-        assertEquals(0, passwordPolicy.getLockoutThreshold());
-        assertEquals(Duration.ZERO, passwordPolicy.getMaxPasswordAge());
-        assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
-        assertEquals(0, passwordPolicy.getMinPasswordLength());
-        assertEquals(0, passwordPolicy.getPasswordHistory());
-        assertEquals(0, passwordPolicy.getPasswordQualityCheck());
-        assertTrue(UnitTestUtil.withinOneSecond(new Duration(ONE_HUNDRED_DAYS_AGO, Instant.now()),
+        Assert.assertEquals(Duration.ZERO, passwordPolicy.getLockoutDuration());
+        Assert.assertEquals(0, passwordPolicy.getLockoutThreshold());
+        Assert.assertEquals(Duration.ZERO, passwordPolicy.getMaxPasswordAge());
+        Assert.assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
+        Assert.assertEquals(0, passwordPolicy.getMinPasswordLength());
+        Assert.assertEquals(0, passwordPolicy.getPasswordHistory());
+        Assert.assertEquals(0, passwordPolicy.getPasswordQualityCheck());
+        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(ONE_HUNDRED_DAYS_AGO, Instant.now()),
                                                        passwordPolicy.getPasswordAge(USER_NO_POLICY_AUTH_INFO)));
-        assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
+        Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
     }
     
     @Test
@@ -174,20 +173,20 @@ public class PasswordPolicyServiceImplTest {
 
         // Checking policy rules
         List<PolicyRule> policyRules = passwordPolicyService.getPolicyRules(USER_SYSTEM_POLICY);
-        assertEquals(expectedPolicyRules, policyRules);
+        Assert.assertEquals(expectedPolicyRules, policyRules);
 
         // Checking password policy
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_SYSTEM_POLICY);
-        assertEquals(Duration.standardMinutes(5), passwordPolicy.getLockoutDuration());
-        assertEquals(5, passwordPolicy.getLockoutThreshold());
-        assertEquals(Duration.standardDays(0), passwordPolicy.getMaxPasswordAge());
-        assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
-        assertEquals(8, passwordPolicy.getMinPasswordLength());
-        assertEquals(5, passwordPolicy.getPasswordHistory());
-        assertEquals(3, passwordPolicy.getPasswordQualityCheck());
-        assertTrue(UnitTestUtil.withinOneSecond(new Duration(FIFTY_DAYS_AGO, Instant.now()),
+        Assert.assertEquals(Duration.standardMinutes(5), passwordPolicy.getLockoutDuration());
+        Assert.assertEquals(5, passwordPolicy.getLockoutThreshold());
+        Assert.assertEquals(Duration.standardDays(0), passwordPolicy.getMaxPasswordAge());
+        Assert.assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
+        Assert.assertEquals(8, passwordPolicy.getMinPasswordLength());
+        Assert.assertEquals(5, passwordPolicy.getPasswordHistory());
+        Assert.assertEquals(3, passwordPolicy.getPasswordQualityCheck());
+        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(FIFTY_DAYS_AGO, Instant.now()),
                                                        passwordPolicy.getPasswordAge(USER_SYSTEM_POLICY_AUTH_INFO)));
-        assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
+        Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
         
     }
 }

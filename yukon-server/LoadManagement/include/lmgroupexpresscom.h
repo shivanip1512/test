@@ -33,8 +33,6 @@ DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
 
     CtiLMGroupExpresscom& operator=(const CtiLMGroupExpresscom& right);
 
-    std::size_t getFixedSize() const override   { return sizeof( *this ); }
-
     /* Static Members */
 
 private:

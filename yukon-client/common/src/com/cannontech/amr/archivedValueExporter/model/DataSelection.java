@@ -6,14 +6,12 @@ public enum DataSelection implements DisplayableEnum {
     LATEST,
     MAX,
     MIN,
-    EARLIEST,
-    SUM,
-    ;
+    EARLIEST;
     
-    private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection.";
+    private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
     @Override
     public String getFormatKey() {
-        return keyPrefix + name();
+        return keyPrefix + "dataSelection." + name();
     }
 }

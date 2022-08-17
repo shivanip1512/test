@@ -69,18 +69,6 @@
   </tag>
   
   <tag>
-    <name>getIconSvg</name>
-    <description>Get the SVG for a specific icon class.</description>
-    <tag-class>com.cannontech.web.taglib.GetIconSvgTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>iconClass</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
     <name>getUsersTimezone</name>
     <description>Retrieve the Users Timezone from Configuration Settings.</description>
     <tag-class>com.cannontech.web.taglib.GetUsersTimezoneTag</tag-class>
@@ -583,13 +571,6 @@
   </tag>
   
   <tag>
-    <name>getYukonColorPaletteJson</name>
-    <tag-class>com.cannontech.web.taglib.GetYukonColorPaletteJson</tag-class>
-    <body-content>empty</body-content>
-    <description>Returns the JSON for YukonColorPalette.</description>
-  </tag>
-  
-  <tag>
     <name>listAsSafeString</name>
     <tag-class>com.cannontech.web.taglib.ListAsSafeString</tag-class>
     <body-content>empty</body-content>
@@ -624,22 +605,6 @@
     <attribute>
       <name>deviceCollection</name>
       <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>deviceNameFromPointId</name>
-    <tag-class>com.cannontech.web.taglib.DeviceNameFromPointIdTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>pointId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
@@ -961,22 +926,6 @@
   </tag>
   
   <tag>
-    <name>pointName</name>
-    <tag-class>com.cannontech.web.taglib.PointNameTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>pointId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
     <name>deviceName</name>
     <tag-class>com.cannontech.web.amr.taglib.DeviceNameTag</tag-class>
     <body-content>empty</body-content>
@@ -1205,11 +1154,6 @@
     </attribute>
     <attribute>
         <name>var</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-        <name>htmlEscape</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>

@@ -10,8 +10,8 @@ import java.util.TimeZone;
 import org.easymock.EasyMock;
 import org.easymock.EasyMockSupport;
 import org.easymock.IMockBuilder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
@@ -109,7 +109,7 @@ public class AccountServiceTest extends EasyMockSupport {
     private StarsDatabaseCache starsDatabaseCacheMock;
     private UsersEventLogService usersEventLogServiceMock;
 
-    @BeforeEach
+    @Before
     public void setUp() throws SecurityException {
         authenticationServiceMock = createNiceMock(AuthenticationService.class);
         userDaoMock = createNiceMock(YukonUserDao.class);

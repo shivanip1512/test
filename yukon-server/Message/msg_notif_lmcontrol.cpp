@@ -75,10 +75,3 @@ CtiMessage* CtiNotifLMControlMsg::replicateMessage() const
     CtiNotifLMControlMsg* ret = new CtiNotifLMControlMsg(*this);
     return (CtiMessage*) ret;
 }
-
-std::size_t CtiNotifLMControlMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   _notif_group_ids.capacity() * sizeof( int );
-}
-

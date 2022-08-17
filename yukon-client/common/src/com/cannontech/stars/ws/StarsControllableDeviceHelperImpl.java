@@ -42,8 +42,6 @@ import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -59,7 +57,6 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.eatonCloud.EatonCloudLcrBuilder;
 import com.cannontech.stars.dr.ecobee.EcobeeBuilder;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
@@ -89,7 +86,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceCreationService deviceCreationService;
-    @Autowired private EatonCloudLcrBuilder eatonCloudLcrBuilder;
     @Autowired private EcobeeBuilder ecobeeBuilder;
     @Autowired private HoneywellBuilder honeywellBuilder;
     @Autowired private PaoLoadingService paoLoadingService;
@@ -109,7 +105,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private LatitudeLongitudeBulkFieldProcessor latitudeLongitudeBulkFieldProcessor;
     @Autowired private ItronBuilder itronBuilder;
     @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private EcobeeZeusCommunicationService zeusCommunicationService;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -351,7 +346,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 lib.setDeviceID(paoIdentifier.getPaoId());
             } else if (ht.isEcobee()) {
                 try {
-                     PaoIdentifier paoIdentifier = ecobeeBuilder.createZeusDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                    PaoIdentifier paoIdentifier = ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
                     lib.setDeviceID(paoIdentifier.getPaoId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register ecobee device with ecobee server.", e);
@@ -384,19 +379,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     lib.setDeviceID(hardware.getDeviceId());
                 } catch (ItronCommunicationException e) {
                     throw new StarsClientRequestException("There was a communication error trying to connect with Itron.", e);
-                }
-            } else if (ht.isEatonCloud()) {
-                String guid = dto.getGuid();
-                if (StringUtils.isBlank(guid) || !Validator.isValidGuid(guid)) {
-                    throw new StarsInvalidArgumentException("Valid GUID is required");
-                }
-                Hardware hardware = hardwareUiService.getHardware(lib.getInventoryID());
-                hardware.setGuid(guid);
-                try {
-                    eatonCloudLcrBuilder.createDevice(hardware);
-                    lib.setDeviceID(hardware.getDeviceId());
-                } catch (DeviceCreationException e) {
-                    throw new StarsClientRequestException("Failed to create eaton cloud LCR", e);
                 }
             }
         }
@@ -535,14 +517,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 throw new StarsClientRequestException("An error occurred trying to communicate with Itron.", e);
             }
         }
-        // Ecobee devices require notifying Zeus API to remove the device from the thermostat group.
-        if (hardwareType.isEcobee()) {
-            try {
-                zeusCommunicationService.deleteDevice(dto.getSerialNumber());
-            } catch (EcobeeCommunicationException e) {
-                throw new StarsClientRequestException("An error occurred trying to communicate with Ecobee.", e);
-            }
-        }
+        
         // Remove device from the account
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
@@ -604,5 +579,4 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
         return ht;
     }
-
 }

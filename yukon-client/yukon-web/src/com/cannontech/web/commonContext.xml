@@ -32,10 +32,6 @@
         <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
     
-    <bean name="paoTypeFilteredPaoPicker" class="com.cannontech.web.search.lucene.criteria.PaoTypeFilteredPaoPicker">
-        <property name="searcher" ref="paoTypeSearcherLucene"/>
-    </bean>
-    
     <bean name="paoPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker"/>
     <bean name="programPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
@@ -87,11 +83,6 @@
             <bean class="com.cannontech.web.search.lucene.criteria.DeviceCriteria"/>
         </property>
     </bean>
-    <bean name="dataExportPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
-        <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.DataExportCriteria"/>
-        </property>
-    </bean>
     <bean name="commanderDevicePicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.CommanderDeviceCriteria"/>
@@ -102,9 +93,9 @@
             <bean class="com.cannontech.web.search.lucene.criteria.MeterCriteria"/>
         </property>
     </bean>
-     <bean name="meterEventsDevicesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+     <bean name="meterAndRelayPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.EventsDevicesCriteria"/>
+            <bean class="com.cannontech.web.search.lucene.criteria.MeterAndRelayCriteria"/>
         </property>
     </bean>
     <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
@@ -273,24 +264,6 @@
             </list>
         </property>
     </bean>
-    
-    <bean name="versacomGroupPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
-        <property name="permission" value="LM_VISIBLE"/>
-        <property name="sqlFilters">
-            <list>
-                <bean class="com.cannontech.common.search.pao.db.VersacomLoadGroupFilter"/>
-            </list>
-        </property>
-    </bean>
-    
-    <bean name="expresscomGroupPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
-        <property name="permission" value="LM_VISIBLE"/>
-        <property name="sqlFilters">
-            <list>
-                <bean class="com.cannontech.common.search.pao.db.ExpresscomLoadGroupFilter"/>
-            </list>
-        </property>
-    </bean>
 
     <bean name="lmGroupPaoPermissionCheckingPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
@@ -414,8 +387,6 @@
 
     <bean name="dmvTestPicker" class="com.cannontech.web.picker.DmvTestPicker" />
     
-    <bean name="gatewayNmIpAddressPortPicker" class="com.cannontech.web.picker.GatewayNMIPAddressPortPicker" />
-    
     <bean name="nonResidentailUserPicker" class="com.cannontech.web.picker.NonResidentailUserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>
@@ -440,18 +411,6 @@
         </property>
     </bean>
     
-    <bean name="signalTransmitterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
-        <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.SignalTransmitterCriteria"/>
-        </property>
-    </bean>
-    
-    <bean name="routesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
-        <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.RouteCriteria"/>
-        </property>
-    </bean>
-    
     <bean name="dnpRtuPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>
@@ -464,18 +423,7 @@
         </property>
     </bean>
     
-    <bean name="rfGatewayLegacyPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
-        <property name="criteria">
-            <bean class="com.cannontech.web.search.lucene.criteria.RFGatewayLegacyCriteria"/>
-        </property>
-    </bean>
-    
-    
-    <bean name="yukonApiValidationUtils" class="com.cannontech.common.validator.YukonApiValidationUtils"/>
-    <bean name="portApiValidatorHelper" class="com.cannontech.common.validator.PortApiValidatorHelper"/>
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
-    <bean name="pointApiValidationUtil" class="com.cannontech.web.tools.points.validators.PointApiValidationUtil"/>
-    <bean name="pointValidationUtilCommon" class="com.cannontech.web.tools.points.validators.PointValidationUtilCommon"/>
     <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean class="com.cannontech.web.stars.scheduledDataImport.dao.impl.ScheduledDataImportDaoImpl"/>
@@ -483,6 +431,4 @@
     <bean class="com.cannontech.web.scheduledDataImport.service.impl.AssetScheduledImportServiceImpl"/>
     
     <bean class="com.cannontech.web.tools.device.programming.dao.impl.MeterProgrammingSummaryDaoImpl"/>
-    <bean class="com.cannontech.web.database.event.publisher.DatabaseChangePublisher"/>
-    <bean class="com.cannontech.web.admin.logger.YukonLoggerExpirationHandler"/>
 </beans>

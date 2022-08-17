@@ -63,11 +63,4 @@ public class DisconnectMeterResult {
     public DisconnectCommand getCommand() {
         return command;
     }
-
-    @Override
-    public String toString() {
-        return "DisconnectMeterResult [meter=" + meter + ", state=" + state + ", error=" + error + ", disconnectTime="
-                + disconnectTime + ", processingException=" + processingException + ", command=" + command + "]";
-    }
-
 }

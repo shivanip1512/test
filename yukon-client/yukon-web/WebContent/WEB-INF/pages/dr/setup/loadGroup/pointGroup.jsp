@@ -35,15 +35,15 @@
 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <tags:nameValue2 nameKey=".controlStartState" id="js-start-state" rowClass="dn">
-                <tags:selectWithItems items="${startStates}" path="startControlRawState.id" 
+                <tags:selectWithItems items="${startStates}" path="startControlRawState.rawState" 
                                       defaultItemValue="0" id="js-control-start-state"
-                                      itemLabel="name" itemValue="id"/>
+                                      itemLabel="stateText" itemValue="rawState"/>
             </tags:nameValue2>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <tags:nameValue2 nameKey=".controlStartState">
-                <cti:pointStatus pointId="${loadGroup.pointUsage.id}" rawState="${loadGroup.startControlRawState.id}"/>&nbsp;
-                ${fn:escapeXml(loadGroup.startControlRawState.name)}
+                <cti:pointStatus pointId="${loadGroup.pointUsage.id}" rawState="${loadGroup.startControlRawState.rawState}"/>&nbsp;
+                ${fn:escapeXml(loadGroup.startControlRawState.stateText)}
             </tags:nameValue2>
         </cti:displayForPageEditModes>
 

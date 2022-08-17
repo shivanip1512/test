@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class HoneywellCycleGearFields implements ProgramGearFields {
 
-    private Boolean mandatory;
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;
     private HowToStopControl howToStopControl;
@@ -17,14 +16,6 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
 
     private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
-
-    public Boolean getMandatory() {
-        return mandatory;
-    }
-
-    public void setMandatory(Boolean mandatory) {
-        this.mandatory = mandatory;
-    }
 
     public Integer getControlPercent() {
         return controlPercent;
@@ -82,7 +73,6 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
         setControlPercent(honeywellCycleGear.getControlPercent());
         setCapacityReduction(honeywellCycleGear.getPercentReduction());
         setCyclePeriodInMinutes(honeywellCycleGear.getCyclePeriod());
-        setMandatory(honeywellCycleGear.isMandatorySelected(honeywellCycleGear.getMethodOptionType()));
         setRampInOut(honeywellCycleGear.isFrontRampEnabled());
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -98,7 +88,6 @@ public class HoneywellCycleGearFields implements ProgramGearFields {
         honeywellCycleGear.setPercentReduction(getCapacityReduction());
         honeywellCycleGear.setControlPercent(getControlPercent());
         honeywellCycleGear.setFrontRampEnabled(getRampInOut());
-        honeywellCycleGear.setMethodOptionType(getMandatory());
         honeywellCycleGear.setCyclePeriod(getCyclePeriodInMinutes());
 
         whenToChangeFields.buildDBPersistent(honeywellCycleGear);

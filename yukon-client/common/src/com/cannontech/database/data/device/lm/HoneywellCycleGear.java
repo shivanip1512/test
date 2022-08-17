@@ -57,19 +57,7 @@ public class HoneywellCycleGear extends com.cannontech.database.db.device.lm.LMP
     public Integer getCyclePeriod() {
         return getMethodRateCount();
     }
-
-    public void setMethodOptionType(boolean isSelected) {
-        if (isSelected) {
-            setMethodOptionType(OPTION_MANDATORY);
-        } else {
-            setMethodOptionType(OPTION_OPTIONAL);
-        }
-    }
-
-    public boolean isMandatorySelected(String methodOptionType) {
-        return OPTION_MANDATORY.equalsIgnoreCase(methodOptionType);
-    }
-
+    
     @Override
     public boolean useCustomDbRetrieve() {
         return false;

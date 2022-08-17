@@ -5,7 +5,6 @@
  */
 package com.cannontech.multispeak.emulator;
 
-import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequestResponse;
 import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
-import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.ODClient;
@@ -37,9 +35,8 @@ public class OD_OA_Test {
     // private String endpointURL = "http://pspl-sw-demo62.eatoneaseng.net:8080/soap/OD_ServerSoap";
     private static ODClient port;
     private static ObjectFactory objectFactory;
-    static List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
     private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-        120, 12, null, false, attributes);
+        120, 12, null, false);
 
     public static void main(String[] args) {
         OD_OA_Test test = new OD_OA_Test();

@@ -42,7 +42,6 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.google.common.collect.Lists;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
@@ -76,7 +75,7 @@ public class ProgramConstraintController {
         ProgramConstraint programConstraint = null;
         try {
             model.addAttribute("mode", PageEditMode.VIEW);
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl  + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintRetrieveUrl + id);
             programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
@@ -96,7 +95,7 @@ public class ProgramConstraintController {
             HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintRetrieveUrl + id);
             ProgramConstraint programConstraint = retrieveConstraint(userContext, request, id, url);
             if (programConstraint == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "constraint.retrieve.error"));
@@ -122,25 +121,25 @@ public class ProgramConstraintController {
             String url = StringUtils.EMPTY;
             ResponseEntity<? extends Object> response = null;
             if (programConstraint.getId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintCreateUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     programConstraint);
             } else {
                 url = helper.findWebServerUrl(request, userContext,
-                        ApiURL.drProgramConstraintUrl + "/" + programConstraint.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, Object.class,
-                        programConstraint);
+                    ApiURL.drProgramConstraintUpdateUrl + programConstraint.getId());
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
+                    programConstraint);
             }
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(programConstraint, "programConstraint");
-                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                result = helper.populateBindingError(result, error, response);
                 return bindAndForward(programConstraint, result, redirectAttributes);
             }
-            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
+            if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> constraintIdMap = (HashMap<String, Integer>) response.getBody();
                 int constraintId = constraintIdMap.get("id");
                 flash.setConfirm(
-                    new YukonMessageSourceResolvable("yukon.common.save.success", programConstraint.getName()));
+                    new YukonMessageSourceResolvable(baseKey + "save.success", programConstraint.getName()));
                 return "redirect:/dr/setup/constraint/" + constraintId;
             }
 
@@ -149,8 +148,8 @@ public class ProgramConstraintController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating program constraint: {}. Error: {}", programConstraint.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", programConstraint.getName(), ex.getMessage()));
+            log.error("Error creating program constraint: " + ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", programConstraint.getName()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -161,11 +160,11 @@ public class ProgramConstraintController {
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drProgramConstraintDeleteUrl + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -173,8 +172,8 @@ public class ProgramConstraintController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting program constraint: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
+            log.error("Error deleting program constraint : " + ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -222,7 +221,7 @@ public class ProgramConstraintController {
         if (PageEditMode.VIEW == model.get("mode")) {
             model.addAttribute("daySelections", programConstraint.getDaySelection());
         } else {
-            model.addAttribute("daySelections", Lists.newArrayList(DayOfWeek.values()));
+            model.addAttribute("daySelections", DayOfWeek.values());
         }
 
         model.addAttribute("programConstraint", programConstraint);

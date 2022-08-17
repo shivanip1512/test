@@ -10,7 +10,7 @@
         <i:inline key="yukon.common.search" />: 
         <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field" style="width:150px;">
         <cti:button renderMode="buttonImage" icon="icon-cross-gray"
-            classes="dn fr vat M0 js-picker-show-all" id="picker-${id}-show-all-link" />
+            classes="dn fr right vat M0 js-picker-show-all" id="picker-${id}-show-all-link" />
     </label>
     
     <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()" nextUrl="javascript:yukon.pickers['${id}'].next()"/>

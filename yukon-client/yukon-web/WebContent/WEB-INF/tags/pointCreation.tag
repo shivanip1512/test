@@ -16,33 +16,24 @@
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.Analog.long" href="${createAnalog}" />
-    
-    <cti:url var="createCalcAnalog" value="/tools/points/CalcAnalog/create">
-        <cti:param name="parentId" value="${paoId}"></cti:param>
-    </cti:url>
-    <cm:dropdownOption key="yukon.common.point.pointType.CalcAnalog.long" href="${createCalcAnalog}" />
-    
-    <cti:url var="createCalcStatus" value="/tools/points/CalcStatus/create">
-        <cti:param name="parentId" value="${paoId}"></cti:param>
-    </cti:url>
-    <cm:dropdownOption key="yukon.common.point.pointType.CalcStatus.long" href="${createCalcStatus}" />
-    
-    <cti:url var="createDemandAccumulator" value="/tools/points/DemandAccumulator/create">
-        <cti:param name="parentId" value="${paoId}"></cti:param>
-    </cti:url>
-    <cm:dropdownOption key="yukon.common.point.pointType.DemandAccumulator.long" href="${createDemandAccumulator}" />
 
     <cti:url var="createPulseAccumulator" value="/tools/points/PulseAccumulator/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.PulseAccumulator.long" href="${createPulseAccumulator}" />
 
-
+    <cti:url var="createCalcAnalog" value="/tools/points/CalcAnalog/create">
+        <cti:param name="parentId" value="${paoId}"></cti:param>
+    </cti:url>
+    <cm:dropdownOption key="yukon.common.point.pointType.CalcAnalog.long" href="${createCalcAnalog}" />
 
     <cti:url var="createStatus" value="/tools/points/Status/create">
         <cti:param name="parentId" value="${paoId}"></cti:param>
     </cti:url>
     <cm:dropdownOption key="yukon.common.point.pointType.Status.long" href="${createStatus}" />
 
-
+    <cti:url var="createCalcStatus" value="/tools/points/CalcStatus/create">
+        <cti:param name="parentId" value="${paoId}"></cti:param>
+    </cti:url>
+    <cm:dropdownOption key="yukon.common.point.pointType.CalcStatus.long" href="${createCalcStatus}" />
 </cm:dropdown>

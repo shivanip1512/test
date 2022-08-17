@@ -1,17 +1,19 @@
 package com.cannontech.dr.constraint.service.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
-import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.DeletionFailureException;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -20,7 +22,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteLMConstraint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.stars.util.ServletUtils;
@@ -31,11 +32,11 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired DBDeletionDao dbDeletionDao;
+    private static final Logger log = YukonLogManager.getLogger(ProgramConstraintServiceImpl.class);
 
     @Override
-    public ProgramConstraint retrieve(int constraintId, LiteYukonUser liteYukonUser) {
+    public ProgramConstraint retrieve(int constraintId) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
@@ -59,7 +60,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public ProgramConstraint create(ProgramConstraint programConstraint, LiteYukonUser liteYukonUser) {
+    public int create(ProgramConstraint programConstraint) {
         Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(programConstraint.getHolidaySchedule().getId());
         if (holidaySchedule.isEmpty()) {
             throw new NotFoundException("Holiday Schedule Id not found");
@@ -76,41 +77,28 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (constraint.getConstraintID() == null) {
             dbPersistentDao.performDBChange(constraint, TransactionType.INSERT);
         }
-        programConstraint.buildModel(constraint);
-        if (holidaySchedule.isPresent()) {
-            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
-        }
-        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
-        if (seasonSchedule.isPresent()) {
-            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
-        }
-        
-        demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(), liteYukonUser);
-
-        return programConstraint;
+        return constraint.getConstraintID();
     }
 
     @Override
-    public int delete(int constraintId, LiteYukonUser liteYukonUser) {
+    public int delete(int constraintId, String constraintName) {
         Optional<LiteLMConstraint> liteLMConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
-                .filter(constraint -> constraint.getConstraintID() == constraintId)
+                .filter(constraint -> constraint.getConstraintID() == constraintId
+                    && constraint.getConstraintName().equalsIgnoreCase(constraintName))
                 .findFirst();
         if (liteLMConstraint.isEmpty()) {
-            throw new NotFoundException("Constraint Id not found");
+            throw new NotFoundException("Constraint Id and Name combination not found");
         }
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         checkIfConstriantIsUsed(liteLMConstraint.get(), paoId);
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         dbPersistentDao.performDBChange(constraint, TransactionType.DELETE);
-
-        demandResponseEventLogService.programConstraintDeleted(constraint.getConstraintName(), liteYukonUser);
-
         return constraint.getConstraintID();
     }
 
     @Override
-    public ProgramConstraint update(int constraintId, ProgramConstraint programConstraint, LiteYukonUser liteYukonUser) {
+    public int update(int constraintId, ProgramConstraint programConstraint) {
         Optional<LiteLMConstraint> lmConstraint = 
                 dbCache.getAllLMProgramConstraints().stream()
                 .filter(liteLMConstraint -> liteLMConstraint.getConstraintID() == constraintId)
@@ -133,18 +121,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         LMProgramConstraint lmprogramConstraint = new LMProgramConstraint();
         programConstraint.buildDBPersistent(lmprogramConstraint);
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
-        programConstraint.buildModel(lmprogramConstraint);
-        if (holidaySchedule.isPresent()) {
-            programConstraint.getHolidaySchedule().setName(holidaySchedule.get().getName());
-        }
-        Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(programConstraint.getSeasonSchedule().getId());
-        if (seasonSchedule.isPresent()) {
-            programConstraint.getSeasonSchedule().setName(seasonSchedule.get().getName());
-        }
-
-        demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(), liteYukonUser);
-
-        return programConstraint;
+        return lmprogramConstraint.getConstraintID();
     }
 
     @Override
@@ -162,7 +139,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     }
 
     @Override
-    public ProgramConstraint copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public int copy(int id, LMCopy lmCopy) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 
@@ -176,7 +153,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
             if (dbDeleteResult.isDeletable()) {
                 String message = "You cannot delete the Program Constraint '" + constraint.getConstraintName()
                     + "' because it is used by a program.";
-                throw new DeletionFailureException(message);
+                throw new LMObjectDeletionFailureException(message);
             }
         }
     }

@@ -60,25 +60,13 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
         { TYPE_RFN420FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN420FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN420FRD, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        //  RFN-500 Focus AX (gen 1)
         { TYPE_RFN520FAX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN520FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN520FAXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN520FRXD,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN530FAX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN530FRX, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        //  RFN-500 Focus AXe (gen 2)
-        { TYPE_RFN520FAXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN520FRXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN520FAXED,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN520FRXED,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_CRL520FAXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_CRL520FAXED,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_CRL520FRXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_CRL520FRXED,Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN530FAXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-        { TYPE_RFN530FRXE, Commands::RfnOvUvConfigurationCommand::LGFocusAX },
-
+        
         { TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL },
         { TYPE_RFN510FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL }
     };

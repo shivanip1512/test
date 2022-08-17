@@ -108,7 +108,6 @@ public class MeterEventStatusTypeGroupings {
         builder.add(BuiltInAttribute.POWER_FAIL_FLAG);
         
         //RFN
-        builder.add(BuiltInAttribute.RFN_BLINK_REPORTED);
         builder.add(BuiltInAttribute.OUTAGE_STATUS);
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_CURRENT_EVENT));
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_VOLTAGE_EVENT));

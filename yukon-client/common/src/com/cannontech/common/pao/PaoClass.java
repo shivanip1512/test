@@ -27,7 +27,6 @@ public enum PaoClass implements DatabaseRepresentationSource {
     RFMESH(1012, "RFMESH"),
     THERMOSTAT(1013, "THERMOSTAT"),
     ITRON(1014, "ITRON"), //A.K.A. SilverSpring or INSI
-    EATON_CLOUD(1015, "EATON_CLOUD"),
     ;
 
     // legacy class id

@@ -345,9 +345,9 @@ public class RfPerformanceController {
                     .map(d -> d.getHardware().getDeviceId())
                     .collect(Collectors.toList());
                 DeviceCollection statusCollection = deviceMemoryCollectionProducer.createDeviceCollection(ids);
-                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getHexColor(), status.getFormatKey());
+                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getColor(), status.getFormatKey());
                 colorCollections.add(mapCollection);
-                mappingMap.put(status.getHexColor(), ids);
+                mappingMap.put(status.getColor(), ids);
             }
             attrs.addFlashAttribute("mappingColors", mappingMap);
             attrs.addFlashAttribute("colorCollections", colorCollections);
@@ -470,13 +470,12 @@ public class RfPerformanceController {
     private String[] getDownloadHeaderRow(YukonUserContext userContext) {
         MessageSourceAccessor Accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // header row
-        String[] headerRow = new String[6];
-        headerRow[0] = Accessor.getMessage(detailsKey + "DEVICE_STATUS");
-        headerRow[1] = Accessor.getMessage(EventDetailSortBy.DEVICE_NAME);
-        headerRow[2] = Accessor.getMessage(EventDetailSortBy.DEVICE_TYPE);
-        headerRow[3] = Accessor.getMessage(EventDetailSortBy.ACCOUNT_NUMBER);
-        headerRow[4] = Accessor.getMessage(EventDetailSortBy.CURRENT_STATUS);
-        headerRow[5] = Accessor.getMessage(detailsKey + "LAST_COMMUNICATION");
+        String[] headerRow = new String[5];
+        headerRow[0] = Accessor.getMessage(EventDetailSortBy.DEVICE_NAME);
+        headerRow[1] = Accessor.getMessage(EventDetailSortBy.DEVICE_TYPE);
+        headerRow[2] = Accessor.getMessage(EventDetailSortBy.ACCOUNT_NUMBER);
+        headerRow[3] = Accessor.getMessage(EventDetailSortBy.CURRENT_STATUS);
+        headerRow[4] = Accessor.getMessage(detailsKey + "LAST_COMMUNICATION");
 
         return headerRow;
     }
@@ -494,14 +493,13 @@ public class RfPerformanceController {
 
         List<String[]> dataRows = Lists.newArrayList();
         searchResults.getResultList().forEach(details -> {
-            String[] dataRow = new String[6];
+            String[] dataRow = new String[5];
 
-            dataRow[0] = accessor.getMessage(details.getMessageStatus());
-            dataRow[1] = deviceDao.getFormattedName(details.getHardware().getDeviceId());
-            dataRow[2] = accessor.getMessage(details.getHardware().getInventoryIdentifier().getHardwareType());
-            dataRow[3] = details.getHardware().getAccountNo();
-            dataRow[4] = accessor.getMessage(details.getDeviceStatus().getFormatKey());
-            dataRow[5] = (details.getLastComm() != null)
+            dataRow[0] = deviceDao.getFormattedName(details.getHardware().getDeviceId());
+            dataRow[1] = accessor.getMessage(details.getHardware().getInventoryIdentifier().getHardwareType());
+            dataRow[2] = details.getHardware().getAccountNo();
+            dataRow[3] = accessor.getMessage(details.getDeviceStatus().getFormatKey());
+            dataRow[4] = (details.getLastComm() != null)
                 ? dateFormattingService.format(details.getLastComm(), DateFormatEnum.FULL, userContext)
                 : accessor.getMessage(detailsKey + "lastCommNotAvailable");
             dataRows.add(dataRow);

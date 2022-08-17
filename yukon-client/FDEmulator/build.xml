@@ -14,7 +14,6 @@
            target="${yukon.javac.target}" 
            source="${yukon.javac.source}"
            debug="${yukon.javac.debug}">
-      <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
       <classpath>
         <fileset dir="${yukon.lib}">
           <include name="**/*.jar"/>
@@ -34,12 +33,7 @@
   </target>
 
   <target name="clean">
-      <move file="build" tofile="build-delete" failonerror="false"/>
-        <parallel>
-           <daemons>
-               <delete dir="build-delete"/>  
-           </daemons>
-       </parallel>
+    <delete dir="build"/>
   </target>
 
   <target name="install">
@@ -56,21 +50,15 @@
       <fileset file="${yukon.lib}/common.jar"/>
       <fileset file="${yukon.lib}/yukonappserver.jar"/>
       <fileset file="${yukon.lib}/sqljdbc42.jar"/>
-      <fileset file="${yukon.lib}/guava-31.1-jre.jar"/>
-      <fileset file="${yukon.lib}/jsr305-3.0.2.jar"/>
-      <fileset file="${yukon.lib}/error_prone_annotations-2.11.0.jar"/>
-      <fileset file="${yukon.lib}/failureaccess-1.0.1.jar"/>
-      <fileset file="${yukon.lib}/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"/>
-      <fileset file="${yukon.lib}/j2objc-annotations-1.3.jar"/>
-      <fileset file="${yukon.lib}/checker-qual-3.12.0.jar"/>
+      <fileset file="${yukon.lib}/guava-13.0.1.jar"/>
       <fileset file="${yukon.lib}/joda-time-2.3.jar"/>
-      <fileset file="${yukon.lib}/log4j-api-2.17.1.jar"/>
-      <fileset file="${yukon.lib}/log4j-core-2.17.1.jar"/>
-      <fileset file="${yukon.lib}/log4j-jcl-2.17.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-api-2.9.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-core-2.9.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-jcl-2.9.1.jar"/>
       <fileset file="${yukon.lib}/commons-lang3-3.3.1.jar"/>
-      <fileset file="${yukon.lib}/spring-jdbc-5.3.22.jar"/>
-      <fileset file="${yukon.lib}/spring-tx-5.3.22.jar"/>
-      <fileset file="${yukon.lib}/spring-core-5.3.22.jar"/>
+      <fileset file="${yukon.lib}/spring-jdbc-5.0.2.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-tx-5.0.2.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-core-5.0.2.RELEASE.jar"/>
       <fileset dir="." includes="src/main/resources/*.cfg"/>
     </copy>
   </target>

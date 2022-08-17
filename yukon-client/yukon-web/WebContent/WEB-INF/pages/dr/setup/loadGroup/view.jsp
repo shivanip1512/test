@@ -27,7 +27,7 @@
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:loadGroup:delete"/>
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:loadGroup:delete"/>
             
                 <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${loadGroup.name}" />
                 <cti:url var="deleteUrl" value="/dr/setup/loadGroup/${loadGroup.id}/delete"/>
@@ -72,13 +72,13 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 
-                    <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON' || isEatonCloudGroupSelected}">
-                        <%@ include file="itronOrEatonCloud.jsp" %>
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
+                        <%@ include file="itron.jsp" %>
                     </c:if>
                     <c:if test="${isLoadGroupSupportRoute}">
                         <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                <tags:selectWithItems items="${routes}" id="route" itemLabel="deviceName" path="routeId" itemValue="deviceId"/>
+                                <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <cti:deviceName deviceId="${loadGroup.routeId}"/>

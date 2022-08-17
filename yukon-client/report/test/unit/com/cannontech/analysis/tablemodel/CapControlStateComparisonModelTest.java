@@ -1,13 +1,13 @@
 package com.cannontech.analysis.tablemodel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.google.common.collect.Sets;

@@ -35,10 +35,4 @@ public class SimulatorStartupSettingsRequest implements SimulatorRequest {
     public boolean isRunOnStartup() {
         return runOnStartup;
     }
-
-    @Override
-    public String toString() {
-        return String.format("SimulatorStartupSettingsRequest [affectedSimulator=%s, runOnStartup=%s]",
-                      affectedSimulator, runOnStartup);
-    }
 }

@@ -186,40 +186,16 @@ string CtiDate::asString() const
     return to_simple_string(bdate);
 }
 
-string CtiDate::asStringISO() const
+string CtiDate::asStringUSFormat() const
 {
-    return to_iso_extended_string(bdate);
-}
+    //  date format "mm/dd/yyyy" 11 bytes needed
+    char time_str[11];
+    CtiTime tempTime((CtiDate &)(*this), 0, 0, 0);
+    ctitime_t seconds = tempTime.seconds();
+    strftime(time_str, 11, "%m/%d/%Y", localtime(&seconds));
+    time_str[10] = 0;
 
-string CtiDate::asStringMDY() const
-{
-    if( bdate.is_neg_infinity() )
-    {
-        return "01/01/0001";
-    }
-    if( bdate.is_pos_infinity() )
-    {
-        return "12/31/9999";
-    }
-    if( bdate.is_not_a_date() )
-    {
-        return "01/01/1970";
-    }
-
-    std::string date_str = "00/00/0000";
-    
-    date_str[0] += bdate.month() / 10;
-    date_str[1] += bdate.month() % 10;
-                  
-    date_str[3] += bdate.day() / 10;
-    date_str[4] += bdate.day() % 10;
-                  
-    date_str[6] += bdate.year() / 1000;
-    date_str[7] += bdate.year() /  100 % 10;
-    date_str[8] += bdate.year() /   10 % 10;
-    date_str[9] += bdate.year()        % 10;
-
-    return date_str;
+    return string(time_str);
 }
 
 string CtiDate::weekDayName() const

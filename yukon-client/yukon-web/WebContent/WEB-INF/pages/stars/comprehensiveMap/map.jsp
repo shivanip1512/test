@@ -9,7 +9,7 @@
 
 <style>
 .map .ol-viewport canvas {
-     min-height: 600px;
+     min-height: 600px; 
 }
 </style>
 
@@ -24,8 +24,8 @@
     <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
     <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
     
-    <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
-        
+    <tags:alertBox classes="dn js-no-location-message" type="warning"><i:inline key=".missingLocations"/></tags:alertBox>
+                
     <div style="height:800px;">
         <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
             <div class="filter-section">
@@ -46,28 +46,23 @@
                                     
                     <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
                     <cti:msg2 var="helpTitle" key=".helpTitle"/>
-                    <div id="map-help" class="dn" data-width="715" data-height="450" data-title="${helpTitle}">
-                        <cti:msg2 key=".helpText"/>
-                        <div class="MT10">
-                            <%@ include file="/WEB-INF/pages/common/mapping/deviceTypeMarkerLenends.jsp" %>
-                        </div>
-                    </div><br/>
+                    <div id="map-help" class="dn" data-width="600" data-height="360" data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div><br/>
     
                     <div style="padding-top:5px;padding-left:60px;">
                         <i:inline key=".colorCodeBy.HOP_COUNT"/>:&nbsp;
                         <tags:selectWithItems items="${hopCountOptions}" path="hopCount" inputClass="js-selected-hop-count" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                     
                         <i:inline key=".colorCodeBy"/>&nbsp;
-                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy" inputClass="vam"/>
+                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
                         
-                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab MB5" disabled="true"/>
+                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" busy="true" disabled="true"/>
                     </div>
                     
                 </form:form>
                 <hr>
             </div>
             
-            <div id="filtered-devices" class="dn PB20">
+            <div id="filtered-devices" class="dn PB10">
                 <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
                 <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
                 <input type="hidden" id="collection-group"/>
@@ -107,7 +102,6 @@
                 <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
             </div>
             <div id="legend" class="dn" style="min-height:20px;"></div>
-            <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
             <%@ include file="routeUpdateDetails.jsp" %>
         </div>
     </div>

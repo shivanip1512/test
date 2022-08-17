@@ -10,7 +10,6 @@
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
         <tag name="GAS_METER_DETAIL_DISPLAYABLE"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
     <configuration>
         <category type="rfnGasChannelConfiguration"/>

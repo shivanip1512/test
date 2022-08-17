@@ -85,20 +85,6 @@ std::unique_ptr<ScanPolicy> resolveScanPolicy( const std::string & paoType )
     return std::make_unique<LoadOnlyScanPolicy>();
 }
 
-std::string resolveInstallOrientation( const VoltageRegulator::InstallOrientation & orientation )
-{
-    return orientation == VoltageRegulator::InstallOrientation::Forward
-            ? "Forward"
-            : "Reverse";
-}
-
-std::string resolveVoltageControlMode( const VoltageRegulator::ControlMode & orientation )
-{
-    return orientation == VoltageRegulator::ControlMode::SetPoint
-            ? "SetPoint"
-            : "ManualTap";
-}
-
 }
 
 // If these strings change, remember to update them in resolveCapControlType()
@@ -121,11 +107,9 @@ VoltageRegulator::VoltageRegulator()
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
-    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
-    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() ),
-    _regulatorTimeout(0)
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
 {
     // empty...
 }
@@ -143,11 +127,9 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _recentTapOperation(false),
     _keepAlivePeriod( 0 ),
     _keepAliveValue( 0 ),
-    _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
-    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() ),
-    _regulatorTimeout(0)
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
 {
     // empty...
 }
@@ -164,10 +146,7 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _lastCommandedOperatingMode(toCopy._lastCommandedOperatingMode),
     _recentTapOperation(toCopy._recentTapOperation),
     _keepAlivePeriod( toCopy._keepAlivePeriod ),
-    _keepAliveValue( toCopy._keepAliveValue ),
-    _installOrientation( toCopy._installOrientation ),
-    _regulatorTimeout(0)
-
+    _keepAliveValue( toCopy._keepAliveValue )
 {
     // empty...
 }
@@ -271,8 +250,6 @@ void VoltageRegulator::loadAttributes( AttributeService * service )
 
     _keepAlivePeriod = getKeepAliveTimer();
     _keepAliveValue  = getKeepAliveConfig();
-
-    _installOrientation = getInstallOrientation();
 
     _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode(), getControlMode() );
     _scanPolicy = resolveScanPolicy( getPaoType() );
@@ -485,26 +462,6 @@ std::string VoltageRegulator::getHeartbeatMode() const
 }
 
 
-VoltageRegulator::InstallOrientation VoltageRegulator::getInstallOrientation() const
-{
-    Config::DeviceConfigSPtr    deviceConfig = getDeviceConfig( this );
-
-    if ( deviceConfig )
-    {
-        if ( boost::optional<std::string>   orientation =
-             deviceConfig->findValue<std::string>( Config::RegulatorStrings::installOrientation ) )
-        {
-            if ( *orientation == "REVERSE" )
-            {
-                return InstallOrientation::Reverse;
-            }
-        }
-    }
-
-    return InstallOrientation::Forward;
-}
-
-
 double VoltageRegulator::requestVoltageChange( const double changeAmount,
                                                const VoltageAdjuster adjuster )
 {
@@ -623,64 +580,6 @@ catch ( UninitializedPointValue & )
 PointValue VoltageRegulator::getCompleteTapPosition()
 {
     return _controlPolicy->getCompleteTapPosition();
-}
-
-
-long VoltageRegulator::getMinTapPosition() const
-{
-    if ( auto deviceConfig = getDeviceConfig( this ) )
-    {
-        if ( auto position = deviceConfig->findValue<long>( Cti::Config::RegulatorStrings::minTapPosition ) )
-        {
-            return *position;
-        }
-    }
-
-    return static_cast<long>( TapPositionLimits::Minimum );
-}
-
-
-long VoltageRegulator::getMaxTapPosition() const
-{
-    if ( auto deviceConfig = getDeviceConfig( this ) )
-    {
-        if ( auto position = deviceConfig->findValue<long>( Cti::Config::RegulatorStrings::maxTapPosition ) )
-        {
-            return *position;
-        }
-    }
-
-    return static_cast<long>( TapPositionLimits::Maximum );
-}
-
-
-//  If we have indeterminate power flow then we don;t want to move the tap position, likewise if we are
-//  at the limits of the tap range, we don;t want to try to move the tap further out of its limits.
-VoltageRegulator::TapInhibit VoltageRegulator::isTapInhibited()
-{
-    if ( determinePowerFlowSituation() == PowerFlowSituations::IndeterminateFlow )
-    {
-        return TapInhibit::NoTap;
-    }
-
-    if ( const auto currentTapPosition = getTapPosition() )
-    {
-        if ( *currentTapPosition <= getMinTapPosition() )
-        {
-            return TapInhibit::NoTapDown;
-        }
-
-        if ( *currentTapPosition >= getMaxTapPosition() )
-        {
-            return TapInhibit::NoTapUp;
-        }
-    }
-    else
-    {
-        return TapInhibit::NoTap;
-    }
-
-    return TapInhibit::None;
 }
 
 
@@ -869,7 +768,7 @@ void VoltageRegulator::submitControlCommands( Policy::Action                  & 
                                                              getTapPosition(),
                                                              user ) );
 
-    CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
+    CtiCapController::getInstance()->manualCapBankControl( request.release() );
 }
 
 
@@ -881,7 +780,7 @@ try
 {
     bool scanSent = false;
 
-    std::map<long, PorterRequest> requests;
+    std::map<long, std::unique_ptr<CtiRequestMsg>> requests;
 
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {
@@ -902,7 +801,7 @@ try
     {
         const long pointPaoID = request->DeviceId();
 
-        CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
 
         sendCapControlOperationMessage( 
             Messaging::CapControl::CapControlOperationMessage::createScanDeviceMessage(
@@ -1010,7 +909,7 @@ try
 {
     _lastCommandedOperatingMode = RemoteMode;
 
-    long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue , _regulatorTimeout) );
+    long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
 
     CTILOG_DEBUG( dout, "Sending KeepAlive for regulator: " << getPaoName() );
 
@@ -1058,7 +957,7 @@ long VoltageRegulator::submitKeepAliveCommands( Policy::Actions & actions )
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
-        CtiCapController::getInstance()->manualCapBankControl( std::move( request ) );
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
     }
 
     return delay;
@@ -1111,244 +1010,6 @@ Policy::Action VoltageRegulator::setSetPointValue( const double newSetPoint )
 }
 
 
-std::string VoltageRegulator::detailedDescription()
-{
-    return
-        resolveVoltageControlMode( getControlMode() )
-        + " Regulator: "
-        + getPaoName()
-        + " in "
-        + resolveControlMode( getConfigurationMode() )
-        + " mode";
-}
-
-VoltageRegulator::PowerFlowSituations VoltageRegulator::determinePowerFlowSituation()
-{
-    struct
-    {
-        PowerFlowSituations code;
-        std::string         reason;
-    }
-    status { PowerFlowSituations::OK, "OK" };
-
-    const ControlPolicy::ControlModes configMode = getConfigurationMode();
-    const InstallOrientation orientation = getInstallOrientation();
-
-    const bool  inReverseFlow = isReverseFlowDetected();
-    const bool  controlPowerFlowReverse = _controlPolicy->isControlPowerFlowReverse();
-
-    // check for reverse installation first and unsupported modes
-
-    switch ( configMode )
-    {
-        case ControlPolicy::LockedForward:
-        case ControlPolicy::ReverseIdle:
-        case ControlPolicy::NeutralIdle:
-        case ControlPolicy::Cogeneration:
-        case ControlPolicy::BiasCogeneration:
-        {
-            if ( orientation == InstallOrientation::Reverse )
-            {
-                status = { PowerFlowSituations::ReverseInstallation, " is installed in reverse orientation." };
-            }
-            break;
-        }
-        case ControlPolicy::LockedReverse:
-        case ControlPolicy::ReverseCogeneration:
-        {
-            if ( orientation == InstallOrientation::Forward )
-            {
-                status = { PowerFlowSituations::ReverseInstallation, " is installed in forward orientation." };
-            }
-            break;
-        }
-        case ControlPolicy::Bidirectional:
-        case ControlPolicy::BiasBidirectional:
-        {
-            // all good...
-            break;
-        }
-        default:
-        {
-            status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
-            break;
-        }
-    }
-
-    if ( status.code == PowerFlowSituations::OK )
-    {
-        if (_controlPolicy->isPowerFlowIndeterminate())
-        {
-            status = { PowerFlowSituations::IndeterminateFlow, " has indeterminate power flow." };
-        }
-        else if ( getControlMode() == VoltageRegulator::ManualTap )
-        {
-            switch ( configMode )
-            {
-                case ControlPolicy::LockedForward:
-                {
-                    if ( inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                    }
-                    else if ( controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::ReverseIdle:
-                case ControlPolicy::NeutralIdle:
-                {
-                    if ( inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                    }
-                    else if ( ! controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::Bidirectional:
-                {
-                    if ( orientation == InstallOrientation::Reverse )
-                    {
-                        status = { PowerFlowSituations::ReverseInstallation, " is installed in reverse orientation." };
-                    }
-                    else if ( inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                    }
-                    else if ( controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
-                    }
-                    break;
-                }
-                default:
-                {
-                    status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
-                    break;
-                }
-            }
-        }
-        else    // we are configured as SetPoint
-        {
-            switch ( configMode )
-            {
-                case ControlPolicy::LockedForward:
-                {
-                    if ( inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                    }
-                    else if ( controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::LockedReverse:
-                {
-                    if ( ! inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting forward power flow." };
-                    }
-                    else if ( ! controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::ReverseIdle:
-                case ControlPolicy::NeutralIdle:
-                {
-                    if ( inReverseFlow )
-                    {
-                        status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                    }
-                    else if ( ! controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::Bidirectional:
-                case ControlPolicy::BiasBidirectional:
-                {
-                    if ( orientation == InstallOrientation::Forward )
-                    {
-                        if ( inReverseFlow )
-                        {
-                            status = { PowerFlowSituations::ReverseFlow, " is detecting reverse power flow." };
-                        }
-                        else if ( controlPowerFlowReverse )
-                        {
-                            status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
-                        }
-                    }
-                    else
-                    {
-                        if ( ! inReverseFlow )
-                        {
-                            status = { PowerFlowSituations::ReverseFlow, " is detecting forward power flow." };
-                        }
-                        else if ( ! controlPowerFlowReverse )
-                        {
-                            status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting forward control power flow." };
-                        }
-                    }
-                    break;
-                }
-                case ControlPolicy::Cogeneration:
-                case ControlPolicy::BiasCogeneration:
-                {
-                    if ( controlPowerFlowReverse )
-                    {
-                        status = { PowerFlowSituations::ReverseControlPowerFlow, " is detecting reverse control power flow." };
-                    }
-                    break;
-                }
-                case ControlPolicy::ReverseCogeneration:
-                {
-                    if ( inReverseFlow )
-                    {
-                        if ( ! controlPowerFlowReverse )
-                        {
-                            status = { PowerFlowSituations::ReverseControlPowerFlow, " has reverse flow, but is detecting forward control power flow." };
-                        }
-                    }
-                    else
-                    {
-                        if ( controlPowerFlowReverse )
-                        {
-                            status = { PowerFlowSituations::ReverseControlPowerFlow, " has forward flow, but is detecting reverse control power flow." };
-                        }
-                    }
-                    break;
-                }
-                default:
-                {
-                    status = { PowerFlowSituations::UnsupportedMode, ", is unsupported." };
-                    break;
-                }
-            }
-        }
-    }
-
-    if ( status.code != PowerFlowSituations::OK )
-    {
-        CTILOG_INFO( dout, detailedDescription() << status.reason );
-    }
-
-    return status.code;
-}
-
-void VoltageRegulator::setRegulatorTimeout(std::chrono::seconds regulatorTimeout)
-{
-    _regulatorTimeout = regulatorTimeout;
-}
 }
 }
 

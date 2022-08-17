@@ -74,8 +74,8 @@ public class SiteSearchController {
                 return "redirect:" + url;
             }
         }
-        // Remove the \ character before returning query text to UI. \ gets added for MAC address search.
-        model.addAttribute("query", query.replace("\\", ""));
+        
+        model.addAttribute("query", query);
         model.addAttribute("itemsPerPage", itemsPerPage);
         model.addAttribute("results", results);
         

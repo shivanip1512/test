@@ -1,14 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="highChart" tagdir="/WEB-INF/tags/highChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <script type="text/javascript"> 
 $(function () {
+    var dateTimePicker;
+    dateTimePicker = yukon.ui.initDateTimePickers();
     // init for a specific DOM element and its children
-    yukon.ui.initDateTimePickers().ancestorInit('#optionalDateFields');
+    dateTimePicker.ancestorInit('#optionalDateFields');
+});
+
+$(document).ready(function(){
+    $('#temperature').click(function() {
+        ${widgetParameters.jsWidget}.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
+    });
 });
 
 </script>
@@ -20,21 +28,18 @@ $(function () {
     
         <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
-        <highChart:trend title="${title}"
-                         pointIds="${pointId}"
-                         temperaturePointId ="${temperaturePointId}" 
-                         isTemperatureChecked = "${isTemperatureChecked}"
-                         temperatureChartInterval="${temperatureChartInterval}"
-                         startDate="${startDate.time}"
-                         endDate="${stopDateAdjusted.time}"
-                         interval="${interval}"
-                         converterType="${attributeGraphType.converterType}"
-                         graphType="${graphType}"
-                         ymin="0"
-                         chartHeight="300"
-                         chartWidth="470"/>
+        <%-- THE CHART --%>
+        <flot:trend title="${title}" pointIds="${pointId}" 
+            temperaturePointId ="${temperaturePointId}" 
+            isTemperatureChecked = "${isTemperatureChecked}"
+            startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
+            interval="${interval}"
+            converterType="${attributeGraphType.converterType}"
+            graphType="${graphType}"
+            temperatureChartInterval="${temperatureChartInterval}"
+            ymin="0"/>
 
-        <table class="compact-results-table trend-settings no-stripes js-trend no-borders">
+        <table class="compact-results-table trend-settings no-stripes js-trend">
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
@@ -107,7 +112,7 @@ $(function () {
                 <tr>
                     <td class="wsnw"><i:inline key=".temperature"/></td>
                     <td>
-                        <input type="checkbox" id="temperature" class="js-temperature-checkbox" <c:if test="${isTemperatureChecked}">checked="checked"</c:if>/>
+                        <input type="checkbox" id="temperature" <c:if test="${isTemperatureChecked}">checked="checked"</c:if>/>
                     </td>
                 </tr>
             </c:if>

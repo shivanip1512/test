@@ -29,10 +29,6 @@ public class HoneywellCycleGearFieldsValidator extends ProgramGearFieldsValidato
 
     @Override
     protected void doValidation(HoneywellCycleGearFields honeywellCycleGear, Errors errors) {
-
-        // Check Mandatory
-        lmValidatorHelper.checkIfFieldRequired("mandatory", errors, honeywellCycleGear.getMandatory(), "Mandatory");
-
         // Check Ramp In/Out
         lmValidatorHelper.checkIfFieldRequired("rampInOut", errors, honeywellCycleGear.getRampInOut(), "Ramp In/Out");
 

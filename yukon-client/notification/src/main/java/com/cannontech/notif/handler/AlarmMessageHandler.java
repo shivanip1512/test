@@ -21,7 +21,6 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
@@ -133,9 +132,9 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                     NumberFormat numberInstance = NumberFormat.getNumberInstance();
                     numberInstance.setMaximumFractionDigits(8); // seems to cut off most crazy floats
                     notif.addData("value", numberInstance.format(msg.value));
-                    UnitOfMeasure unitMeasureByPointID = YukonSpringHook.getBean(UnitMeasureDao.class).getUnitMeasureByPointID(msg.pointId);
-                    if (unitMeasureByPointID != null) {
-                        uofm = unitMeasureByPointID.getAbbreviation();
+                    LiteUnitMeasure liteUnitMeasureByPointID = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(msg.pointId);
+                    if (liteUnitMeasureByPointID != null) {
+                        uofm = liteUnitMeasureByPointID.getUnitMeasureName();
                     }
                 }
                 notif.addData("unitofmeasure", uofm);

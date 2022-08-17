@@ -12,7 +12,7 @@ import com.cannontech.common.device.model.SimpleDevice;
  */
 public class CollectionActionBulkProcessorCallback implements BulkProcessorCallback<SimpleDevice, SimpleDevice>{
 
-    protected CollectionActionResult result;
+    private CollectionActionResult result;
     private CollectionActionService collectionActionService;
     private CollectionActionDao collectionActionDao;
 
@@ -25,9 +25,9 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
 
     @Override
     public void receivedProcessingException(int rowNumber, SimpleDevice device, ProcessorCallbackException e) {
-        CollectionActionLogDetail log = new CollectionActionLogDetail(device, e.getDetail());
+        CollectionActionLogDetail log = new CollectionActionLogDetail(device, CollectionActionDetail.FAILURE);
         log.setDeviceErrorText(e.getMessage());
-        result.addDeviceToGroup(e.getDetail(), device, log);
+        result.addDeviceToGroup(CollectionActionDetail.FAILURE, device, log);
         collectionActionDao.updateCollectionActionRequest(result.getCacheKey(), device.getDeviceId(),
             CommandRequestExecutionStatus.FAILED);
     }

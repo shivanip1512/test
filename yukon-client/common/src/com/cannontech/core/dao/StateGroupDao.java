@@ -13,12 +13,6 @@ public interface StateGroupDao {
     List<LiteStateGroup> getAllStateGroups();
 
     /**
-     * Retrieves a {@link LiteStateGroup} based on stateGroupId.
-     * Return null when LiteStateGroup not found for stateGroupId
-     */
-    LiteStateGroup findStateGroup(int stateGroupId);
-    
-    /**
      * Retrieves a {@link LiteStateGroup} from cache. Loads from database if not found in cache
      */
     LiteStateGroup getStateGroup(int stateGroupId);

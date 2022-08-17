@@ -2,6 +2,7 @@ package com.cannontech.common.util.jms;
 
 import java.io.Serializable;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -10,22 +11,26 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
     
+	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
+    
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
-        super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
     }
-
+    
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate) {
-        super(configurationName, configurationSource, jmsTemplate, false);
+            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
+        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
     }
 
     @Override
@@ -34,23 +39,24 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         final Duration reply2Timeout = configurationSource.getDuration(configurationName + "_REPLY2_TIMEOUT", Duration.standardMinutes(10));
 
         DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-        MessageProducer producer = session.createProducer(
-                resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain()));
-
+        MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, requestQueueName, pubSubDomain));
+        
         TemporaryQueue replyQueue = session.createTemporaryQueue();
         MessageConsumer replyConsumer = session.createConsumer(replyQueue);
         
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
-
-        log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Sending requestMessage to producer " + requestMessage.toString());
+        }
+        if (rfnLogger.isInfoEnabled()) {
+            rfnLogger.info("<<< " + requestPayload.toString());
+        }
+        producer.send(requestMessage);
         
-        logRequest(requestPayload.toString());
-        sendMessage(producer, requestMessage);
-        
-        handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer, requestPayload.toString());
-        log.trace("Request replied or timed out: {}", requestMessage.toString());
+        handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer);
+        log.trace("Request replied or timed out " + requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();
@@ -69,15 +75,13 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
     }
 
     private void handleRepliesAndOrTimeouts(JmsReplyReplyHandler<R1, R2> callback,
-            final Duration reply1Timeout,
-            final Duration reply2Timeout, MessageConsumer replyConsumer,
-            final String requestPayload)
+                                            final Duration reply1Timeout,
+                                            final Duration reply2Timeout, MessageConsumer replyConsumer)
             throws JMSException {
-        /* Blocks for status response or until timeout */
+        /* Blocks for status response or until timeout*/
         Message reply1 = replyConsumer.receive(reply1Timeout.getMillis());
-
+        
         if (reply1 == null) {
-            logReply(requestPayload, "NULL");
             callback.handleTimeout1();
             return;
         }
@@ -87,15 +91,13 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         if (!keepGoing) {
             return;
         }
-        /* Blocks for reading point data or until timeout */
+        /* Blocks for reading point data or until timeout*/
         Message reply2 = replyConsumer.receive(reply2Timeout.getMillis());
         if (reply2 == null) {
-            logReply(requestPayload, reply1Payload.toString());
             callback.handleTimeout2();
             return;
         }
         R2 reply2Payload = JmsHelper.extractObject(reply2, callback.getExpectedType2());
-        logReply(requestPayload, reply2Payload.toString());
         callback.handleReply2(reply2Payload);
     }
 }

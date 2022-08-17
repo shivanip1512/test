@@ -84,17 +84,14 @@
                 <c:if test="${selectedGearType == 'EcobeeSetpoint' }">
                     <%@ include file="ecobeeSetpoint.jsp" %>
                 </c:if>
-                <c:if test="${selectedGearType == 'EcobeePlus' }">
-                    <%@ include file="ecobeePlus.jsp" %>
-                </c:if>
                 <c:if test="${selectedGearType == 'HoneywellCycle'}">
                     <%@ include file="honeywellCycle.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'HoneywellSetpoint'}">
                     <%@ include file="honeywellSetpoint.jsp" %>
                 </c:if>
-                <c:if test="${selectedGearType == 'ItronCycle' || selectedGearType == 'EatonCloudCycle'}">
-                    <%@ include file="itronOrEatonCloudCycle.jsp" %>
+                <c:if test="${selectedGearType == 'ItronCycle'}">
+                    <%@ include file="itronCycle.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'NestStandardCycle'}">
                     <%@ include file="nestStandardCycle.jsp" %>

@@ -30,7 +30,6 @@ import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
-import com.cannontech.database.vendor.DatabaseVendor;
 
 @ManagedResource
 public class PoolManager {
@@ -65,7 +64,27 @@ public class PoolManager {
     private static ConfigurationSource configSource = null;
     private String primaryUrl;
     private String primaryUser;
-    private BasicDataSource bds;
+	private BasicDataSource bds;
+	
+	private enum DatabaseVendor { 
+	    ORACLE_DATABASE(":"), 
+	    ORACLE12_DATABASE("/"),
+	    ORACLE18_DATABASE("/"),
+	    ORACLE19_DATABASE("/"),
+	    MSSQL_DATABASE(""),        //MS SQL Server doesn't use this URL style in the JDBC string.
+	    ;
+	    
+	    String urlCharacter;
+	    
+	    DatabaseVendor(String urlChar) {
+	        urlCharacter = urlChar;
+	    }
+	    
+	    public String getUrlCharacter() {
+	        return urlCharacter;
+	    }
+	
+	}
 
     private PoolManager() {
         init();
@@ -73,10 +92,22 @@ public class PoolManager {
 
     private ConnectionDescription getConnectionUrl() {
 
-        String dbType = configSource.getString(DB_TYPE);
-        // This is not the actual DatabaseVendor type, but an assumed type based off DB_TYPE. We haven't connected yet, so we
-        // don't know exact version at this time
-        DatabaseVendor dbVendor = DatabaseVendor.getForDbType(dbType);
+        String dbTypeName = configSource.getString(DB_TYPE);
+        DatabaseVendor dbType = null;
+
+        if ("mssql".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.MSSQL_DATABASE;
+        } else if ("oracle".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE_DATABASE;
+        } else if ("oracle12".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE12_DATABASE;
+        } else if ("oracle18".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE18_DATABASE;    
+        } else if ("oracle19".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE19_DATABASE;
+        } else {
+            throw new BadConfigurationException("Unrecognized database type (DB_TYPE) in master.cfg: " + dbTypeName);
+        }
 
         String appName = CtiUtilities.getJvmProcessName(); // default in case appName urlEncoding fails  
         try {
@@ -97,44 +128,49 @@ public class PoolManager {
                 }
             }
             log.debug("Using DB_JAVA_URL=" + jdbcUrl);
-            return new ConnectionDescription(jdbcUrl, dbVendor);
+            return new ConnectionDescription(jdbcUrl, dbType);
         }
-
-        if (dbVendor.isSqlServer()) {
-            // configure as microsoft
-            // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
-            StringBuilder url = new StringBuilder("jdbc:jtds:sqlserver://");
-            String host = configSource.getRequiredString(DB_SQLSERVER);
-            Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
-            Matcher matcher = pattern.matcher(host);
-            if (matcher.matches()) {
-                host = matcher.group(1);
-            }
-            url.append(host);
-            url.append(":1433;APPNAME=yukon-client " + appName + ";TDS=8.0");
-            // setup the connection for SSL
-            if (configSource.getBoolean(DB_SSL_ENABLED, false)) {
-                url.append(";ssl=require;socketKeepAlive=true");
-            }
-            log.debug("Found MSSQL, url=" + url);
-            return new ConnectionDescription(url.toString(), dbVendor);
-        } else if (dbVendor.isOracle()) {
-            // Configure using SID, which is used by Oracle 9, 10, and 11.
-            // format: jdbc:oracle:thin:@<host>:<port>:<SID>
-            // Note: As of Oracle version 12c, use of SID has been deprecated in favor of
-            // using service name.
-            StringBuilder url = new StringBuilder("jdbc:oracle:thin:@");
-            String host = configSource.getRequiredString(DB_SQLSERVER_HOST);
-            url.append(host);
-            url.append(":1521");
-            url.append(dbVendor.getUrlCharacter());
-            String tnsName = configSource.getRequiredString(DB_SQLSERVER);
-            url.append(tnsName);
-
-            log.debug("Found Oracle, url=" + url);
-            return new ConnectionDescription(url.toString(), dbVendor);
+        
+        StringBuilder url = new StringBuilder();
+        String host;
+        switch(dbType) {
+            case MSSQL_DATABASE:
+                // configure as microsoft
+                // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
+                url.append("jdbc:jtds:sqlserver://");
+                host = configSource.getRequiredString(DB_SQLSERVER);
+                Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
+                Matcher matcher = pattern.matcher(host);
+                if (matcher.matches()) {
+                    host = matcher.group(1);
+                }
+                url.append(host);
+                url.append(":1433;APPNAME=yukon-client " + appName + ";TDS=8.0");
+                //setup the connection for SSL
+                if(configSource.getBoolean(DB_SSL_ENABLED, false)){
+                    url.append(";ssl=require;socketKeepAlive=true");
+                }
+                log.debug("Found MSSQL, url=" + url);
+                return new ConnectionDescription(url.toString(), dbType);
+            case ORACLE_DATABASE:
+            case ORACLE12_DATABASE:
+            case ORACLE18_DATABASE:
+            case ORACLE19_DATABASE:
+                // Configure using SID, which is used by Oracle 9, 10, and 11. 
+                // format: jdbc:oracle:thin:@<host>:<port>:<SID>
+                // Note: As of Oracle version 12c, use of SID has been deprecated in favor of using service name.
+                url.append("jdbc:oracle:thin:@");
+                host = configSource.getRequiredString(DB_SQLSERVER_HOST);
+                url.append(host);
+                url.append(":1521");
+                url.append(dbType.getUrlCharacter());
+                String tnsName = configSource.getRequiredString(DB_SQLSERVER);
+                url.append(tnsName);
+                
+                log.debug("Found Oracle");
+                return new ConnectionDescription(url.toString(), dbType);
         }
-
+        
         //unreachable
         throw new BadConfigurationException("Unable to generate connection URL");
     }
@@ -168,9 +204,14 @@ public class PoolManager {
         log.info("DB maxTotal=" + maxTotalConnections);
         
         String defaultValidationQuery;
-        if (connectionDescription.type.isOracle()) {
+        switch (connectionDescription.type) {
+        case ORACLE_DATABASE:
+        case ORACLE12_DATABASE:
+        case ORACLE18_DATABASE:
+        case ORACLE19_DATABASE:
             defaultValidationQuery = "select 1 from dual";
-        } else {
+            break;
+        default:
             defaultValidationQuery = "select 1";
         }
         String validationQuery = configSource.getString(DB_JAVA_VALIDATION_QUERY, defaultValidationQuery);

@@ -114,7 +114,6 @@
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOut.hoverText">Resends an opt out command to a given device.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOutDisabled.hoverText">The device cannot resend the command because the initial command has not been sent.  This is most likely because the opt out is scheduled into the future.</entry>
     <entry key="yukon.web.modules.operator.optOut.main.resendOptOut.successText">Opt Out Command Resent</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.resendOptOut.error">An error occurred during resend Opt Out. Please view the logs for more details.</entry>
 
     <entry key="yukon.web.modules.operator.optOut.main.confirmResetToLimit.title">Confirm Reset Opt Out Limit</entry>
     <entry key="yukon.web.modules.operator.optOut.main.confirmResetToLimit.message">Are you sure you want to reset the opt out limit for {0}?</entry>

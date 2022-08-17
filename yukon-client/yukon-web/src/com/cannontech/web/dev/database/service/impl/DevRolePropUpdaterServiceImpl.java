@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.CapControlCommandsAccessLevel;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -117,7 +116,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.TRENDING)) {
-                    setRoleProperty(group, YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.OWNER.toString());
+                    setRoleProperty(group, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION,true);
                     setRoleProperty(group, YukonRoleProperty.VIEW_ALARMS_AS_ALERTS,true);
                     setRoleProperty(group, YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS,false);
                     results.put(YukonRole.TRENDING, true);
@@ -138,6 +137,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
 
                 if (canAddRole(group, YukonRole.CBC_SETTINGS)) {
                     setRoleProperty(group, YukonRoleProperty.CAP_CONTROL_ACCESS,true);
+                    setRoleProperty(group, YukonRoleProperty.HIDE_REPORTS, false);
                     setRoleProperty(group, YukonRoleProperty.HIDE_GRAPHS, false);
                     setRoleProperty(group, YukonRoleProperty.CBC_ALLOW_OVUV,true);
                     setRoleProperty(group, YukonRoleProperty.CBC_DATABASE_EDIT,true);

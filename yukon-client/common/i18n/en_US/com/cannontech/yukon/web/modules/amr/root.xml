@@ -101,9 +101,6 @@
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageTitle">{0}</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.virtual.pageName">Meter Detail</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.virtual.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.meterDetail.virtual.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.amr.meterDetail.water.pageName">Meter Detail</entry>
     <entry key="yukon.web.modules.amr.meterDetail.water.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.meterDetail.water.pageTitle">{0}</entry>
@@ -264,9 +261,6 @@
     <entry key="yukon.web.modules.amr.gasServicePointsInfo">Gas Service Point Information</entry>
     <entry key="yukon.web.modules.amr.propaneServicePointsInfo">Propane Service Point Information</entry>
     <entry key="yukon.web.modules.amr.waterServicePointsInfo">Water Service Point Information</entry>
-    <entry key="yukon.web.modules.amr.electricService">Electric Service</entry>
-    <entry key="yukon.web.modules.amr.gasService">Gas Service</entry>
-    <entry key="yukon.web.modules.amr.waterService">Water Service</entry>
     <entry key="yukon.web.modules.amr.namePlateInfo">Nameplate</entry>
     <entry key="yukon.web.modules.amr.noResults">No Data</entry>
     <entry key="yukon.web.modules.amr.customerHazardType">Customer Hazard Type</entry>
@@ -343,10 +337,8 @@
     <entry key="yukon.web.modules.amr.meterProgramming.specialCases.title">Automatically Generated</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.type">Type</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.program">Program</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.numberOfDevices">Devices</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.numberSuccessful">Success</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.numberInProgress">In Progress</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.numberFailed">Failure</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.numberOfDevices"># of Devices</entry>
+    <entry key="yukon.web.modules.amr.meterProgramming.numberInProgress"># in Progress</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.noProgramsFound">No programs found.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.delete.success">Program {0} was successfully deleted.</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.delete.error">There was a problem deleting program {0}.</entry>
@@ -387,6 +379,5 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendLink">Resend Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.noProgramsFound">No programs found</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.programDoesNotMatch">The program selected for this action no longer matches the current program for this device.</entry>
-    <entry key="yukon.web.modules.amr.meterProgramming.summary.timeout">There was an issue completing the command. Request timed out.</entry>
  
 </properties>

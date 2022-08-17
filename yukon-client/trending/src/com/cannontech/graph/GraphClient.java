@@ -71,7 +71,6 @@ import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -1601,17 +1600,11 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
             // Setup Role Property to create/edit trends.
             ClientSession session = ClientSession.getInstance();
             RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-
-            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.CREATE,
-                    session.getUser())) {
+            boolean graphEdit =
+                rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, session.getUser());
+            if (!graphEdit) {
                 getTrendMenu().getCreateMenuItem().setEnabled(false);
-            }
-            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.UPDATE,
-                    session.getUser())) {
                 getTrendMenu().getEditMenuItem().setEnabled(false);
-            }
-            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.OWNER, session.getUser())) {
-                getTrendMenu().getDeleteMenuItem().setEnabled(false);
             }
 
             histDate = com.cannontech.util.ServletUtil.getToday();

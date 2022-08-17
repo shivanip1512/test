@@ -47,7 +47,7 @@
             <!-- Delete Meter Button -->
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
                 <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" 
-                                   icon="icon-delete" data-ok-event="yukon:meter:delete" />
+                                   icon="icon-cross" data-ok-event="yukon:meter:delete" />
                 <d:confirm on="#deleteMeter"  nameKey="confirmDelete" argument="${deviceName}"/>
                 <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
                 <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
@@ -131,16 +131,12 @@
                     <c:when test="${showPolyphaseReadings}">
                        <tags:widget bean="polyphaseMeterReadingsWidget"/>
                     </c:when>
-                    <c:when test ="${isDerEdgeCooordinator}">
-                        <!-- Don't show any meter reading widget -->
-                    </c:when>
                     <c:otherwise>
                        <tags:widget bean="meterReadingsWidget"/>
                     </c:otherwise>
                 </c:choose>
                 
                 <c:if test="${showWifiConnection}"><tags:widget bean="wifiConnectionWidget"/></c:if>
-                <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
                 
                 <c:if test="${showRfMetadata}">
                     <cti:msg var="widgetHelpText" key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText"/>
@@ -158,15 +154,10 @@
             </div>
             
             <div class="column two nogutter">
-                <c:if test="${!isDerEdgeCooordinator}">
-                    <div id="trendWidget">
-                        <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
-                    </div>
-                </c:if>
-                <c:if test="${showInfrastructureWarnings}">
-                    <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
-                    <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}"/>
-                </c:if>
+                <div id="trendWidget">
+                   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
+                </div>
+                
                 <c:if test="${showDisconnect}">
                     <cti:url var="url" value="/widget/disconnectMeterWidget/helpInfo">
                         <cti:param name="deviceId" value="${deviceId}"/>

@@ -8,26 +8,27 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnDeviceLookupService;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<GatewayArchiveRequest> {
-        
+    
+    private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
+    
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private NmSyncServiceImpl nmSyncService;
-    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private List<Worker> workers;
@@ -42,14 +43,12 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 missingGatewayFirstDataTimes.remove(identifier);
             }
-            RfnDevice device = rfnDeviceLookupService.findRfnDevices(identifier);
-            if(device != null) {
-                return device;
-            }
+
             try {
                 // Create the device in Yukon and send a DB change message
-                device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(),
+                RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(),
                     request.getRfnIdentifier());
+                rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
 
                 gatewayEventLogService.createdGatewayAutomatically(device.getName(),
@@ -67,11 +66,6 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             //no data to archive on this queue, just device creation requests that have no other payload
             incrementProcessedArchiveRequest();
             return Optional.empty();  //  no point data to track
-        }
-
-        @Override
-        protected Instant getDataTimestamp(GatewayArchiveRequest request) {
-            return null;
         }
     }
     
@@ -111,7 +105,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     
     //Not needed, no response is sent for this message
     @Override
-    protected YukonJmsTemplate getJmsTemplate() {
+    protected String getRfnArchiveResponseQueueName() {
         return null;
     }
     

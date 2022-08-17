@@ -1,14 +1,14 @@
 package com.cannontech.multispeak;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.multispeak.service.MultispeakMeterServiceBase;
 
@@ -17,7 +17,7 @@ public class DeviceNameExtensionRegexTest {
     private ArrayList<String> inValidDeviceNameExtList = new ArrayList<>();
     String deviceNameExtRegex = MultispeakMeterServiceBase.DEVICE_NAME_EXT_REGEX;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         validDeviceNameExtList.add(" [CisSubstation01]");
         validDeviceNameExtList.add(" [CisSubstation02]");
@@ -51,7 +51,7 @@ public class DeviceNameExtensionRegexTest {
         }
     }
 
-    @AfterEach
+    @After
     public void tearDown() {
         validDeviceNameExtList.clear();
         inValidDeviceNameExtList.clear();

@@ -26,7 +26,7 @@ public interface AssetAvailabilityDao {
     public enum SortBy {
 
         SERIALNUM("SERIAL_NUM"), 
-        TYPE("TYPEENTRYTEXT"), 
+        TYPE("TYPE"), 
         LASTCOMM("LAST_COMM"), 
         LASTRUN("LAST_RUN"),
         GATEWAYNAME("GATEWAY_NAME");

@@ -16,11 +16,11 @@ void identifyProject(const compileinfo_t &info)
 {
     if( isDebugLudicrous() && info.date )
     {
-        CTILOG_INFO(dout, info.project << " [Version " << info.version << ", " << info.date << "]");
+        CTILOG_INFO(dout, info.project << " [Version " << info.version << "]" << " [Version Details: " << info.details << ", " << info.date << "]");
     }
     else
     {
-        CTILOG_INFO(dout, info.project << " [Version " << info.version << "]");
+        CTILOG_INFO(dout, info.project << " [Version " << info.version << "]" << " [Version Details: " << info.details << "]");
     }
 }
 

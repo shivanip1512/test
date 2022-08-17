@@ -5,6 +5,6 @@ Class-Path: ./
  calchist.jar 
  yukonappserver.jar 
  sqljdbc42.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  ../log/ 
  ../export/ 

@@ -2,27 +2,27 @@ package com.cannontech.clientutils.commander;
 
 import java.awt.Color;
 
-import com.cannontech.common.YukonColorPalette;
-
 public enum MessageType {
     
-    INFO(YukonColorPalette.BLACK), 
-    ERROR(YukonColorPalette.RED), 
-    SUCCESS(YukonColorPalette.BLUE), 
-    INHIBITED(YukonColorPalette.GRAY);
+    INFO(Color.BLACK, "Black"), 
+    ERROR(Color.RED, "Red"), 
+    SUCCESS(Color.BLUE, "Blue"), 
+    INHIBITED(Color.GRAY, "Gray");
     
-    private YukonColorPalette color;
+    private Color color;
+    private String styleString;
     
-    private MessageType(YukonColorPalette color) {
+    private MessageType(Color color, String styleString) {
         this.color = color;
+        this.styleString = styleString;
     }
     
-    public YukonColorPalette getColor() {
+    public Color getColor() {
         return color;
     }
     
     public String getStyleString() {
-        return getColor().toDefaultText();
+        return styleString;
     }
     
     public static MessageType getMessageType(int status) {

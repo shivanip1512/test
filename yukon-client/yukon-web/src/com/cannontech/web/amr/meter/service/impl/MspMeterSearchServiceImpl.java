@@ -25,14 +25,12 @@ import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 public class MspMeterSearchServiceImpl implements MspMeterSearchService {
 
     @Autowired private MspSearchFieldsProviderV3 fieldsProviderV3;
-    @Autowired private MspSearchFieldsProviderV4 fieldsProviderV4;
     @Autowired private MspSearchFieldsProviderV5 fieldsProviderV5;
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
 
     List<MspMeterSearchMethodResultProvider> methodResultProviders;
     private Map<MspSearchField, MspMeterSearchMethodResultProvider> methodResultProviderMapV3 = new HashMap<>();
-    private Map<MspSearchField, MspMeterSearchMethodResultProvider> methodResultProviderMapV4 = new HashMap<>();
     private Map<MspSearchField, MspMeterSearchMethodResultProvider> methodResultProviderMapV5 = new HashMap<>();
     private Set<MspSearchField> mspSearchFields = new HashSet<>();
 
@@ -54,10 +52,6 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
                     mspSearchFields =
                         fieldsProviderV3.loadMspSearchFields(mspVendor, methodResultProviderMapV3.keySet());
 
-                } else if (cisVersion == MultiSpeakVersion.V4) {
-                    mspSearchFields =
-                            fieldsProviderV4.loadMspSearchFields(mspVendor, methodResultProviderMapV4.keySet());
-                        
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     mspSearchFields =
                         fieldsProviderV5.loadMspSearchFields(mspVendor, methodResultProviderMapV5.keySet());
@@ -88,18 +82,11 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
             MultispeakInterface cb_server_v3 =
                 mspVendor.getMspInterfaceMap().get(
                     MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V3));
-            
-            MultispeakInterface cb_server_v4 = 
-                mspVendor.getMspInterfaceMap().get(
-                    MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V4));
 
             if (cb_server_v3 != null) {
                 msFilterByList = loadFilterList(MultiSpeakVersion.V3);
-                
-            } else if (cb_server_v4 != null) {
-                msFilterByList = loadFilterList(MultiSpeakVersion.V4);
-            }
-            else {
+
+            } else {
                 msFilterByList = loadFilterList(MultiSpeakVersion.V5);
             }
         }
@@ -112,11 +99,7 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
             for (MspSearchField mspSearchField : mspSearchFields) {
                 msFilterByList.add(new MspFilterBy(mspSearchField.name(), methodResultProviderMapV3.get(mspSearchField)));
             }
-        } else if (multiSpeakVersion == MultiSpeakVersion.V4) {
-            for (MspSearchField mspSearchField : mspSearchFields) {
-                msFilterByList.add(new MspFilterBy(mspSearchField.name(), methodResultProviderMapV4.get(mspSearchField)));
-            }
-        } else if (multiSpeakVersion == MultiSpeakVersion.V5) {
+        } else {
             for (MspSearchField mspSearchField : mspSearchFields) {
                 msFilterByList.add(new MspFilterBy(mspSearchField.name(), methodResultProviderMapV5.get(mspSearchField)));
             }
@@ -130,10 +113,7 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
         for (MspMeterSearchMethodResultProvider methodResultProvider : methodResultProviders) {
             if (methodResultProvider.version() == MultiSpeakVersion.V3) {
                 methodResultProviderMapV3.put(methodResultProvider.getSearchField(), methodResultProvider);
-            } else if (methodResultProvider.version() == MultiSpeakVersion.V4) {
-                methodResultProviderMapV4.put(methodResultProvider.getSearchField(), methodResultProvider);
-            }
-            else if (methodResultProvider.version() == MultiSpeakVersion.V5) {
+            } else {
                 methodResultProviderMapV5.put(methodResultProvider.getSearchField(), methodResultProvider);
             }
         }

@@ -8,17 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointDataTagsListener;
-import com.cannontech.core.dynamic.PointValueQualityTagHolder;
+import com.cannontech.core.dynamic.PointDataListener;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.core.dynamic.RichPointDataService;
 
-public class RichPointDataServiceImpl implements RichPointDataService, PointDataTagsListener {
+public class RichPointDataServiceImpl implements RichPointDataService, PointDataListener {
     private AsyncDynamicDataSource asyncDynamicDataSource;
     private PointDao pointDao;
     
-    private List<RichPointDataListener> listeners = new CopyOnWriteArrayList<>();
+    private List<RichPointDataListener> listeners = new CopyOnWriteArrayList<RichPointDataListener>();
 
     @Override
     public void registerForAll(RichPointDataListener listener) {
@@ -29,7 +29,7 @@ public class RichPointDataServiceImpl implements RichPointDataService, PointData
     }
 
     @Override
-    public void pointDataReceived(PointValueQualityTagHolder pointData) {
+    public void pointDataReceived(PointValueQualityHolder pointData) {
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointData.getId());
         RichPointData richPointData = new RichPointData(pointData, paoPointIdentifier);
         

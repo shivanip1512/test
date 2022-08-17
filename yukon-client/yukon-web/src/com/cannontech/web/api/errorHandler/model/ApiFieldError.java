@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ApiFieldError {
@@ -12,7 +11,6 @@ public class ApiFieldError {
     private String field;
     private String code;
     @JsonInclude(Include.NON_NULL)
-    @JsonSerialize(using = RejectValueDelegatingSerializer.class)
     private Object rejectedValue;
     
     public ApiFieldError(String field, String code, Object rejectedValue) {

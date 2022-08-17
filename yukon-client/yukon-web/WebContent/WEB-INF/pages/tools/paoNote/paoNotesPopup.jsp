@@ -43,7 +43,7 @@
         </c:when>
         <c:otherwise>
             <div class="scroll-lg" id="pao-notes-list-container" data-url="${searchUrl}" data-static>
-                <table class="compact-results-table no-stripes has-actions wrbw" style="width:100%; table-layout:fixed;">
+                <table class="compact-results-table has-actions row-highlighting wrbw" style="width:100%; table-layout:fixed;">
                     <thead>
                         <th width="36%"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
                         <th width="10%"/>
@@ -64,12 +64,12 @@
                                         <div id="js-popup-note-content-${noteId}" class="wspr">${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</div>
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
-                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="width:100%" class="rn"
+                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 
                                             maxlength="${noteTextAreaMaxLength}" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
                                     </div>
                                 </td>
                                 <td class="vam js-popup-note-actions dn">
-                                    <cti:msg2 var="cancelText" key="yukon.common.cancelChanges"/>
+                                    <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
                                     <cti:msg2 var="saveText" key="yukon.common.save"/>
                                     <div id="js-save-popup-note-group-${noteId}" class="button-group dn">
                                         <cti:button id="js-save-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-disk" 
@@ -99,7 +99,7 @@
                                         <c:if test="${paoNoteSearchResult.modifiable}">
                                             <cti:button id="js-edit-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                                         data-note-id="${noteId}" title="${editText}"/>
-                                            <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
+                                            <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
                                                         data-ok-event="yukon:popup:note:delete" title="${deleteText}"/>
                                             <d:confirm on="#js-delete-popup-note-btn-${noteId}"  nameKey="confirmDelete"/>
                                         </c:if>

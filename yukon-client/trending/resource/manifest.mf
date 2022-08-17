@@ -10,7 +10,7 @@ Class-Path: ./
  jcpagelayout450K.jar 
  junit.jar 
  sqljdbc42.jar 
- ojdbc10.jar 
+ ojdbc6.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 

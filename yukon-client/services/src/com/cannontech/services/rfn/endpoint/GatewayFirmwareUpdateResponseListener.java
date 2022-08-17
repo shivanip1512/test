@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -16,9 +15,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnDeviceLookupService;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -32,7 +28,6 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
     private static final Logger log = YukonLogManager.getLogger(GatewayFirmwareUpdateResponseListener.class);
     
     @Autowired private RfnGatewayFirmwareUpgradeDao gatewayFirmwareUpgradeDao;
-    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     
     private List<Worker> workers;
     
@@ -44,13 +39,9 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
         
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
-            try {
-                return rfnDeviceLookupService.getDevice(identifier);
-            } catch (NotFoundException ex) {
-                // We got a message for a gateway that is not in the database.
-                log.warn("Received firmware update response for a gateway that's not in the database: " + identifier);
-                throw new RuntimeException("Creation not attempted for " + identifier);
-            }
+            // We got a message for a gateway that is not in the database.
+            log.warn("Received firmware update response for a gateway that's not in the database: " + identifier);
+            throw new RuntimeException("Creation not attempted for " + identifier);
         }
         
         @Override
@@ -60,11 +51,6 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
                                                rfnDevice.getPaoIdentifier(), 
                                                response.getResult());
             return Optional.empty();  //  no point data to track
-        }
-
-        @Override
-        protected Instant getDataTimestamp(RfnIdentifyingMessage request) {
-            return null;
         }
     }
     
@@ -104,7 +90,7 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
     
     //Not needed, no response is sent for this message
     @Override
-    protected YukonJmsTemplate getJmsTemplate() {
+    protected String getRfnArchiveResponseQueueName() {
         return null;
     }
 }

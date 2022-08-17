@@ -28,7 +28,7 @@ public class DataCollectionWidget extends AdvancedWidgetControllerBase {
         
     @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request) throws Exception {
-        String deviceGroup = WidgetParameterHelper.getStringParameter(request, "deviceGroup");    
+        String deviceGroup = WidgetParameterHelper.getStringParameter(request, "deviceGroup");
         model.addAttribute("deviceGroup", deviceGroup);
         
         Boolean includeDisabled = WidgetParameterHelper.getBooleanParameter(request, "includeDisabled", true);

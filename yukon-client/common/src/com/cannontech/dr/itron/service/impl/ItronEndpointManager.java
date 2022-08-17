@@ -1,16 +1,15 @@
 package com.cannontech.dr.itron.service.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Base64;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPConstants;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.WebServiceClientException;
-import org.springframework.ws.client.WebServiceIOException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
@@ -19,8 +18,7 @@ import org.springframework.ws.soap.SoapMessageFactory;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpComponentsConnection;
-import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
@@ -33,7 +31,6 @@ public enum ItronEndpointManager {
     SERVICE_POINT("ServicePointManagerPort", "com.cannontech.dr.itron.model.jaxb.servicePointManagerTypes_v1_3"),
     REPORT("ReportManagerPort", "com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2");
 
-    private int itronTimeoutSeconds = 120;
     private WebServiceTemplate template;
     private String port;
     private Jaxb2Marshaller marshaller;
@@ -50,36 +47,12 @@ public enum ItronEndpointManager {
             template = new WebServiceTemplate(factory);
             template.setMarshaller(marshaller);
             template.setUnmarshaller(marshaller);
-            setTemplateTimeout(itronTimeoutSeconds, template, log);
         } catch (Exception e) {
             log.error("Unable to create template or marshaller", e);
         }
     }
-    
-    /**
-     * This slightly sketchy method creates a new message sender, sets the timeout, and sets it as the message sender
-     * for the specified template.
-     * @param timeoutSeconds The timeout length, in seconds.
-     * @param template The WebServiceTemplate that will have its message sender and timeout modified in place.
-     */
-    private static void setTemplateTimeout(int timeoutSeconds, WebServiceTemplate template, Logger log) {
-        HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender();
-        messageSender.setReadTimeout(timeoutSeconds * 1000); //timeout set in milliseconds
-        template.setMessageSender(messageSender);
-        log.info("Updated Itron response timeout to {} seconds.", timeoutSeconds);
-    }
-    
+
     public WebServiceTemplate getTemplate(GlobalSettingDao settingDao) {
-        int timeoutSecondsSetting = settingDao.getInteger(GlobalSettingType.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS);
-        
-        // Only update the template if the cached timeout setting has changed
-        if (itronTimeoutSeconds != timeoutSecondsSetting) {
-            //update the cached timeout setting
-            itronTimeoutSeconds = timeoutSecondsSetting;
-            //update the template with the new timeout
-            setTemplateTimeout(itronTimeoutSeconds, template, log);
-        }
-        
         String userName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
         String password = settingDao.getString(GlobalSettingType.ITRON_HCM_PASSWORD);
         ClientInterceptor[] interceptors = { new ItronCommunicationInterceptor(userName, password) };
@@ -129,16 +102,12 @@ public enum ItronEndpointManager {
             TransportContext context = TransportContextHolder.getTransportContext();
             String userCredentials = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes()));
-            HttpComponentsConnection connection = (HttpComponentsConnection) context.getConnection(); //WebServiceConnection
-            try {
-                connection.addRequestHeader("authorization", basicAuth);
-                //Soap 1.1 uses "text/xml". Soap 1.2 uses "application/soap+xml"
-                //Itron uses 1.1 as indicated by namespace http://schemas.xmlsoap.org/wsdl/soap/ in WSDLs
-                connection.addRequestHeader("Content-Type", "text/xml; charset=UTF-8");
-                return true;
-            } catch (IOException e) {
-                throw new WebServiceIOException("Failed to add request headers to connection.", e);
-            }
+            HttpUrlConnection conn = (HttpUrlConnection) context.getConnection();
+            conn.getConnection().setRequestProperty("authorization", basicAuth);
+            //Soap 1.1 uses "text/xml". Soap 1.2 uses "application/soap+xml"
+            //Itron uses 1.1 as indicated by namespace http://schemas.xmlsoap.org/wsdl/soap/ in WSDLs
+            conn.getConnection().addRequestProperty("Content-Type", "text/xml; charset=UTF-8");
+            return true;
         }
 
         @Override

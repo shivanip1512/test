@@ -3,6 +3,7 @@ package com.cannontech.messaging.serialization.thrift;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TMemoryBuffer;
 
 import com.cannontech.messaging.serialization.MessageFactory;
 import com.cannontech.messaging.serialization.MessageSerializer;
@@ -74,7 +75,7 @@ public abstract class ThriftSerializer<T, TE extends TBase<TE, ?>> implements Me
 
     @Override
     public byte[] serialize(MessageFactory factory, T msg) {
-        YukonTMemoryBuffer transport = ThriftMessageFactory.createDefaultMemoryBufferTransport();
+        TMemoryBuffer transport = ThriftMessageFactory.createDefaultMemoryBufferTransport();
         TProtocol protocol = ThriftMessageFactory.createDefaultProtocol(transport);
         byte[] result = null;
 

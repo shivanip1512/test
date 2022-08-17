@@ -281,16 +281,13 @@ $(document).ready(function(){
                     </tags:sectionContainer2>
                 </div>
 
-                <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
                 <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
                 <div id="create-popup" data-dialog
-                        class="dn js-smart-notifications-popup"
-                        data-event="yukon:notifications:save"
+                        class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
                         data-title="<cti:msg2 key=".createPopup.title"/>"
                         data-url="${smartNotificationsUrl}" 
                         data-load-event="yukon:notifications:load"
-                        data-width="600"
-                        data-help-text="${helpText}"></div>
+                        data-width="600"></div>
 
             </cti:msgScope>
         </cti:checkRolesAndProperties>

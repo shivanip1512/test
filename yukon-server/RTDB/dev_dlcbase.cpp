@@ -411,6 +411,8 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
             ReturnMsg->setResultString(getName() + " / " + description);
         }
 
+        retMsgHandler(InMessage.Return.CommandStr, InMessage.ErrorCode, ReturnMsg, vgList, retList);
+
         if( ptr.get() )
         {
             ptr->invokeRequestHandler(*this, InMessage, vgList, retList, outList);
@@ -421,8 +423,6 @@ void DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNo
 
             decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
         }
-
-        retMsgHandler(InMessage.Return.CommandStr, InMessage.ErrorCode, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection));
     }
     catch( DlcCommand::CommandException &e )
     {
@@ -669,8 +669,6 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                                 pOut->Request,
                                 getName() + ": ERROR " + CtiNumStr(nRet) + " (" + CtiError::GetErrorString(nRet) + ") performing command on route " + Route->getName(),
                                 nRet));
-
-                decrementGroupMessageCount(pOut->Request.UserID, pOut->Request.Connection);
             }
         }
         else if( getRouteManager() == 0 )       // If there is no route manager, we need porter to do the route work!

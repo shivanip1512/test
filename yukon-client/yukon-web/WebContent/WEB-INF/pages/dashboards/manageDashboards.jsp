@@ -15,7 +15,7 @@
 <div class="page-actions fr stacked-md">
     <cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/>
 </div>
-<br/><br/><br/>
+<br/><br/>
 
 <cti:tabs>
     <cti:msg2 var="dashboardsTab" key=".dashboardsTab"/>
@@ -59,13 +59,13 @@
                                             <c:when test="${user.userID == dashboard.owner.userID && dashboard.visibility != 'SYSTEM'}">
                                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}" />
-                                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-delete"
+                                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
                                                     data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
                                                 <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <cm:dropdownOption key=".edit" icon="icon-pencil" disabled="true" />
-                                                <cm:dropdownOption key=".delete" icon="icon-delete" disabled="true" />
+                                                <cm:dropdownOption key=".delete" icon="icon-cross" disabled="true" />
                                             </c:otherwise>
                                         </c:choose>
                                     </cm:dropdown>

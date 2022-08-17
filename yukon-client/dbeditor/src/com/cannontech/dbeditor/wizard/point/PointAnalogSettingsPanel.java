@@ -4,7 +4,10 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
+import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -12,7 +15,7 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 
 public class PointAnalogSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjUnitOfMeasureLabel = null;
-	private javax.swing.JComboBox<UnitOfMeasure> ivjUnitOfMeasureComboBox = null;
+	private javax.swing.JComboBox ivjUnitOfMeasureComboBox = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldDecimalPlaces = null;
     private com.klg.jclass.field.JCSpinField meterDialsSpinner = null;
 	private javax.swing.JLabel ivjJLabelDecimalPlaces = null;
@@ -185,10 +188,10 @@ private javax.swing.JTextField getMultiplierTextField() {
  * Return the JComboBox1 property value.
  * @return javax.swing.JComboBox
  */
-private javax.swing.JComboBox<UnitOfMeasure> getUnitOfMeasureComboBox() {
+private javax.swing.JComboBox getUnitOfMeasureComboBox() {
 	if (ivjUnitOfMeasureComboBox == null) {
 		try {
-			ivjUnitOfMeasureComboBox = new javax.swing.JComboBox<>();
+			ivjUnitOfMeasureComboBox = new javax.swing.JComboBox();
 			ivjUnitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
 			ivjUnitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjUnitOfMeasureComboBox.setMaximumRowCount(6);
@@ -220,7 +223,6 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
-@Override
 public Object getValue(Object val)
 {
 	//Assuming commonObject is AnalogPoint (real or not)
@@ -241,13 +243,14 @@ public Object getValue(Object val)
 
 	com.cannontech.database.data.point.AnalogPoint point = (com.cannontech.database.data.point.AnalogPoint) val;
 
-	int uOfMeasureID = ((UnitOfMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getId();
+	int uOfMeasureID =
+		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
-	point.getPointUnit().setUomID(uOfMeasureID);
-	point.getPoint().setStateGroupID(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG);
+	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
+	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
 
-	point.getPointUnit().setDecimalPlaces(((Number) getJCSpinFieldDecimalPlaces().getValue()).intValue());
-    point.getPointUnit().setMeterDials(((Number) getMeterDialsSpinner().getValue()).intValue());
+	point.getPointUnit().setDecimalPlaces(new Integer(((Number) getJCSpinFieldDecimalPlaces().getValue()).intValue()));
+    point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
 	point.getPointAnalog().setMultiplier(multiplier);
 	point.getPointAnalog().setDataOffset(dataOffset);
 	return val;
@@ -340,11 +343,13 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 
-    List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
-    for (UnitOfMeasure um : unitMeasures) {
+    List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
+    for (LiteUnitMeasure um : unitMeasures) {
         getUnitOfMeasureComboBox().addItem(um);
+        if(um.getUomID() == UnitOfMeasure.KW.getId()) {
+            getUnitOfMeasureComboBox().setSelectedItem(um);
+        }
     }
-    getUnitOfMeasureComboBox().setSelectedItem(UnitOfMeasure.KW);
 		
 	getMultiplierTextField().setText("1.0");
 	getDataOffsetTextField().setText("0.0");
@@ -364,8 +369,7 @@ public static void main(java.lang.String[] args) {
 		frame.add("Center", aPointAnalogSettingsPanel);
 		frame.setSize(aPointAnalogSettingsPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
+			public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -379,17 +383,14 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
-@Override
 public void setValue(Object val) {
 }
 
-@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
-        @Override
         public void run() 
             { 
             getUnitOfMeasureComboBox().requestFocus(); 

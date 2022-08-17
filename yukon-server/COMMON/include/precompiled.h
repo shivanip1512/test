@@ -36,6 +36,7 @@
 #include <boost/assert.hpp>
 #include <boost/assign/ptr_map_inserter.hpp>
 #include <boost/bimap.hpp>
+#include <boost/bind.hpp>
 #include <boost/config.hpp>
 #include <boost/crc.hpp>
 #include <boost/mem_fn.hpp>
@@ -60,6 +61,7 @@
 
 //#include <boost/regex.hpp>
 
+//#include <boost/test/auto_unit_test.hpp>
 //#include <boost/test/floating_point_comparison.hpp>
 //#include <boost/test/unit_test.hpp>
 

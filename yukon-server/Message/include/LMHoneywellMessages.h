@@ -16,7 +16,6 @@ public:
                                       const int  dutyCycle,
                                       const int  startTime,
                                       const int  controlDuration,
-                                      const bool mandatory,
                                       const bool rampInOut );
 
     void streamInto(cms::StreamMessage & message) const;
@@ -26,7 +25,6 @@ private:
     int  _programId;
     int  _groupId;
     bool _rampingOption;
-    bool _mandatory;
     char _dutyCycle;
     int  _startTime;
     int  _stopTime;

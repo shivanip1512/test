@@ -30,7 +30,6 @@ Uninstall-CloudService
 Expand-Installer
 Upgrade-Yukon
 Update-YukonDatabase
-Update-ApiDocumentation
 Install-CloudService
 Start-YukonServices
 Start-EIM

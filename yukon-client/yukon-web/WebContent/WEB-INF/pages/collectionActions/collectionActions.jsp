@@ -76,11 +76,11 @@
                 <cti:checkRolesAndProperties value="MASS_CHANGE">
                     <c:set var="showConfigSection" value="true"/>
                 </cti:checkRolesAndProperties>
-                <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
+                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                         <c:set var="showConfigSection" value="true"/>
                     </cti:checkRolesAndProperties>
-                </cti:checkLicenseKey>
+                </cti:checkRolesAndProperties>
                 <c:if test="${showConfigSection}">
                     <cti:dataGridCell>
                         <tags:sectionContainer2 nameKey="header.configActions" styleClass="w300">
@@ -100,7 +100,7 @@
                                 </cti:checkLicenseKey>
                                         
                                 <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
-                                <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
+                                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
                                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                                         <%-- CONFIGURE DATA STREAMING --%>
                                         <tags:collectionActionTr linkKey=".configureDataStreamingLabel" 
@@ -112,7 +112,7 @@
                                             descriptionKey=".removeDataStreamingDescription" icon="icon-app icon-app-32-datastreaming-remove"
                                             action="/bulk/dataStreaming/removeInputs" deviceCollection="${deviceCollection}" ajaxSubmit="true"/>
                                     </cti:checkRolesAndProperties>
-                                </cti:checkLicenseKey>
+                                </cti:checkRolesAndProperties>
                             </table>
                         </tags:sectionContainer2>
                     </cti:dataGridCell>

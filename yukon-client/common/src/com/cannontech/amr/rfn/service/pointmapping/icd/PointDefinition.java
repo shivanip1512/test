@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import com.cannontech.common.pao.PaoType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -57,10 +54,5 @@ public class PointDefinition extends BasePointDefinition {
         super(unit, modifiers);
         this.mapped = mapped;
         this.coincident = coincident;
-    }
-    
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

@@ -1,8 +1,8 @@
 #include "precompiled.h"
 
+
 #include "dnp_object_binaryoutput.h"
 #include "logger.h"
-#include "std_helper.h"
 
 using std::endl;
 
@@ -203,7 +203,7 @@ void BinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long of
 
 void BinaryOutputControl::setStatus(ControlStatus s)
 {
-    _crob_or_pcb.block.status = as_underlying(s);
+    _crob_or_pcb.block.status = static_cast<unsigned char>(s);
 }
 
 

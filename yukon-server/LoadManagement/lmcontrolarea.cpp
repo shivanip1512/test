@@ -2448,28 +2448,10 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
             }
 
             if( lm_direct->getManualControlReceivedFlag() ||
-                ( lm_direct->getDirectStopTime() == resultStop && resultStart == lm_direct->getDirectStartTime() ) || 
-                  resultStart == beginTime )
+                lm_direct->getDirectStopTime() == resultStop )
             {
                 continue;
-            }            
-            else
-            {
-                lm_direct->setDirectStartTime(resultStart);
-                lm_direct->setDirectStopTime(resultStop);
-                if( lm_direct->isControlling() )
-                {   
-                // If we are controlling already, we dont want to send another start message. This happens
-                // when the control window is moved around.
-                    lm_direct->scheduleStopNotificationForTimedControl(resultStop);
-                }
-                else
-                {
-                    lm_direct->scheduleNotificationForTimedControl(resultStart, resultStop);
-                }
-
-                setUpdatedFlag(TRUE);
-            }                                                                   
+            }
 
             if( ! lm_direct->getConstraintOverride() )
             {
@@ -2738,7 +2720,7 @@ void CtiLMControlArea::restore(Cti::RowReader &rdr)
     }
     else
     {
-        figureNextCheckTime(CtiTime());
+        figureNextCheckTime(CtiTime().seconds());
         setNewPointDataReceivedFlag(FALSE);
         setUpdatedFlag(TRUE);//should always be sent to clients if it is newly added!
         setControlAreaState(CtiLMControlArea::InactiveState);
@@ -2823,40 +2805,6 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
     }
 
     return returnString;
-}
-
-std::size_t CtiLMControlArea::getMemoryConsumption() const
-{
-    // The fixed size
-    std::size_t sz = sizeof( *this );
-
-    // the additional allocated string memory
-    sz  += dynamic_sizeof( _paocategory )
-        +  dynamic_sizeof( _paoclass )
-        +  dynamic_sizeof( _paoname )
-        +  dynamic_sizeof( _paoTypeString )
-        +  dynamic_sizeof( _paodescription )
-        +  dynamic_sizeof( _defoperationalstate );
-
-    // the allocated array
-    sz += _lmcontrolareatriggers.capacity() * sizeof( CtiLMControlAreaTrigger* );
-
-    // each of the triggers memory consumption
-    for ( const auto & trigger : _lmcontrolareatriggers )
-    {
-        sz += trigger->getMemoryConsumption();
-    }
-
-    // the allocated array
-    sz += _lmprograms.capacity() * sizeof( CtiLMProgramBaseSPtr );
-
-    // each programs memory consumption
-    for ( const auto & program : _lmprograms )
-    {
-        sz += program->getMemoryConsumption();
-    }
-
-    return sz;
 }
 
 

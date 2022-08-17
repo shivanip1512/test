@@ -5,12 +5,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
-public enum DayOfWeek implements DisplayableEnum {
+public enum DayOfWeek {
     SUNDAY, 
     MONDAY, 
     TUESDAY, 
@@ -45,10 +44,5 @@ public enum DayOfWeek implements DisplayableEnum {
                         .filter(i -> daySelection.charAt(i) == 'Y')
                         .mapToObj(i -> dayOfWeeksMap.get(i))
                         .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getFormatKey() {
-        return "yukon.common.day." + name() + ".short";
     }
 }

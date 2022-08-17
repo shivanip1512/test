@@ -9,7 +9,7 @@ public class RouteData implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    private long routeDataTimestamp; // Retrieved from ROUTE_DATA_POINT.routeDataTimeStamp
+    private long routeDataTimeStamp;
 
     private String destinationAddress;
     
@@ -27,12 +27,12 @@ public class RouteData implements Serializable {
     
     private Short routeColor;
 
-    public long getRouteDataTimestamp() {
-        return routeDataTimestamp;
+    public long getRouteDataTimeStamp() {
+        return routeDataTimeStamp;
     }
 
-    public void setRouteDataTimestamp(long routeDataTimestamp) {
-        this.routeDataTimestamp = routeDataTimestamp;
+    public void setRouteDataTimeStamp(long routeDataTimeStamp) {
+        this.routeDataTimeStamp = routeDataTimeStamp;
     }
 
     public String getDestinationAddress() {
@@ -108,7 +108,7 @@ public class RouteData implements Serializable {
         result = prime * result + ((nextHopAddress == null) ? 0 : nextHopAddress.hashCode());
         result = prime * result + ((nextHopRfnIdentifier == null) ? 0 : nextHopRfnIdentifier.hashCode());
         result = prime * result + ((routeColor == null) ? 0 : routeColor.hashCode());
-        result = prime * result + (int) (routeDataTimestamp ^ (routeDataTimestamp >>> 32));
+        result = prime * result + (int) (routeDataTimeStamp ^ (routeDataTimeStamp >>> 32));
         result = prime * result + ((routeFlags == null) ? 0 : routeFlags.hashCode());
         result = prime * result + ((routeTimeout == null) ? 0 : routeTimeout.hashCode());
         result = prime * result + ((totalCost == null) ? 0 : totalCost.hashCode());
@@ -149,7 +149,7 @@ public class RouteData implements Serializable {
                 return false;
         } else if (!routeColor.equals(other.routeColor))
             return false;
-        if (routeDataTimestamp != other.routeDataTimestamp)
+        if (routeDataTimeStamp != other.routeDataTimeStamp)
             return false;
         if (routeFlags == null) {
             if (other.routeFlags != null)
@@ -172,8 +172,8 @@ public class RouteData implements Serializable {
     @Override
     public String toString() {
         return String.format(
-                "RouteData [routeDataTimestamp=%s, destinationAddress=%s, nextHopAddress=%s, nextHopRfnIdentifier=%s, totalCost=%s, hopCount=%s, routeTimeout=%s, routeFlags=%s, routeColor=%s]",
-                routeDataTimestamp, destinationAddress, nextHopAddress, nextHopRfnIdentifier, totalCost, hopCount, routeTimeout,
+                "RouteData [routeDataTimeStamp=%s, destinationAddress=%s, nextHopAddress=%s, nextHopRfnIdentifier=%s, totalCost=%s, hopCount=%s, routeTimeout=%s, routeFlags=%s, routeColor=%s]",
+                routeDataTimeStamp, destinationAddress, nextHopAddress, nextHopRfnIdentifier, totalCost, hopCount, routeTimeout,
                 routeFlags, routeColor);
     }
 }

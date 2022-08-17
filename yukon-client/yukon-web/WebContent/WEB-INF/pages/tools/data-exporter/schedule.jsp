@@ -29,7 +29,7 @@
                 </tags:nameValue2>
                 <c:if test="${not empty attributes}">
                     <c:forEach var="attribute" items="${attributes}">
-                        <input type="hidden" name="attributes" value="${attribute.key}">
+                        <input type="hidden" name="attributes" value="${attribute}">
                     </c:forEach>
                     <tags:nameValue2 nameKey=".attribute">
                         <c:forEach var="attribute" items="${attributes}" varStatus="status">
@@ -40,12 +40,6 @@
                 <tags:nameValue2 nameKey=".dataRange">
                     <tags:dataRange value="${dataRange}"/>
                 </tags:nameValue2>
-                <c:if test="${isOnInterval}">
-                    <tags:nameValue2 nameKey=".onInterval">
-                        <i:inline key=".intervals.${interval}"/>
-                        <input type="hidden" name="interval" value="${interval}"/>
-                    </tags:nameValue2>
-                </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         

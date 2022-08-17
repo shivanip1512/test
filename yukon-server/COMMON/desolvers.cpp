@@ -171,27 +171,13 @@ string desolveDeviceType( int aType )
         case TYPE_RFN430SL4:    Ret = "rfn-430sl4";     break;
 
         case TYPE_RFN510FL:     Ret = "rfn-510fl";      break;
-        //  RFN-500 Focus AX (gen 1)
         case TYPE_RFN520FAX:    Ret = "rfn-520fax";     break;
         case TYPE_RFN520FRX:    Ret = "rfn-520frx";     break;
         case TYPE_RFN520FAXD:   Ret = "rfn-520faxd";    break;
         case TYPE_RFN520FRXD:   Ret = "rfn-520frxd";    break;
         case TYPE_RFN530FAX:    Ret = "rfn-530fax";     break;
         case TYPE_RFN530FRX:    Ret = "rfn-530frx";     break;
-        //  RFN-500 Focus AXe (gen 2)
-        case TYPE_RFN520FAXE:   Ret = "rfn-520faxe";    break;
-        case TYPE_RFN520FRXE:   Ret = "rfn-520frxe";    break;
-        case TYPE_RFN520FAXED:  Ret = "rfn-520faxed";   break;
-        case TYPE_RFN520FRXED:  Ret = "rfn-520frxed";   break;
-        case TYPE_CRL520FAXE:   Ret = "crl-520faxe";    break;
-        case TYPE_CRL520FAXED:  Ret = "crl-520faxed";   break;
-        case TYPE_CRL520FRXE:   Ret = "crl-520frxe";    break;
-        case TYPE_CRL520FRXED:  Ret = "crl-520frxed";   break;
-        case TYPE_RFN530FAXE:   Ret = "rfn-530faxe";    break;
-        case TYPE_RFN530FRXE:   Ret = "rfn-530frxe";    break;
-        //  RFN-500 S4
         case TYPE_RFN530S4X:    Ret = "rfn-530s4x";     break;
-        case TYPE_CRL530S4X:    Ret = "crl-530s4x";     break;
         case TYPE_RFN530S4EAX:  Ret = "rfn-530s4eax";   break;
         case TYPE_RFN530S4EAXR: Ret = "rfn-530s4eaxr";  break;
         case TYPE_RFN530S4ERX:  Ret = "rfn-530s4erx";   break;
@@ -203,14 +189,8 @@ string desolveDeviceType( int aType )
 
         case TYPE_RFG201:       Ret = "rfg-201";        break;
         case TYPE_RFG301:       Ret = "rfg-301";        break;
-        case TYPE_RFG301A:      Ret = "rfg-301a";       break;
-        case TYPE_RFG301R:      Ret = "rfg-301r";       break;
-
-        case TYPE_CRLY856:      Ret = "crly-856";       break;
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
-
-        case TYPE_RFN530S4X_DER:       Ret = "rfn-530s4x-der";       break;
 
         case TYPE_LOAD_TAP_CHANGER:             Ret = "ltc";   break;
         case TYPE_GANG_OPERATED_REGULATOR:      Ret = "go_regulator";   break;
@@ -239,7 +219,6 @@ string desolveDeviceType( int aType )
         case TYPE_LMGROUP_ITRON:            Ret = "itron group";                break;
         case TYPE_LMGROUP_METER_DISCONNECT: Ret = "meter disconnect group";     break;
         case TYPE_LMGROUP_MCT:              Ret = "mct group";                  break;
-        case TYPE_LMGROUP_EATON_CLOUD:      Ret = "eaton cloud group";          break;            
         case TYPE_LMGROUP_GOLAY:            Ret = "golay group";                break;
         case TYPE_LMGROUP_SADIGITAL:        Ret = "sa-digital group";           break;
         case TYPE_LMGROUP_SA105:            Ret = "sa-105 group";               break;

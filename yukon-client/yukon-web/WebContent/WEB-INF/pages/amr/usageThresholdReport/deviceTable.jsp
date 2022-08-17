@@ -29,7 +29,7 @@
         <span class="fr">
             <c:forEach var="availability" items="${dataAvailabilityOptions}">
                 <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
-                <span class="label" style="background-color:${availability.colorHex}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
+                <span class="label" style="background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
             </c:forEach>
         </span>
         
@@ -42,21 +42,21 @@
                         </c:forEach>
                     </cti:url>
                     <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
-                    <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>
+                    <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
                     <cti:url var="mapUrl" value="/tools/map">
                         <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                     </cti:url>
-                    <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
                     <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                         <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>
-                        </c:forEach>
+                        </c:forEach>                
                     </cti:url>
-                    <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
+                    <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>          
                     <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
                         <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>
-                        </c:forEach>
+                        </c:forEach>                
                     </cti:url>
                     <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
                 </cm:dropdown>
@@ -66,20 +66,20 @@
         <table class="compact-results-table row-highlighting has-alerts has-actions">
             <th></th>
             <th class="row-icon"/>
-            <tags:sort column="${deviceName}" />
-            <tags:sort column="${meterNumber}" />
-            <tags:sort column="${deviceType}" />
+            <tags:sort column="${deviceName}" />                
+            <tags:sort column="${meterNumber}" />                
+            <tags:sort column="${deviceType}" />                
             <tags:sort column="${primaryGateway}" />
             <tags:sort column="${delta}" />    
-            <tags:sort column="${earliestReading}" />
-            <tags:sort column="${latestReading}" />
+            <tags:sort column="${earliestReading}" />                
+            <tags:sort column="${latestReading}" />                            
             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             <c:forEach var="device" items="${report.detail.resultList}">
                 <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
                 <tr>
                     <td>
                         <cti:msg2 var="availabilityText" key=".dataAvailability.${device.availability}"/>
-                        <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.colorHex}"></div>
+                        <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
                     </td>
                     <td>
                         <c:if test="${notesList.contains(device.paoIdentifier.paoId)}">
@@ -90,16 +90,7 @@
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${fn:escapeXml(device.meterNumber)}</td>
                     <td>${fn:escapeXml(device.paoIdentifier.paoType.paoTypeName)}</td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${!empty device.gatewayPaoIdentifier}">
-                                <cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl>
-                            </c:when>
-                            <c:when test="${device.paoIdentifier.paoType.isRfn()}">
-                                <i:inline key="yukon.common.unknown"/>
-                            </c:when>
-                        </c:choose>
-                    </td>
+                    <td><cti:paoDetailUrl yukonPao="${device.gatewayPaoIdentifier}" newTab="true">${fn:escapeXml(device.gatewayName)}</cti:paoDetailUrl></td>
                     <td class="wsnw">
                         <fmt:formatNumber pattern="###.#" value="${device.delta}"/>
                          <c:if test="${device.earliestReading != null}">
@@ -154,7 +145,7 @@
                             <c:if test="${device.paoIdentifier.paoType.isMct()}">
                                 <cti:url var="locateRouteUrl" value="/bulk/routeLocate/home">
                                     <cti:param name="collectionType" value="idList"/>
-                                    <cti:param name="idList.ids" value="${deviceId}"/>
+                                    <cti:param name="idList.ids" value="${deviceId}"/>              
                                 </cti:url>
                                 <cm:dropdownOption icon="icon-connect" key=".locateRoute" href="${locateRouteUrl}" newTab="true"/>
                             </c:if>
@@ -162,17 +153,17 @@
                                 <cti:param name="collectionType" value="idList"/>
                                 <cti:param name="idList.ids" value="${deviceId}"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>     
                             <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                                 <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>
+                                <cti:param name="idList.ids" value="${deviceId}"/>           
                             </cti:url>
-                            <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>              
                             <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
                                 <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>
+                                <cti:param name="idList.ids" value="${deviceId}"/>               
                             </cti:url>
-                            <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>   
                         </cm:dropdown>
                     </td>
                 </tr>
@@ -183,3 +174,4 @@
     </div>
     <div class="dn" id="js-pao-notes-popup"></div>
 </cti:msgScope>
+

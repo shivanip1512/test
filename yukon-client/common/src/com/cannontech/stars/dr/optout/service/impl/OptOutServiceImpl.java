@@ -13,7 +13,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-import jakarta.mail.MessagingException;
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

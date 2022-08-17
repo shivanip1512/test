@@ -66,7 +66,6 @@ import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.enumerations.ServiceKind;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
-import com.cannontech.msp.beans.v5.multispeak.GasMeter;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
@@ -75,7 +74,6 @@ import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
-import com.cannontech.multispeak.client.MultispeakLoggingHelper;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
@@ -94,7 +92,6 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private MultispeakLoggingHelper loggingHelper;
     
     @Resource(name="domainMarshallerV5") Jaxb2Marshaller jaxb2Marshaller;
 
@@ -151,18 +148,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 responseHeader.getResult() == null ? null : responseHeader.getResult().getErrorObjects() != null
                     ? responseHeader.getResult().getErrorObjects().getErrorObject() : null;
         } catch (Exception e) {
-            loggingHelper.logResponseMessageSource(requestMessage);
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
         return errorObjects;
     }
 
-    /**
-     * the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd fields. The
-     * expectation is that getMultispeakVendorFromHeader will replace these values with the correct values from the
-     * other vendor once it is loaded.
-     */
-    private void getHeader(SOAPMessage soapMessage) throws SOAPException {
+    
+    
+    public void getHeader(SOAPMessage soapMessage, MultispeakVendor mspVendor) throws SOAPException {
         SOAPEnvelope env = soapMessage.getSOAPPart().getEnvelope();
 
         Node nxtNode = getRequestSOAPMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
@@ -182,12 +175,11 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
-
-        getHeader(headElement, "res", "unauthorized", "unauthorized");
+        getHeader(headElement, "res", mspVendor);
 
     }
 
-    public void getHeader(SOAPElement headElement, String prefix, String outUserName, String outPassword) throws SOAPException {
+    public void getHeader(SOAPElement headElement, String prefix, MultispeakVendor mspVendor) throws SOAPException {
 
         SOAPElement callerElement = headElement.addChildElement("Caller", prefix);
         SOAPElement appNameElement = callerElement.addChildElement("AppName", "com");
@@ -196,13 +188,13 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         appVersionElement.addTextNode(VersionTools.getYUKON_VERSION());
         SOAPElement companyElement = callerElement.addChildElement("Company", "com");
         companyElement.addTextNode("Cannon");
-        if (StringUtils.isNotBlank(outUserName)) {
+        if (StringUtils.isNotBlank(mspVendor.getOutUserName())) {
             SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
-            systemIDElement.addTextNode(outUserName);
+            systemIDElement.addTextNode(mspVendor.getOutUserName());
         }
-        if (StringUtils.isNotBlank(outPassword)) {
+        if (StringUtils.isNotBlank(mspVendor.getOutPassword())) {
             SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
-            passwordElement.addTextNode(outPassword);
+            passwordElement.addTextNode(mspVendor.getOutPassword());
         }
         SOAPElement coordSysInforElement = headElement.addChildElement("CoordinateSystemInformation", prefix);
         SOAPElement csUnit = coordSysInforElement.addChildElement("CSUnits", "com");
@@ -223,7 +215,12 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         SOAPMessage soapMessage;
         try {
             soapMessage = getResponseSOAPMessage();
-            getHeader(soapMessage);
+            // the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd
+            // fields. The expectation is that getMultispeakVendorFromHeader will replace these values with
+            // the correct values from the other vendor once it is loaded.
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                MultispeakDefines.MSP_APPNAME_YUKON);
+            getHeader(soapMessage, mspVendor);
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
@@ -584,11 +581,6 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         List<WaterMeter> waterMeters = (null != meters.getWaterMeters()) ? meters.getWaterMeters().getWaterMeter() : null;
         if (CollectionUtils.isNotEmpty(waterMeters)) {
             mspMeters.addAll(waterMeters);
-        }
-        
-        List<GasMeter> gasMeters = (null != meters.getGasMeters()) ? meters.getGasMeters().getGasMeter() : null;
-        if (CollectionUtils.isNotEmpty(gasMeters)) {
-            mspMeters.addAll(gasMeters);
         }
         return mspMeters;
 

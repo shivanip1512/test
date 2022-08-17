@@ -17,7 +17,6 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
 import com.google.common.base.Joiner;
@@ -46,7 +45,6 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PlcBasicDaoImpl plcBasicDao;
-    @Autowired private LMDao lmDao;
     
     private List<PaoLoader<DisplayablePao>> displayablePaoloaders;
     private List<PaoLoader<DeviceCollectionReportDevice>> deviceCollectionReportDeviceLoaders;
@@ -62,7 +60,6 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
         builder2.add(meterDao.getDeviceCollectionReportDeviceLoader());
         builder2.add(plcBasicDao.getDeviceCollectionReportDeviceLoader());
         builder2.add(deviceDao.getDeviceCollectionReportDeviceLoader());
-        builder2.add(lmDao.getDeviceCollectionReportDeviceLoader());
         deviceCollectionReportDeviceLoaders = builder2.build();
     }
     

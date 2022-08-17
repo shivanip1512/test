@@ -36,7 +36,7 @@ DlcCommand::emetcon_request_ptr Mct410HourlyReadCommand::executeCommand(CtiTime 
 
         if( _date_end < _request.date )
         {
-            throw CommandException(ClientErrors::BadParameter, "Invalid end date (" + _date_end.asStringMDY() + ") for hourly read request; must be after begin date (" + _request.date.asStringMDY() + ")");
+            throw CommandException(ClientErrors::BadParameter, "Invalid end date (" + _date_end.asStringUSFormat() + ") for hourly read request; must be after begin date (" + _request.date.asStringUSFormat() + ")");
         }
     }
 
@@ -89,12 +89,12 @@ void Mct410HourlyReadCommand::validateDate(const CtiDate &d, const CtiDate &Yest
 
     if( d > Yesterday )
     {
-        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringMDY() + ") for hourly read request; must be before today (" + (Yesterday + 1).asStringMDY() + ")");
+        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be before today (" + (Yesterday + 1).asStringUSFormat() + ")");
     }
 
     if( d < Yesterday - DaysBack )
     {
-        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringMDY() + ") for hourly read request; must be no more than 7 days ago (" + (Yesterday - DaysBack).asStringMDY() + ")");
+        throw CommandException(ClientErrors::BadParameter, "Invalid date (" + d.asStringUSFormat() + ") for hourly read request; must be no more than 7 days ago (" + (Yesterday - DaysBack).asStringUSFormat() + ")");
     }
 }
 

@@ -42,7 +42,8 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     private SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorTemplate;
 
     
-    private final YukonRowMapper<StatusPointMonitor> statusPointMonitorRowMapper = new YukonRowMapper<>() {
+    private final YukonRowMapper<StatusPointMonitor> statusPointMonitorRowMapper =
+        new YukonRowMapper<StatusPointMonitor>() {
         @Override
         public StatusPointMonitor mapRow(YukonResultSet rs) throws SQLException {
             
@@ -59,7 +60,8 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         }
     };
     
-    private final YukonRowMapper<StatusPointMonitorProcessor> processorRowMapper = new YukonRowMapper<>() {
+    private final YukonRowMapper<StatusPointMonitorProcessor> processorRowMapper =
+        new YukonRowMapper<StatusPointMonitorProcessor>() {
         @Override
         public StatusPointMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
             StatusPointMonitorProcessor retVal = new StatusPointMonitorProcessor();
@@ -67,12 +69,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             retVal.setPrevState(rs.getString("prevState"));
             retVal.setNextState(rs.getString("nextState"));
             retVal.setActionType(rs.getString("actionType"));
-            retVal.setNotifyOnAlarmOnly(isEnabled(rs.getInt("notifyOnAlarmOnly")));
             return retVal;
-        }
-        
-        private boolean isEnabled(int value) {
-            return value != 0;
         }
     };
     
@@ -159,12 +156,14 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     public List<StatusPointMonitorProcessor> getProcessorsByMonitorId(int statusPointMonitorId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType, NotifyOnAlarmOnly");
+        sql.append("SELECT StatusPointMonitorProcessorId, StatusPointMonitorId, PrevState, NextState, ActionType");
         sql.append("FROM StatusPointMonitorProcessor");
         sql.append("WHERE StatusPointMonitorId").eq(statusPointMonitorId);
         sql.append("ORDER BY StatusPointMonitorProcessorId");
         
-        return yukonJdbcTemplate.query(sql, processorRowMapper);
+        List<StatusPointMonitorProcessor> processorList = yukonJdbcTemplate.query(sql, processorRowMapper); 
+        
+        return processorList;
     }
     
     @Override
@@ -191,7 +190,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         return rowsAffected > 0;
     }
     
-    private final FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<>() {
+    private final FieldMapper<StatusPointMonitor> statusPointMonitorFieldMapper = new FieldMapper<StatusPointMonitor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, StatusPointMonitor statusPointMonitor) {
             p.addValue("StatusPointMonitorName", statusPointMonitor.getName());
@@ -210,14 +209,13 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         }
     };
     
-    private final FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<>() {
+    private final FieldMapper<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorFieldMapper = new FieldMapper<StoredStatusPointMonitorProcessor>() {
         @Override
         public void extractValues(MapSqlParameterSource p, StoredStatusPointMonitorProcessor holder) {
             p.addValue("StatusPointMonitorId", holder.parent.getStatusPointMonitorId());
             p.addValue("PrevState", holder.statusPointMonitorProcessor.getPrevState());
             p.addValue("NextState", holder.statusPointMonitorProcessor.getNextState());
             p.addValue("ActionType", holder.statusPointMonitorProcessor.getActionTypeEnum().name());
-            p.addValue("NotifyOnAlarmOnly", holder.statusPointMonitorProcessor.isNotifyOnAlarmOnly() ? 1 : 0);
         }
         @Override
         public Number getPrimaryKey(StoredStatusPointMonitorProcessor holder) {
@@ -230,13 +228,13 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     };
     
     @PostConstruct
-    public void init() {
-        statusPointMonitorTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
+    public void init() throws Exception {
+        statusPointMonitorTemplate = new SimpleTableAccessTemplate<StatusPointMonitor>(yukonJdbcTemplate, nextValueHelper);
         statusPointMonitorTemplate.setTableName("StatusPointMonitor");
         statusPointMonitorTemplate.setPrimaryKeyField("StatusPointMonitorId");
         statusPointMonitorTemplate.setFieldMapper(statusPointMonitorFieldMapper);
         
-        statusPointMonitorProcessorTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
+        statusPointMonitorProcessorTemplate = new SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor>(yukonJdbcTemplate, nextValueHelper);
         statusPointMonitorProcessorTemplate.setTableName("StatusPointMonitorProcessor");
         statusPointMonitorProcessorTemplate.setPrimaryKeyField("StatusPointMonitorProcessorId");
         statusPointMonitorProcessorTemplate.setFieldMapper(statusPointMonitorProcessorFieldMapper);

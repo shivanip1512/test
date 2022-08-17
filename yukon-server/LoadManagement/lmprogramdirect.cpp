@@ -287,7 +287,8 @@ bool CtiLMProgramDirect::getIsRampingIn()
     {
         CTILOG_ERROR(dout, "no current gear found!?");
     }
-    else if( gear->getRampInInterval() == 0 || gear->getRampInPercent() == 0 )
+
+    if( gear->getRampInInterval() == 0 || gear->getRampInPercent() == 0 )
     {
         // The current gear doesn't ramp in, no way we can be ramping in
         return false;
@@ -319,17 +320,15 @@ bool CtiLMProgramDirect::getIsRampingOut()
     {
         CTILOG_ERROR(dout, "no current gear found!?");
     }
-    else
+
+    const string& stop_type = gear->getMethodStopType();
+    if( !(stop_type == CtiLMProgramDirectGear::RampOutRandomStopType ||
+          stop_type == CtiLMProgramDirectGear::RampOutFIFOStopType ||
+          stop_type == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
+          stop_type == CtiLMProgramDirectGear::RampOutFIFORestoreStopType) )
     {
-        const string& stop_type = gear->getMethodStopType();
-        if( !(stop_type == CtiLMProgramDirectGear::RampOutRandomStopType ||
-              stop_type == CtiLMProgramDirectGear::RampOutFIFOStopType ||
-              stop_type == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
-              stop_type == CtiLMProgramDirectGear::RampOutFIFORestoreStopType) )
-        {
-            // The current gear doesn't ramp out, no way we can be ramping out
-            return false;
-        }
+        // The current gear doesn't ramp out, no way we can be ramping out
+        return false;
     }
 
     // OK, the gear has ramp out set up, are any of our groups
@@ -677,7 +676,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
 
                 if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
                 {
-                    for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
+                    for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                     {
                         LONG shedTime = getShedTimeForSmartGears();
 
@@ -688,11 +687,6 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             if( smartGearObject->attemptControl(currentLMGroup, shedTime, expectedLoadReduced) )
                             {
                                 setLastControlSent(CtiTime());
-                                if ( getProgramState() == CtiLMProgramBase::InactiveState )
-                                {
-                                    // Let the world know we are starting up - but only if we actually issue a control!
-                                    scheduleStartNotification(CtiTime());
-                                }
                             }
                         }
                         else
@@ -705,13 +699,16 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 }
                             }
                         }
+
+                        if( getProgramState() == CtiLMProgramBase::InactiveState )
+                        {
+                            // Let the world know we are starting up!
+                            scheduleStartNotification(CtiTime());
+                        }
+
                     }
 
-                    if ( ! smartGearObject->performsControl() ) // if we are a NoControl gear, our program is in a NonControlling state
-                    {
-                        setProgramState( CtiLMProgramBase::NonControllingState );
-                    }
-                    else if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
@@ -1271,7 +1268,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
 
             if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
             {
-                for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
+                for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                 {
                     LONG shedTime = getShedTimeForSmartGears();
 
@@ -1295,9 +1292,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
                         }
                     }
                 }
-                setProgramState( smartGearObject->performsControl()
-                                    ? CtiLMProgramBase::ManualActiveState
-                                    : CtiLMProgramBase::NonControllingState );
+                setProgramState(CtiLMProgramBase::ManualActiveState);
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TimeRefreshMethod) )
             {
@@ -1531,7 +1526,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MasterCycleMethod) )  //NOTE: add ramp in logic
             {
                 ResetGroups();
-                StartMasterCycle(CtiTime(), currentGearObject);
+                StartMasterCycle(CtiTime().seconds(), currentGearObject);
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
             {
@@ -2678,8 +2673,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime cu
             }
 
             int numberOfActiveGroups = 0;
-            for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
+            for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
             {
+                CtiLMGroupPtr currentLMGroup  = *i;
                 // .checkControl below can modify (shorten) the shed time
                 CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
                 if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
@@ -2706,14 +2702,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime cu
                 }
             }
 
-            if ( ! smartGearObject->performsControl() && numberOfActiveGroups == 0 )
-            {
-                setProgramState( CtiLMProgramBase::NonControllingState );
-            }
-            else
-            {
-                updateStandardControlActiveState(numberOfActiveGroups);
-            }
+            updateStandardControlActiveState(numberOfActiveGroups);
         }
         else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
@@ -3632,36 +3621,6 @@ bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiT
     }
 }
 
-/*----------------------------------------------------------------------------
-notifyGroupsOfCancelIfScheduled
-
-Let the notification groups know when we have canceled a program IF the program is configured to send a scheduled notification
-Returns true if a notifcation was sent.
-----------------------------------------------------------------------------*/
-bool CtiLMProgramDirect::notifyGroupsOfCancelIfScheduled()
-{
-    if ( shouldNotifyWhenScheduled() ) 
-    {
-        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CTILOG_DEBUG(dout, "sending notification of scheduled program canceling before start. Program: " << getPAOName());
-        }
-
-        auto multiNotifMsg = std::make_unique<CtiMultiMsg>();
-        auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::CANCELATION, getPAOId(), getDirectStartTime(), getDirectStopTime());
-        multiNotifMsg->insert(notif_msg.release());
-
-        CtiLoadManager::getInstance()->sendMessageToNotification(std::move(multiNotifMsg));
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
 BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
 {
     return _controlActivatedByStatusTrigger;
@@ -3704,7 +3663,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
     {
         if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
         {
-            for ( CtiLMGroupPtr currentLMGroup : _lmprogramdirectgroups )
+            for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
             {
                 if( currentLMGroup->readyToControlAt(currentTime) )
                 {
@@ -3738,14 +3697,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                 }
             }
 
-            if ( ! smartGearObject->performsControl() && numberOfActiveGroups == 0 )
-            {
-                setProgramState( CtiLMProgramBase::NonControllingState );
-            }
-            else
-            {
-                updateStandardControlActiveState(numberOfActiveGroups);
-            }
+            updateStandardControlActiveState(numberOfActiveGroups);
         }
         else if( ciStringEqual(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TimeRefreshMethod) )
         {
@@ -4816,7 +4768,7 @@ BOOL CtiLMProgramDirect::handleManualControl(CtiTime currentTime, CtiMultiMsg* m
             // been made.
 
             // Gear constraints are only not checked in the starttimed function now.
-            if( getConstraintOverride() || con_checker.checkGroupConstraints(getCurrentGearNumber(), getDirectStartTime(), getDirectStopTime()) )
+            if( getConstraintOverride() || con_checker.checkGroupConstraints(getCurrentGearNumber(), getDirectStartTime().seconds(), getDirectStopTime().seconds()) )
             {
                 // are any of our master programs already running?  if so we can't start MASTERSLAVE - this is alreadya  constraint checked in executor
                 returnBoolean = TRUE;
@@ -5085,16 +5037,11 @@ bool CtiLMProgramDirect::startTimedProgram(CtiTime currentTime, long secondsFrom
     CtiLMProgramConstraintChecker con_checker(*this, currentTime);
 
     CtiLMProgramControlWindow* controlWindow = getControlWindow(secondsFromBeginningOfDay);
-    //If we are not in a control window then we shouldn't be starting!
-    if( controlWindow == NULL )
-    {
-        CTILOG_ERROR(dout, "We are not in a valid control window for the LM Program :  " << getPAOName() << " , with ID: " << getPAOId());
-        return false;
-    }
+    assert(controlWindow != NULL); //If we are not in a control window then we shouldn't be starting!
 
     CtiTime startTime = currentTime;
     CtiTime endTime = controlWindow->getAvailableStopTime(); // This is likely wrong, not changing during refactor.
-    if( !getConstraintOverride() && !con_checker.checkAutomaticProgramConstraints(startTime, endTime) )
+    if( !getConstraintOverride() && !con_checker.checkAutomaticProgramConstraints(startTime.seconds(), endTime.seconds()) )
     {
         if( !_announced_program_constraint_violation )
         {
@@ -6426,46 +6373,6 @@ void CtiLMProgramDirect::setPendingGroupsInactive()
             group->setGroupControlState( CtiLMGroupBase::InactiveState );
         }
     }
-}
-
-std::size_t CtiLMProgramDirect::getMemoryConsumption() const
-{
-    // the fixed memeory amount
-    std::size_t sz = sizeof( *this );
-
-    // the base class allocated amount
-    sz +=   CtiLMProgramBase::getMemoryConsumption();
-
-    // this class allocations
-    sz +=   dynamic_sizeof( _message_subject )
-        +   dynamic_sizeof( _message_header )
-        +   dynamic_sizeof( _message_footer )
-        +   dynamic_sizeof( _additionalinfo )
-        +   dynamic_sizeof( _last_user )
-        +   dynamic_sizeof( _change_reason )
-        +   dynamic_sizeof( _origin );
-
-    sz += _lmprogramdirectgears.capacity() * sizeof( CtiLMProgramDirectGear* );
-    for ( const auto & gear : _lmprogramdirectgears )
-    {
-        sz += calculateMemoryConsumption( gear );
-    }
-
-    sz += _lmprogramdirectgroups.capacity() * sizeof( CtiLMGroupVec::value_type );
-    for ( const auto & group : _lmprogramdirectgroups )
-    {
-        sz += calculateMemoryConsumption( group.get() );
-    }
-
-    // these are just hierarchy designations - don't include their memory consumption here.
-    // These are std::set<>, we are a little short on the memory consumption by the underlying node info.
-    sz += _master_programs.size() * sizeof( CtiLMProgramDirectSPtr );
-    sz += _subordinate_programs.size() * sizeof( CtiLMProgramDirectSPtr );
-
-    // elements stored by value
-    sz += _notificationgroupids.capacity() * sizeof( int );
-
-    return sz;
 }
 
 // Static Members

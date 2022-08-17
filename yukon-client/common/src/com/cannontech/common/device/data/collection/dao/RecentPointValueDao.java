@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
-import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.Direction;
@@ -19,25 +18,21 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public interface RecentPointValueDao {
     
     enum RangeType {
-        AVAILABLE(YukonColorPalette.GREEN),
-        EXPECTED(YukonColorPalette.BLUE),
-        OUTDATED(YukonColorPalette.ORANGE),
-        UNAVAILABLE(YukonColorPalette.GRAY);
+        AVAILABLE("#093"),
+        EXPECTED("#4d90fe"),
+        OUTDATED("#ec971f"),
+        UNAVAILABLE("#888");
 
         private final String baseKey = "yukon.web.modules.amr.dataCollection.detail.rangeType.";
 
-        private YukonColorPalette color;
+        private String color;
 
-        private RangeType(YukonColorPalette color) {
+        private RangeType(String color) {
             this.color = color;
         }
 
-        public YukonColorPalette getColor() {
+        public String getColor() {
             return color;
-        }
-        
-        public String getColorHex() {
-            return color.getHexValue();
         }
 
         public String getLabelKey() {

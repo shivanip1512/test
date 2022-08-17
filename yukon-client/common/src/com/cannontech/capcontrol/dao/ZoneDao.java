@@ -80,16 +80,6 @@ public interface ZoneDao {
      * @return
      */
     public Zone findParentZoneByBusId(int subBusId);
-
-    /**
-     * Returns the zone stored in the database with the zoneId.
-     *
-     * Returns null if there is no zone with the given name
-     *
-     * @param zoneName
-     * @return Zone
-     */
-    public Zone findZoneByZoneName(String zoneName);
  
     /**
      * Returns a list of all unassigned capBankIds on the subBusId.

@@ -98,7 +98,7 @@ yukon.dr.setup.loadGroup = (function() {
                 $("#js-loadgroup-container").find("#js-control-start-state").empty();
                 var controlStartState = container.find("#js-control-start-state");
                 data.startStates.forEach(function (field){
-                    var option = $('<option value=' + field.id + '>' + yukon.escapeXml(field.name) + '</option>');
+                    var option = $('<option value=' + field.rawState + '>' + yukon.escapeXml(field.stateText) + '</option>');
                     controlStartState.append(option);
                 });
             });

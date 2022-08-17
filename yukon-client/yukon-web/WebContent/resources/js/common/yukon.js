@@ -379,7 +379,7 @@ yukon.namespace = function (ns) {
         return this.each(function () {
             
             options = $.extend({ 
-                color: yg.colors.YELLOW, 
+                color: '#fff288', 
                 duration: 1500,
                 complete: yukon.nothing
             }, options || {});
@@ -461,8 +461,7 @@ yukon.namespace = function (ns) {
             } else {
                 alertbox.html(messages[0]);
             }
-            alertbox.prepend("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\">"
-            		+ yg.iconSvg.iconCloseX + "</i>");
+            alertbox.prepend("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\"></i>");
         });
     };
     
@@ -648,7 +647,7 @@ yukon.namespace = function (ns) {
                 } else {
                     //  otherwise use the single event's icon
                     
-                    $('<i class="M0 icon ' + (firstEvent.icon || 'icon-blank') + '">' + (firstEvent.iconSvg || '') + '</i>')
+                    $('<i class="M0 icon ' + (firstEvent.icon || 'icon-blank') + '"/>')
                         .appendTo(span);
 
                     if (firstEvent.icon) {
@@ -656,9 +655,6 @@ yukon.namespace = function (ns) {
                     }
                 }
                     
-                //remove tooltip for event id if it already exists (prevents duplicates from displaying)
-                $('.js-event-tooltip[data-event-id=' + firstEvent.id + ']').remove();
-                
                 var tooltip = $('<ul class="dn simple-list">')
                     .addClass('js-event-tooltip js-sticky-tooltip')
                     .attr('data-event-id', firstEvent.id);
@@ -676,7 +672,7 @@ yukon.namespace = function (ns) {
                     var text = '';
                     
                     if (shouldDisplayIcons) {
-                        text += '<i class="icon ' + (event.icon || 'icon-blank') + '">' + (event.iconSvg || '') + '</i>'; 
+                        text += '<i class="icon ' + (event.icon || 'icon-blank') + '"></i>'; 
                     }
                     
                     text += moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);

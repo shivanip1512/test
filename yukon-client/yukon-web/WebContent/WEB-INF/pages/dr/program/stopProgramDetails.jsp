@@ -54,7 +54,7 @@ $( function () {
         <form:hidden path="gearNumber"/>
     </c:if>
 
-    <table class="compact-results-table no-stripes no-borders">
+    <table class="compact-results-table">
         <thead>
             <tr>
                 <th><cti:msg2 key=".stopTime"/></th>

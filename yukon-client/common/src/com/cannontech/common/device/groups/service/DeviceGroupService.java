@@ -141,9 +141,4 @@ public interface DeviceGroupService {
     
     public List<LiteCommand> getDeviceCommands(List<SimpleDevice> devices, LiteYukonUser user);
 
-    /**
-     * Removes group/device combination from cache
-     */
-    void removeFromCache(DeviceGroup group, YukonPao pao);
-
 }

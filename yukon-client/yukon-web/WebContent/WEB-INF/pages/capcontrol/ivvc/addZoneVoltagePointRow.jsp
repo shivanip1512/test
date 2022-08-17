@@ -7,27 +7,16 @@
 
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
-<cti:msg2 var="noneSelected" key="yukon.web.components.button.selectionPicker.label"/>
 <table class="compact-results-table">
 <tr>
-    <td>
+	<td>
         ${fn:escapeXml(row.name)}
         <input type="hidden" value="${row.id}" name="pointAssignments[${itemIndex}].id"/>
         <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="pointAssignments[${itemIndex}].name"/>
         <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="pointAssignments[${itemIndex}].device"/>
         <input type="hidden" value="false" name="pointAssignments[${itemIndex}].deletion" class="isDeletionField">
     </td>
-    <td>${fn:escapeXml(row.device)}</td>
-    <td>
-        <select name="pointAssignments[${itemIndex}].feederId" >
-            <option value>${noneSelected}</option>
-            <c:forEach var="feeder" items="${feederList}">
-                <option value="${feeder.ccId}">
-                    ${feeder.ccName}
-                </option>
-            </c:forEach>
-        </select>
-    </td>
+	<td>${fn:escapeXml(row.device)}</td>
     <td>
         <c:choose>
             <c:when test="${phaseUneditable}">

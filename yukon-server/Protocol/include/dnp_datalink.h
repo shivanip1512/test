@@ -57,6 +57,7 @@ private:
     bool _reset_sent;
     bool _fcb_out, _fcb_in;
 
+    int _comm_errors;
     int _protocol_errors;
 
     //  outbound-specific
@@ -97,6 +98,7 @@ private:
 
     enum MiscNumeric
     {
+        CommRetryCount     =   3,
         ProtocolRetryCount =   3
     };
 

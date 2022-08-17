@@ -1,0 +1,25 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+
+==== Control Scenario
+
+*Request Properties* :
+
+include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/http-response.adoc[]

@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
-import com.cannontech.msp.beans.v5.multispeak.GasMeter;
-import com.cannontech.msp.beans.v5.multispeak.GasMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
 import com.cannontech.msp.beans.v5.multispeak.WaterMeters;
@@ -22,7 +20,6 @@ public class MspMeterReturnList extends MspReturnList {
             meters = new Meters();
             meters.setElectricMeters(new ElectricMeters());
             meters.setWaterMeters(new WaterMeters());
-            meters.setGasMeters(new GasMeters());
         }
         return meters;
     }
@@ -40,14 +37,6 @@ public class MspMeterReturnList extends MspReturnList {
 
     public void setWaterMeters(List<WaterMeter> waterMeters) {
         getMeters().getWaterMeters().getWaterMeter().addAll(waterMeters);
-    }
-    
-    public List<WaterMeter> getGasMeters() {
-        return getMeters().getWaterMeters().getWaterMeter();
-    }
-
-    public void setGasMeters(List<GasMeter> gasMeters) {
-        getMeters().getGasMeters().getGasMeter().addAll(gasMeters);
     }
     
     /**

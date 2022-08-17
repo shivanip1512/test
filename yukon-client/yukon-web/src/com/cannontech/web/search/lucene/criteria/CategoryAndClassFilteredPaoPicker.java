@@ -17,7 +17,7 @@ public class CategoryAndClassFilteredPaoPicker extends PaoPicker {
             String extraArgs) {
         PaoType paoType = PaoType.valueOf(extraArgs);
         
-        final BooleanQuery.Builder query = new BooleanQuery.Builder();
+        final BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
         query.setMinimumNumberShouldMatch(2);
         
         TermQuery paoCategoryTermQuery = new TermQuery(new Term("category", paoType.getPaoCategory().getDbString()));

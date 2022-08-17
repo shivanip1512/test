@@ -489,6 +489,21 @@
         </property>
     </bean>
     
+    <bean id="ecobeePointUpdateJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="ecobeePointUpdate"/>
+        <property name="taskName">
+            <idref bean="ecobeePointUpdateTask"/>
+        </property>
+        <property name="title" value="Ecobee Point Update Execution Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="nestSyncJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="nestScheduledSync"/>
         <property name="taskName">
@@ -544,6 +559,21 @@
                             </property>
                         </bean>
                     </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+   <bean id="deviceConfigVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="deviceConfigVerification"/>
+        <property name="taskName">
+            <idref bean="deviceConfigVerificationTask"/>
+        </property>
+        <property name="title" value="Device Configuration Verification Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
                 </property>
             </bean>
         </property>
@@ -616,6 +646,10 @@
     <bean id="ecobeeReconciliationReportTask" class="com.cannontech.web.dr.ecobee.EcobeeReconciliationReportTask" 
         scope="prototype"/>
         
+    <bean id="ecobeePointUpdateTask" class="com.cannontech.web.dr.ecobee.EcobeePointUpdateTask" scope="prototype"/>
+    
+    <bean id="deviceConfigVerificationTask" class="com.cannontech.web.tools.device.config.DeviceConfigVerificationTask" scope="prototype"/>
+
     <bean id="nestSyncTask" class="com.cannontech.web.dr.nest.NestSyncTask" scope="prototype"/>
     <bean id="scheduledDataImportTask" class="com.cannontech.web.scheduledDataImport.tasks.ScheduledDataImportTask" scope="prototype"/>
 </beans>

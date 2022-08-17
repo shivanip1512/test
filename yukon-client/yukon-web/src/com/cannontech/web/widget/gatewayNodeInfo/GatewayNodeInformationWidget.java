@@ -54,9 +54,6 @@ public class GatewayNodeInformationWidget extends AdvancedWidgetControllerBase {
             //check for wifi meters
             List<RfnDevice> wiFiMeters = rfnDeviceDao.getDevicesForGateways(Arrays.asList(deviceId), PaoType.getWifiTypes());
             model.addAttribute("wifiCount", wiFiMeters.size());
-            //check for cellular devices
-            List<RfnDevice> cellDevices = rfnDeviceDao.getDevicesForGateways(Arrays.asList(deviceId), PaoType.getCellularTypes());
-            model.addAttribute("cellularCount", cellDevices.size());
         } catch (NmCommunicationException e) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             String errorMsg = accessor.getMessage(baseKey + "error.comm");

@@ -48,7 +48,7 @@ yukon.dr.assetavailability.detail = (function () {
         selectedGateways =  $("#selectedGatewayIds").chosen().val();
         
         var filters = {
-                paobjectId : $("input[name=paobjectId]").val(),
+        		paobjectId : $("input[name=paobjectId]").val(),
                 deviceSubGroups : deviceSubGroups,
                 statuses : statuses, 
                 selectedGateways : selectedGateways
@@ -66,7 +66,7 @@ yukon.dr.assetavailability.detail = (function () {
 
             var chart = $('.js-asset-availability-pie-chart-summary'),
                 data = yukon.fromJson('#js-asset-availability-summary');
-            yukon.assetAvailability.pieChart.buildChart(chart, data, false);
+            yukon.widget.assetAvailability.buildChart(chart, data);
             
             $('input[name=statuses]').each(function() {
                 var statusButton = $(this);

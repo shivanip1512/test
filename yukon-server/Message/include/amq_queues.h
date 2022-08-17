@@ -17,7 +17,6 @@ public:
     static const OutboundQueue EcobeeCyclingControl;
     static const OutboundQueue EcobeeSetpointControl;
     static const OutboundQueue EcobeeRestore;
-    static const OutboundQueue EcobeePlusControl;
     static const OutboundQueue HoneywellCyclingControl;
     static const OutboundQueue HoneywellSetpointControl;
     static const OutboundQueue HoneywellRestore;
@@ -27,8 +26,6 @@ public:
     static const OutboundQueue ItronRestore;
     static const OutboundQueue MeterDisconnectControl;
     static const OutboundQueue MeterDisconnectRestore;
-    static const OutboundQueue EatonCloudScheduledCyclingRequest;
-    static const OutboundQueue EatonCloudStopRequest;
     static const OutboundQueue HistoryRowAssociationResponse;
     static const OutboundQueue IvvcAnalysisMessage;
     static const OutboundQueue CapControlOperationMessage;
@@ -42,10 +39,6 @@ public:
     static const OutboundQueue DeviceCreationRequest;
     static const OutboundQueue RfnDataStreamingUpdate;
     static const OutboundQueue MeterProgramStatusArchiveRequest;
-    static const OutboundQueue RfnEdgeDrUnicastResponse;
-    static const OutboundQueue RfnEdgeDrBroadcastResponse;
-    static const OutboundQueue RfnEdgeDrDataNotification;
-    static const OutboundQueue NetworkManagerRfnBroadcastRequest;
 };
 
 
@@ -54,23 +47,12 @@ class IM_EX_MSG InboundQueue
 public:
     std::string name;
 
-    static const InboundQueue MeterProgramValidationRequest;
     static const InboundQueue NetworkManagerResponse;
     static const InboundQueue NetworkManagerE2eDataConfirm;
     static const InboundQueue NetworkManagerE2eDataIndication;
     static const InboundQueue ScannerOutMessages;
     static const InboundQueue ScannerInMessages;
     static const InboundQueue PorterDynamicPaoInfoRequest;
-
-    static const InboundQueue FieldSimulatorStatusRequest;
-    static const InboundQueue FieldSimulatorModifyConfiguration;
-
-    static const InboundQueue RfnMeterDisconnectRequest;
-    static const InboundQueue RfnMeterReadRequest;
-
-    static const InboundQueue RfnEdgeDrUnicastRequest;
-    static const InboundQueue RfnEdgeDrBroadcastRequest;
-    static const InboundQueue NetworkManagerRfnBroadcastResponse;
 };
 
 }

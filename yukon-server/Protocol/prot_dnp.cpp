@@ -6,7 +6,6 @@
 #include "utility.h"
 #include "numstr.h"
 #include "ctidate.h"
-#include "error.h"
 #include "prot_dnp.h"
 #include "dnp_object_class.h"
 #include "dnp_object_binaryinput.h"
@@ -19,13 +18,14 @@
 
 #include "std_helper.h"
 
-#include <boost/algorithm/cxx11/none_of.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/find.hpp>
 
 using std::endl;
 using std::string;
-using namespace std::string_literals;
 
-namespace Cti::Protocols {
+namespace Cti {
+namespace Protocols {
 
 using boost::scoped_ptr;
 
@@ -85,8 +85,8 @@ void DnpProtocol::setConfigData( unsigned internalRetries, TimeOffset timeOffset
                                   bool omitTimeRequest, bool enableUnsolicitedClass1, bool enableUnsolicitedClass2,
                                   bool enableUnsolicitedClass3, bool enableNonUpdatedOnFailedScan)
 {
-    _config = 
-       std::make_unique<DNP::config_data>(
+    _config.reset(
+       new DNP::config_data(
           internalRetries,
           timeOffset,
           enableDnpTimesyncs,
@@ -94,7 +94,7 @@ void DnpProtocol::setConfigData( unsigned internalRetries, TimeOffset timeOffset
           enableUnsolicitedClass1,
           enableUnsolicitedClass2,
           enableUnsolicitedClass3,
-          enableNonUpdatedOnFailedScan);
+          enableNonUpdatedOnFailedScan));
 
     _app_layer.setConfigData(_config.get());
 }
@@ -359,67 +359,6 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
 }
 
 
-namespace {
-
-    using Cmd = DnpProtocol::Command;
-
-    const std::map<Cmd, std::string> CommandNames {
-            { Cmd::Command_Invalid,
-                      "Invalid" },
-            { Cmd::Command_WriteTime,
-                      "Write Time" },
-            { Cmd::Command_ReadTime,
-                      "Read Time" },
-            { Cmd::Command_Class0Read,
-                      "Class 0 Read" },
-            { Cmd::Command_Class1Read,
-                      "Class 1 Read" },
-            { Cmd::Command_Class2Read,
-                      "Class 2 Read" },
-            { Cmd::Command_Class3Read,
-                      "Class 3 Read" },
-            { Cmd::Command_Class123Read,
-                      "Class 123 Read" },
-            { Cmd::Command_Class123Read_WithTime,
-                      "Class 123 Read With Time" },
-            { Cmd::Command_Class1230Read,
-                      "Class 1230 Read" },
-            { Cmd::Command_Class1230Read_WithTime,
-                      "Class 1230 Read With Time" },
-            { Cmd::Command_SetAnalogOut,
-                      "Set Analog Out" },
-            { Cmd::Command_SetDigitalOut_Direct,
-                      "Set Digital Out Direct" },
-            { Cmd::Command_SetDigitalOut_SBO_Select,
-                      "Set Digital Out SBO Select" },
-            { Cmd::Command_SetDigitalOut_SBO_Operate,
-                      "Set Digital Out SBO Operate" },
-            { Cmd::Command_SetDigitalOut_SBO_SelectOnly,
-                      "Set Digital Out SBO Select Only" },
-
-            { Cmd::Command_ResetDeviceRestartBit,
-                      "Reset Device Restart Bit" },
-
-            { Cmd::Command_Loopback,
-                      "Loopback" },
-            { Cmd::Command_ReadInternalIndications,
-                      "Read Internal Indications" },
-
-            { Cmd::Command_UnsolicitedEnable,
-                      "Unsolicited Enable" },
-            { Cmd::Command_UnsolicitedDisable,
-                      "Unsolicited Disable" },
-
-            { Cmd::Command_UnsolicitedInbound,
-                      "Unsolicited Inbound" },
-    };
-
-    std::string getCommandName(Cmd c)
-    {
-        return mapFindOrDefault(CommandNames, c, "Invalid command " + std::to_string(c));
-    }
-}
-
 YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 {
     bool final = true;
@@ -599,20 +538,14 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
         case Command_UnsolicitedEnable:
         {
-            if( ! _app_layer.getIINErrorCode() )
-            {
-                _string_results.push_back("Unsolicited reporting enabled");
-            }
+            _string_results.push_back("Unsolicited reporting enabled");
 
             break;
         }
 
         case Command_UnsolicitedDisable:
         {
-            if( ! _app_layer.getIINErrorCode() )
-            {
-                _string_results.push_back("Unsolicited reporting disabled");
-            }
+            _string_results.push_back("Unsolicited reporting disabled");
 
             break;
         }
@@ -653,7 +586,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 {
                     cto = std::make_unique<TimeCTO>(*(reinterpret_cast<const TimeCTO *>(od.object)));
 
-                    const CtiTime t = convertFromDeviceTimeOffset(*cto);
+                    CtiTime t = convertFromDeviceTimeOffset(*cto);
 
                     cto->setSeconds(t.seconds());
 
@@ -680,7 +613,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 {
                     absoluteTime = std::make_unique<Time>(*(reinterpret_cast<const DNP::Time *>(od.object)));
 
-                    const CtiTime t = convertFromDeviceTimeOffset(*absoluteTime);
+                    CtiTime t = convertFromDeviceTimeOffset(*absoluteTime);
 
                     absoluteTime->setSeconds(t.seconds());
 
@@ -730,6 +663,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 (ob->getGroup() != Time::Group))
             {
                 pointlist_t points;
+                int count = ob->size();
 
                 ob->getPoints(points, cto.get(), absoluteTime.get());
 
@@ -778,21 +712,13 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     break;
                 }
             }
-
-            if( ! _command_results.empty() )
-            {
-                _string_results.push_back(getCommandName(_command) 
-                    + (retVal 
-                        ? (" completed with status " + std::to_string(retVal) + " - " + CtiError::GetErrorString(retVal))
-                        : (" completed successfully"s)));
-            }
-            
-            _command_results.push(retVal);
         }
 
         if( _app_layer.hasInternalIndications() && _app_layer.needsTime() && _command != Command_WriteTime )
         {
-            if( boost::algorithm::none_of_equal(_additional_commands, Command_WriteTime) )
+            auto itr = boost::range::find(_additional_commands, Command_WriteTime);
+
+            if( itr == _additional_commands.end() )
             {
                 _additional_commands.insert(_additional_commands.begin(), Command_WriteTime);
             }
@@ -813,7 +739,9 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
             if( _config->isAnyUnsolicitedEnabled() )
             {
-                if( boost::algorithm::none_of_equal(_additional_commands, Command_UnsolicitedEnable) )
+                auto itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
+
+                if( itr == _additional_commands.end() )
                 {
                     // Device restarted, so let's tell it to enabled unsolicited commands.
                     _additional_commands.push_back(Command_UnsolicitedEnable);
@@ -830,27 +758,19 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             else
             {
                 setCommand(Command_Complete);
-                
-                if( ! _command_results.empty() )
-                {
-                    retVal = _command_results.front();
-
-                    _command_results = {};
-                }
             }
         }
 
         if( _app_layer.hasInternalIndications() )
         {
-            constexpr int IINStatusPointOffset_RestartBit = 9999;
+            const int IINStatusPointOffset_RestartBit = 9999;
 
             // Add the point message for the restart bit.
-            auto pt_msg =
-                std::make_unique<CtiPointDataMsg>(
-                    IINStatusPointOffset_RestartBit,
-                    deviceRestarted,
-                    NormalQuality,
-                    StatusPointType);
+            CtiPointDataMsg* pt_msg =
+                new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
+                                    deviceRestarted,
+                                    NormalQuality,
+                                    StatusPointType);
 
             // We need to set up a millisecond time for the point message.
             SYSTEMTIME st;
@@ -860,7 +780,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
                st.wMilliseconds );
 
-            _point_results.push_back(pt_msg.release());
+            _point_results.push_back(pt_msg);
         }
     }
 
@@ -870,7 +790,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
 void DnpProtocol::recordPoints( int group, const pointlist_t &points )
 {
-    pointtype_values *target = nullptr;
+    pointtype_values *target = 0;
 
     switch( group )
     {
@@ -894,7 +814,7 @@ void DnpProtocol::recordPoints( int group, const pointlist_t &points )
         }
     }
 
-    for( const auto msg : points )
+    for each( const CtiPointDataMsg *msg in points )
     {
         if( msg )
         {
@@ -941,44 +861,63 @@ string DnpProtocol::pointSummary(unsigned points)
 }
 
 
-template <class Iterator, typename ToString>
-std::string join_itrs(Iterator itr, Iterator end, ToString toString, std::string separator)
-{
-    if( itr == end )
-    {
-        return {};
-    }
-
-    return std::accumulate(
-        std::next(itr), 
-        end, 
-        toString(*itr), 
-        [toString, separator](std::string init, std::iterator_traits<Iterator>::value_type value) {
-            return init + separator + toString(value);
-        });
-}
-
-
 string DnpProtocol::pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points)
 {
-    string report = "[";
-    const string separator = ", ";
+    string report, item;
 
-    const auto pointdata_as_string = [](pointtype_values::value_type pd) {
-        const auto& [offset, value] = pd;
-        return std::to_string(offset) + ":" + std::to_string(static_cast<long>(value));
-    };
+    std::map<unsigned, double>::const_iterator itr;
+    std::map<unsigned, double>::const_reverse_iterator r_itr;
+
+    report += "[";
 
     if( pointdata.size() <= (points * 2) )
     {
-        report += join_itrs(pointdata.cbegin(), pointdata.cend(), pointdata_as_string, separator);
+        for( itr = pointdata.begin(); itr != pointdata.end(); itr++ )
+        {
+            item = CtiNumStr(itr->first) + ":" + CtiNumStr(itr->second, 0);
+
+            if( itr != pointdata.begin() )
+            {
+                report += ", ";
+            }
+
+            report += item;
+        }
     }
     else
     {
-        auto firstElements = join_itrs(pointdata.cbegin(), std::next(pointdata.cbegin(), points), pointdata_as_string, separator);
-        auto lastElements  = join_itrs(std::next(pointdata.cend(), -points), pointdata.cend(), pointdata_as_string, separator);
+        std::map<unsigned, double>::const_iterator itr_end;
 
-        report += firstElements + separator + " ... " + lastElements;
+        string first, second;
+        int i;
+
+        for( i = 0, itr = pointdata.begin(); i < points; itr++, i++ )
+        {
+            item  = CtiNumStr(itr->first);
+            item += ":";
+            item += CtiNumStr(itr->second, 0);
+            item += ", ";
+
+            first += item;
+        }
+
+        r_itr = pointdata.rbegin();
+
+        for( i = 0; i < points; r_itr++, i++ )
+        {
+            item  = CtiNumStr(r_itr->first);
+            item += ":";
+            item += CtiNumStr(r_itr->second, 0);
+
+            if( i )
+            {
+                item += ", ";
+            }
+
+            second = item + second;
+        }
+
+        report += first + " ... " + second;
     }
 
     report += "]\n";
@@ -1014,21 +953,21 @@ bool DnpProtocol::isTransactionComplete( void ) const
 
 
 const auto ControlResultStrings = std::map<unsigned char, const char *> {
-        { as_underlying(ControlStatus::Success),           "Request accepted, initiated, or queued."},
-        { as_underlying(ControlStatus::Timeout),           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
-        { as_underlying(ControlStatus::NoSelect),          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
-        { as_underlying(ControlStatus::FormatError),       "Request not accepted because there were formatting errors in the control request."},
-        { as_underlying(ControlStatus::NotSupported),      "Request not accepted because a control operation is not supported for this point."},
-        { as_underlying(ControlStatus::AlreadyActive),     "Request not accepted, because the control queue is full or the point is already active."},
-        { as_underlying(ControlStatus::HardwareError),     "Request not accepted because of control hardware problems."},
-        { as_underlying(ControlStatus::Local),             "Request not accepted because Local/Remote switch is in Local position."},
-        { as_underlying(ControlStatus::TooManyObjs),       "Request not accepted because too many objects appeared in the same request."},
-        { as_underlying(ControlStatus::NotAuthorized),     "Request not accepted because of insufficient authorization."},
-        { as_underlying(ControlStatus::AutomationInhibit), "Request not accepted because it was inhibited by a local automation process."},
-        { as_underlying(ControlStatus::ProcessingLimited), "Request not accepted because the device cannot process any more activities than are presently in progress."},
-        { as_underlying(ControlStatus::OutOfRange),        "Request not accepted because the value is outside the acceptable range permitted for this point."},
-        { as_underlying(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
-        { as_underlying(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
+        { static_cast<unsigned char>(ControlStatus::Success),           "Request accepted, initiated, or queued."},
+        { static_cast<unsigned char>(ControlStatus::Timeout),           "Request not accepted because the operate message was received after the arm timer timed out. The arm timer was started when the select operation for the same point was received."},
+        { static_cast<unsigned char>(ControlStatus::NoSelect),          "Request not accepted because no previous matching select request exists. {An operate message was sent to activate an output that was not previously armed with a matching select message.},"},
+        { static_cast<unsigned char>(ControlStatus::FormatError),       "Request not accepted because there were formatting errors in the control request."},
+        { static_cast<unsigned char>(ControlStatus::NotSupported),      "Request not accepted because a control operation is not supported for this point."},
+        { static_cast<unsigned char>(ControlStatus::AlreadyActive),     "Request not accepted, because the control queue is full or the point is already active."},
+        { static_cast<unsigned char>(ControlStatus::HardwareError),     "Request not accepted because of control hardware problems."},
+        { static_cast<unsigned char>(ControlStatus::Local),             "Request not accepted because Local/Remote switch is in Local position."},
+        { static_cast<unsigned char>(ControlStatus::TooManyObjs),       "Request not accepted because too many objects appeared in the same request."},
+        { static_cast<unsigned char>(ControlStatus::NotAuthorized),     "Request not accepted because of insufficient authorization."},
+        { static_cast<unsigned char>(ControlStatus::AutomationInhibit), "Request not accepted because it was inhibited by a local automation process."},
+        { static_cast<unsigned char>(ControlStatus::ProcessingLimited), "Request not accepted because the device cannot process any more activities than are presently in progress."},
+        { static_cast<unsigned char>(ControlStatus::OutOfRange),        "Request not accepted because the value is outside the acceptable range permitted for this point."},
+        { static_cast<unsigned char>(ControlStatus::NonParticipating),  "Outstation shall not issue or perform the control operation."},
+        { static_cast<unsigned char>(ControlStatus::Undefined),         "Request not accepted because of some other undefined reason."}};
 
 std::string DnpProtocol::getControlResultString( unsigned char result_status )
 {
@@ -1049,7 +988,7 @@ std::string DnpProtocol::getControlResultString( unsigned char result_status )
 }
 
 
-DWORD timeZoneId(const DWORD incoming, TimeOffset deviceUtcOffset)
+int timeZoneId(const int incoming, TimeOffset deviceUtcOffset)
 {
     if( deviceUtcOffset == TimeOffset::LocalStandard && incoming == TIME_ZONE_ID_DAYLIGHT )
     {
@@ -1117,3 +1056,5 @@ std::unique_ptr<DNP::Time> DnpProtocol::convertToDeviceTimeOffset( const CtiTime
 
 
 }
+}
+

@@ -4,12 +4,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.errors.dao.DeviceError;
@@ -32,8 +34,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
@@ -44,17 +44,14 @@ import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
 @ManagedResource
 public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
+    private static final Logger log = YukonLogManager.getLogger(RfnStatusArchiveRequestListener.class);
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    //  The JMS template used to send the RfnStatusArchiveResponse
-    private YukonJmsTemplate jmsTemplate;
-    //  The Thrift messenger to send any resulting MeterProgramStatus updates
+    private JmsTemplate jmsTemplate;
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
-    private Logger log = YukonLogManager.getRfnLogger();
+    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     /**
      * Meter Mode                       Relay Status    RfnMeterDisconnectState                                 Comments
         TERMINATE                       TERMINATED      DISCONNECTED(2)                                         This meter is configured for On-demand disconnect. The mode is reflecting the relay status. If it does not, it is an error.
@@ -89,15 +86,15 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_DEMAND_THRESHOLD_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_DEMAND_THRESHOLD_ACTIVE);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
         //skipping CYCLING_CONFIGURATION           *   
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED_CYCLING_ACTIVE);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_ACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED_CYCLING_ACTIVE);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
-        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.CONNECTED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN), RfnMeterDisconnectState.CONNECTED);
     }
@@ -111,7 +108,9 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnStatusArchiveRequest request) {
-        log.info("<<< {}", request.toString());
+        if (rfnCommsLog.isEnabled(Level.INFO)) {
+            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
+        }
         queueHandler.add(this, request);
     }
 
@@ -139,42 +138,42 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     /**
      * Attempts to publish disconnect point data
      */
-    private void updateDisconnectInfo(RfnStatusArchiveRequest request, String processor, MeterInfoStatus status) {
-        if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
-            Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key = Pair.of(
-                    status.getData().getMeterDisconnectStatus().getMeterMode(),
-                    status.getData().getMeterDisconnectStatus().getRelayStatus());
-            RfnMeterDisconnectState state = disconnectStates.get(key);
-            if (state != null) {
-                publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
-                        request.getRfnIdentifier(), status.getTimeStamp(), processor);
-            } else {
-                log.info(
-                        "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
-                        status, key);
-            }
-        }
-    }
+	private void updateDisconnectInfo(RfnStatusArchiveRequest request, String processor, MeterInfoStatus status) {
+		if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
+			Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key = Pair.of(
+					status.getData().getMeterDisconnectStatus().getMeterMode(),
+					status.getData().getMeterDisconnectStatus().getRelayStatus());
+			RfnMeterDisconnectState state = disconnectStates.get(key);
+			if (state != null) {
+				publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
+						request.getRfnIdentifier(), status.getTimeStamp(), processor);
+			} else {
+				log.info(
+						"Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
+						status, key);
+			}
+		}
+	}
     
-        /**
-         * Sends status update message to SM to update MeterProgramStatus table
-         */
-        private void archiveProgrammingStatus(MeterInfoStatus status) {
-            if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
-                MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
-                request.setError(DeviceError.SUCCESS);
-                request.setSource(Source.SM_STATUS_ARCHIVE);
-                request.setRfnIdentifier(status.getRfnIdentifier());
-                request.setConfigurationId(status.getData().getMeterConfigurationID());
-                request.setStatus(ProgrammingStatus.IDLE);
-                request.setTimestamp(new Instant(status.getTimeStamp()));
-                log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
-                thriftMessenger.send(request);
-            } else {
-                log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
-                        status);
-            }
-        }
+    /**
+     * Sends status update message to SM to update MeterProgramStatus table
+     */
+	private void archiveProgrammingStatus(MeterInfoStatus status) {
+		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
+			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+			request.setError(DeviceError.SUCCESS);
+			request.setSource(Source.SM_STATUS_ARCHIVE);
+			request.setRfnIdentifier(status.getRfnIdentifier());
+			request.setConfigurationId(status.getData().getMeterConfigurationID());
+			request.setStatus(ProgrammingStatus.IDLE);
+			request.setTimestamp(new Instant(status.getTimeStamp()));
+			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+			thriftMessenger.send(request);
+		} else {
+			log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
+					status);
+		}
+	}
 
     /**
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
@@ -211,21 +210,21 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         RfnStatusArchiveResponse response = new RfnStatusArchiveResponse();
         response.setStatusPointId(request.getStatusPointId());
         if (request.getRfnIdentifier().is_Empty_()) {
-            log.info("{} acknowledged empty rfnIdentifier {} statusPointId {}", processor, request.getRfnIdentifier(),
+            log.info("{} acknowledged empty rfnIdentifier {} statusPointId={}", processor, request.getRfnIdentifier(),
                 request.getStatusPointId());
+        } else {
+            log.debug("{} acknowledged statusPointId={}", processor, request.getStatusPointId());
         }
-        log.info(">>> {}", response.toString());
-        jmsTemplate.convertAndSend(response);
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getResponseQueue().get().getName(), response);
     }
 
-    @PostConstruct
-    public void initialize() {
-        //  The JMS template used to respond to the RfnStatusArchiveRequest
-        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
-
-        //  The Thrift template used to send any resulting MeterProgramStatus updates
-        thriftMessenger = new ThriftRequestTemplate<>(
-                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE),
-                new MeterProgramStatusArchiveRequestSerializer());
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
+                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                                                      new MeterProgramStatusArchiveRequestSerializer());
     }
 }

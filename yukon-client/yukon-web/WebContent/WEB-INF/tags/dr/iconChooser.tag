@@ -36,7 +36,7 @@
 <cti:displayForPageEditModes modes="EDIT,CREATE">
 <spring:bind path="${pageScope.path}">
 
-<table cellpadding="0" cellspacing="0" style="margin-left:-6px;">
+<table cellpadding="0" cellspacing="0">
     <tr>
         <td>
             <form:hidden id="${pageScope.id}HiddenIconInput" path="${pageScope.path}"/>

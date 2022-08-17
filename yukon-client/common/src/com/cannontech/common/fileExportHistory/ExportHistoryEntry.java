@@ -2,7 +2,7 @@ package com.cannontech.common.fileExportHistory;
 
 import java.util.Comparator;
 
-import jakarta.activation.MimetypesFileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
 
 import org.joda.time.Instant;
 

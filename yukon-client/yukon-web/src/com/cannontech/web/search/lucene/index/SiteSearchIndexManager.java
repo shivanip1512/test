@@ -131,7 +131,7 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
         TopDocsCallbackHandler<Boolean> handler = new TopDocsCallbackHandler<Boolean>() {
             @Override
             public Boolean processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
-                return topDocs.totalHits.value == 0;
+                return topDocs.totalHits == 0;
             }};
         Query query = staticPageIndexBuilder.getUserContextQuery(userContext);
         boolean needToIndex = true;

@@ -15,7 +15,7 @@ struct KeepAlivePolicy : Policy
         LocalMode
     };
 
-    virtual Actions SendKeepAlive( const long keepAliveValue, std::chrono::seconds regulatorTimeout) = 0;
+    virtual Actions SendKeepAlive( const long keepAliveValue ) = 0;
 
     virtual Actions StopKeepAlive() = 0;
 

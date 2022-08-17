@@ -294,7 +294,7 @@
                                                                 <div class="dib">
                                                                     <span id="removeGroupButton" data-ok-event="yukon:devicegroup:removegroup"
                                                                           data-form-id="${subId}removeSubGroupForm">
-                                                                        <a href="#"><cti:icon icon="icon-cross"/></a>
+                                                                        <a href="#"><i class="icon icon-cross"></i></a>
                                                                     </span>
                                                                     <d:confirm on="#removeGroupButton" nameKey="removeGroup.areYouSure"/>
                                                                 </div>

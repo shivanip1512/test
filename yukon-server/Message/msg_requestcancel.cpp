@@ -112,8 +112,3 @@ CtiMessage* CtiRequestCancelMsg::replicateMessage() const
     return( (CtiMessage*)ret );
 }
 
-std::size_t CtiRequestCancelMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize();
-}
-

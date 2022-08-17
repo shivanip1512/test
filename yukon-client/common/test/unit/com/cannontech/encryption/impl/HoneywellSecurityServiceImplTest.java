@@ -1,6 +1,6 @@
 package com.cannontech.encryption.impl;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.security.KeyPair;
@@ -17,8 +17,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.easymock.EasyMock;
 import org.jdom2.JDOMException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.database.db.security.EncryptionKey;
@@ -34,7 +34,7 @@ public class HoneywellSecurityServiceImplTest {
     private EncryptedRouteDao mockEncryptedRouteDao;
     private HoneywellSecurityService honeywellSecurityService;
 
-    @BeforeEach
+    @Before
     public void setup() {
         mockEncryptedRouteDao = EasyMock.createMock(EncryptedRouteDao.class);
         honeywellSecurityService = new HoneywellSecurityServiceImpl();

@@ -98,9 +98,6 @@ public:
     friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const unsigned long s);
     friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const unsigned long s);
 
-    friend CtiTime IM_EX_CTIBASE operator + (const CtiTime& t, const std::chrono::seconds s);
-    friend CtiTime IM_EX_CTIBASE operator - (const CtiTime& t, const std::chrono::seconds s);
-
     friend bool IM_EX_CTIBASE operator < (const CtiTime& t1, const CtiTime& t2);
     friend bool IM_EX_CTIBASE operator <= (const CtiTime& t1, const CtiTime& t2);
     friend bool IM_EX_CTIBASE operator > (const CtiTime& t1, const CtiTime& t2);
@@ -113,16 +110,7 @@ public:
 
 namespace Cti::Time {
 
-    struct TimezoneHelper
-    {
-        virtual tm localtime(const ctitime_t* seconds) const = 0;
-        virtual tm gmtime(const ctitime_t* seconds) const = 0;
-        virtual ctitime_t mktime(tm* descriptor) const = 0;
-        virtual TIME_ZONE_INFORMATION GetTZI() const = 0;
-    };
-
-    IM_EX_CTIBASE auto exchangeTimezoneHelper(std::unique_ptr<TimezoneHelper>, Test::use_in_unit_tests_only&)
-                        -> std::unique_ptr<TimezoneHelper>;
-    IM_EX_CTIBASE auto exchangeMakeNow(std::function<CtiTime()>, Test::use_in_unit_tests_only&)
-                        -> std::function<CtiTime()>;
+    extern IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime;
+    //  Pass a pointer to override, set to nullptr to reset behavior
+    extern IM_EX_CTIBASE void overrideTimeZoneInformation(const TIME_ZONE_INFORMATION*, Cti::Test::use_in_unit_tests_only&);
 }

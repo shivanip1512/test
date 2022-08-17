@@ -46,12 +46,6 @@ auto RfnCommand::getApplicationServiceId() const -> ASID
     return ASID::ChannelManager;
 }
 
-//  Defaults to the Device Configuration priority class
-auto RfnCommand::getPriorityClass() const -> Messaging::Rfn::PriorityClass
-{
-    return Messaging::Rfn::PriorityClass::DeviceConfiguration;
-}
-
 bool RfnCommand::isPost() const
 {
     return false;
@@ -62,10 +56,6 @@ bool RfnCommand::isOneWay() const
     return false;
 }
 
-bool RfnCommand::isOscoreEncrypted() const
-{
-    return false;
-}
 
 std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
 {

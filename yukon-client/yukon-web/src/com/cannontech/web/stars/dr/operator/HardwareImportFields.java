@@ -18,8 +18,7 @@ public enum HardwareImportFields {
     DEVICE_VENDOR_USER_ID(null),
     OPTION_PARAMS(null),
     LATITUDE(null),
-    LONGITUDE(null),
-    GUID(null);
+    LONGITUDE(null);
     
     private String legendKey;
     

@@ -1,18 +1,11 @@
 package com.cannontech.common.bulk.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.joda.time.Instant;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
@@ -31,23 +24,23 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for ObjectMapperFactoryImpl
  */
-public class ObjectMapperFactoryImplTest {
+public class ObjectMapperFactoryImplTest extends TestCase {
     private SimpleDevice testDevice = new SimpleDevice(1, PaoType.MCT310);
     private PaoDaoAdapter paoDaoAdapter;
     private DeviceDaoAdapter deviceDaoAdapter;
 
-    @BeforeEach
-    public void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         paoDaoAdapter = new PaoDaoAdapter() {
 
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1, null, PaoType.MCT310, null, null);
@@ -119,7 +112,6 @@ public class ObjectMapperFactoryImplTest {
 
     }
 
-    @Test
     public void testCreateBulkImporterToYukonDeviceMapper() throws Exception {
 
         ObjectMapper<String, SimpleDevice> testMapper;
@@ -138,10 +130,10 @@ public class ObjectMapperFactoryImplTest {
         }
 
         SimpleDevice device = testMapper.map("1");
-        assertEquals(testDevice, device, "Mapped device is not as expected");
+        assertEquals("Mapped device is not as expected", testDevice, device);
 
         device = testMapper.map("1,2,0");
-        assertEquals(testDevice, device, "Mapped device is not as expected");
+        assertEquals("Mapped device is not as expected", testDevice, device);
 
         try {
             testMapper.map("2");
@@ -355,36 +347,9 @@ public class ObjectMapperFactoryImplTest {
         }
 
         @Override
-        public int getEnabledPaoCount(Set<PaoType> paoTypes) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
         public YukonPao findPort(String paoName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
-
-        @Override
-        public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public String findPaoInfoValue(int paoId, InfoKey key) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public DynamicPaoInfo getDynamicPaoInfo(InfoKey key) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        
     }
 
     /**
@@ -399,7 +364,12 @@ public class ObjectMapperFactoryImplTest {
         }
 
         @Override
-        public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+        public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<Integer> getDevicesByPort(int portId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -574,56 +544,6 @@ public class ObjectMapperFactoryImplTest {
 
         @Override
         public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public boolean isGuidExists(String guid) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public String getGuid(int deviceId) throws NotFoundException {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void updateGuid(int deviceId, String guid) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public void insertGuid(int deviceId, String guid) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<String> getGuids() {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public List<Integer> getDeviceIdsWithGuids() {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public int getDeviceIdByName(String name) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public Map<String, Integer> getDeviceIds(Iterable<String> guids) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

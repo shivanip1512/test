@@ -4,9 +4,9 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -44,7 +44,7 @@ import com.google.common.collect.Multimap;
 public class DrReconciliationServiceTest {
     private DrReconciliationServiceImpl dr;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         dr = new DrReconciliationServiceImpl();
         DrReconciliationDao drReconciliationDao = createNiceMock(DrReconciliationDao.class);
@@ -339,7 +339,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertTrue(conflictingLCR.size() == 1, "LCR correct address ");
+        assertTrue("LCR correct address ", conflictingLCR.size() == 1);
     }
 
     // Incorrect Program Set on one relay
@@ -359,7 +359,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Splinter Set on one relay
@@ -377,7 +377,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Spid Set in addressing
@@ -395,7 +395,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Geo Set in addressing
@@ -413,7 +413,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Substation Set in addressing
@@ -431,7 +431,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Feeder Set on one relay
@@ -449,7 +449,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Incorrect Zip Set in addressing
@@ -467,7 +467,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
     // Incorrect Uda Set in addressing
     @Test
@@ -484,7 +484,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertFalse(conflictingLCR.size() == 0, "LCR correct address ");
+        assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
     // Multiple LCR in single group, correct group addressing
@@ -505,7 +505,7 @@ public class DrReconciliationServiceTest {
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertTrue(conflictingLCR.size() == 1, "Group did not match ");
+        assertTrue("Group did not match ", conflictingLCR.size() == 1);
     }
     
     // Multiple LCR in single group, group addressing incorrect - Group 7 and 8 have different zip code
@@ -526,7 +526,7 @@ public class DrReconciliationServiceTest {
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertTrue(!conflictingLCR.contains(4), "Group did not match ");
+        assertTrue("Group did not match ", !conflictingLCR.contains(4));
     }
 
     // Two groups with correct feeders
@@ -551,7 +551,7 @@ public class DrReconciliationServiceTest {
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertTrue(conflictingLCR.contains(6), "Group did not match ");
+        assertTrue("Group did not match ", conflictingLCR.contains(6));
     }
     
     // Two groups with incorrect feeders
@@ -575,7 +575,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
-        assertTrue(!conflictingLCR.contains(5), "Group did not match ");
+        assertTrue("Group did not match ", !conflictingLCR.contains(5));
     }
 
     @Test
@@ -599,11 +599,11 @@ public class DrReconciliationServiceTest {
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, outOfServiceExppectedLcrs);
 
         ReflectionTestUtils.invokeMethod(dr, "compareExpectedServiceStatusWithReportedLcrs", lcrsToSendCommand);
-        assertArrayEquals(reportedInServiceLcrs,
-                lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).toArray(), "Devices to send InServcie Message : ");
+        assertArrayEquals("Devices to send InServcie Message : ", reportedInServiceLcrs,
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).toArray());
 
-        assertArrayEquals(reportedOutOfServiceLcrs,
-                lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).toArray(), "Devices to send Out Of Service Message : ");
+        assertArrayEquals("Devices to send Out Of Service Message : ", reportedOutOfServiceLcrs,
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).toArray());
     }
 
     private List<ExpressComReportedAddress> getDefaultLCRAddressing(List<Integer> lcrs) {

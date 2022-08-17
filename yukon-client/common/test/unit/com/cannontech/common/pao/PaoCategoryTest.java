@@ -1,13 +1,13 @@
 package com.cannontech.common.pao;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.fail;
 
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Sets;
@@ -16,7 +16,7 @@ public class PaoCategoryTest {
 
     private Set<PaoCategory> allCategories;
 
-    @BeforeEach
+    @Before
     public void setup() {
         allCategories = EnumSet.allOf(PaoCategory.class);
     }

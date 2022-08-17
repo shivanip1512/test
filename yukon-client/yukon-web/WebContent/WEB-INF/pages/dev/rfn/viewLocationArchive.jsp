@@ -1,10 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="dev" page="rfnTest.rfLocationArchiveRequest">
+<cti:standardPage module="dev" page="rfnTest">
     <tags:sectionContainer title="RFN Meter Location Archive Request Test">
         <form action="sendLocationArchiveRequest" method="post">
             <cti:csrfToken/>
@@ -77,40 +76,4 @@
             </div>
         </form>
     </tags:sectionContainer>
-    <tags:sectionContainer title="Gateway Location Archive Request Test">
-        <form action="sendGatewayLocationArchiveRequest" method="post">
-            <cti:csrfToken/>
-            <tags:nameValueContainer>
-            	<tags:nameValue name="Serial Number">
-	                <select id="gatewaySerialNumber" name="serialNumber">
-	                    <c:forEach var="gateway" items="${gateways}">
-	                        <option value="${gateway.sensorSerialNumber}" data-manufacturer="${gateway.sensorManufacturer}" 
-	                        	data-model="${gateway.sensorModel}">${fn:escapeXml(gateway.sensorSerialNumber)}</option>
-	                    </c:forEach>
-	                </select>
-	                <input type="hidden" name="manufacturer" class="js-gateway-manufacturer"/>
-	                <input type="hidden" name="model" class="js-gateway-model"/>
-                </tags:nameValue>
-                <tags:nameValue name="Latitude"><input name="latitude" type="text" value="45.019524"></tags:nameValue>
-                <tags:nameValue name="Longitude"><input name="longitude" type="text" value="-93.347115"></tags:nameValue>
-            </tags:nameValueContainer>
-            <div class="page-action-area">
-                <cti:button nameKey="send" type="submit" classes="js-blocker"/>
-            </div>
-        </form>
-    </tags:sectionContainer>
-    
-    <script>
-    	_setManufacturerModel = function() {
-            var selectedGateway = $('#gatewaySerialNumber').find(':selected');
-	        $('.js-gateway-manufacturer').val(selectedGateway.data('manufacturer'));
-	        $('.js-gateway-model').val(selectedGateway.data('model'));
-    	};
-    	
-    	_setManufacturerModel();
-    	
-	    $(document).on('change', '#gatewaySerialNumber', function () {
-	        _setManufacturerModel();
-	    });
-    </script>
 </cti:standardPage>

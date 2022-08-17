@@ -66,7 +66,9 @@ public class CalculatedPoint extends ScalarPoint {
     @Override
     public void delete() throws SQLException {
         CalcComponent.deleteCalcComponents(getPoint().getPointID(), getDbConnection());
-        CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
+        if (!baselineAssigned) {
+            CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
+        }
         getCalcBase().delete();
         super.delete();
     }
@@ -74,7 +76,9 @@ public class CalculatedPoint extends ScalarPoint {
     @Override
     public void deletePartial() throws SQLException {
         CalcComponent.deleteCalcComponents(getPoint().getPointID(), getDbConnection());
-        CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
+        if (!baselineAssigned) {
+            CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());
+        }
         getCalcBaseDefaults().delete();
         super.deletePartial();
     }

@@ -6,7 +6,6 @@
 <%@ page import="com.cannontech.multispeak.client.MultiSpeakVersion" %>
 <cti:msgScope paths="widgets.accountInformationWidget">
 <c:set var="V3" value="<%= MultiSpeakVersion.V3.getVersion()%>"/>
-<c:set var="V4" value="<%= MultiSpeakVersion.V4.getVersion()%>"/>
     <c:choose>
         <c:when test="${!hasVendorId}">
             <i:inline key=".noVendor" />
@@ -15,9 +14,6 @@
            <c:choose>
                <c:when test="${multiSpeakVersion.version == V3}">
                    <%@ include file="../../widget/accountInformationWidget/accountInfoPartial.jspf"%>
-               </c:when>
-               <c:when test="${multiSpeakVersion.version == V4}">
-                   <%@ include file="../../widget/accountInformationWidget/accountInfoPartialV4.jspf"%>
                </c:when>
                <c:otherwise>
                    <%@ include file="../../widget/accountInformationWidget/accountInfoPartialV5.jspf"%>

@@ -73,7 +73,12 @@ public class MockDeviceDao implements DeviceDao {
     }
 
     @Override
-    public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+    public List<Integer> getDevicesByPort(int portId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
         throw new MethodNotImplementedException();
     }
 
@@ -200,56 +205,6 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public boolean isGuidExists(String guid) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public String getGuid(int deviceId) throws NotFoundException {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void updateGuid(int deviceId, String guid) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void insertGuid(int deviceId, String guid) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<String> getGuids() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<Integer> getDeviceIdsWithGuids() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public int getDeviceIdByName(String name) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Map<String, Integer> getDeviceIds(Iterable<String> guids) {
         throw new MethodNotImplementedException();
     }
 }

@@ -2,8 +2,7 @@
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
         <analog offset="100"/>
-        <status offset="103"/>
-        <systemStatus offset="2000"/>
+        <status offset="64"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="20" type="Analog">
@@ -30,34 +29,6 @@
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="24" type="Analog">
-        <name>RSSI</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DBM"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="25" type="Analog">
-        <name>RSRP</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DBM"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="26" type="Analog">
-        <name>RSRQ</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DB"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="27" type="Analog">
-        <name>SINR</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DB"/>
-        <decimalplaces value="0"/>
-    </point>
     <point offset="100" type="Analog">
         <name>Outages</name>
         <multiplier value="1"/>
@@ -75,44 +46,9 @@
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
-    <point offset="65" type="Status">
-        <name>Cellular Connection Failed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="66" type="Status">
-        <name>Cellular Modem Disabled</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="67" type="Status">
-        <name>Cellular Sim Card Inserted Removed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="68" type="Status">
-        <name>Cellular APN Changed</name>
-        <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="102" type="Status">
-        <name>Ultra Capacitor Bad</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
-    </point>
-    <point offset="103" type="Status">
-        <name>Blink Reported</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
-    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Outage Status"/>
-    </point>
-    <point offset="2000" type="Status">
-        <name>Comm Status</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Comm Status State"/>
     </point>
 </points>

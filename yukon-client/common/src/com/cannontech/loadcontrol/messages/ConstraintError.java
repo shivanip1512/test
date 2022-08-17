@@ -49,7 +49,7 @@ public enum ConstraintError {
 	},
 	CONTROLLED_LESS_THAN_MINIMUM(107) {
 		Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
-			return map("numSeconds", constraintViolation.getDoubleParams().get(0));
+			return map("numHours", constraintViolation.getDoubleParams().get(0));
 		}
 	},
 	CONTROLLED_MORE_THAN_MAXIMUM(108) {
@@ -291,12 +291,7 @@ public enum ConstraintError {
 		Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
 			return map("paoName", constraintViolation.getStringParams().get(0));
 		}
-	},
-	PROGRAM_CONTROL_WINDOW_EXCEEDS_MIDNIGHT(150) {
-            Map<String, Object> getViolationParameters(ConstraintViolation constraintViolation) {
-                    return map();
-        }
-    };
+	};
 	
 	private final int errorCode;
 	

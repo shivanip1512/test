@@ -198,7 +198,7 @@ struct DIALUPREPLY
    BYTE          Status;                   /* Device Status Byte */
    BYTE          AckNak;                   /* Last device response to comms */
    USHORT        CompFlag;                 /* Indicates progress through the various commands */
-   BYTE          Message[2600];            /* Data is in here */
+   BYTE          Message[2048];            /* Data is in here */
 };
 
 /*----------------------------------------------------------------------------*

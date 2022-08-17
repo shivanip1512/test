@@ -50,7 +50,7 @@ yukon.paonotes.paoselection = (function () {
                 $("#deviceGroups\\.errors").addClass('db');
             }
             if($("#paoIds\\.errors").exists()) {
-                $("<br>").insertBefore("#paoIds\\.errors");
+                $( "<br>" ).insertBefore( "#paoIds\\.errors");
             }
             _initialized = true;
         }

@@ -109,8 +109,15 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-AT
+        RFN_530S4AT(PaoType.RFN530S4EAXR,
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KWH,         //metric 3
+                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                ),
         //S4-AR
-        RFN_530S4A_TR(PaoType.RFN530S4EAXR,
+        RFN_530S4AR(PaoType.RFN530S4EAXR,
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -132,8 +139,21 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RT
+        RFN_530S4RT(PaoType.RFN530S4ERXR,
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KWH,         //metric 3
+                BuiltInAttribute.SUM_KVARH,       //metric 23
+                /* Removed due to RFNFIVE-636
+                BuiltInAttribute.NET_KVARH,       //metric 24
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.NET_KVAH,        //metric 44
+                */
+                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                ),
         //S4-RR
-        RFN_530S4R_TR(PaoType.RFN530S4ERXR,
+        RFN_530S4RR(PaoType.RFN530S4ERXR,
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
@@ -160,24 +180,28 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_B, //metric 120
                 BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_C  //metric 121
                 ),
-        
-        CRL_530S4X(PaoType.CRL530S4X,
+        //Focus AXD-500
+        RFN_520FAXD(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.SUM_KVARH,       //metric 23
-                /*Var Hour Net*/                  //metric 24
-                BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_A, //metric 119
-                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_B, //metric 120
-                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_C  //metric 121
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
                 ),
-        //Focus AXD-500
         //Focus AXT-500
+        RFN_520FAXT(PaoType.RFN520FAX,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
         //Focus AXR-500
-        RFN_520FAX_DTR(PaoType.RFN520FAX,
+        RFN_520FAXR(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
@@ -187,9 +211,7 @@ public class DataStreamingAttributeHelper {
                 /*Average Voltage Phase C*/       //metric 121
                 ),
         //Focus AXD-SD-500
-        //FocusAXT-SD-500
-        //FocusAXR-SD-500
-        RFN_520FAX_DTR_SD(PaoType.RFN520FAXD,
+        RFN_520FAXD_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
@@ -198,10 +220,41 @@ public class DataStreamingAttributeHelper {
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
                 ),
-        //FocusRXD-500
+        //FocusAXT-SD-500
+        RFN_520FAXT_SD(PaoType.RFN520FAXD,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
+        //FocusAXR-SD-500
+        RFN_520FAXR_SD(PaoType.RFN520FAXD,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
+        //TODO: Focus RXD-500??
         //FocusRXT-500
+        RFN_520FRXT(PaoType.RFN520FRX,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
         //FocusRXR-500
-        RFN_520FRX_DTR(PaoType.RFN520FRX,
+        RFN_520FRXR(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
@@ -213,9 +266,31 @@ public class DataStreamingAttributeHelper {
                 /*Average Voltage Phase C*/       //metric 121
                 ),
         //FocusRXD-SD-500
+        RFN_520FRXD_SD(PaoType.RFN520FRXD,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
         //FocusRXT-SD-500
+        RFN_520FRXT_SD(PaoType.RFN520FRXD,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
+                BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.VOLTAGE          //metric 115
+                /*Average Voltage Phase A*/       //metric 119
+                /*Average Voltage Phase B*/       //metric 120
+                /*Average Voltage Phase C*/       //metric 121
+                ),
         //FocusRXR-SD-500
-        RFN_520FRX_DTR_SD(PaoType.RFN520FRXD,
+        RFN_520FRXR_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
@@ -313,6 +388,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
+                BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100

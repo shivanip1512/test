@@ -8,7 +8,6 @@ public enum JmsApiCategory {
     DATA_STREAMING("Data Streaming"),
     DIGI_ZIGBEE("Digi Zigbee"),
     DR_NOTIFICATION("DR Notification"),
-    EDGE_DR("Edge DR"),
     MONITOR("Monitor"),
     OTHER("Other"), //use for misc single apis that don't fit in other existing categories
     RFN_LCR("RFN LCR"),
@@ -16,10 +15,8 @@ public enum JmsApiCategory {
     RF_GATEWAY("RF Gateway"),
     RF_MISC("RF Misc."), //use for misc single apis that are RF-related
     RF_NETWORK("RF Network"),
-    SIMULATOR_MANAGEMENT("Simulator Management"),
     SMART_NOTIFICATION("Smart Notification"),
     WIDGET_REFRESH("Widget Refresh"),
-    SIMULATOR("Simulator"),
     ;
     
     private final String niceString;

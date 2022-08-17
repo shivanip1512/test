@@ -2,11 +2,11 @@ package com.cannontech.amr.deviceDataMonitor.service.impl;
 
 import java.util.concurrent.ExecutionException;
 
-import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -25,9 +25,6 @@ import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.user.YukonUserContext;
@@ -38,22 +35,18 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private SmartNotificationSubscriptionService smartNotificationSubscriptionService;
     @Autowired private UserPageDao userPageDao;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
+
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
+    private JmsTemplate jmsTemplate;
+    private static final String recalcQueueName = "yukon.qr.obj.amr.dataDeviceMonitor.RecalculateRequest";
+    private static final String statusRequestQueueName = "yukon.qr.obj.amr.dataDeviceMonitor.RecalculateStatus";
     
     private RequestTemplateImpl<DeviceDataMonitorStatusResponse> statusRequestTemplate;
-    private YukonJmsTemplate deviceDataMonitorRecalcJmsTemplate;
-    
-    @PostConstruct
-    public void init() {
-        deviceDataMonitorRecalcJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DEVICE_DATA_MONITOR_RECALC);
-    }
 
     @Override
     public DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException {
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
         return monitor;
     }
     
@@ -61,7 +54,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     public DeviceDataMonitor update(DeviceDataMonitor monitor) throws DuplicateException {
         DeviceDataMonitor existingMonitor = deviceDataMonitorDao.getMonitorById(monitor.getId());
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, existingMonitor, Action.UPDATE));
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, existingMonitor,  Action.UPDATE));
         return monitor;
     }
     
@@ -77,7 +70,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     
     @Override
     public void recaclulate(DeviceDataMonitor monitor) {
-        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
     }
 
     @Override
@@ -87,7 +80,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         monitor.setEnabled(newStatus);
         Action action = monitor.isEnabled()? Action.ENABLE : Action.DISABLE;
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, action));
+        jmsTemplate.convertAndSend(recalcQueueName, new DeviceDataMonitorMessage(monitor, action));
         log.info("Updated deviceDataMonitor enabled status: status=" + newStatus + ", deviceDataMonitor=" + monitor);
         return newStatus;
     }
@@ -120,8 +113,12 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DEVICE_DATA_MONITOR_STATUS);
-        statusRequestTemplate = new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS", configSource, jmsTemplate,
-                true);
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+        
+        statusRequestTemplate =
+            new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS",
+                configSource, connectionFactory, statusRequestQueueName, false, true);
     }
 }

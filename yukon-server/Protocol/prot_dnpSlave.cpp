@@ -9,39 +9,39 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_class.h"
 
-#include "GlobalSettings.h"
-
 #include "logger.h"
 
 #include "std_helper.h"
 
-namespace Cti::Protocols {
+namespace Cti {
+namespace Protocols {
 
 using namespace Cti::Protocols::DNP;
 using namespace std::chrono_literals;
 
 YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
-    if( const auto retVal = _datalink.decode(xfer, ClientErrors::None);
-        ! _datalink.isTransactionComplete() )
+    if( xfer.getOutBuffer()[10] & 0x80 )
+    {
+        setTransactionComplete();
+        return ClientErrors::None;
+    }
+
+    YukonError_t retVal = _datalink.decode(xfer, ClientErrors::None);
+
+    if( ! _datalink.isTransactionComplete() )
     {
         return retVal;
     }
 
-    if( const auto retVal = _transport.decode(_datalink);
-        ! _transport.isTransactionComplete() )
+    retVal = _transport.decode(_datalink);
+
+    if( ! _transport.isTransactionComplete() )
     {
         return retVal;
     }
 
-    if( const auto retVal = _application.decode(_transport);
-        ! _application.isTransactionComplete() )
-    {
-        return retVal;
-    }
-
-    setTransactionComplete();
-    return ClientErrors::None;
+    return _application.decode(_transport);
 }
 
 
@@ -332,17 +332,13 @@ void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outpu
         }
     }
 
-    const auto outboundApplicationFragmentSize = GlobalSettings::getInteger(GlobalSettings::Integers::FdrDnpSlaveApplicationFragmentSize, 2048);
-
-    _application.setOutboundFragmentSize(outboundApplicationFragmentSize);
-
     std::vector<ObjectBlockPtr> dobs;
 
-    const auto insertPoints = [ &dobs, outboundApplicationFragmentSize ]( auto && points ) 
+    const auto insertPoints = [ &dobs ]( auto && points ) 
                               { 
                                   if( ! points.empty() ) 
                                   {
-                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points), outboundApplicationFragmentSize);
+                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points));
                                       std::move(blocks.begin(), blocks.end(), std::back_inserter(dobs));
                                   }
                               };
@@ -395,29 +391,30 @@ void DnpSlaveProtocol::setControlCommand( const DnpSlave::control_request &contr
 }
 
 
-void DnpSlaveProtocol::setAnalogOutputCommand( const std::vector<DnpSlave::analog_output_request> & analogs )
+void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_request &analog )
 {
     _command = Commands::SetAnalogOut_Direct;
 
-    std::vector<std::pair<unsigned, ObjectPtr>> objs;
+    auto aoc = std::make_unique<AnalogOutput>(analog.type);
 
-    for ( const auto & analog : analogs )
-    {
-        auto aoc = std::make_unique<AnalogOutput>( analog.type );
+    aoc->setControl(analog.value);
+    aoc->setStatus(analog.status);
 
-        aoc->setControl( analog.value );
-        aoc->setStatus( analog.status );
-
-        objs.emplace_back( analog.offset, std::move(aoc) );
-    }
+    const auto BlockFactoryFunc =
+            analog.isLongIndexed
+                ? ObjectBlock::makeLongIndexedBlock
+                : ObjectBlock::makeIndexedBlock;
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-            ObjectBlock::makeLongIndexedBlockForObjects( std::move(objs) ) );
+            BlockFactoryFunc(
+                    std::move(aoc),
+                    analog.offset));
 
     //  finalize the request
     _application.initForSlaveOutput();
 }
+
 
 void DnpSlaveProtocol::setDelayMeasurementCommand( const std::chrono::milliseconds delay )
 {
@@ -541,3 +538,5 @@ unsigned short DnpSlaveProtocol::getDstAddr() const
 }
 
 }
+}
+

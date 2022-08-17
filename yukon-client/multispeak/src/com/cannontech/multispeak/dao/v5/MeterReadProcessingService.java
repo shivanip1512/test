@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.dao.v5;
 
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
@@ -16,7 +15,7 @@ public interface MeterReadProcessingService {
      * aggregated or chained) and then processed later in a synchronous manner.
      */
     public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
-                                           PointValueHolder pointValueHolder, PaoType type);
+                                           PointValueHolder pointValueHolder);
 
     /**
      * Simple helper to create a blank MeterRead for a given Meter.
@@ -30,5 +29,5 @@ public interface MeterReadProcessingService {
      * be shared across threads.
      */
     public void updateMeterRead(MeterReading reading, BuiltInAttribute attribute,
-                         PointValueHolder pointValueHolder, PaoType type);
+                         PointValueHolder pointValueHolder);
 }

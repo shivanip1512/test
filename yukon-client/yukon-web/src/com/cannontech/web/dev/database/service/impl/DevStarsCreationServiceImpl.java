@@ -2,7 +2,6 @@ package com.cannontech.web.dev.database.service.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +26,6 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserGroup;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.development.model.DevCCU;
 import com.cannontech.development.service.impl.DevObjectCreationBase;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -63,7 +61,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
-    @Autowired private NextValueHelper nextValueHelper;
 
     private static int complete ;
     private static int total;
@@ -145,7 +142,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, "2");
         setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, true);
 
-        setRoleProperty(roleGroup, YukonRoleProperty.MANAGE_TRENDS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
@@ -339,24 +336,13 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
     private void createHardware(DevStars devStars, DevHardwareType devHardwareType, int accountId, int inventoryIdIterator) {
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
         Hardware hardware = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
-        HardwareType type = hardware.getHardwareType();
         hardware.setAccountId(accountId);
-        if (type.isEatonCloud()) {
-            String guid = UUID.randomUUID().toString();
-            int value = nextValueHelper.getNextValue("EatonCloudSimulatorNameIncrementor");
-            String name = type.getForHardwareType() + "_SIM_" + value;
-            hardware.setDisplayName(name);
-            hardware.setSerialNumber(name);
-            hardware.setGuid(guid);
-            hardware.setCreatingNewTwoWayDevice(false);
-            hardware.setDisplayLabel(name);
-        }
         if (!canAddStarsHardware(devStars, hardware)) {
             devStars.incrementFailureCount();
             return;
         }
         try {
-
+            HardwareType type = hardware.getHardwareType();
             if (type.isRf()) {
                 /** For rf devices the {@link RfnDeviceCreationService} will end up calling {@link HardwareUiService} createHardware method 
                  * after it creates the pao part of the device using the {@link DeviceCreationService}. */
@@ -422,9 +408,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
     }
 
     private boolean canAddStarsHardware(DevStars devStars, Hardware hardware) {
-        if(hardware.getHardwareType().isEatonCloud()) {
-            return true;
-        }
         int serialNum = Integer.valueOf(hardware.getSerialNumber());
         if (serialNum >= devStars.getDevStarsHardware().getSerialNumMax()) {
             log.info("Hardware Object " + hardware.getDisplayName() + " cannot be added. Max of "

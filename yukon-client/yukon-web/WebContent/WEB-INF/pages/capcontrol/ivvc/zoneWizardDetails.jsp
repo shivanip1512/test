@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -8,9 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
-
-<cti:msg2 var="confirmDeleteMsg" key=".confirmDelete" argument="${zoneDto.name}"/>
-<input type="hidden" class="js-confirm-delete" value="${confirmDeleteMsg}"/>
 
 <tags:setFormEditMode mode="${mode}"/>
 
@@ -24,16 +20,16 @@
 <form:form id="zoneDetailsForm" modelAttribute="zoneDto" action="${action}" >
     <cti:csrfToken/>
     <form:hidden path="zoneId"/>
+    <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>
     <input type="hidden" id="zoneType" name="zoneType" value="${zoneDto.zoneType}"/>
     <c:if test="${zoneDto.zoneType != 'THREE_PHASE'}">
         <input type="hidden" id="regulatorPhase" value="${zoneDto.regulator.phase}"/>
     </c:if>
-    <cti:msg2 var="noneSelected" key="yukon.web.components.button.selectionPicker.label"/>
 
     <tags:nameValueContainer2 tableClass="stacked">
         <%-- Zone Name --%>
-        <tags:inputNameValue path="name" nameKey=".label.name" size="25" maxlength="60"/>
+        <tags:inputNameValue path="name" nameKey=".label.name" size="25"/>
 
         <%-- Zone Type --%>
         <tags:nameValue2 nameKey=".label.zoneType">
@@ -54,23 +50,15 @@
                     <i:inline key="yukon.common.dashes"/>
                 </c:when>
                 <c:otherwise>
-                    <cti:displayForPageEditModes modes="EDIT">
-                        <form:select path="parentId">
-                            <c:forEach var="parentZone" items="${parentZones}">
-                                <form:option value="${parentZone.id}">
-                                    <c:set var="regulator" value="${parentZone.regulators[0]}"/>
-                                    <%@ include file="zoneNameDisplay.jsp" %>
-                                </form:option>
-                            </c:forEach>
-                        </form:select>
-                    </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="CREATE">
-                        <form:hidden path="parentId"/>
-                        <c:if test="${parentZone.zoneType == singlePhase}">
-                            <c:set var="regulator" value="${parentZone.regulator}"/>
-                        </c:if>
-                        <%@ include file="zoneNameDisplay.jsp" %>
-                    </cti:displayForPageEditModes>
+                    <c:choose>
+                        <c:when test="${parentZone.zoneType == singlePhase}">
+                            ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>: 
+                            <i:inline key="${parentZone.regulator.phase}"/>
+                        </c:when>
+                        <c:otherwise>
+                            ${fn:escapeXml(parentZone.name)} - <i:inline key="${parentZone.zoneType}"/>
+                        </c:otherwise>
+                    </c:choose>
                 </c:otherwise>
             </c:choose>
         </tags:nameValue2>
@@ -87,7 +75,6 @@
                     <tags:bind path="regulator.regulatorId">
                         <tags:pickerDialog id="voltageGangRegulatorPicker${zoneDto.zoneId}" 
                             type="availableVoltageRegulatorGangPicker" 
-                            buttonStyleClass="PT5"
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
                             selectionProperty="paoName"
@@ -97,22 +84,18 @@
                             multiSelectMode="false"
                             immediateSelectMode="true"/>
                     </tags:bind>
-                    <c:if test="${zoneDto.parentId != null}">
-                        <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulator.feederId"/>
-                    </c:if>
                 </tags:nameValue2>
             </c:when>
     
             <%-- Regulator Selection - Three Phase --%>
             <c:when test="${zoneDto.zoneType ==  threePhase}">
-                <c:forEach items="${zoneDto.regulators}" var="regulator" varStatus="statusIndex">
+                <c:forEach items="${zoneDto.regulators}" var="regulator">
                     <c:set var="phaseKey" value="${regulator.key}"/>
                     <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
                     <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
                         <tags:bind path="regulators[${phaseKey}].regulatorId">
                             <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${zoneDto.zoneId}${phaseKey}"
                                 type="availableVoltageRegulatorPhasePicker" 
-                                buttonStyleClass="PT5"
                                 destinationFieldName="regulators[${phaseKey}].regulatorId"
                                 initialId="${zoneDto.regulators[phaseKey].regulatorId}"
                                 selectionProperty="paoName"
@@ -124,9 +107,6 @@
                                 allowEmptySelection="true"
                                 endAction="yukon.da.zone.wizard.updateRegPickerExcludes"/>
                         </tags:bind>
-                        <c:if test="${zoneDto.parentId != null && statusIndex.index == 0}">
-                            <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulators[${phaseKey}].feederId"/>
-                        </c:if>
                     </tags:nameValue2>
                 </c:forEach>
             </c:when>
@@ -138,7 +118,6 @@
                     <tags:bind path="regulator.regulatorId">
                         <tags:pickerDialog id="voltageSinglePhaseRegulatorPicker${zoneDto.zoneId}" 
                             type="availableVoltageRegulatorPhasePicker" 
-                            buttonStyleClass="PT5"
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
                             selectionProperty="paoName"
@@ -148,9 +127,6 @@
                             multiSelectMode="false"
                             immediateSelectMode="true"/>
                     </tags:bind>
-                    <c:if test="${zoneDto.parentId != null}">
-                        <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulator.feederId"/>
-                    </c:if>
                 </tags:nameValue2>
             </c:when>
         </c:choose>
@@ -225,7 +201,6 @@
                             <tr>
                                 <th><i:inline key=".table.point.name"/></th>
                                 <th><i:inline key=".table.point.device"/></th>
-                                <th><i:inline key=".table.point.feeder"/></th>
                                 <th><i:inline key=".table.phase"/></th>
                                 <th><i:inline key=".table.position"/></th>
                                 <th><i:inline key=".table.distance"/></th>
@@ -245,10 +220,6 @@
                                     </td>
                                     <td>
                                         ${fn:escapeXml(row.device)}
-                                    </td>
-                                    <td>
-                                        <tags:selectWithItems path="pointAssignments[${status.index}].feederId" items="${feederList}"
-                                            itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}"/>
                                     </td>
                                     <td>
                                         <c:choose>
@@ -295,4 +266,5 @@
     </div>
     
 </form:form>
+
 </tags:standardPopup>

@@ -35,10 +35,6 @@ yukon.dev.simulators.deviceArchiveRequestSimulator = ( function() {
                     var manufacturerModelField = $('#js-meter-manufacturer-model').find(':selected'),
                         manufacturer = manufacturerModelField.data("manufacturer"),
                         model = manufacturerModelField.data("model");
-                } else if (deviceType == 'js-rfn-1200') {
-                    var manufacturerModelField = $('#js-rfn-mm-1200').find(':selected'),
-                        manufacturer = manufacturerModelField.data("manufacturer"),
-                        model = manufacturerModelField.data("model");
                 } else {
                     var model = $('#' + deviceType + '-model').val(),
                         manufacturer = $('#' + deviceType + '-manufacturer').val();

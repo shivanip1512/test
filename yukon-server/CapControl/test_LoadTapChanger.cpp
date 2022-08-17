@@ -29,21 +29,21 @@ struct load_tap_changer_fixture
             CtiCapController::setInstance(this);
         }
 
-        void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
+        virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
             signalMessages.emplace_back( message );
         }
-        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
+        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
         {
-            requestMessages.emplace_back( std::move( pilRequest ) );
+            requestMessages.emplace_back( pilRequest );
         }
-        void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event) override
+        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
         {
             eventMessages.push_back(event);
         }
 
         std::vector< std::unique_ptr<CtiMessage> >      signalMessages;
-        Cti::CapControl::PorterRequests                 requestMessages;
+        std::vector< std::unique_ptr<CtiRequestMsg> >   requestMessages;
         Cti::CapControl::EventLogEntries                eventMessages;
     }
     capController;
@@ -117,7 +117,6 @@ struct load_tap_changer_fixture
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::LoadTapChanger );
-        regulator->setRegulatorTimeout(std::chrono::seconds{ 100 });
     }
 };
 

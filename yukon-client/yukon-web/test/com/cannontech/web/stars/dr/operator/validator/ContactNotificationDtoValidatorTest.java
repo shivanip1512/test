@@ -1,13 +1,13 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
 import static com.cannontech.common.model.ContactNotificationType.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -20,7 +20,7 @@ public class ContactNotificationDtoValidatorTest {
 
     private ContactNotificationDtoValidator validator;
 
-    @BeforeEach
+    @Before
     public void setup() {
         validator = new ContactNotificationDtoValidator();
         ReflectionTestUtils.setField(validator, "phoneNumberFormattingService", new PhoneNumberFormattingServiceImpl());
@@ -65,7 +65,7 @@ public class ContactNotificationDtoValidatorTest {
         for (ContactNotificationType notifType : phoneTypes) {
             dto.setContactNotificationType(notifType);
             validator.validate(dto, errors);
-            assertEquals(!good, errors.hasErrors(), "Phone Number: " + phoneNum + " validated incorrectly! ");
+            assertEquals("Phone Number: " + phoneNum + " validated incorrectly! ",!good, errors.hasErrors());
         }
     }
 
@@ -78,7 +78,7 @@ public class ContactNotificationDtoValidatorTest {
         for (ContactNotificationType notifType : Arrays.asList(EMAIL,EMAIL_TO_CELL,EMAIL_TO_PAGER)) {
             dto.setContactNotificationType(notifType);
             validator.validate(dto, errors);
-            assertEquals(!good, errors.hasErrors(), "Email: " + email + " validated incorrectly! ");
+            assertEquals("Email: " + email + " validated incorrectly! ", !good, errors.hasErrors());
         }
     }
 }

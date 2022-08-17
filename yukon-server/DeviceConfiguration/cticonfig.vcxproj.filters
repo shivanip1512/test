@@ -89,9 +89,6 @@
     <ClInclude Include="include\mgr_meter_programming.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\meter_programming_prefixes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">

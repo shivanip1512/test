@@ -10,7 +10,7 @@ public class SystemData implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String fieldName;
-    private Object fieldValue;
+    private String fieldValue;
     private DateTime timestamp;
     private IOTDataType iotDataType;
 
@@ -22,11 +22,11 @@ public class SystemData implements Serializable {
         this.fieldName = fieldName;
     }
 
-    public Object getFieldValue() {
+    public String getFieldValue() {
         return fieldValue;
     }
 
-    public void setFieldValue(Object fieldValue) {
+    public void setFieldValue(String fieldValue) {
         this.fieldValue = fieldValue;
     }
 

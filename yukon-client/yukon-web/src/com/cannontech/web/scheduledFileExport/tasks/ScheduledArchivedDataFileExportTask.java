@@ -34,7 +34,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.dao.RawPointHistoryDao;
 
 public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask implements PersistedFormatTask {
@@ -51,8 +50,6 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	private int formatId;
 	private Set<Attribute> attributes;
 	private DataRange dataRange = new DataRange();
-	private boolean onInterval;
-	private TimeIntervals interval;
 	
 	@Override
 	public void start() {
@@ -77,8 +74,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		try (
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(archiveFile)));
 		){
-		    exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray, 
-		                                                writer, onInterval, interval);
+		    exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray, writer);
 		} catch(IOException e) {
 			throw new FileCreationException("Unable to generate Scheduled Archived Data file due to I/O errors.", e);
 		}
@@ -100,8 +96,6 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		formatId = adeParameters.getFormatId();
 		attributes = adeParameters.getAttributes();
 		dataRange = adeParameters.getDataRange();
-		onInterval = adeParameters.isOnInterval();
-		interval = adeParameters.getInterval();
 		
 		DeviceCollection deviceCollection = adeParameters.getDeviceCollection();
 		collectionId = deviceCollectionService.saveCollection(deviceCollection);
@@ -244,21 +238,4 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
     public void setDataRangeIsTimeSelected(boolean timeSelected) {
         dataRange.setTimeSelected(timeSelected);
     }
-
-    public boolean isOnInterval() {
-        return onInterval;
-    }
-
-    public void setOnInterval(boolean onInterval) {
-        this.onInterval = onInterval;
-    }
-
-    public TimeIntervals getInterval() {
-        return interval;
-    }
-
-    public void setInterval(TimeIntervals interval) {
-        this.interval = interval;
-    }
-    
 }

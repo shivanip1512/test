@@ -3,13 +3,12 @@
 #include "ccid.h"
 #include "cctwowaycbcpoints.h"
 #include "cbcHeartbeatPolicy.h"
-#include "Requests.h"
 #include "desolvers.h"
-#include "logger.h"
 
 extern unsigned long _CC_DEBUG;
 
-namespace Cti::CapControl {
+namespace Cti           {
+namespace CapControl    {
 
 CbcHeartbeatPolicy::OperatingMode CbcHeartbeatPolicy::getOperatingMode( CtiCCTwoWayPoints & twoWayPoints )
 try
@@ -52,7 +51,7 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
         switch ( point.getPointType() )
         {
             case CtiPointType_t::StatusPointType:
-                actions.emplace_back( makeStandardDigitalControl( point, "CBC Heartbeat Clear", RequestType::Heartbeat ) );
+                actions.emplace_back( makeStandardDigitalControl( point, "CBC Heartbeat Clear" ) );
                 break;
             case CtiPointType_t::AnalogPointType:
                 actions.emplace_back( WriteAnalogValue( AttributeClear, 0, twoWayPoints ) );
@@ -74,7 +73,7 @@ Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute
     return
     {
         makeSignalTemplate( point.getPointId(), 0, "CBC Heartbeat" ),
-        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ), RequestType::Heartbeat )
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ) )
     };
 }
 
@@ -150,8 +149,7 @@ Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
     }
     
     actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideEnable, twoWayPoints ),
-                                                      "CBC Heartbeat Pulse",
-                                                      RequestType::Heartbeat ) );
+                                                      "CBC Heartbeat Pulse" ) );
 
     return actions;
 }
@@ -167,3 +165,5 @@ catch ( UninitializedPointValue & )
 }
 
 }
+}
+

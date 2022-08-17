@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.jsoup.helper.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -129,7 +130,7 @@ public class NestTestController {
     
     @RequestMapping(value = "/useAsNestFile", method = RequestMethod.POST)
     public String useAsNestFile(String fileName, FlashScope flash) {
-        if (org.apache.commons.lang3.StringUtils.isBlank(fileName)) {
+        if (StringUtil.isBlank(fileName)) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dev.nest.useNestFile.blankFileName"));
             return "redirect:viewNestFileSetting";
         } else {

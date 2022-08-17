@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <boost/test/auto_unit_test.hpp>
 
 #include "dev_dnp.h"
 #include "config_data_dnp.h"
@@ -1111,270 +1111,6 @@ BOOST_AUTO_TEST_CASE(test_integrity_scan)
         "\n");
 }
 
-BOOST_AUTO_TEST_CASE(test_integrity_scan_with_powerfail_reset_unsolicited_enable_fc_not_supported)
-{
-    dev._dnp.setAddresses(4, 3);
-
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "false");
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "true");
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2,      "false");
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3,      "false");
-    fixtureConfig->insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "false");
-
-    //  start the request
-    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
-
-    CtiCommandParser parse("scan integrity");
-
-    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
-
-    BOOST_REQUIRE_EQUAL(outList.size(), 1);
-    BOOST_CHECK(vgList.empty());
-    BOOST_CHECK(retList.empty());
-
-    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
-
-    delete_container(outList);  outList.clear();
-    delete_container(vgList);   vgList.clear();
-
-    CtiXfer xfer;
-
-    //  Scan
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-            "05 64 14 C4 04 00 03 00 c7 17 "
-            "c0 c1 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 7a 6f");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-
-    //  Scan response
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-    {
-        const byte_str header{ "05 64 27 44 03 00 04 00 AB 3D" };
-
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(header.begin(), header.end(), inBufItr);
-
-        xfer.setInCountActual(header.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(40, xfer.getInCountExpected());
-    }
-    {
-        const byte_str body{ "c0 ca 81 9f 00 1e 01 18 01 00 03 00 3f 01 00 00 DB A8 "
-                             "01 02 18 01 00 01 00 14 01 18 01 00 00 00 13 00 95 4f "
-                             "00 00 ff ff" };
-
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(body.begin(), body.end(), inBufItr);
-
-        xfer.setInCountActual(body.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-
-    //  Powerfail reset
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-            "05 64 0E C4 04 00 03 00 6D D3 "
-            "C0 C2 02 50 01 00 07 07 00 08 65"); 
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-
-    //  Powerfail reset response
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-    {
-        const byte_str header{ "05 64 0A 44 03 00 04 00 7C AE" };
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(header.begin(), header.end(), inBufItr);
-
-        xfer.setInCountActual(header.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-    {
-        const byte_str body{ "C2 C2 81 10 00 11 b9" };
-
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(body.begin(), body.end(), inBufItr);
-
-        xfer.setInCountActual(body.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-
-    //  Unsolicited enable
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-            "05 64 0B C4 04 00 03 00 E4 2B "
-            "C0 C3 14 3C 02 06 BA 3C");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-
-    //  Unsolicited enable response (failure)
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-    {
-        const byte_str header{ "05 64 0A 44 03 00 04 00 7C AE" };
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(header.begin(), header.end(), inBufItr);
-
-        xfer.setInCountActual(header.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-    }
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-    {
-        const byte_str body{ "C3 C3 81 10 01 A1 6E" };
-
-        //  make sure we don't copy more than they expect
-        auto inBufItr = stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected());
-        std::copy(body.begin(), body.end(), inBufItr);
-
-        xfer.setInCountActual(body.size());
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
-    }
-
-    INMESS inmess;
-
-    dev.sendCommResult(inmess);
-
-    dev.ResultDecode(inmess, CtiTime(), vgList, retList, outList);
-
-    BOOST_CHECK(vgList.empty());
-    BOOST_CHECK(outList.empty());
-    BOOST_REQUIRE_EQUAL(retList.size(), 1);
-
-    const auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
-
-    BOOST_REQUIRE(retMsg);
-
-    BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::None);
-
-    BOOST_CHECK_EQUAL(
-        retMsg->ResultString(),
-        "Test DNP device / Internal indications:"
-        "\nBroadcast message received"
-        "\nClass 1 data available"
-        "\nClass 2 data available"
-        "\nClass 3 data available"
-        "\nTime synchronization needed"
-        "\nDevice restart"
-        "\n"
-        "\nTest DNP device / Point data report:"
-        "\nAI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; "
-        "\nFirst/Last 5 points of each type returned:"
-        "\nAnalog inputs:"
-        "\n[4:319]"
-        "\nBinary inputs:"
-        "\n[2:0]"
-        "\nCounters:"
-        "\n[1:19]"
-        "\n"
-        "\nTest DNP device / Attempting to clear Device Restart bit"
-        "\nTest DNP device / Internal indications:"
-        "\nTime synchronization needed"
-        "\n"
-        "\nTest DNP device / Reset Device Restart Bit completed successfully"
-        "\nTest DNP device / Internal indications:"
-        "\nTime synchronization needed"
-        "\nFunction code not implemented"
-        "\n"
-        "\nTest DNP device / Unsolicited Enable completed with status 304 - Function code not supported."
-        "\n");
-}
-
 /*
 2019-07-03 13:08:17.167  P: 34979 / TCP port GE_DSCADA  D: 35009 / GE_SCADA (cltrpdelrp1:20000) OUT:
 05 64 14 c4 01 00 01 00 e1 12 c0 c6 01 3c 02 06 3c 03 06 3c 04 06 3c 01 06 aa
@@ -1917,6 +1653,18 @@ BOOST_AUTO_TEST_CASE(test_integrity_scan_8k)
     dev._name = "8k DNP test";
     dev._dnp.setAddresses(1, 1);
     dev._dnp.setName("8k DNP test");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "UTC");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
 
     //  start the request
     BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());

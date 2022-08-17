@@ -2131,45 +2131,34 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
 {
     CTILOCKGUARD( CtiCriticalSection, guard, getMux() );
 
-    if ( pao->getDisableFlag() == disableFlag )
+    bool updateSuccessful = updateDisableFlag(pao->getPaoId(), disableFlag);
+
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(pao->getPaoId(), ChangePAODb,
+                                                  pao->getPaoCategory(),
+                                                  pao->getPaoType(),
+                                                  ChangeTypeUpdate);
+
+    if (forceFullReload)
     {
-        CTILOG_DEBUG( dout, pao->getPaoName() << " - Ignoring requested state change, the object is already in that state." );
-        return false;
+        dbChange->setSource(CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE);
+    }
+    else
+    {
+        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
     }
 
-    CTILOG_DEBUG( dout, pao->getPaoName() << " - Changing state to '"
-                    << ( disableFlag ? "Dis" : "En" ) << "abled'." );
-
-    if ( ! updateDisableFlag( pao->getPaoId(), disableFlag ) )
+    if (disableFlag)
     {
-        CTILOG_ERROR( dout, pao->getPaoName() << " - Failed to update state in database." );
-        return false;
+        pao->setDisableFlag(disableFlag, MAXPRIORITY);//high priority, process before DB Change
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
+    }
+    else
+    {
+        CtiCapController::getInstance()->sendMessageToDispatch(dbChange, CALLSITE);
+        pao->setDisableFlag(disableFlag); //normal priority, DB Change will be processed first
     }
 
-    auto dbChange =
-        std::make_unique<CtiDBChangeMsg>(
-            pao->getPaoId(),
-            ChangePAODb,
-            pao->getPaoCategory(),
-            pao->getPaoType(),
-            ChangeTypeUpdate );
-
-    dbChange->setSource(
-        forceFullReload
-            ? CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE
-            : CAP_CONTROL_DBCHANGE_MSG_SOURCE );
-
-    pao->setDisableFlag(
-        disableFlag,
-        disableFlag
-            ? MAXPRIORITY
-            : Cti::CapControl::DisableMsgPriority );
-
-    CTILOG_DEBUG( dout, pao->getPaoName() << " - Issuing database change." );
-
-    CtiCapController::getInstance()->sendMessageToDispatch( dbChange.release(), CALLSITE );
-
-    return true;
+    return updateSuccessful;
 }
 
 /*---------------------------------------------------------------------------
@@ -4754,6 +4743,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                           &_pointid_capbank_map, &_capbank_subbus_map,
                                           &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
             }
+
+            if (CtiCCFeederPtr currentFeeder = findInMap(feederId, paobject_feeder_map))
+            {
+                reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
+            }
         }
 
         {
@@ -5539,21 +5533,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
     {
         std::set< std::pair<long, int> >    requiredPointResponses;
 
-        if ( subBusId > 0 )
-        {
-            // this keeps the point registration in sync with respect to monitor points...
-
-            if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId ) )
-            {
-                CtiCapController::getInstance()->unregisterPaoForPointUpdates( *bus );
-
-                for ( auto & bank : bus->getAllCapBanks() )
-                {
-                    CtiCapController::getInstance()->unregisterPaoForPointUpdates( *bank );
-                }
-            }
-        }
-
         {
             static const std::string sql =
                 "SELECT "
@@ -5713,19 +5692,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
 
                         bank->addPointResponse(defaultPointResponse);
                     }
-                }
-            }
-        }
-
-        if ( subBusId > 0 )
-        {
-            if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId ) )
-            {
-                CtiCapController::getInstance()->registerPaoForPointUpdates( *bus );
-
-                for ( auto & bank : bus->getAllCapBanks() )
-                {
-                    CtiCapController::getInstance()->registerPaoForPointUpdates( *bank );
                 }
             }
         }
@@ -6802,20 +6768,15 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
                                      &_pointid_station_map, &_substation_area_map,
                            &_substation_specialarea_map, &_ccSubstations);
 
-        if ( auto station = findSubstationByPAObjectID( reloadId ) )
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(reloadId);
+        if (station != NULL)
         {
-            for ( long subbusID : station->getCCSubIds() )
-            {
-                reloadMonitorPointsFromDatabase(subbusID, &_paobject_capbank_map, &_paobject_feeder_map,
-                                                &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
-            }
             addVectorIdsToSet(station->getCCSubIds(), modifiedBusIdsSet);
             modifiedStationIdsSet.insert(reloadId);
             if (station->getDisableFlag())
-            {
                 station->checkForAndStopVerificationOnChildSubBuses(capMessages);
-            }
         }
+
     }
 }
 
@@ -6860,9 +6821,6 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(long reloadId, BYTE reloadAct
                                  &_paobject_substation_map, &_pointid_subbus_map,
                                  &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
 
-        reloadMonitorPointsFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
-                                        &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
-
         modifiedBusIdsSet.insert(reloadId);
     }
 }
@@ -6883,12 +6841,6 @@ void CtiCCSubstationBusStore::handleFeederDBChange(long reloadId, BYTE reloadAct
         }
         reloadFeederFromDatabase(reloadId, &_paobject_feeder_map,
                                   &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
-
-        if (CtiCCFeederPtr tempFeed = findFeederByPAObjectID(reloadId))
-        {
-            reloadMonitorPointsFromDatabase(tempFeed->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map,
-                                            &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
-        }
 
         if(isFeederOrphan(reloadId))
               removeFromOrphanList(reloadId);
@@ -8786,24 +8738,7 @@ bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
         }
         else
         {
-            auto beforeBusID = _zoneManager.getZone( zoneId )->getSubbusId();
-
             _zoneManager.reload(zoneId);
-
-            reloadMonitorPointsFromDatabase( beforeBusID,
-                                             &_paobject_capbank_map, &_paobject_feeder_map,
-                                             &_paobject_subbus_map, &_pointid_capbank_map,
-                                             &_pointid_subbus_map );
-
-            auto afterBusID = _zoneManager.getZone( zoneId )->getSubbusId();
-
-            if ( beforeBusID != afterBusID )
-            {
-                reloadMonitorPointsFromDatabase( afterBusID,
-                                                 &_paobject_capbank_map, &_paobject_feeder_map,
-                                                 &_paobject_subbus_map, &_pointid_capbank_map,
-                                                 &_pointid_subbus_map );
-            }
         }
     }
     catch(...)

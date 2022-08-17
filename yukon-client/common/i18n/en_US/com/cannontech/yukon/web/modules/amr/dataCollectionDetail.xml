@@ -44,9 +44,9 @@
             <li><b>Device Group(s)</b> - Select one to many device groups to filter the results.</li>
             <li><b>Recent Reading</b> - Select any data availability options to filter the results.</li>
             <ul>
-                <li><span class="fwb bg-color-green txt-color-white">Available (Green)</span> - 
+                <li><span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span> - 
                 Data has been received for these devices within the desired number of days.</li>
-                <li><span class="fwb bg-color-blue txt-color-white">Expected (Blue)</span> - 
+                <li><span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span> - 
                 Data has been received for these devices within 7 days.</li>
                 <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
                 Data has been received for these devices within 14 days.</li>

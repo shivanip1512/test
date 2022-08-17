@@ -59,7 +59,7 @@
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <div class="action-area">
                     <form action="category/create">
-                        <cti:button nameKey="create" type="submit" icon="icon-plus-green" classes="ML15"/>
+                        <cti:button nameKey="create" type="submit" icon="icon-plus-green"/>
                         <select name="categoryType" class="js-init-chosen">
                             <c:forEach var="option" items="${categoryTypes}">
                                 <option value="${option.value}"><cti:msg2 key="${option.formatKey}"/></option>

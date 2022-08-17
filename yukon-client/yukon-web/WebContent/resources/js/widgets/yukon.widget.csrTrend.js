@@ -26,16 +26,10 @@ yukon.widget.csrTrend = (function () {
                     titleContainer = $(this).closest('.titled-container'),
                     helpText = titleContainer.find('.js-trend-help-text');
                 if (helpText.exists()) {
-                    popup.html(helpText.val());
+                    popup.find('.scroll-lg').html(helpText.val());
                 }
             });
 
-            $(document).on('click', '.js-temperature-checkbox', function() {
-                var widgetId = $(this).closest('.widgetWrapper').attr('id'),
-                    widgetId = widgetId.substring(widgetId.indexOf("_") + 1);
-                var widget = yukon.widgets[widgetId];
-                widget.doDirectActionRefresh('render?isTemperatureChecked=' + this.checked);
-            });
             
             _initialized = true;
         }

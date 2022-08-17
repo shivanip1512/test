@@ -80,20 +80,20 @@ public class PaoIndexManager extends SimpleIndexManager {
         doc.add(new Field("category", category, TYPE_STORED));
         doc.add(new Field("paoclass", paoClass, TYPE_STORED));
 
+        String all = paoName + " " + type + " " + paoIdStr + " " + paoClass + " " + category;
+        doc.add(new TextField("all", all, Field.Store.YES));
+
         String deviceId = rs.getString("deviceId");
         String isDevice = String.valueOf(!StringUtils.isEmpty(deviceId));
         deviceId = deviceId == null ? "" : deviceId;
         doc.add(new Field("deviceId", deviceId, TYPE_STORED));
         doc.add(new Field("isDevice", isDevice, TYPE_NOT_STORED));
 
-        String meterNumber = rs.getString("meterNumber");
+        String meterNumber = rs.getString("meternumber");
         String isMeter = String.valueOf(!StringUtils.isEmpty(meterNumber));
         meterNumber = meterNumber == null ? "" : meterNumber;
         doc.add(new TextField("meterNumber", meterNumber, Field.Store.YES));
         doc.add(new Field("isMeter", isMeter, TYPE_NOT_STORED));
-        
-        String all = paoName + " " + type + " " + paoIdStr + " " + paoClass + " " + meterNumber + " " + category;
-        doc.add(new TextField("all", all, Field.Store.YES));
 
         DisplayablePao displayablePao =
                 paoLoadingService.getDisplayablePao(new PaoIdentifier(paoId, PaoType.getForDbString(type)));

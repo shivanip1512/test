@@ -1,12 +1,12 @@
 package com.cannontech.amr.rfn.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.database.db.device.RfnAddress;
@@ -23,11 +23,11 @@ public class RfnAddressIdLookupTest {
     public void test_emptyLookup() {
         var lookup = new RfnAddressIdLookup();
         
-        assertNull(lookup.get(id1), "Nonexistent lookup");
-        assertNull(lookup.get(id2), "Nonexistent lookup");
-        assertNull(lookup.get(id3), "Nonexistent lookup");
-        assertNull(lookup.get(id4), "Nonexistent lookup");
-        assertNull(lookup.get(nonexistent), "Nonexistent lookup");
+        assertNull("Nonexistent lookup", lookup.get(id1));
+        assertNull("Nonexistent lookup", lookup.get(id2));
+        assertNull("Nonexistent lookup", lookup.get(id3));
+        assertNull("Nonexistent lookup", lookup.get(id4));
+        assertNull("Nonexistent lookup", lookup.get(nonexistent));
     }
 
     @Test
@@ -36,11 +36,11 @@ public class RfnAddressIdLookupTest {
 
         lookup.putAll(List.of(makeRfnAddress(17, id1)));
         
-        assertEquals(Integer.valueOf(17), lookup.get(id1), "Numeric serial lookup");
-        assertNull(lookup.get(id2), "Nonexistent lookup");
-        assertNull(lookup.get(id3), "Nonexistent lookup");
-        assertNull(lookup.get(id4), "Nonexistent lookup");
-        assertNull(lookup.get(nonexistent), "Nonexistent lookup");
+        assertEquals("Numeric serial lookup", Integer.valueOf(17), lookup.get(id1));
+        assertNull("Nonexistent lookup", lookup.get(id2));
+        assertNull("Nonexistent lookup", lookup.get(id3));
+        assertNull("Nonexistent lookup", lookup.get(id4));
+        assertNull("Nonexistent lookup", lookup.get(nonexistent));
     }
     
     @Test
@@ -49,11 +49,11 @@ public class RfnAddressIdLookupTest {
 
         lookup.putAll(List.of(makeRfnAddress(1776, id2)));
         
-        assertNull(lookup.get(id1), "Nonexistent lookup");
-        assertEquals(Integer.valueOf(1776), lookup.get(id2), "Alphanumeric serial lookup");
-        assertNull(lookup.get(id3), "Nonexistent lookup");
-        assertNull(lookup.get(id4), "Nonexistent lookup");
-        assertNull(lookup.get(nonexistent), "Nonexistent lookup");
+        assertNull("Nonexistent lookup", lookup.get(id1));
+        assertEquals("Alphanumeric serial lookup", Integer.valueOf(1776), lookup.get(id2));
+        assertNull("Nonexistent lookup", lookup.get(id3));
+        assertNull("Nonexistent lookup", lookup.get(id4));
+        assertNull("Nonexistent lookup", lookup.get(nonexistent));
     }
     
     @Test
@@ -65,15 +65,15 @@ public class RfnAddressIdLookupTest {
                               makeRfnAddress(31, id3),
                               makeRfnAddress(3141, id4)));
         
-        assertEquals(Integer.valueOf(17), lookup.get(id1), "Integer serial lookup");
-        assertEquals(Integer.valueOf(1776), lookup.get(id2), "Alphanumeric serial lookup");
-        assertEquals(Integer.valueOf(31), lookup.get(id3), "Long serial lookup");
-        assertEquals(Integer.valueOf(3141), lookup.get(id4), "Long serial lookup");
-        assertNull(lookup.get(nonexistent), "Nonexistent lookup");
+        assertEquals("Integer serial lookup", Integer.valueOf(17), lookup.get(id1));
+        assertEquals("Alphanumeric serial lookup", Integer.valueOf(1776), lookup.get(id2));
+        assertEquals("Long serial lookup", Integer.valueOf(31), lookup.get(id3));
+        assertEquals("Long serial lookup", Integer.valueOf(3141), lookup.get(id4));
+        assertNull("Nonexistent lookup", lookup.get(nonexistent));
         
         Set<Integer> multiple = lookup.getAll(List.of(id1, id2, id3, id4, nonexistent));
         
-        assertEquals(multiple, Set.of(17, 1776, 31, 3141), "Multiple lookup");
+        assertEquals("Multiple lookup", multiple, Set.of(17, 1776, 31, 3141));
     }
     
     @Test
@@ -89,7 +89,7 @@ public class RfnAddressIdLookupTest {
         
         Set<Integer> multiple = lookup.getAll(List.of(id1, id2, id3, id4, nonexistent));
         
-        assertEquals(Set.of(17, 31), multiple, "Post-removal lookup");
+        assertEquals("Post-removal lookup", Set.of(17, 31), multiple);
     }
     
     private static RfnAddress makeRfnAddress(int paoId, RfnIdentifier rfnIdentifier) {

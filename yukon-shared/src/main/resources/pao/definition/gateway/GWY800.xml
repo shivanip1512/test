@@ -8,26 +8,18 @@
         <tag name="DB_EDITOR_INCOMPATIBLE" />
         <tag name="GATEWAY_DETAIL_DISPLAYABLE"/>
         <tag name="DATA_STREAMING"/>
-        <tag name="RFN_EVENTS"/>
-        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
-        <pointInfo name="Connected Device Count" attributes="STREAMING_CAPABLE_DEVICE_COUNT" />
-        <pointInfo name="Data Streaming Load" attributes="DATA_STREAMING_LOAD" />
+        <pointInfo name="Connected Device Count" init="true" attributes="STREAMING_CAPABLE_DEVICE_COUNT" />
+        <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD" />
         <pointInfo name="Door Open" attributes="DOOR_OPEN"/>
-        <pointInfo name="Certificate Expiration" attributes="CERTIFICATE_EXPIRATION"/>
         <pointInfo name="Node Count Exceeded" attributes="NODE_COUNT_EXCEEDED"/>
         <pointInfo name="Power Failure" attributes="POWER_FAILURE"/>
         <pointInfo name="Radio Failure" attributes="RADIO_FAILURE"/>
         <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
         <pointInfo name="Security Alarm" attributes="SECURITY_ALARM"/>
-        <pointInfo name="Streaming Device Count" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
+        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
         <pointInfo name="Time Sync Failed" attributes="TIME_SYNC_FAILED"/>
-        <pointInfo name="UPS Battery Voltage Low" attributes="UPS_BATTERY_VOLTAGE_LOW"/>
-        <pointInfo name="High Disk Usage" attributes="HIGH_DISK_USAGE"/>
-        <pointInfo name="RTC Battery Failure" attributes="RTC_BATTERY_FAILURE"/>
-        <pointInfo name="AC Power Failure" attributes="AC_POWER_FAILURE"/>
-        
     </pointInfos>
 </pao>

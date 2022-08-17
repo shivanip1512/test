@@ -1,9 +1,7 @@
 <?xml version="1.0" ?>
-<project name="Yukon Ant Build Script" default="targets" basedir=".." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:if="ant:if">
+<project name="Yukon Ant Build Script" default="targets" basedir="..">
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="./lib/jacocoant.jar"/>
-    </taskdef>
+	
     <property environment="env" />
     <tstamp/>
     <tstamp>
@@ -13,8 +11,6 @@
     <property name="log.dir" value="${basedir}/yukon-build/logs" />
     <property name="dist.dir" value="${basedir}/yukon-build/dist" />
     <property name="temp.dir" value="${basedir}/yukon-build/temp" />
-    <property name="apiDocumentationTemp.dir" value="${basedir}/yukon-build/apiDocumentationTemp" />
-    <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
 
     <target name="targets">
         <echo message="The following targets are available" />
@@ -32,6 +28,7 @@
         <echo message=" compile-java    - Builds all java/war but does not run unit tests " />
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
+
     <macrodef name="gitlogcount">
         <attribute name="result"/>
         <sequential>
@@ -63,7 +60,7 @@
     </target>
 
     <!-- build-release is now the only way to store symbols -->
-    <target name="build" depends="init,clean,buildTarget,build-dist-server" />
+    <target name="build" depends="init,clean,buildTarget,build-dist-pdb" />
     <target name="build-release" depends="init,clean,buildTarget,symstore,build-dist" />
 
     <target name="buildTarget" depends="build-client,build-server,build-install" />
@@ -74,15 +71,6 @@
         <ant dir="${basedir}/yukon-client/build" >
             <target name="createDatabaseSnapshots"/>
         </ant>
-    
-        <!-- Restore files which got modifies and present in "Changes not staged for commit" Unstaged section -->
-        <exec executable="git" dir='${basedir}'>
-            <arg line="restore yukon-database/"/>
-        </exec>
-        <!-- Clean newly created untracked files -->
-        <exec executable="git" dir='${basedir}'>
-            <arg line="clean -f"/>
-        </exec>
     </target>
     
     <target name="build-client">
@@ -111,7 +99,6 @@
         <mkdir dir="${log.dir}" />
 
         <!-- build it -->
-        <property name="server-build-single-core" value="false"/>
         <exec failonerror="true" 
               dir="${basedir}/yukon-server/"
               resultproperty="serverbuilderrorcode"
@@ -119,7 +106,6 @@
             <arg value="/c" />
             <arg value="${basedir}\yukon-server\b.cmd" />
             <arg value="--exit" />
-            <arg value="single" if:true="${server-build-single-core}" />
             <arg value="--basedir" />
             <arg value="${basedir}" />
             <arg value="--labels" />
@@ -162,7 +148,7 @@
             <mkdir dir="${client.dir}/Import"/>
             <mkdir dir="${client.dir}/Log"/>
             <mkdir dir="${client.dir}/DBScripts"/>
-
+        
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/lib"/>
@@ -172,25 +158,9 @@
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/third-party">
                 <include name="**/*.jar"/>
-                <exclude name="easymock-4.3.jar"/>
-                <exclude name="mockito-core-4.5.1.jar"/>
-                <exclude name="byte-buddy-1.12.10.jar"/>
-                <exclude name="byte-buddy-agent-1.12.10.jar"/>
+                <exclude name="easymock-3.0.jar"/>
                 <exclude name="h2-1.4.178.jar"/>
-                <exclude name="objenesis-3.2.jar"/>
-                <exclude name="apiguardian-api-1.1.0.jar"/>
-                <exclude name="hamcrest-2.2.jar"/>
-                <exclude name="hamcrest-core-2.2.jar"/>
-                <exclude name="hamcrest-library-2.2.jar"/>
-                <exclude name="javassist-3.26.0-GA.jar"/>
-                <exclude name="junit-jupiter-api-5.7.1.jar"/>
-                <exclude name="junit-jupiter-engine-5.7.1.jar"/>
-                <exclude name="junit-jupiter-params-5.7.1.jar"/>
-                <exclude name="junit-platform-commons-1.7.1.jar"/>
-                <exclude name="junit-platform-console-standalone-1.7.1.jar"/>
-                <exclude name="junit-platform-engine-1.7.1.jar"/>
-                <exclude name="reflections-0.9.12.jar"/>
-                <exclude name="opentest4j-1.2.0.jar"/>
+                <exclude name="objenesis-1.2.jar"/>
               </fileset>
         </copy>
 
@@ -203,10 +173,7 @@
 
         <copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
-            <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-4.3.jar,h2-1.4.178.jar,objenesis-3.2.jar,
-            apiguardian-api-1.1.0.jar,javassist-3.26.0-GA.jar,junit-jupiter-api-5.7.1.jar,junit-jupiter-engine-5.7.1.jar,junit-jupiter-params-5.7.1.jar,hamcrest-2.2.jar,
-            hamcrest-core-2.2.jar,hamcrest-library-2.2.jar,junit-platform-commons-1.7.1.jar,junit-platform-console-standalone-1.7.1.jar,junit-platform-engine-1.7.1.jar,
-            opentest4j-1.2.0.jar,reflections-0.9.12.jar,mockito-core-4.5.1.jar,byte-buddy-agent-1.12.10.jar,byte-buddy-1.12.10.jar"/>
+            <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-3.0.jar,h2-1.4.178.jar,objenesis-1.2.jar"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
             <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
@@ -222,8 +189,7 @@
             <fileset dir="${basedir}/yukon-client/yukon-message-broker/conf"/>
             <fileset dir="${basedir}/yukon-client/yukon-watchdog-service/conf"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/conf"/>
-            <fileset dir="${basedir}/yukon-applications/cloud-service/conf" excludes="install_standaloneCloudService.bat"/>
-            <fileset dir="${basedir}/yukon-applications/cloud-service/src/main/resources" includes="cloudservice.properties"/>
+            <fileset dir="${basedir}/yukon-applications/cloud-service/conf"/>
         </copy>
         
         <antcall target="copy_web_content"/>
@@ -249,20 +215,13 @@
         <mkdir dir="${server.dir}/Import"/>
         <mkdir dir="${server.dir}/Log"/>
         
-        <!-- Tools Component -->
-        <property name="tools.dir" value="${install.bag}/Yukon Base/Tools"/>
-        <mkdir dir="${tools.dir}/RfNetworkData"/>
-        <copy todir="${tools.dir}/RfNetworkData" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/resources/scripts/rfNetworkData"/>
-        </copy>
-        
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
         <!-- Config Properties Component -->
         <copy todir="${install.bag}/Config Properties" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/resources" includes="*Logging.xml," casesensitive="false"/>
-            <fileset file="${basedir}/yukon-client/common/resource/encryptedSystemPublisherMetadata.yaml"/>
+            <fileset dir="${basedir}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
+            </fileset>
         </copy>
         
         <!-- Common Directories Component -->
@@ -273,19 +232,12 @@
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
-        <!-- Add data export template folder and template files.-->
-        <copy todir="${install.bag}/Common Directories/Config/DataExportTemplates" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-shared/src/main/resources/DataExportTemplates/" includes="*.yaml" casesensitive="false"/>
-        </copy>
- 
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE" />
         </copy>
 
         <!-- Tomcat Component -->
-        <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/ApacheTomcat/conf/server.xml"/>
-        
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/ApacheTomcat" />
         </copy>
@@ -316,16 +268,11 @@
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
-
-        <gitlogcount result="yukon-build-number"/>
         
+        <gitlogcount result="yukon-build-number"/>
         <!-- Build the installer -->
-        <exec failonerror="false" executable="cmd" resultproperty="installererrorcode">
-            <arg value="/c"/>
-            <arg value="C:\WINDOWS\system32\windowspowershell\v1.0\powershell.exe"/>
-            <arg value="-File"/>
-            <arg value="&quot;${basedir}/yukon-build/InstallShieldSetup.ps1&quot;"/>
-            
+        <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
+            <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
             <env key="YukonBuildVersion" value="${version.major}.${version.minor}.${yukon-build-number}.${version.revision}" />
         </exec>
@@ -344,57 +291,6 @@
             </condition>
         </fail>
     </target>
-
-    <!-- Scan the third party lib using OWASP Dependency check utility -->
-    <target name="dependency-check" description="Dependency-Check Analysis">
-        
-        <property name="dependency-check.home" value="${basedir}\yukon-client\build\dependency-check-ant"/>
-        <path id="dependency-check.path">
-           <pathelement location="${dependency-check.home}/dependency-check-ant.jar"/>
-            <fileset dir="${dependency-check.home}/lib">
-                <include name="*.jar"/>
-            </fileset>
-        </path>
-        <taskdef resource="dependency-check-taskdefs.properties">
-           <classpath refid="dependency-check.path" />
-        </taskdef>
-        <dependency-check projectname="Yukon-Jar-Scan"
-                          reportoutputdirectory="${basedir}"
-                          proxyServer="proxy.etn.com"
-                          proxyPort="8080"
-                          reportformat="HTML">
-            <fileset dir="${basedir}\yukon-client\third-party\">
-                <include name="**/*.jar"/>
-            </fileset>
-        </dependency-check>
-    </target>
-    
-    <macrodef name="verifyShutdownPortDisabled">
-        <attribute name="serverXmlFilename"/>
-        <sequential>
-            <loadfile property="serverShutdownPort" srcfile="@{serverXmlFilename}">
-                <filterchain>
-                    <linecontainsregexp>
-                        <!-- Looking for e.g. <Server port="8005" shutdown="SHUTDOWN"> -->
-                        <regexp pattern="&lt;Server.*port.*&gt;"/>
-                    </linecontainsregexp>
-                </filterchain>
-            </loadfile>
-            <local name="detectedShutdownPort"/>
-            <property name="detectedShutdownPort">
-                Detected active shutdown port in @{serverXmlFilename}.
-                Set to -1 using port=&quot;-1&quot;
-                ${serverShutdownPort}
-            </property>
-            <fail message="${detectedShutdownPort}">
-                <condition>
-                    <not>
-                        <matches pattern="port=&quot;-1&quot;" string="${serverShutdownPort}"/>
-                    </not>
-                </condition>
-            </fail>
-        </sequential>
-    </macrodef>
 
     <target name="copy_web_content" >
         <property name="yukon.lib" value="${basedir}/yukon-client/lib" />
@@ -424,10 +320,7 @@
            <fileset dir="${yukon.lib}" >
               <include name="**/*.jar" />
               <exclude name="catalina.jar"/>
-              <exclude name="easymock-4.3.jar"/>
-              <exclude name="byte-buddy-1.12.10.jar"/>
-              <exclude name="byte-buddy-agent-1.12.10.jar"/>
-              <exclude name="mockito-core-4.5.1.jar"/>
+              <exclude name="easymock-3.0.jar"/>
               <exclude name="h2-1.4.178.jar"/>
               <exclude name="jsp-api.jar"/>
               <exclude name="servlet-api.jar"/>
@@ -454,51 +347,19 @@
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
         </copy>
+        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
+            <fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
+        </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseCreation">
-            <fileset file="${basedir}/yukon-database/CreationScripts/OracleTableCreation.sql"/>
-            <fileset file="${basedir}/yukon-database/CreationScripts/SqlServerTableCreation.sql"/>
+            <fileset dir="${basedir}/yukon-database/CreationScripts" />
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle">
-            <fileset dir="${basedir}/yukon-database/DBUpdates/oracle">
-                <exclude name="2.*.sql"/>
-                <exclude name="3.*.sql"/>
-                <exclude name="4.*.sql"/>
-                <exclude name="5.0*.sql"/>
-                <exclude name="5.1*.sql"/>
-                <exclude name="5.2_0.sql"/>
-                <exclude name="5.2_1.sql"/>
-                <exclude name="5.2_2.sql"/>
-                <exclude name="5.2_3.sql"/>
-                <exclude name="5.2_4.sql"/>
-                <exclude name="5.2_5.sql"/>
-                <exclude name="5.2_6.sql"/>
-                <exclude name="5.2_7.sql"/>
-                <exclude name="**/stars/**"/>
-            </fileset>
+            <fileset dir="${basedir}/yukon-database/DBUpdates/oracle" />
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer">
-            <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver">
-                <exclude name="2.*.sql"/>
-                <exclude name="3.*.sql"/>
-                <exclude name="4.*.sql"/>
-                <exclude name="5.0*.sql"/>
-                <exclude name="5.1*.sql"/>
-                <exclude name="5.2_0.sql"/>
-                <exclude name="5.2_1.sql"/>
-                <exclude name="5.2_2.sql"/>
-                <exclude name="5.2_3.sql"/>
-                <exclude name="5.2_4.sql"/>
-                <exclude name="5.2_5.sql"/>
-                <exclude name="5.2_6.sql"/>
-                <exclude name="5.2_7.sql"/>
-                <exclude name="**/stars/**"/>
-            </fileset>
+            <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         
-
-        <antcall target="apiDocumentation">
-            <param name="tempDir" value="${temp.dir}"/>
-        </antcall>
         <mkdir dir="${dist.dir}" />
         
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip">
@@ -508,11 +369,12 @@
         <delete dir="${temp.dir}" />
     </target>
 
-    <target name="build-dist-server" depends="build-dist">
+    <target name="build-dist-pdb" depends="build-dist">
         <mkdir dir="${temp.dir}" />
+
         <gitlogcount result="yukon-build-number"/>
-        <zip destfile="${temp.dir}/YukonInstall/yukon-server.zip" update="true">
-          <fileset dir="${basedir}/yukon-server" />
+        <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
+          <fileset dir="${basedir}/yukon-server/pdb" />
         </zip>
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip" update="true">
             <fileset dir="${temp.dir}" />
@@ -534,69 +396,7 @@
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests"/>
         </exec>
-        <!-- Merge all jococo exe files from lib/coverage to yukon-client-->
-        <jacoco:merge destfile="${basedir}/yukon-client/merged.exec">
-            <fileset dir="${basedir}/yukon-client/lib/coverage" includes="*.exec"/>
-        </jacoco:merge>
-        <antcall target="generateReport"/>
     </target>
-
-    <target name="generateReport">
-        <mkdir dir="${basedir}/yukon-client/jacocoReport"/>
-        <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
-            <executiondata>
-                <file file="${basedir}/yukon-client/merged.exec"/>
-            </executiondata>
-            <structure name="Coverage Structure">
-                <group name="common">
-                    <classfiles>
-                       <fileset dir="${basedir}/yukon-client/common/build/com/cannontech">
-                           <exclude name="**/*dao*.class" />
-                           <exclude name="**/*Dao*.class" />
-                           <exclude name="**/dao/**/*.class" />
-                           <exclude name="**/*Model.class" />
-                           <exclude name="**/model/**/*.class" />
-                           <exclude name="**/simulators/**/*.class" />
-                           <exclude name="**/clientutils/commander/*.class" />
-                           <exclude name="**/clientutils/popup/*.class" />
-                           <exclude name="**/common/editor/*.class" />
-                           <exclude name="**/common/device/groups/service/*.class" />
-                           <exclude name="**/common/gui/**/*.class"/>
-                           <exclude name="**/common/gui/wizard/state/*.class" />
-                           <exclude name="**/common/i18n/*.class" />
-                           <exclude name="**/common/login/*.class" />
-                           <exclude name="**/common/opc/*.class" />
-                           <exclude name="**/common/wizard/*.class" />
-                           <exclude name="**/common/database/model/*.class" />
-                           <exclude name="**/common/loadcontrol/displays/*.class" />
-                           <exclude name="**/common/loadcontrol/events/*.class" />
-                       </fileset>
-                    </classfiles>
-                    <sourcefiles>
-                        <fileset dir="${basedir}/yukon-client/common/src"/>
-                    </sourcefiles>
-                </group>
-                <group name="yukon-web">
-                     <classfiles>
-                          <fileset dir="${basedir}/yukon-client/yukon-web/build_src"/>
-                     </classfiles>
-                     <sourcefiles>
-                          <fileset dir="${basedir}/yukon-client/yukon-web/src"/>
-                     </sourcefiles>
-                </group>
-                <group name="services">
-                     <classfiles>
-                          <fileset dir="${basedir}/yukon-client/services/build"/>
-                     </classfiles>
-                     <sourcefiles>
-                          <fileset dir="${basedir}/yukon-client/services/src"/>
-                     </sourcefiles>
-                </group>
-            </structure>
-            <html destdir="${basedir}/yukon-client/jacocoReport"/>
-            <xml destfile="C:/CodeCoverage/junitCoverage.xml"/>
-        </jacoco:report>
-   </target>
 
     <target name="signclient">
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
@@ -616,15 +416,9 @@
         <property name="symbol_server" value="p:\YukonSWBuild\SYMBOLS" />
         <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
         <arg line='/c symstore.exe add /r /f ${basedir}\yukon-server\*.* /s ${symbol_server} /t "Yukon Server" /v "${yukon.build.details}"'/>
-        </exec>
+        </exec>   
     </target>
-
-    <target name="create-server-zip">
-        <zip destfile="${dist.dir}/yukon-server.zip">
-            <fileset dir="${basedir}/yukon-server" />
-        </zip>
-    </target>
-
+        
     <target name="updatedbscripts" depends="init">
         <echo message="version: ${version.major}.${version.minor}.${version.revision}" />
         <ant dir="${basedir}/yukon-database"
@@ -650,22 +444,5 @@
             <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
         </jsdoctoolkit>
     </target>
-
-
-    <target name="apiDocumentation">
-        <mkdir dir="${apiDocumentationTemp.dir}" />      
-        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation">
-            <fileset dir="${basedir}/yukon-build/swagger-ui" />
-        </copy>
-        <copy todir="${apiDocumentationTemp.dir}/apiDocumentation/apiDocumentation">
-            <fileset dir="${basedir}/yukon-client/yukon-web/apiDocumentation" />
-        </copy>
-
-        <zip destfile="${tempDir}/apiDocumentation.zip">
-            <fileset dir="${apiDocumentationTemp.dir}/apiDocumentation" />
-        </zip>
-
-        <delete dir="${apiDocumentationTemp.dir}" />  
-    </target> 
 
 </project>

@@ -15,7 +15,7 @@ Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes() const
     };
 }
 
-Policy::Actions CountdownKeepAlivePolicy::SendKeepAlive( const long keepAliveValue, std::chrono::seconds regulatorTimeout)
+Policy::Actions CountdownKeepAlivePolicy::SendKeepAlive( const long keepAliveValue )
 {
     Actions    actions;
 
@@ -40,7 +40,7 @@ Policy::Actions CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAl
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, EnableRemoteControlText ),
-                          PorterRequest::none() );
+                          nullptr );
 
     return actions;
 }
@@ -52,7 +52,7 @@ Policy::Actions CountdownKeepAlivePolicy::DisableRemoteControl()
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
-                          PorterRequest::none() );
+                          nullptr );
 
     return actions;
 }

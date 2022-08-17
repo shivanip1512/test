@@ -19,7 +19,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta charset="UTF-8">
 
-<title>${fn:escapeXml(pageDetail.pageTitle)}</title>
+<title>${pageDetail.pageTitle}</title>
 
 <link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
 
@@ -141,7 +141,7 @@
                                     ${requestScope['com.cannontech.web.layout.part.headingSuffix']}</h1>
                             </c:if>
                             <div class="page-actions">
-                                <cm:dropdown id="b-page-actions" type="button" showIcon="false" triggerClasses="fr dn ML15">
+                                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn">
                                     <cti:displayForPageEditModes modes="EDIT,VIEW">
                                         <c:if test="${!empty info.smartNotificationsEvent}">
                                             <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>

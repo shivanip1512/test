@@ -1,9 +1,8 @@
 package com.cannontech.common.rfn.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class GatewayFirmwareVersionParserTest {
 
@@ -11,14 +10,14 @@ public class GatewayFirmwareVersionParserTest {
     public void test_firmwareVersion_majorMinorRevision_format() {
         GatewayFirmwareVersion actualVersion = GatewayFirmwareVersion.parse("6.3.2");
         GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 2);
-        assertEquals(expectedVersion, actualVersion, "Parsed version string incorrectly");
+        assertEquals("Parsed version string incorrectly", expectedVersion, actualVersion);
     }
 
     @Test
     public void test_firmwareVersion_majorMinor_format() {
         GatewayFirmwareVersion actualVersion = GatewayFirmwareVersion.parse("6.3");
         GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 0);
-        assertEquals(expectedVersion, actualVersion, "Failed to parse version string without revision");
+        assertEquals("Failed to parse version string without revision", expectedVersion, actualVersion);
     }
 
     @Test
@@ -28,38 +27,34 @@ public class GatewayFirmwareVersionParserTest {
         GatewayFirmwareVersion actualVersion3 = GatewayFirmwareVersion.parse("6.3.2.0.0");
         GatewayFirmwareVersion actualVersion4 = GatewayFirmwareVersion.parse("6.3.2.somethingotherthandecimal ");
         GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 2);
-        assertEquals(expectedVersion, actualVersion1, "Failed to truncate 4-part version string into 3 parts");
-        assertEquals(expectedVersion, actualVersion2, "Failed to truncate 4-part version string into 3 parts");
-        assertEquals(expectedVersion, actualVersion3, "Failed to truncate 5-part version string into 3 parts");
-        assertEquals(expectedVersion, actualVersion4, "Failed to truncate version string with non-numerics after the 3rd segment");
+        assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion1);
+        assertEquals("Failed to truncate 4-part version string into 3 parts", expectedVersion, actualVersion2);
+        assertEquals("Failed to truncate 5-part version string into 3 parts", expectedVersion, actualVersion3);
+        assertEquals("Failed to truncate version string with non-numerics after the 3rd segment", expectedVersion, actualVersion4);
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidFirmwareVersion_alphaInFirstThreeSegments() {
         // Non-numerics in the first 3 segments will cause a parsing error
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            GatewayFirmwareVersion.parse("6.3.2alpha");
-        });
+        GatewayFirmwareVersion.parse("6.3.2alpha");
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_invalidFirmwareVersion_majorOnly() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            GatewayFirmwareVersion.parse("6");
-        });
+        GatewayFirmwareVersion.parse("6");
     }
     
     @Test
     public void test_whitespaceTrimming() {
         GatewayFirmwareVersion actualVersionWithSpaces = GatewayFirmwareVersion.parse(" 6.3.0  ");
         GatewayFirmwareVersion expectedVersion = new GatewayFirmwareVersion(6, 3, 0);
-        assertEquals(expectedVersion, actualVersionWithSpaces, "Parsed version string with leading and trailing whitespace incorrectly");
+        assertEquals("Parsed version string with leading and trailing whitespace incorrectly", expectedVersion, actualVersionWithSpaces);
         
         GatewayFirmwareVersion actualVersionWithNewlines = GatewayFirmwareVersion.parse("\n6.3.0 \n\n");
-        assertEquals(expectedVersion, actualVersionWithNewlines, "Parsed version string with leading and trailing newlines incorrectly");
+        assertEquals("Parsed version string with leading and trailing newlines incorrectly", expectedVersion, actualVersionWithNewlines);
         
         GatewayFirmwareVersion actualVersionMajorMinorWithNewlines = GatewayFirmwareVersion.parse("\n6.3 \n\n");
-        assertEquals(expectedVersion, actualVersionMajorMinorWithNewlines, "Parsed version string with leading and trailing newlines incorrectly");
+        assertEquals("Parsed version string with leading and trailing newlines incorrectly", expectedVersion, actualVersionMajorMinorWithNewlines);
     }
 }
 

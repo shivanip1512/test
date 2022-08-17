@@ -40,7 +40,7 @@ public class HomeController {
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private DashboardService dashboardService;
 
-    @RequestMapping(value = {"/home", "/index.jsp", "/"})
+    @RequestMapping(value = {"/home", "/index.jsp"})
     public String home(LiteYukonUser user) {
         String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
         if ("/operator/Operations.jsp".equals(homeUrl)) {

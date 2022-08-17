@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.jms.ConnectionFactory;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+
 import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseException;
@@ -27,17 +31,17 @@ import com.google.common.collect.Lists;
 
 public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
-    @Autowired private RfnDataValidator rfnDataValidator;
     @Autowired private ParsingService<SimpleXPathTemplate> parsingService;
     @Autowired private RfnLcrDataMappingService<SimpleXPathTemplate> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
+    protected JmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiParsingStrategy.class);
 
     @Override
-    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings,
-            AtomicInteger pointDataProduced) throws ParseException {
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings)
+            throws ParseException {
         RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
         SimpleXPathTemplate decodedPayload = null;
 
@@ -62,23 +66,29 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
         Instant currentInstant = new Instant();
 
         // Discard all the data that is older than the global timestamp limit
-        if (rfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
+        if (RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
-            pointDataProduced.addAndGet(messagesToSend.size());
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
             }
 
             // Handle addressing data
-            rfnLcrDataMappingService.storeAddressingData(decodedPayload, rfnDevice);
+            rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
         } else {
             log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
+    }
+
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 
     @Override

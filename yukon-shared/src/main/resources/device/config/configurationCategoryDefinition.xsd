@@ -114,7 +114,6 @@
             <xs:enumeration value="GasRecordingInterval"/>
             <xs:enumeration value="GasReportingInterval"/>
             <xs:enumeration value="CBCHeartbeatMode"/>
-            <xs:enumeration value="RegulatorInstallOrientation"/>
         </xs:restriction>
     </xs:simpleType>
 

@@ -5,6 +5,3 @@
 build
 /.classpath
 /.project
-
-# Ignore output directory
-bin

@@ -111,7 +111,6 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
     bool notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg);
     bool notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop);
-    bool notifyGroupsOfCancelIfScheduled();
     BOOL wasControlActivatedByStatusTrigger();
 
     long getShedTimeForSmartGears();
@@ -240,6 +239,4 @@ private:
     void setPendingGroupsInactive();
 
     void restore(Cti::RowReader &rdr);
-
-    std::size_t getMemoryConsumption() const override;
 };

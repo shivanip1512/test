@@ -5,11 +5,10 @@ Class-Path:
  common.jar 
  yukonappserver.jar 
  tools.jar 
- spring-ws-core-3.1.3.jar 
- spring-orm-5.3.22.jar 
+ spring-ws-core-3.0.7.RELEASE.jar 
+ spring-orm-5.1.5.RELEASE.jar 
  msp-beans-v3.jar
  msp-beans-v5.jar
- msp-beans-v4.jar
  ../log/ 
  ../export/ 
 

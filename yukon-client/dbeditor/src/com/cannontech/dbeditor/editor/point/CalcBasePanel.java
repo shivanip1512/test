@@ -9,11 +9,12 @@ import javax.swing.JLabel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.JCSpinField;
@@ -28,7 +29,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JLabel ivjPeriodicRateLabel = null;
     private JComboBox<String> ivjUpdateTypeComboBox = null;
     private JLabel ivjUpdateTypeLabel = null;
-    private JComboBox<UnitOfMeasure> ivjUnitOfMeasureComboBox = null;
+    private JComboBox<LiteUnitMeasure> ivjUnitOfMeasureComboBox = null;
     private JLabel ivjUnitOfMeasureLabel = null;
     private com.klg.jclass.field.JCSpinField ivjDecimalPlacesSpinner = null;
     private JLabel ivjJLabelDecimalPositons = null;
@@ -51,15 +52,15 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
                     e.getSource() == getUnitOfMeasureComboBox() ||
                     e.getSource() == getJCheckboxCalcQual() ||
                     e.getSource() == getStateGroupComboBox()) {
-                fireInputUpdate();
+                this.fireInputUpdate();
             }
             
             if (e.getSource() == getArchiveTypeComboBox()) {
-                archiveTypeComboBox_ActionPerformed(e);
+                this.archiveTypeComboBox_ActionPerformed(e);
             }
             
             if (e.getSource() == getUpdateTypeComboBox()) {
-                updateTypeComboBox_ActionPerformed(e);
+                this.updateTypeComboBox_ActionPerformed(e);
             }
             
         } catch (java.lang.Throwable ivjExc) {
@@ -90,7 +91,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JComboBox<String> getArchiveIntervalComboBox() {
         if (ivjArchiveIntervalComboBox == null) {
             try {
-                ivjArchiveIntervalComboBox = new JComboBox<>();
+                ivjArchiveIntervalComboBox = new JComboBox<String>();
                 ivjArchiveIntervalComboBox.setName("ArchiveIntervalComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -116,7 +117,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JComboBox<String> getArchiveTypeComboBox() {
         if (ivjArchiveTypeComboBox == null) {
             try {
-                ivjArchiveTypeComboBox = new JComboBox<>();
+                ivjArchiveTypeComboBox = new JComboBox<String>();
                 ivjArchiveTypeComboBox.setName("ArchiveTypeComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -277,7 +278,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JComboBox<String> getPeriodicRateComboBox() {
         if (ivjPeriodicRateComboBox == null) {
             try {
-                ivjPeriodicRateComboBox = new JComboBox<>();
+                ivjPeriodicRateComboBox = new JComboBox<String>();
                 ivjPeriodicRateComboBox.setName("PeriodicRateComboBox");
                 ivjPeriodicRateComboBox.setFont(new java.awt.Font("dialog", 0, 12));
             } catch (java.lang.Throwable ivjExc) {
@@ -301,10 +302,10 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         return ivjPeriodicRateLabel;
     }
 
-    private JComboBox<UnitOfMeasure> getUnitOfMeasureComboBox() {
+    private JComboBox<LiteUnitMeasure> getUnitOfMeasureComboBox() {
         if (ivjUnitOfMeasureComboBox == null) {
             try {
-                ivjUnitOfMeasureComboBox = new JComboBox<>();
+                ivjUnitOfMeasureComboBox = new JComboBox<LiteUnitMeasure>();
                 ivjUnitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
                 ivjUnitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
             } catch (java.lang.Throwable ivjExc) {
@@ -331,7 +332,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JComboBox<String> getUpdateTypeComboBox() {
         if (ivjUpdateTypeComboBox == null) {
             try {
-                ivjUpdateTypeComboBox = new JComboBox<>();
+                ivjUpdateTypeComboBox = new JComboBox<String>();
                 ivjUpdateTypeComboBox.setName("UpdateTypeComboBox");
                 ivjUpdateTypeComboBox.setFont(new java.awt.Font("dialog", 0, 12));
             } catch (java.lang.Throwable ivjExc) {
@@ -372,7 +373,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
     private JComboBox<LiteStateGroup> getStateGroupComboBox() {
         if (stateGroupComboBox == null) {
             try {
-                stateGroupComboBox = new JComboBox<>();
+                stateGroupComboBox = new JComboBox<LiteStateGroup>();
                 stateGroupComboBox.setName("stateGroupComboBox");
                 stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
             } catch (java.lang.Throwable ivjExc) {
@@ -402,7 +403,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         // Assume that commonObject is an instance of com.cannontech.database.data.point.CalculatedPoint
         CalculatedPoint calcPoint = (CalculatedPoint) val;
 
-        int uOfMeasureID = ((UnitOfMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getId();
+        int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
         String selectedArchiveType = getArchiveTypeComboBox().getSelectedItem().toString();
         calcPoint.getPoint().setArchiveType(PointArchiveType.getByDisplayName(selectedArchiveType));
@@ -417,10 +418,10 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
             calcPoint.getCalcBase().setCalculateQuality('N');
         }
 
-        calcPoint.getPointUnit().setDecimalPlaces(((Number) getDecimalPlacesSpinner().getValue()).intValue());
-        calcPoint.getPointUnit().setUomID(uOfMeasureID);
+        calcPoint.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
+        calcPoint.getPointUnit().setUomID(new Integer(uOfMeasureID));
         LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
-        calcPoint.getPoint().setStateGroupID(stateGroup.getStateGroupID());
+        calcPoint.getPoint().setStateGroupID(new Integer(stateGroup.getStateGroupID()));
 
         return calcPoint;
     }
@@ -528,9 +529,9 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         setBorder(border);
 
         // load unit of measure combo box with all possible values
-        List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
-        for (UnitOfMeasure uom : unitMeasures) {
-            getUnitOfMeasureComboBox().addItem(uom);
+        List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
+        for (LiteUnitMeasure lum : unitMeasures) {
+            getUnitOfMeasureComboBox().addItem(lum);
         }
 
         // Load the Archive Type combo box with default possible values
@@ -571,7 +572,6 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         getUpdateTypeComboBox().addItem("On Timer+Change");
         getUpdateTypeComboBox().addItem("Constant");
         getUpdateTypeComboBox().addItem("Historical");
-        getUpdateTypeComboBox().addItem("Backfilling");
 
         // Load the Periodic Rate combo box with default possible values
         getPeriodicRateComboBox().addItem("1 second");
@@ -622,7 +622,7 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         }
 
         for (int i = 0; i < getUnitOfMeasureComboBox().getModel().getSize(); i++) {
-            if (getUnitOfMeasureComboBox().getItemAt(i).getId() == uOfMeasureID) {
+            if (getUnitOfMeasureComboBox().getItemAt(i).getUomID() == uOfMeasureID) {
                 getUnitOfMeasureComboBox().setSelectedIndex(i);
                 break;
             }
@@ -637,9 +637,8 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
         for (int i = 0; i < getUpdateTypeComboBox().getModel().getSize(); i++) {
             if (getUpdateTypeComboBox().getItemAt(i).equalsIgnoreCase(updateType)) {
                 getUpdateTypeComboBox().setSelectedIndex(i);
-                if (getPeriodicRateComboBox().isEnabled()) {
+                if (getPeriodicRateComboBox().isEnabled())
                     SwingUtil.setIntervalComboBoxSelectedItem(getPeriodicRateComboBox(), periodicRate.intValue());
-                }
                 break;
             }
         }
@@ -684,9 +683,8 @@ public class CalcBasePanel extends DataInputPanel implements JCValueListener, Ac
 
     @Override
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        if (arg1.getSource() == getDecimalPlacesSpinner()) {
-            fireInputUpdate();
-        }
+        if (arg1.getSource() == getDecimalPlacesSpinner())
+            this.fireInputUpdate();
     }
 
     @Override

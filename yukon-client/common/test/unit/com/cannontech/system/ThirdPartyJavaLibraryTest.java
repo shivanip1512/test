@@ -1,13 +1,13 @@
 package com.cannontech.system;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.equalTo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,29 +15,18 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.common.stream.StreamUtils;
-import com.cannontech.common.util.YamlParserUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -50,10 +39,9 @@ public class ThirdPartyJavaLibraryTest {
             "annotations-api.jar",
             "catalina-ant.jar",
             "catalina-ha.jar",
-            "catalina-ssi.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
-            "ecj-4.20.jar",
+            "ecj-4.10.jar",
             "el-api.jar",
             "jasper-el.jar",
             "jasper.jar",
@@ -74,7 +62,7 @@ public class ThirdPartyJavaLibraryTest {
             "tomcat-websocket.jar",
             "websocket-api.jar",
             "catalina.jar",
-            "tomcat-juli-9.0.65.jar");
+            "tomcat-juli-9.0.20.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
@@ -88,8 +76,7 @@ public class ThirdPartyJavaLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class, libraryYaml.getFilename());
+        ThirdPartyLibraries documentedLibraries = ThirdPartyLibraryParser.parse(libraryYaml.getInputStream());
         
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries, l -> l.filename); 
         
@@ -103,25 +90,25 @@ public class ThirdPartyJavaLibraryTest {
         Set<String> thirdPartyFilenames = Sets.difference(classpathJars.keySet(), IgnoredThirdPartyJavaLibraries.getFilenames());
         
         Set<String> unknownFiles = Sets.difference(thirdPartyFilenames, documentedLibrariesByFilename.keySet());
-        assertTrue(unknownFiles.isEmpty(), "Unknown JAR files found.  These must be added to thirdPartyLibraries.yaml or IgnoredThirdPartyJavaLibraries.java: " + unknownFiles);
+        assertTrue("Unknown JAR files found.  These must be added to thirdPartyLibraries.yaml or IgnoredThirdPartyJavaLibraries.java: " + unknownFiles, unknownFiles.isEmpty());
 
         Set<String> missingFiles = Sets.difference(documentedLibrariesByFilename.keySet(), Sets.union(thirdPartyFilenames, tomcatJars));
-        assertTrue(missingFiles.isEmpty(), "JAR files listed in thirdPartyLibraries.yaml, but missing from classpath: " + missingFiles);
+        assertTrue("JAR files listed in thirdPartyLibraries.yaml, but missing from classpath: " + missingFiles, missingFiles.isEmpty());
         
         MessageDigest md_md5 = MessageDigest.getInstance("MD5");
         MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
 
         documentedLibrariesByFilename.entrySet().stream().forEach(e -> {
-            assertNotNull(e.getValue().group, e.getKey() + " must have a Yukon library group");
-            assertFalse(StringUtils.isEmpty(e.getValue().project), e.getKey() + " must have a project name");
-            assertFalse(StringUtils.isEmpty(e.getValue().version), e.getKey() + " must have a project version");
-            assertFalse(StringUtils.isEmpty(e.getValue().projectUrl), e.getKey() + " must have a project URL");
-            assertFalse(StringUtils.isEmpty(e.getValue().mavenUrl), e.getKey() + " must have a Maven URL");
+            assertNotNull(e.getKey() + " must have a Yukon library group", e.getValue().group);
+            assertFalse(e.getKey() + " must have a project name", StringUtils.isEmpty(e.getValue().project));
+            assertFalse(e.getKey() + " must have a project version", StringUtils.isEmpty(e.getValue().version));
+            assertFalse(e.getKey() + " must have a project URL", StringUtils.isEmpty(e.getValue().projectUrl));
+            assertFalse(e.getKey() + " must have a Maven URL", StringUtils.isEmpty(e.getValue().mavenUrl));
             assertThat(e.getKey() + " must have a valid Maven URL", e.getValue().mavenUrl, anyOf(startsWith("https://mvnrepository.com/artifact/"), equalTo("n/a")));
-            assertFalse(CollectionUtils.isEmpty(e.getValue().licenses), e.getKey() + " must have a license type");
-            assertFalse(CollectionUtils.isEmpty(e.getValue().licenseUrls), e.getKey() + " must have a license URL");
-            assertFalse(StringUtils.isEmpty(e.getValue().jira), e.getKey() + " must have a JIRA entry");
-            assertNotNull(e.getValue().updated, e.getKey() + " must have an updated date");
+            assertFalse(e.getKey() + " must have a license type", CollectionUtils.isEmpty(e.getValue().licenses));
+            assertFalse(e.getKey() + " must have a license URL", CollectionUtils.isEmpty(e.getValue().licenseUrls));
+            assertFalse(e.getKey() + " must have a JIRA entry", StringUtils.isEmpty(e.getValue().jira));
+            assertNotNull(e.getKey() + " must have an updated date", e.getValue().updated);
             for (File f : classpathJars.get(e.getKey())) {
                 Path p = f.toPath();
                 byte[] contents;
@@ -132,45 +119,9 @@ public class ThirdPartyJavaLibraryTest {
                 }
                 String md5 = Hex.encodeHexString(md_md5.digest(contents));
                 String sha1 = Hex.encodeHexString(md_sha1.digest(contents));
-                assertEquals(md5, e.getValue().md5, "MD5 mismatch for " + e.getKey() + " " + p);
-                assertEquals(sha1, e.getValue().sha1, "SHA1 mismatch for " + e.getKey() + " " + p);
+                assertEquals("MD5 mismatch for " + e.getKey() + " " + p, e.getValue().md5, md5);
+                assertEquals("SHA1 mismatch for " + e.getKey() + " " + p, e.getValue().sha1, sha1);
             }
         });
-    }
-    
-    @Test
-    public void test_junitJarsExcluded()
-            throws IOException, NoSuchAlgorithmException, ParserConfigurationException, SAXException {
-        Set<String> unitTestJars = new HashSet<>();
-        String buildDirectory = System.getProperty("user.dir");
-        if (!buildDirectory.contains("yukon-build")) {
-            String yukonDirectory = buildDirectory.substring(0, buildDirectory.indexOf("yukon-client"));
-            buildDirectory = yukonDirectory + "yukon-build";
-        }
-        File resourceFile = new File(buildDirectory + File.separatorChar + "build.xml");
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser saxParser = factory.newSAXParser();
-        DefaultHandler handler = new DefaultHandler() {
-            @Override
-            public void startElement(String uri, String localName, String qName, Attributes attributes)
-                    throws SAXException {
-                if (qName.equals("exclude") && attributes.getValue("name").endsWith(".jar")) {
-                    unitTestJars.add(attributes.getValue("name"));
-                }
-            }
-        };
-        saxParser.parse(resourceFile, handler);
-        ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
-
-        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class, libraryYaml.getFilename());
-        Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries,
-                l -> l.filename);
-
-        Set<String> unitTestjarsFromYaml = documentedLibrariesByFilename.entrySet().stream()
-                .filter(e -> e.getValue().group == LibraryGroup.UNIT_TESTS).map(e -> e.getKey()).collect(Collectors.toSet());
-        Set<String> missingJars = Sets.difference(unitTestjarsFromYaml, unitTestJars);
-        assertTrue(missingJars.isEmpty(),
-                "New Unit Tests related JAR found. These must be excluded in build.xml file of yukon-build " + missingJars);
     }
 }

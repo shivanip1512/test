@@ -1,34 +1,29 @@
 package com.cannontech.dr.setup.service;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
-
 public interface LMSetupService<T1, T2> {
 
     /**
      * Creates the LM object.
      */
-    T1 create(T1 lmObject, LiteYukonUser liteYukonUser);
+    int create(T1 lmObject);
     
     /**
      * Update the LM object.
      */
-    T1 update(int id, T1 lmObject, LiteYukonUser liteYukonUser);
+    int update(int id, T1 lmObject);
 
     /**
      * Retrieve LM objects based on id.
      */
-    T1 retrieve(int id, LiteYukonUser liteYukonUser);
-    
+    T1 retrieve(int id);
+
     /**
      * Delete the LM object.
      */
-    int delete(int id, LiteYukonUser liteYukonUser);
+    int delete(int id, String name);
 
     /**
      * Copy the LM object.
      */
-    T1 copy(int id, T2 lmCopy, LiteYukonUser liteYukonUser);
-       
-   
-    
+    int copy(int id, T2 lmCopy);
 }

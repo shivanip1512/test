@@ -1,12 +1,11 @@
 package com.cannontech.amr.rfn.message.read;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 
-import org.junit.jupiter.api.Test;
+import junit.framework.Assert;
+
+import org.junit.Test;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -75,16 +74,16 @@ public class ChannelDataTest {
             ByteArrayInputStream in = new ByteArrayInputStream(original);
             ObjectInputStream deserializer = new ObjectInputStream(in);
             ChannelData originalChannelData = (ChannelData) deserializer.readObject();
-            assertEquals(channelData.getChannelNumber(), originalChannelData.getChannelNumber());
-            assertEquals(channelData.getStatus(), originalChannelData.getStatus());
-            assertEquals(channelData.getUnitOfMeasure(), originalChannelData.getUnitOfMeasure());
-            assertEquals(channelData.getUnitOfMeasureModifiers(), originalChannelData.getUnitOfMeasureModifiers());
-            assertEquals(channelData.getValue(), originalChannelData.getValue());
+            Assert.assertEquals(channelData.getChannelNumber(), originalChannelData.getChannelNumber());
+            Assert.assertEquals(channelData.getStatus(), originalChannelData.getStatus());
+            Assert.assertEquals(channelData.getUnitOfMeasure(), originalChannelData.getUnitOfMeasure());
+            Assert.assertEquals(channelData.getUnitOfMeasureModifiers(), originalChannelData.getUnitOfMeasureModifiers());
+            Assert.assertEquals(channelData.getValue(), originalChannelData.getValue());
             // adding a field to ChannelData may cause the following to fail, 
             // but as long as the above passed, this might still be a valid test
-            assertEquals(channelData, originalChannelData); // optional
+            Assert.assertEquals(channelData, originalChannelData); // optional
         } catch (Exception e) {
-            fail();
+            Assert.fail();
         }
     }
     

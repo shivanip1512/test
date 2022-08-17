@@ -5,9 +5,6 @@
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
                     <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
-                    <tags:nameValue2 nameKey=".mandatory">
-                        <tags:switchButton path="fields.mandatory" onNameKey=".yes" offNameKey=".no" />
-                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".controlPercent">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.controlPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>

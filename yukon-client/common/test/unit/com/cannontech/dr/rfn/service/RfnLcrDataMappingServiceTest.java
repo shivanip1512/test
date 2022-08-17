@@ -2,13 +2,13 @@ package com.cannontech.dr.rfn.service;
 
 import static com.cannontech.dr.rfn.model.RfnLcrPointDataMap.RELAY_1_LOAD_SIZE;
 import static com.cannontech.dr.rfn.model.RfnLcrPointDataMap.RELAY_1_REMAINING_CONTROL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
+import junit.framework.Assert;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -74,14 +74,14 @@ public class RfnLcrDataMappingServiceTest {
         RfnDevice device = new RfnDevice("serialNumber", identifier, new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
         List<PointData> mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device, assetAvailabilityTimes);
         
-        assertEquals(mapIntervalData.size(), 0);
+        Assert.assertEquals(mapIntervalData.size(), 0);
         
         // Change only the start time so this version has at least 1 valid value. Otherwise identical to above.
         data.setContext(timeModifiedReading);
 
         try {
             mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device);
-            fail();
+            Assert.fail();
         } catch(Exception e) { /* This throws as it generates 1 valid value and I did not do the work to handle the point being generated.*/ }
 
     }
@@ -92,10 +92,10 @@ public class RfnLcrDataMappingServiceTest {
         data.setContext(realReading);
         
         // Test that .001 multiplier is working; <KwRating>132</KwRating>
-        assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_LOAD_SIZE), .132, .000001);
+        Assert.assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_LOAD_SIZE), .132, .000001);
         
         // Test that having no multiplier is working; <RemainingControlTime>12965</RemainingControlTime>
-        assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_REMAINING_CONTROL), 12965, .000001);
+        Assert.assertEquals((Double)ReflectionTestUtils.invokeMethod(dataMappingServiceImpl,"evaluateArchiveReadValue", data, RELAY_1_REMAINING_CONTROL), 12965, .000001);
     }
 
 }

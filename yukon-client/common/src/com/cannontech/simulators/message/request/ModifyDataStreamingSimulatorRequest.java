@@ -32,10 +32,4 @@ public class ModifyDataStreamingSimulatorRequest implements SimulatorRequest {
     public SimulatedDataStreamingSettings getSettings() {
         return settings;
     }
-
-    @Override
-    public String toString() {
-        return String.format("ModifyDataStreamingSimulatorRequest [stopSimulator=%s, settings=%s]",
-                             stopSimulator, settings);
-    }
 }

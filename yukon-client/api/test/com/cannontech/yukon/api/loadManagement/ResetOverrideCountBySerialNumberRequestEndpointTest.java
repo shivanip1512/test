@@ -1,10 +1,10 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.jdom2.Element;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -39,7 +39,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
     //test response xml data
     static final String RESP_ELEMENT_NAME = "resetOverrideCountBySerialNumberResponse";   
     
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
@@ -75,8 +75,8 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(SERIAL1, mockOptOutService.getSerialNumber(), "Incorrect serialNumber.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
 
         //verify the results
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -92,8 +92,8 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(INVALID_ACCOUNT, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(SERIAL1, mockOptOutService.getSerialNumber(), "Incorrect serialNumber.");
+        Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
         
         //verify the results
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -109,8 +109,8 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(INVALID_SERIAL, mockOptOutService.getSerialNumber(), "Incorrect serialNumber.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", INVALID_SERIAL, mockOptOutService.getSerialNumber());
         
         //verify the results
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -127,8 +127,8 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
-        assertEquals(INCORRECT_SERIAL, mockOptOutService.getSerialNumber(), "Incorrect serialNumber.");
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", INCORRECT_SERIAL, mockOptOutService.getSerialNumber());
         
         //verify the results
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);

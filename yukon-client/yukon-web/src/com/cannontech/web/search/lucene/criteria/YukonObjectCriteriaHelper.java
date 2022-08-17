@@ -13,7 +13,7 @@ import com.cannontech.database.data.point.PointType;
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     
-    BooleanQuery.Builder query = new BooleanQuery.Builder();
+    BooleanQuery.Builder query = new BooleanQuery.Builder().setDisableCoord(false);
     
     public YukonObjectCriteriaHelper() {
         query.setMinimumNumberShouldMatch(1);

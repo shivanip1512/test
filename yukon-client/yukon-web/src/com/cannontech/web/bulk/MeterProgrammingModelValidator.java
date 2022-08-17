@@ -25,7 +25,6 @@ public class MeterProgrammingModelValidator extends SimpleValidator<MeterProgram
                                                        "password",
                                                        config.getPassword(),
                                                        maxPasswordLength);
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "yukon.web.error.isBlank");
         } else {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "existingProgramGuid", "yukon.web.error.isBlank");
         }

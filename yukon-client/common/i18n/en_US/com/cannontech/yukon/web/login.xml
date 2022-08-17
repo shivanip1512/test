@@ -94,7 +94,6 @@ When you go to this location you will be allowed to set a new password for your 
     <entry key="yukon.web.login.passwordChange.successful">Password changed.</entry>
     <entry key="yukon.web.login.passwordChange.successful.reLogin">Password changed successfully, please re-login using new password.</entry>
     <entry key="yukon.web.login.passwordExpired">The password for this login has expired.</entry>
-    <entry key="yukon.web.modules.passwordPolicyError.INVALID_UUID">Invalid UUID</entry>
     
     <entry key="yukon.web.modules.passwordPolicy.policyRule.UPPERCASE_CHARACTERS">Uppercase Characters</entry>
     <entry key="yukon.web.modules.passwordPolicy.policyRule.LOWERCASE_CHARACTERS">Lowercase Characters</entry>

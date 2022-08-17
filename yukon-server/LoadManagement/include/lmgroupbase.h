@@ -134,11 +134,6 @@ public:
     std::string buildShedString(LONG shedTime) const;
     std::string buildPeriodString(LONG periodTime) const;
 
-   // This is the 'object representation' size
-   virtual std::size_t getFixedSize() const     { return sizeof( *this ); }
-   // This is any additional data that is allocated from free store memory
-   virtual std::size_t getVariableSize() const;
-
     // Static Members
 
     // Possible group control states
@@ -212,6 +207,4 @@ inline bool operator!=( const CtiLMGroupBase & lhs, const CtiLMGroupBase & rhs )
 {
     return ! ( lhs == rhs );
 }
-
-std::size_t calculateMemoryConsumption( const CtiLMGroupBase * g );
 

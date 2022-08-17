@@ -1,17 +1,15 @@
 package com.cannontech.common.util.xml;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.Date;
 import java.util.List;
+
+import junit.framework.Assert;
 
 import org.jdom2.Element;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.cannontech.common.exception.InvalidDateFormatException;
 import com.google.common.collect.Lists;
@@ -62,7 +60,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(booleanValue, false);
+        Assert.assertEquals(booleanValue, false);
     }
     
     /**
@@ -77,7 +75,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement", true);
         
-        assertEquals(booleanValue, true);
+        Assert.assertEquals(booleanValue, true);
     }
     
     /**
@@ -92,7 +90,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(true, booleanValue.booleanValue());
+        Assert.assertEquals(true, booleanValue.booleanValue());
     }
     
     /**
@@ -107,7 +105,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(true, booleanValue.booleanValue());
+        Assert.assertEquals(true, booleanValue.booleanValue());
     }
 
     /**
@@ -122,7 +120,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(true, booleanValue.booleanValue());
+        Assert.assertEquals(true, booleanValue.booleanValue());
     }
 
     /**
@@ -137,7 +135,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(true, booleanValue.booleanValue());
+        Assert.assertEquals(true, booleanValue.booleanValue());
     }
     
     /**
@@ -152,7 +150,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(false, booleanValue.booleanValue());
+        Assert.assertEquals(false, booleanValue.booleanValue());
     }
 
     /**
@@ -167,7 +165,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(false, booleanValue.booleanValue());
+        Assert.assertEquals(false, booleanValue.booleanValue());
     }
     
     /**
@@ -182,7 +180,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
         Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
-        assertEquals(false, booleanValue.booleanValue());
+        Assert.assertEquals(false, booleanValue.booleanValue());
     }
 
     /**
@@ -190,28 +188,25 @@ public class SimpleXPathTemplateTest {
      *      <booleanElement>Foo</booleanElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsBoolean_invalidBoolean() {
-        
         Element testElement = generateElement("booleanElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
-        });
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
+        
+        Assert.assertEquals(false, booleanValue.booleanValue());
     }
     
     /**
      * A null expression passed into evaluateAsBoolean.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsBoolean_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsBoolean(null);
-        });
+        simpleXPathTemplate.evaluateAsBoolean(null);
     }
     
 /************************ evaluateAsDate Tests ***************/
@@ -227,7 +222,7 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Date date = simpleXPathTemplate.evaluateAsDate("/testElement/dateElement");
         
-        assertNull(date);
+        Assert.assertNull(date);
     }
     
     /**
@@ -235,14 +230,12 @@ public class SimpleXPathTemplateTest {
      *      <dateElement>Foo</dateElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=InvalidDateFormatException.class)
     public void testEvaluateAsDate_invalidDate() {
         Element testElement = generateElement("dateElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(InvalidDateFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsDate("/testElement/dateElement");
-        });
+        simpleXPathTemplate.evaluateAsDate("/testElement/dateElement");
     }
     
     /**
@@ -258,20 +251,18 @@ public class SimpleXPathTemplateTest {
         Date date = simpleXPathTemplate.evaluateAsDate("/testElement/dateElement");
         
         Date expectedDate = dateTimeFormmater.parseDateTime("12/31/2010 6:30:00").toDate();
-        assertEquals(expectedDate, date);
+        Assert.assertEquals(expectedDate, date);
     }
     
     /**
      * A null expression passed into evaluateAsDate.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsDate_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsDate(null);
-        });
+        simpleXPathTemplate.evaluateAsDate(null);
     }
 
 /************************ evaluateAsLong Tests ***************/
@@ -280,14 +271,12 @@ public class SimpleXPathTemplateTest {
      *      <longElement>Foo</longElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=NumberFormatException.class)
     public void testEvaluateAsLong_invalidLong() {
         Element testElement = generateElement("longElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsLong("/testElement/longElement");
-        });
+        simpleXPathTemplate.evaluateAsLong("/testElement/longElement");
     }
     
     /**
@@ -302,34 +291,29 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         long longValue = simpleXPathTemplate.evaluateAsLong("/testElement/longElement");
         
-        assertEquals(42, longValue);
+        Assert.assertEquals(42, longValue);
     }
     
     /**
      * A null expression passed into evaluateAsLong.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsLong_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsLong(null);
-        });
+        simpleXPathTemplate.evaluateAsLong(null);
     }
 
     /**
      * A empty longElement element passed into evaluateAsFloat.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsLong_emptyExpression() {
         Element testElement = new Element("longElement", "");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsLong(null);
-        });
+        simpleXPathTemplate.evaluateAsLong(null);
     }
     
 /************************ evaluateAsFloat Tests ***************/
@@ -338,15 +322,12 @@ public class SimpleXPathTemplateTest {
      *      <floatElement>Foo</floatElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=NumberFormatException.class)
     public void testEvaluateAsFloat_invalidFloat() {
         Element testElement = generateElement("floatElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsFloat("/testElement/floatElement");
-        });
-        
+        simpleXPathTemplate.evaluateAsFloat("/testElement/floatElement");
     }
     
     /**
@@ -361,33 +342,29 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         float floatValue = simpleXPathTemplate.evaluateAsFloat("/testElement/floatElement");
         
-        assertEquals(42.0f, floatValue);
+        Assert.assertEquals(42.0f, floatValue);
     }
     
     /**
      * A null expression passed into evaluateAsFloat.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsFloat_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsFloat(null);
-        });
+        simpleXPathTemplate.evaluateAsFloat(null);
     }
     
     /**
      * A empty floatElement element passed into evaluateAsFloat.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsFloat_emptyExpression() {
         Element testElement = new Element("floatElement", "");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsFloat(null);
-        });
+        simpleXPathTemplate.evaluateAsFloat(null);
     }
     
 /************************ evaluateAsInt Tests ***************/
@@ -396,14 +373,12 @@ public class SimpleXPathTemplateTest {
      *      <intElement>Foo</intElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=NumberFormatException.class)
     public void testEvaluateAsInt_invalidInt() {
         Element testElement = generateElement("intElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsInt("/testElement/intElement");
-        });
+        simpleXPathTemplate.evaluateAsInt("/testElement/intElement");
     }
     
     /**
@@ -419,7 +394,7 @@ public class SimpleXPathTemplateTest {
         int intValue = simpleXPathTemplate.evaluateAsInt("/testElement/intElement");
         
         
-        assertEquals(42, intValue);
+        Assert.assertEquals(42, intValue);
     }
     
     /**
@@ -434,33 +409,29 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         int intValue = simpleXPathTemplate.evaluateAsInt("/testElement/intElement");
         
-        assertEquals(42, intValue);
+        Assert.assertEquals(42, intValue);
     }
     
     /**
      * A null expression passed into evaluateAsFloat.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsInt_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsInt(null);
-        });
+        simpleXPathTemplate.evaluateAsInt(null);
     }
     
     /**
      * A empty intElement element passed into evaluateAsFloat.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsInt_emptyExpression() {
         Element testElement = new Element("intElement", "");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsInt(null);
-        });
+        simpleXPathTemplate.evaluateAsInt(null);
     }
     
     /**
@@ -468,14 +439,12 @@ public class SimpleXPathTemplateTest {
      *      <intListElement>Foo</intListElement>
      * </testElement>
      */
-    @Test
+    @Test(expected=NumberFormatException.class)
     public void testEvaluateAsIntegerList_invalidInt() {
         Element testElement = generateElement("intListElement", "Foo");
         
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsIntegerList("/testElement/intListElement");
-        });
+        simpleXPathTemplate.evaluateAsIntegerList("/testElement/intListElement");
     }
     
     /**
@@ -493,20 +462,18 @@ public class SimpleXPathTemplateTest {
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         List<Integer> integerList = simpleXPathTemplate.evaluateAsIntegerList("/testElement/intListElement");
         
-        assertEquals(Lists.newArrayList(42,24,36), integerList);
+        Assert.assertEquals(Lists.newArrayList(42,24,36), integerList);
     }
     
     /**
      * A null expression passed into evaluateAsIntegerList.
      */
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsIntegerList_noExpression() {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsIntegerList(null);
-        });
+        simpleXPathTemplate.evaluateAsIntegerList(null);
     }
 
     /************************ evaluateAsDouble Tests ***************/
@@ -523,42 +490,36 @@ public class SimpleXPathTemplateTest {
         Element testElement = generateElement("doubleElement", "10.00");
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Double doubleValue = simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement");
-        assertEquals(10.00, doubleValue.doubleValue());
+        Assert.assertEquals(10.00, doubleValue.doubleValue());
     }
 
     /**
      * A null expression passed into evaluateAsDouble
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testevaluateAsDouble_nullNode() {
         Element testElement = generateElement("doubleElement");
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsDouble(null);
-        });
+        simpleXPathTemplate.evaluateAsDouble(null);
     }
 
     /**
      * A String expression passed into evaluateAsDouble
      */
-    @Test
+    @Test(expected = NumberFormatException.class)
     public void testevaluateAsDouble_stringNode() {
         Element testElement = generateElement("doubleElement", "foo");
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(NumberFormatException.class, () -> {
-            simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement");
-        });
+        simpleXPathTemplate.evaluateAsDouble("/testElement/doubleElement");
     }
 
     /**
      * A empty expression passed into evaluateAsDouble
      */
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testevaluateAsDouble_emptyNode() {
         Element testElement = generateElement("doubleElement", "");
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            simpleXPathTemplate.evaluateAsDouble(null);
-        });
+        simpleXPathTemplate.evaluateAsDouble(null);
     }
 }

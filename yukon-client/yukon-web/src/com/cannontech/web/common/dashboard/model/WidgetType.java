@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.cannontech.common.config.MasterConfigLicenseKey;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
@@ -39,7 +39,7 @@ public enum WidgetType implements DisplayableEnum {
     METER_SEARCH(DashboardScope.GENERAL, WidgetCategory.AMI, "meterSearchWidget", "image-meter-search"),
     AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI, "systemActionsMenuWidget", "image-ami-actions"),
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
-    GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming", MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED.name()),
+    GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming", MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()),
     DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
     ASSET_AVAILABILITY(DashboardScope.GENERAL, WidgetCategory.DR, "assetAvailabilityWidget", "image-asset-availability"),
     RF_BROADCAST(DashboardScope.GENERAL, WidgetCategory.DR, "rfBroadcastWidget", "image-rf-broadcast", GlobalSettingType.RF_BROADCAST_PERFORMANCE.name()),
@@ -70,13 +70,18 @@ public enum WidgetType implements DisplayableEnum {
     static {
         Builder<WidgetType, String> javascriptBuilder = new ImmutableListMultimap.Builder<WidgetType, String>()
             .put(SYSTEM_MESSAGING, "/resources/js/pages/yukon.support.systemHealth.js")
-            .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js")
+            .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
+                                     "HIGH_STOCK")
             .putAll(ASSET_AVAILABILITY, baseJSPath + "yukon.widget.assetAvailability.js",
-                    "/resources/js/common/yukon.assetAvailability.pieChart.js")
+                    "HIGH_STOCK")
             .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
-            .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js")
+            .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
+                                         "HIGH_STOCK",
+                                         "HIGH_STOCK_NO_DATA")
             .putAll(TRENDS, baseJSPath + "yukon.widget.trends.js",
-                            "/resources/js/common/yukon.trends.js");
+                            "/resources/js/common/yukon.trends.js",
+                                         "HIGH_STOCK",
+                                         "HIGH_STOCK_NO_DATA");
         widgetSpecificJavascript = javascriptBuilder.build();
         
         widgetSpecificCss = ImmutableListMultimap.of(

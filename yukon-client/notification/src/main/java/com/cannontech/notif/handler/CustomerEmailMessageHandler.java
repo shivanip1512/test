@@ -1,7 +1,7 @@
 package com.cannontech.notif.handler;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

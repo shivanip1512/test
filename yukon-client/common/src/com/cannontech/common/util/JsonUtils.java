@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -31,7 +30,6 @@ public class JsonUtils {
     private static final ObjectWriter writer;
     static {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JodaModule());
         // Disabling FAIL_ON_UNKNOWN_PROPERTIES tells jackson to ignore setters in POJOs 
         // for which properties arn't present in the json string. 
         // We still need to add @JsonIgnore to any method (or field for all setters/getters) 

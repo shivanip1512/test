@@ -6,8 +6,10 @@ import javax.jms.ObjectMessage;
 
 import org.apache.activemq.DestinationDoesNotExistException;
 import org.apache.logging.log4j.Logger;
+import org.springframework.jms.core.JmsTemplate;
+
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.simulators.SimulatorUtils;
 import com.cannontech.simulators.handler.SimulatorMessageHandler;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -19,11 +21,12 @@ import com.cannontech.simulators.message.response.SimulatorResponse;
 public class SimulatorMessageListener {
     private static final Logger log = YukonLogManager.getLogger(SimulatorMessageListener.class);
     
-    private YukonJmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
     private Set<SimulatorMessageHandler> messageHandlers;
     private Thread listenerThread;
     private volatile boolean isActive;
-    public SimulatorMessageListener(YukonJmsTemplate jmsTemplate, Set<SimulatorMessageHandler> messageHandlers) {
+    
+    public SimulatorMessageListener(JmsTemplate jmsTemplate, Set<SimulatorMessageHandler> messageHandlers) {
         this.jmsTemplate = jmsTemplate;
         this.messageHandlers = messageHandlers;
     }
@@ -41,7 +44,7 @@ public class SimulatorMessageListener {
             public void run() {
                 while (isActive) {
                     try {
-                        Object message = jmsTemplate.receive();
+                        Object message = jmsTemplate.receive(SimulatorUtils.SIMULATORS_REQUEST_QUEUE);
                         if (message != null && message instanceof ObjectMessage) {
                             log.debug("Processing simulator request message");
                             ObjectMessage request = (ObjectMessage) message;

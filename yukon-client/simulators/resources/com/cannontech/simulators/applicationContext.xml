@@ -21,7 +21,6 @@
     <bean class="com.cannontech.simulators.handler.AmrCreationSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.RfnLcrDataSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.RfnMeterDataSimulatorMessageHandler"/>
-    <bean class="com.cannontech.simulators.handler.RfnDeviceDeleteSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.RfnMeterReadAndControlSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.DataStreamingSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.NmNetworkSimulatorMessageHandler"/>
@@ -29,9 +28,6 @@
     <bean class="com.cannontech.simulators.handler.SmartNotificationSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.StatusArchiveSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.DeviceArchiveSimulatorMessageHandler"/>
-    <bean class="com.cannontech.simulators.handler.FieldSimulatorMessageHandler"/>
-    <bean class="com.cannontech.simulators.handler.EatonCloudMessageHandler"/>
-    <bean class="com.cannontech.simulators.handler.DrSetupMessageHandler"/>
     
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>
@@ -39,6 +35,4 @@
     <bean class="com.cannontech.simulators.ivvc.impl.IvvcSimulatorServiceImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.RegulatorEventsSimulatorDaoImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.DeviceConfigurationSimulatorDaoImpl"/>
-    <bean class="com.cannontech.simulators.eatonCloud.model.EatonCloudFakeTimeseriesDataV1"/>
-    <bean class="com.cannontech.simulators.eatonCloud.model.EatonCloudDataV1"/>
 </beans>

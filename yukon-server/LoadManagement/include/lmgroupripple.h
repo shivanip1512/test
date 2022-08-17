@@ -29,8 +29,6 @@ DECLARE_COLLECTABLE( CtiLMGroupRipple );
 
     CtiLMGroupRipple& operator=(const CtiLMGroupRipple& right);
 
-    std::size_t getFixedSize() const override   { return sizeof( *this ); }
-
     /* Static Members */
 
 private:

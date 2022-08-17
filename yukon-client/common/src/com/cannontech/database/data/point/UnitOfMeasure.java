@@ -1,14 +1,9 @@
 package com.cannontech.database.data.point;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableSet;
 
-public enum UnitOfMeasure implements DisplayableEnum {
+public enum UnitOfMeasure {
     
     INVALID(-1, "", ""),
     KW(0, "kW", "kW"),
@@ -68,19 +63,15 @@ public enum UnitOfMeasure implements DisplayableEnum {
     UNDEF(54, "UNDEF", "Undefined"),
     CUBIC_METERS(55, "m^3", "Cubic Meters"),
     MEGABYTES(56, "MB", "Megabytes"),
-    DBM(57, "dBm", "Decibel-Milliwatts"),
-    THERMS(58, "Therms", "Therms"),
-    DB(59, "dB", "Decibels"),
-    CCF(60, "CCF", "Centum Cubic Feet");
-    // When adding a new UoM, remember to update displayableEnums.xml and point.xsd and creation scripts and update scripts
+    DBM(57, "dBm", "Decibel-Milliwatts");
     
-    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
-    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_WATTS_UOM = ImmutableSet.of(KW, MW, WATTS);
-    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_VOLTS_UOM = ImmutableSet.of(KVOLTS, VOLTS, VOLTS_V2H, KV);
-    private static final ImmutableSet<UnitOfMeasure> DURATION = ImmutableSet.of(HOURS, MINUTES, SECONDS, MS);
-    private static final String keyBase = "yukon.common.unitOfMeasure.";
     
-    private static List<UnitOfMeasure> values;
+    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
+    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_WATTS_UOM = ImmutableSet.of(KW, MW, WATTS);
+    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_VOLTS_UOM = ImmutableSet.of(KVOLTS, VOLTS, VOLTS_V2H, KV);
+    
+    private final static ImmutableSet<UnitOfMeasure> DURATION = ImmutableSet.of(HOURS, MINUTES, SECONDS, MS);
+    
     private int id;
     private String abbreviation;
     private String longName;
@@ -89,11 +80,6 @@ public enum UnitOfMeasure implements DisplayableEnum {
         this.id = id;
         this.abbreviation = abbreviation;
         this.longName = longName;
-    }
-    
-    @Override
-    public String getFormatKey() {
-        return keyBase + name();
     }
     
     public int getId() {
@@ -124,6 +110,24 @@ public enum UnitOfMeasure implements DisplayableEnum {
         return DURATION.contains(this);
     }
     
+    public static UnitOfMeasure getForLongName(String longName) {
+        for (UnitOfMeasure uom : values()) {
+            if (uom.getLongName().equalsIgnoreCase(longName)) {
+                return uom;
+            }
+        }
+        throw new NotFoundException("No UoM found for longName: " + longName);
+    }
+    
+    public static UnitOfMeasure getForAbbreviation(String abbreviation) {
+        for (UnitOfMeasure uom : values()) {
+            if (uom.getAbbreviation().equalsIgnoreCase(abbreviation)) {
+                return uom;
+            }
+        }
+        throw new NotFoundException("No UoM found for abbreviation: " + abbreviation);
+    }
+    
     public static UnitOfMeasure getForId(int id) {
         for (UnitOfMeasure uom : values()) {
             if (uom.getId() == id) {
@@ -145,17 +149,4 @@ public enum UnitOfMeasure implements DisplayableEnum {
         return CAP_CONTROL_WATTS_UOM;
     }
     
-    @Override
-    public String toString() {
-        return longName;
-    }
-    
-    public static List<UnitOfMeasure> allValidValues() {
-        if (values == null) {
-            values = Arrays.stream(values())
-                           .filter(uom -> uom != UnitOfMeasure.INVALID)
-                           .collect(Collectors.toList());
-        }
-        return values;
-    }
 }

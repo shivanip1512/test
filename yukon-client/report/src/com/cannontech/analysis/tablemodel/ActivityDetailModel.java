@@ -26,7 +26,7 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class ActivityDetailModel extends ReportModelBase<Object> {
     /** A string for the title of the data */
-    private static String title = "Energy Company Activity Detail";
+    private static String title = "ENERGY COMPANY ACTIVITY DETAIL";
 
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 6;

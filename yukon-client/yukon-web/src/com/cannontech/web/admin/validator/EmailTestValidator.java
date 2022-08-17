@@ -14,22 +14,17 @@ import com.cannontech.web.admin.config.model.AdminSetupEmailModel;
 @Component
 public class EmailTestValidator extends SimpleValidator<AdminSetupEmailModel> {
     public static final String MSGKEY_EMAIL_REQUIRED = "yukon.web.modules.operator.accountGeneral.email.required";
-    public static final String MSGKEY_FROM_EMAIL_REQUIRED = "yukon.web.modules.operator.accountGeneral.from.email.required";
     public static final String FIELDNAME_EMAIL = "to";
-    public static final String FIELDNAME_EMAIL_FROM = "from";
     public static final String MSGKEY_EMAIL_INVALID = "yukon.web.modules.operator.accountGeneral.email.invalid";
-
     private EmailValidator emailValidator = EmailValidator.getInstance();
 
     public EmailTestValidator() {
         super(AdminSetupEmailModel.class);
     }
-
+    
     @Override
     public void doValidation(AdminSetupEmailModel emailModel, Errors errors) {
         String email = emailModel.getTo();
-        String fromEmail = emailModel.getFrom();
-
         if (!StringUtils.isEmpty(email)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, FIELDNAME_EMAIL, email, MAX_NOTIFICATION_LENGTH);
             if (!emailValidator.isValid(email)) {
@@ -37,15 +32,6 @@ public class EmailTestValidator extends SimpleValidator<AdminSetupEmailModel> {
             }
         } else {
             errors.rejectValue(FIELDNAME_EMAIL, MSGKEY_EMAIL_REQUIRED);
-        }
-
-        if (!StringUtils.isEmpty(fromEmail)) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, FIELDNAME_EMAIL_FROM, fromEmail, MAX_NOTIFICATION_LENGTH);
-            if (!emailValidator.isValid(fromEmail)) {
-                errors.rejectValue(FIELDNAME_EMAIL_FROM, MSGKEY_EMAIL_INVALID);
-            }
-        } else {
-            errors.rejectValue(FIELDNAME_EMAIL_FROM, MSGKEY_FROM_EMAIL_REQUIRED);
         }
     }
 }

@@ -67,7 +67,9 @@ begin
     GetSystemInfo(DATE, nResult, sDateString);
     // Format date pattern in YYYYMMDD
     formattedDateString = FormatDatePattern(sDateString);
-    BackupEncryptedSystemPublisherMetadataFile(formattedDateString);
+    if(!CheckForBackUpFiles()) then
+    BackupLoggingConfigFiles(formattedDateString);
+    endif;
     RenameInstalledJavaServicesAndClientLog(formattedDateString);
     // Delete Yukon Client if exist.
     RemoveOldYukonClientDirectory();
@@ -126,6 +128,8 @@ begin
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
     
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
@@ -343,11 +347,6 @@ begin
 	ReplaceStringInFile(sMasterConfig, "msq15d.dll", "mssql");
 	ReplaceStringInFile(sMasterConfig, "ora15d.dll", "oracle");
 	
-	// Replace pre-7.5.0 RF_DATA_STREAMING cparm
-	if(IsInstalledVersionLesser("7.5.0")) then 
-        UpdateCparmValueInFile(sMasterConfig, "RF_DATA_STREAMING_ENABLED", "true", "E7A13FCA-C5E4-D7FD-6FF3-674CA0515A8C");
-    endif;
-	
 	//Save the configuration of all installed services.
 	//This will be read in on the other side of the file transfer
 	//to re-populate the settings lost in the upgrade
@@ -366,7 +365,10 @@ begin
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\web.xml", sBackupDir + "web_" + sOldVersion + ".xml");
 	endif;
 	
-    BackupEncryptedSystemPublisherMetadataFile(sOldVersion);
+    // Take backup of logging config files if installedVersion < "7.1.0"
+    if(IsInstalledVersionLesser("7.1.0")) then 
+        BackupLoggingConfigFiles(sOldVersion);
+    endif;
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
 	sCMD = SYS32 ^ "sc.exe";
@@ -401,9 +403,6 @@ begin
         DeleteFile (shortcutDir);
     endif;
 
-    //Delete Trending, TDC and Commander shortcuts if they exists.
-    removeShortcut();
-
     //Delete Static folder in case of upgrade when installed version < "7.2.0".
     if(IsInstalledVersionLesser("7.2.0")) then
         sDir = TARGETDIR ^ "\\Server\\Static";
@@ -415,14 +414,6 @@ begin
         sDir = TARGETDIR ^ "\\Runtime";
         DeleteDir(sDir, ALLCONTENTS);
     endif;
-
-    //Delete logic.dll in case of upgrade when installed version < "7.5.0".
-    if(IsInstalledVersionLesser("7.5.0")) then
-        DeleteFile ( TARGETDIR ^ "\\Server\\bin\\logic.dll");
-    endif;
-
-    // Delete Old Rfn Network data scripts
-    RemoveOldRfnNetworkDataScripts();
 
 	//set installer to update all features that are currently installed
 	FeatureReinstall();

@@ -1,9 +1,9 @@
 package com.cannontech.common.pao.attribute.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
@@ -82,7 +82,7 @@ public class BuiltInAttributeTest {
 
         for (var attr : BuiltInAttribute.values()) {
             var pointEntry = pointEntries.get(attr.getFormatKey());
-            assertNotNull(pointEntry, "No key for " + attr);
+            assertNotNull("No key for " + attr, pointEntry);
             validateNamingConvention((String) pointEntry);
         }
     }
@@ -114,7 +114,7 @@ public class BuiltInAttributeTest {
                             })
                             .stream())
                     .reduce((pos1, pos2) -> {
-                        assertTrue(pos1.getValue() < pos2.getValue(), "Reversed tokens for " + pointName + ": " + pos1 + pos2);
+                        assertTrue("Reversed tokens for " + pointName + ": " + pos1 + pos2, pos1.getValue() < pos2.getValue());
                         return pos2;
                     }));
     }

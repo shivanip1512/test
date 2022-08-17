@@ -1,0 +1,18 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Ecobee Program
+
+*Request URL* :
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/http-request.adoc[]
+
+*Response Properties* :
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/response-fields.adoc[]
+
+*Response JSON* :
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/http-response.adoc[]
+

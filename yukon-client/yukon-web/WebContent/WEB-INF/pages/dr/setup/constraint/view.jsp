@@ -28,7 +28,7 @@
             <!-- Delete -->
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="delete-option" data-ok-event="yukon:constraint:delete"/>
             
                 <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${programConstraint.name}" />
@@ -79,7 +79,30 @@
                     <tags:numeric path="minRestartSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".daySelection">
-                    <tags:checkboxButtonGroup items="${daySelections}" path="daySelection" />
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                    <div class="button-group">
+                        <c:forEach var="daySelection" items="${daySelections}">
+                            <tags:check id="js-${daySelection}" path="daySelection" value="${daySelection}" key="yukon.common.day.${daySelection}.short" classes="M0"/>
+                        </c:forEach>
+                    </div>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <c:choose>
+                        <c:when test="${empty daySelections}">
+                            <i:inline key=".none"/>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="button-group">
+                                <c:forEach var="daySelection" items="${daySelections}" varStatus="status">
+                                    <i:inline key="yukon.common.day.${daySelection}.short"/>
+                                    <c:if test="${!status.last}">
+                                        <i:inline key="yukon.common.comma"/>&nbsp;
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".holidaySchedule">
                     <cti:displayForPageEditModes modes="CREATE,EDIT">

@@ -35,10 +35,10 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
@@ -63,7 +63,6 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.input.type.AttributeType;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
@@ -91,9 +90,8 @@ public class DataExporterScheduleController {
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
-    @Autowired private AttributeType attributeTypeEditor;
     
-    public static final String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
+    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     
     @RequestMapping("/data-exporter/scheduleReport")
@@ -107,8 +105,6 @@ public class DataExporterScheduleController {
         DataRange dataRange;
         ScheduledFileExportData exportData;
         CronExpressionTagState cronTagState;
-        boolean isOnInterval;
-        TimeIntervals interval;
         
         if(jobId != null) {
             //edit existing schedule
@@ -120,8 +116,6 @@ public class DataExporterScheduleController {
             format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
             attributes = task.getAttributes();
             dataRange = task.getDataRange();
-            isOnInterval = task.isOnInterval();
-            interval = task.getInterval();
             cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
             exportData = new ScheduledFileExportData();
             exportData.setScheduleName(task.getName());
@@ -163,8 +157,6 @@ public class DataExporterScheduleController {
                 attributes = archivedValuesExporter.getAttributes();
             }
             dataRange = archivedValuesExporter.getScheduleDataRange();
-            isOnInterval = archivedValuesExporter.isOnInterval();
-            interval = archivedValuesExporter.getInterval();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
             exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
@@ -181,18 +173,15 @@ public class DataExporterScheduleController {
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-        model.addAttribute("isOnInterval", isOnInterval);
-        model.addAttribute("interval", interval);
        
         return "data-exporter/schedule.jsp";
     }
     
 
     @RequestMapping(value = "/data-exporter/doSchedule", method = RequestMethod.POST)
-    public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, 
-            BindingResult bindingResult, HttpServletRequest request, int formatId, String[] attributes, Integer jobId, 
-            TimeIntervals interval, YukonUserContext userContext, FlashScope flashScope) 
-                throws ServletRequestBindingException, IllegalArgumentException, ParseException {
+    public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
+     int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
+            throws ServletRequestBindingException, IllegalArgumentException, ParseException {
         
         // Build parameters
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -203,8 +192,7 @@ public class DataExporterScheduleController {
                 attributeSet.add(attributeService.resolveAttributeName(attribute));
             }
         }
-        boolean isOnInterval = interval != null;
-        ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange, isOnInterval, interval);
+        ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
         exportData.setParameters(parameters);
         exportData.setJobState(JobState.SCHEDULED);
 
@@ -239,10 +227,6 @@ public class DataExporterScheduleController {
             model.addAttribute("jobId", jobId);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-            if (interval != null) {
-                model.addAttribute("isOnInterval", true);
-                model.addAttribute("interval", interval);
-            }
             
             return "data-exporter/schedule.jsp";
         }
@@ -309,10 +293,9 @@ public class DataExporterScheduleController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
-        binder.registerCustomEditor(Attribute.class, attributeTypeEditor.getPropertyEditor());
+        binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
-        binder.registerCustomEditor(TimeIntervals.class, new EnumPropertyEditor<>(TimeIntervals.class));
-        
+
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
         PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);
         binder.registerCustomEditor(LocalDate.class, "runDataRange.endDate", localDatePropertyEditor);

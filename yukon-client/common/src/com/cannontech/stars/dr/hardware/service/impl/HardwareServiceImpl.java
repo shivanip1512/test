@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -18,6 +16,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
@@ -80,13 +79,12 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private OptOutService optOutService;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private SelectionListService selectionListService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private LocationService locationService;
 
-    private static final Logger log = YukonLogManager.getLogger(HardwareServiceImpl.class);
-    
     @Override
     @Transactional
     public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
@@ -129,7 +127,6 @@ public class HardwareServiceImpl implements HardwareService {
                 deletePao = true;
             }
             
-            log.debug("Deleting hardware:{} InventoryIdentifier:{}", pao, id);
             // Warn the ExtensionService we are about to delete.
             hardwareTypeExtensionService.preDeleteCleanup(pao, id);
             
@@ -137,15 +134,11 @@ public class HardwareServiceImpl implements HardwareService {
             /*TODO handle this with new code, not with this util. */
             InventoryManagerUtil.deleteInventory( lib, ec, deletePao);
 
-            log.debug("Deleting hardware:{} InventoryIdentifier:{} deleted inventory", pao, id);
             // Give the Extension service a chance to clean up its tables
             hardwareTypeExtensionService.deleteDevice(pao, id);
             
-            log.debug("Deleting hardware:{} InventoryIdentifier:{} deleted device", pao, id);
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(user, lib.getDeviceLabel());
-            
-            log.debug("Deleting hardware:{} InventoryIdentifier:{} deletion complete", pao, id);
         } else {
             removeFromAccount(user, lib, accountNumber);
             dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,

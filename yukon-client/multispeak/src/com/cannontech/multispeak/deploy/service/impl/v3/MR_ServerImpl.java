@@ -172,12 +172,11 @@ public class MR_ServerImpl implements MR_Server{
         multispeakEventLogService.methodInvoked("GetReadingsByDate", vendor.getCompanyName());
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
-                                                                                                  null, 	//get all
-                                                                                                  startDate.getTime(), 
-                                                                                                  endDate.getTime(), 
-                                                                                                  lastReceived,
-                                                                                                  vendor.getMaxReturnRecords(),
-                                                                                                  vendor.getAttributes());
+                                                                          null, 	//get all
+                                                                          startDate.getTime(), 
+                                                                          endDate.getTime(), 
+                                                                          lastReceived,
+                                                                          vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
         List<MeterRead> meterReads = mspMeterReadReturnList.getMeterReads();
@@ -199,12 +198,11 @@ public class MR_ServerImpl implements MR_Server{
         mspValidationService.isYukonMeterNumber(meterNo);
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
-                                                                                                  meterNo, 
-                                                                                                  startDate.getTime(), 
-                                                                                                  endDate.getTime(), 
-                                                                                                  null,
-                                                                                                  vendor.getMaxReturnRecords(),
-                                                                                                  vendor.getAttributes());
+                                                                          meterNo, 
+                                                                          startDate.getTime(), 
+                                                                          endDate.getTime(), 
+                                                                          null,
+                                                                          vendor.getMaxReturnRecords());
         
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         // updateResponseHeader(mspMeterRead);
@@ -235,12 +233,12 @@ public class MR_ServerImpl implements MR_Server{
             MeterRead meterRead = multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
             multispeakEventLogService.returnObject("MeterRead", meterNo, "GetLatestReadingByMeterNo", vendor.getCompanyName());
             return meterRead;
-        } else { // THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
+        } else { //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
-
-                EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendor.getAttributes());
-
+                
+                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+    
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
@@ -433,12 +431,8 @@ public class MR_ServerImpl implements MR_Server{
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetLatestReadings", vendor.getCompanyName());
-
-        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, 
-                                                                                                       null,
-                                                                                                       lastReceived, 
-                                                                                                       vendor.getMaxReturnRecords(),
-                                                                                                       vendor.getAttributes());
+        
+        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 

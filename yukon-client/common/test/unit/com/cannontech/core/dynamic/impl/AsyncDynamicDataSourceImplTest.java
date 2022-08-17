@@ -1,11 +1,11 @@
 package com.cannontech.core.dynamic.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 public class AsyncDynamicDataSourceImplTest {
     private AsyncDynamicDataSourceImpl impl;
     private MockDispatchConnection dispatchConnection;
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
         impl = new AsyncDynamicDataSourceImpl();
         DispatchProxy dispatchProxy = new DispatchProxy();

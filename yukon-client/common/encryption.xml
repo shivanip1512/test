@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<project name="Encrypt">
+    <property file="../build/build.properties"/>
+    <target name="run">
+        <path id="classpathId">
+            <pathelement path="bin"/>
+            <pathelement location="${yukon-shared}\build\classes"/>
+            <fileset dir="${third-party}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="false" classpathref="classpathId">
+        </java>
+    </target>
+</project>

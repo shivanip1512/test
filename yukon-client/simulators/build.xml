@@ -6,12 +6,7 @@
     <target name="all" depends="clean, build" description="Performs a clean build."/>
     	
     <target name="clean" description="Deletes any previous build artifacts.">
-        <move file="build" tofile="build-delete" failonerror="false"/>
-        <parallel>
-            <daemons>
-                <delete dir="build-delete"/>  
-            </daemons>
-        </parallel>
+        <delete dir="build"/>
     </target>
     
     <target name="build" description="Build the project.">
@@ -22,7 +17,6 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
-            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar"/>

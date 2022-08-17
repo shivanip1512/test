@@ -38,13 +38,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     LCR_6600_EXPRESSCOM(YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM, ONE_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
     LCR_6600_RFN(YUK_DEF_ID_DEV_TYPE_LCR_6600_RFN, TWO_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
     LCR_6700_RFN(YUK_DEF_ID_DEV_TYPE_LCR_6700_RFN, TWO_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
-    LCR_6200S(YUK_DEF_ID_DEV_TYPE_LCR_6200S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     LCR_6600S(YUK_DEF_ID_DEV_TYPE_LCR_6600S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     LCR_6601S(YUK_DEF_ID_DEV_TYPE_LCR_6601S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     
-    LCR_6200C(YUK_DEF_ID_DEV_TYPE_LCR_6200C, TWO_WAY_RECEIVER, SWITCH, EATON_CLOUD, false, true, false),
-    LCR_6600C(YUK_DEF_ID_DEV_TYPE_LCR_6600C, TWO_WAY_RECEIVER, SWITCH, EATON_CLOUD, false, true, false),
-
     LCR_6200_ZIGBEE(YUK_DEF_ID_DEV_TYPE_LCR_6200_ZIGBEE, TWO_WAY_RECEIVER, SWITCH, SEP, false, false, false),
     LCR_6200_EXPRESSCOM(YUK_DEF_ID_DEV_TYPE_LCR_6200_XCOM, ONE_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
     LCR_6200_RFN(YUK_DEF_ID_DEV_TYPE_LCR_6200_RFN, TWO_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
@@ -104,7 +100,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> ecobeeTypes;
     private final static ImmutableSet<HardwareType> honeywellTypes;
     private final static ImmutableSet<HardwareType> nestTypes;
-    private final static ImmutableSet<HardwareType> eatonCloudTypes = ImmutableSet.of(LCR_6200C, LCR_6600C);
     
     private final static ImmutableSet<HardwareType> supportsChangeType;
     private final static ImmutableSet<HardwareType> supportsAddByRange;
@@ -171,7 +166,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 UTILITY_PRO_G3);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN, LCR_6700_RFN);
-        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S, LCR_6200S);
+        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S);
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
@@ -187,13 +182,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         starsToPaoMap.put(PaoType.LCR6200_RFN, LCR_6200_RFN);
         starsToPaoMap.put(PaoType.LCR6600_RFN, LCR_6600_RFN);
         starsToPaoMap.put(PaoType.LCR6700_RFN, LCR_6700_RFN);
-        starsToPaoMap.put(PaoType.LCR6200S, LCR_6200S);
         starsToPaoMap.put(PaoType.LCR6600S, LCR_6600S);
         starsToPaoMap.put(PaoType.LCR6601S, LCR_6601S);
-        starsToPaoMap.put(PaoType.LCR6200C, LCR_6200C);
-        starsToPaoMap.put(PaoType.LCR6600C, LCR_6600C);
-
-                //Sets of hardware that don't support schedules or manual adjustment
+        
+        //Sets of hardware that don't support schedules or manual adjustment
         Builder<HardwareType> schedulableBuilder = ImmutableSet.builder();
         Builder<HardwareType> manualAdjustmentBuilder = ImmutableSet.builder();
         for (HardwareType hardwareType : HardwareType.values()) {
@@ -552,15 +544,5 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         }
         return false;
     }
-    
-    /**
-     * Returns true when type has guid.
-     */
-    public boolean isSupportsGuid() {
-        return isEatonCloud();
-    }
-    
-    public boolean isEatonCloud() {
-        return eatonCloudTypes.contains(this);
-    }
+
 }

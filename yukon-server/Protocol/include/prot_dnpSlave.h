@@ -4,7 +4,8 @@
 #include "dnp_object_analogoutput.h"
 #include "dnp_object_binaryoutput.h"
 
-namespace Cti::Protocols {
+namespace Cti {
+namespace Protocols {
 
 namespace DnpSlave {
     struct output_point;
@@ -43,7 +44,7 @@ public:
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
     void setScanCommand( std::vector<DnpSlave::output_point> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
-    void setAnalogOutputCommand( const std::vector<DnpSlave::analog_output_request> & analogs );
+    void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
     void setDelayMeasurementCommand( const std::chrono::milliseconds delay );
     void setWriteTimeCommand();
     void setUnsupportedCommand();
@@ -136,3 +137,5 @@ struct analog_output_request
 }
 
 }
+}
+

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.Instant;
@@ -81,7 +82,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlPaginateQuery.append(sortingOrder);
         sqlPaginateQuery.append(" ");
         sqlPaginateQuery.append(sortingDirection);
-        sqlPaginateQuery.append(")) AS RowNumber, Appliances, DeviceId, InventoryId, serial_num, Type, typeEntryText, last_comm,last_run, gateway_id, gateway_name,"
+        sqlPaginateQuery.append(")) AS RowNumber, Appliances,DeviceId,InventoryId,serial_num,Type,last_comm,last_run, gateway_id, gateway_name,"
             + "Availability");
         sqlCommon.append("FROM ");
         sqlCommon.append("(SELECT DISTINCT ");
@@ -342,7 +343,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlPaginateQuery.append(sortingOrder);
         sqlPaginateQuery.append(" ");
         sqlPaginateQuery.append(sortingDirection);
-        sqlPaginateQuery.append(")) AS RowNumber, DeviceId, InventoryId, serial_num, Type, typeEntryText, last_comm, last_run, gateway_id, gateway_name,"
+        sqlPaginateQuery.append(")) AS RowNumber, DeviceId, InventoryId, serial_num, Type, last_comm, last_run, gateway_id, gateway_name,"
             + "Availability");
         sqlCommon.append("FROM ");
         sqlCommon.append("(SELECT DISTINCT ");
@@ -414,9 +415,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("(SELECT YukonDefinitionId");
         sqlCommon.append("FROM YukonListEntry");
         sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
-        sqlCommon.append("(SELECT EntryText ");
-        sqlCommon.append("FROM YukonListEntry");
-        sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS typeEntryText,");
         sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
         sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
             AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");

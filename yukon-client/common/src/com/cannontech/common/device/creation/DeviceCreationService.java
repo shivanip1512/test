@@ -69,9 +69,4 @@ public interface DeviceCreationService {
      * Creates device type by paoType and name
      */
     SimpleDevice createDeviceByDeviceType(PaoType paoType, String name) throws DeviceCreationException;
-
-    /**
-     * Finds and returns template device, attempts to create one if not found.
-     */
-    SimpleDevice getOrCreateTemplateDevice(String templateName);
 }

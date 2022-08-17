@@ -1,24 +1,11 @@
 package com.cannontech.common.events.loggers;
 
-/**
- * 
- * Some arguments tend to be used frequently, such as username, account number,
- * or paoId. Arguments that are likely to be used in other event log methods 
- * should be added to ArgEnum.java. For arguments in this enum, you should use
- * the \@Arg annotation. You do not, and should not, add every argument type to
- * ArgEnum! Only the ones that are likely to be reused."
- *
- */
 public enum ArgEnum {
     accountNumber,
     action,
-    apn,
     applianceCategoryName,
     applianceType,
-    attributeId,
-    attributeName,
     auto,
-    baudRate,
     cancelledCount,
     cancelTime,
     changeId,
@@ -52,9 +39,7 @@ public enum ArgEnum {
     fileName, 
     frequency,
     gatewayName, //Zigbee gateway, not RF gateway
-    gearControlMethod,
     gearName,
-    gearNumber,
     globalSettingType,
     globalSettingValue,
     group,
@@ -64,10 +49,8 @@ public enum ArgEnum {
     ipAddress,
     jobId,
     key,
-    level,
     loadGroupIds,
     loadGroupName,
-    loadProgramNames,
     logoutReason,
     macAddress,
     manual,
@@ -89,8 +72,7 @@ public enum ArgEnum {
     pointName,
     pointOffset, 
     pointType, 
-    pointValue,
-    programConstraintName,
+    pointValue, 
     programName, 
     remoteAddress,
     resultKey,
@@ -117,7 +99,6 @@ public enum ArgEnum {
     tagSet,
     taskName,
     thermostatLabel,
-    triggerNames,
     type,
     totalCount,
     unsupportedCount,
@@ -126,7 +107,5 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
-    yukonService,
-    serverIdentifier,
     ;
 }

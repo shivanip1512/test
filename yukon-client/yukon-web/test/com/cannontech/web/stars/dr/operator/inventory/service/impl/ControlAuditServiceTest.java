@@ -1,16 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.easymock.EasyMock.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -18,6 +8,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,8 +20,9 @@ import java.util.concurrent.Executor;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -147,7 +139,7 @@ public class ControlAuditServiceTest {
         allPaos.putAll(unsupportedPaos);
     }
 
-    @BeforeEach
+    @Before
     public void setup() {
         service = new ControlAuditServiceImpl();
         inventoryDao = createNiceMock(InventoryDao.class);
@@ -343,70 +335,90 @@ public class ControlAuditServiceTest {
         for (AuditRow row : runAudit.getControlled()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            assertTrue(controlledPaos.containsKey(deviceId),
-                    "Report did not contain device " + deviceId + " in controlled rows. Was expecting it to be controlled.");
-            assertFalse(uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in uncontrolled rows. Was expecting it to be controlled.");
-            assertFalse(unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unknown rows. Was expecting it to be controlled.");
-            assertFalse(unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unsupported rows. Was expecting it to be controlled.");
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in controlled rows. Was expecting it to be controlled.",
+                              controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in uncontrolled rows. Was expecting it to be controlled.",
+                               uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be controlled.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be controlled.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUncontrolled()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            assertFalse(controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in controlled rows. Was expecting it to be uncontrolled.");
-            assertTrue(uncontrolledPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                    + " in uncontrolled rows. Was expecting it to be uncontrolled.");
-            assertFalse(unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unknown rows. Was expecting it to be uncontrolled.");
-            assertFalse(unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unsupported rows. Was expecting it to be uncontrolled.");
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in controlled rows. Was expecting it to be uncontrolled.",
+                               controlledPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in uncontrolled rows. Was expecting it to be uncontrolled.",
+                              uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be uncontrolled.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be uncontrolled.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUnknown()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            assertFalse(controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in controlled rows. Was expecting it to be unknown.");
-            assertFalse(uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in uncontrolled rows. Was expecting it to be unknown.");
-            assertTrue(unknownPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                    + " in unknown rows. Was expecting it to be unknown.");
-            assertFalse(unsupportedPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unsupported rows. Was expecting it to be unknown.");
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in controlled rows. Was expecting it to be unknown.",
+                               controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in uncontrolled rows. Was expecting it to be unknown.",
+                               uncontrolledPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId
+                              + " in unknown rows. Was expecting it to be unknown.",
+                              unknownPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unsupported rows. Was expecting it to be unknown.",
+                               unsupportedPaos.containsKey(deviceId));
         }
 
         for (AuditRow row : runAudit.getUnsupported()) {
             int deviceId = row.getHardware().getDeviceId();
 
-            assertFalse(controlledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in controlled rows. Was expecting it to be unsupported.");
-            assertFalse(uncontrolledPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in uncontrolled rows. Was expecting it to be unsupported.");
-            assertFalse(unknownPaos.containsKey(deviceId), "Report contained device " + deviceId
-                    + " in unknown rows. Was expecting it to be unsupported.");
-            assertTrue(unsupportedPaos.containsKey(deviceId), "Report did not contain device " + deviceId
-                    + " in unsupported rows. Was expecting it to be unsupported.");
+            Assert.assertFalse("Report contained device " + deviceId
+                              + " in controlled rows. Was expecting it to be unsupported.",
+                              controlledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                              + " in uncontrolled rows. Was expecting it to be unsupported.",
+                              uncontrolledPaos.containsKey(deviceId));
+            Assert.assertFalse("Report contained device " + deviceId
+                               + " in unknown rows. Was expecting it to be unsupported.",
+                               unknownPaos.containsKey(deviceId));
+            Assert.assertTrue("Report did not contain device " + deviceId 
+                              + " in unsupported rows. Was expecting it to be unsupported.", 
+                              unsupportedPaos.containsKey(deviceId));
         }
 
-        assertEquals(controlledPaos.size(), runAudit.getControlled().size(), "Incorrect number of controlled paos.");
-        assertEquals(controlledPaos.size(), runAudit.getControlledPaged().getHitCount(),
-                "Incorrect number of controlled paos in hit count.");
+        Assert.assertEquals("Incorrect number of controlled paos.", 
+                            controlledPaos.size(), runAudit.getControlled().size());
+        Assert.assertEquals("Incorrect number of controlled paos in hit count.", 
+                            controlledPaos.size(), runAudit.getControlledPaged().getHitCount());
 
-        assertEquals(uncontrolledPaos.size(), runAudit.getUncontrolled().size(), "Incorrect number of uncontrolled paos.");
-        assertEquals(uncontrolledPaos.size(), runAudit.getUncontrolledPaged().getHitCount(),
-                "Incorrect number of uncontrolled paos in hit count.");
+        Assert.assertEquals("Incorrect number of uncontrolled paos.", 
+                            uncontrolledPaos.size(), runAudit.getUncontrolled().size());
+        Assert.assertEquals("Incorrect number of uncontrolled paos in hit count.", 
+                            uncontrolledPaos.size(), runAudit.getUncontrolledPaged().getHitCount());
 
-        assertEquals(unknownPaos.size(), runAudit.getUnknown().size(), "Incorrect number of unknown paos.");
-        assertEquals(unknownPaos.size(), runAudit.getUnknownPaged().getHitCount(),
-                "Incorrect number of unknown paos in hit count.");
+        Assert.assertEquals("Incorrect number of unknown paos.", 
+                            unknownPaos.size(), runAudit.getUnknown().size());
+        Assert.assertEquals("Incorrect number of unknown paos in hit count.", 
+                            unknownPaos.size(), runAudit.getUnknownPaged().getHitCount());
 
-        assertEquals(unsupportedPaos.size(), runAudit.getUnsupported().size(), "Incorrect number of unsupported paos.");
-        assertEquals(unsupportedPaos.size(), runAudit.getUnsupportedPaged().getHitCount(),
-                "Incorrect number of unsupported paos in hit count.");
+        Assert.assertEquals("Incorrect number of unsupported paos.", 
+                            unsupportedPaos.size(), runAudit.getUnsupported().size());
+        Assert.assertEquals("Incorrect number of unsupported paos in hit count.", 
+                            unsupportedPaos.size(), runAudit.getUnsupportedPaged().getHitCount());
     }
 
     private List<PointValueQualityHolder> getData(double value, int number) {
@@ -472,7 +484,7 @@ public class ControlAuditServiceTest {
      * Asserts object is not null and all getter methods return non-null objects.
      */
     private static void assertPropertiesNotNull(Object object) {
-        assertNotNull(object, "Object itself is null.");
+        Assert.assertNotNull("Object itself is null.", object);
 
         BeanInfo beanInfo;
         try {
@@ -486,8 +498,8 @@ public class ControlAuditServiceTest {
                         continue;
                     }
                     
-                    assertNotNull(readMethod.invoke(object),
-                            "Method " + clazz.getSimpleName() + "." + readMethod.getName() + "() returned null.");
+                    Assert.assertNotNull("Method " + clazz.getSimpleName() + "." + readMethod.getName() + "() returned null.",
+                                         readMethod.invoke(object));
                 }
             }
         } catch (ReflectiveOperationException | IntrospectionException e) {

@@ -23,33 +23,33 @@
     <ProjectGuid>{E4433E7C-FECA-1BAD-68B7-7E944B245715}</ProjectGuid>
     <RootNamespace>ctithriftmsg</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -140,7 +140,6 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -183,7 +182,6 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ENABLE_ASSERT_HANDLER;BUILD_VERSION=6.5 (build 0);BUILD_VERSION_DETAILS=6.5.0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -394,20 +392,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\DeviceCreation_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\DeviceCreation_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastRequest_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastRequest_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastResponse_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastResponse_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrDataNotification_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrDataNotification_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrError_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrError_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastRequest_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastRequest_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastResponse_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastResponse_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\FieldSimulator_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\FieldSimulator_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMCommand_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMCommand_types.cpp">
@@ -440,10 +424,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMDynamicTriggerData_types.cpp">
     </ClCompile>
-    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\LMEatonCloudCommandData_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\LMEcobeeCommandData_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\LMEcobeeCommandData_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\LMEnergyExchangeAccept_types.cpp">
@@ -506,8 +486,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\MeterProgramming_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\MeterProgramming_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\MeterProgramValidation_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\MeterProgramValidation_types.cpp" />
     <ClCompile Include="Serialization\Thrift\Multi_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\Multi_types.cpp">
@@ -592,8 +570,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\RfnAddressing_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnAddressing_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\RfnBroadcastMessaging_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\RfnBroadcastMessaging_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnE2eData_constants.cpp">
@@ -604,10 +580,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.cpp">
     </ClCompile>
-    <ClCompile Include="Serialization\Thrift\RfnMeterDisconnectRequest_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\RfnMeterDisconnectRequest_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\RfnMeterReadRequest_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\RfnMeterReadRequest_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.cpp" />
     <ClCompile Include="Serialization\Thrift\ServerRequest_constants.cpp">
@@ -682,20 +654,6 @@
     <ClInclude Include="Serialization\Thrift\DBChange_types.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_constants.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastRequest_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastRequest_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastResponse_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastResponse_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrDataNotification_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrDataNotification_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrError_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrError_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastRequest_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastRequest_types.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastResponse_constants.h" />
-    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastResponse_types.h" />
-    <ClInclude Include="Serialization\Thrift\FieldSimulator_constants.h" />
-    <ClInclude Include="Serialization\Thrift\FieldSimulator_types.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_types.h" />
     <ClInclude Include="Serialization\Thrift\LMControlAreas_constants.h" />
@@ -712,10 +670,6 @@
     <ClInclude Include="Serialization\Thrift\LMDynamicProgramData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMDynamicTriggerData_types.h" />
-    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_constants.h" />
-    <ClInclude Include="Serialization\Thrift\LMEatonCloudCommandData_types.h" />
-    <ClInclude Include="Serialization\Thrift\LMEcobeeCommandData_constants.h" />
-    <ClInclude Include="Serialization\Thrift\LMEcobeeCommandData_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_constants.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeAccept_types.h" />
     <ClInclude Include="Serialization\Thrift\LMEnergyExchangeControl_constants.h" />
@@ -748,8 +702,6 @@
     <ClInclude Include="Serialization\Thrift\Message_types.h" />
     <ClInclude Include="Serialization\Thrift\MeterProgramming_constants.h" />
     <ClInclude Include="Serialization\Thrift\MeterProgramming_types.h" />
-    <ClInclude Include="Serialization\Thrift\MeterProgramValidation_constants.h" />
-    <ClInclude Include="Serialization\Thrift\MeterProgramValidation_types.h" />
     <ClInclude Include="Serialization\Thrift\Multi_constants.h" />
     <ClInclude Include="Serialization\Thrift\Multi_types.h" />
     <ClInclude Include="Serialization\Thrift\NetworkManagerMessaging_constants.h" />
@@ -794,18 +746,12 @@
     <ClInclude Include="Serialization\Thrift\Return_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnAddressing_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnAddressing_types.h" />
-    <ClInclude Include="Serialization\Thrift\RfnBroadcastMessaging_constants.h" />
-    <ClInclude Include="Serialization\Thrift\RfnBroadcastMessaging_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnE2eData_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnE2eData_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.h" />
-    <ClInclude Include="Serialization\Thrift\RfnMeterDisconnectRequest_constants.h" />
-    <ClInclude Include="Serialization\Thrift\RfnMeterDisconnectRequest_types.h" />
-    <ClInclude Include="Serialization\Thrift\RfnMeterReadRequest_constants.h" />
-    <ClInclude Include="Serialization\Thrift\RfnMeterReadRequest_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.h" />
     <ClInclude Include="Serialization\Thrift\ServerRequest_constants.h" />

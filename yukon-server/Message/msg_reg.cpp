@@ -86,9 +86,3 @@ void     CtiRegistrationMsg::setAppIsUnique(bool b)        { _appIsUnique = b;  
 int      CtiRegistrationMsg::getAppExpirationDelay() const { return _appExpirationDelay; }
 void     CtiRegistrationMsg::setAppExpirationDelay(int d)  { _appExpirationDelay = d; }
 
-std::size_t CtiRegistrationMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   dynamic_sizeof( _appName );
-}
-

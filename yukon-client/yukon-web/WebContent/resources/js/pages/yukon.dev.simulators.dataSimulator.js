@@ -16,7 +16,6 @@ yukon.dev.simulators.dataSimulator = ( function() {
     _checkStatusTime = 2500,
 
     _startButtonClick = function(event) {
-        $('.js-all-types-warning').toggleClass('dn', !allTypes);
         var formData = $('#dataSimulatorForm').serialize();
         if ($(this).attr('id') === 'start-simulator') {
             $(this).attr("disabled", "disabled");

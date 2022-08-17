@@ -21,7 +21,7 @@
         <tags:nameValue2 nameKey="yukon.common.point">${fn:escapeXml(pointName)}</tags:nameValue2>
         </tags:nameValueContainer2>
         <div class="scroll-lg">
-            <table id="tagList" class="compact-results-table no-stripes with-form-controls clearfix">
+            <table id="tagList" class="compact-results-table row-highlighting with-form-controls clearfix">
                 <thead>
                     <tr>
                         <th><i:inline key=".tags.group"/></th>

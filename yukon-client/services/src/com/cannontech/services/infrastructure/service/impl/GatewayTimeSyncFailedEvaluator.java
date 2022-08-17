@@ -29,7 +29,7 @@ public class GatewayTimeSyncFailedEvaluator extends InfrastructureStatusWarningE
 
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return PaoType.getRfGatewayTypes();
+        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
     }
     
 }

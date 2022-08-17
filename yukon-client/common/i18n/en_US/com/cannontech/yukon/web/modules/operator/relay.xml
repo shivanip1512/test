@@ -4,6 +4,11 @@
 
     <!-- relay/list.jsp -->
     <entry key="yukon.web.modules.operator.relays.list.pageName">Relays</entry>
+    <entry key="yukon.web.modules.operator.relays.list.searchCriteria.title">Search Criteria</entry>
+    <entry key="yukon.web.modules.operator.relays.list.searchResults.title">Search Results</entry>
+    <entry key="yukon.web.modules.operator.relays.list.name">Name</entry>
+    <entry key="yukon.web.modules.operator.relays.list.serialNumber">Serial Number</entry>
+    
 
     <!-- relayHome.jsp -->
     <entry key="yukon.web.modules.operator.relayDetail.pageName">Relay Detail</entry>

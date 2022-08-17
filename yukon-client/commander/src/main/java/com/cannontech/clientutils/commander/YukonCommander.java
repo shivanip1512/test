@@ -738,7 +738,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 
                 for (MessageType messageType : MessageType.values()) {
                     Style style = ivjDebugOutputTextPane.addStyle(messageType.getStyleString(), null);
-                    StyleConstants.setForeground(style, messageType.getColor().getAwtColor());
+                    StyleConstants.setForeground(style, messageType.getColor());
                 }
                 
                 Style style = ivjDebugOutputTextPane.addStyle("Font", null);
@@ -779,7 +779,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 
                 for (MessageType messageType : MessageType.values()) {
                     Style style = ivjDisplayOutputTextPane.addStyle(messageType.getStyleString(), null);
-                    StyleConstants.setForeground(style, messageType.getColor().getAwtColor());
+                    StyleConstants.setForeground(style, messageType.getColor());
                 }
 
                 Style style = ivjDisplayOutputTextPane.addStyle("Font", null);

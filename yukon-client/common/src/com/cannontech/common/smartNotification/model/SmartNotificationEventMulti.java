@@ -3,10 +3,7 @@ package com.cannontech.common.smartNotification.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.logging.log4j.Level;
+import java.util.stream.Collectors;
 
 /**
  * A simple container for multiple smart notification events, for use by event producers that tend to produce multiple
@@ -30,26 +27,8 @@ public class SmartNotificationEventMulti implements Serializable {
         return type;
     }
     
-    public String loggingString(Level level) {
-        if (level.isMoreSpecificThan(Level.INFO)) {
-            return toString();
-        } else {
-            return getLogMsg().toString();
-        }
-    }
-    
     @Override
     public String toString() {
-        ToStringBuilder tsb = getLogMsg();
-        tsb.append("events", events);
-        return tsb.toString();
-    }
-
-    private ToStringBuilder getLogMsg() {
-        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        tsb.appendSuper(super.toString());
-        tsb.append("type", type);
-        tsb.append("events total", events.size());
-        return tsb;
+        return "SmartNotificationMulti [type=" + type + "] "+ events.stream().map(e -> e.toString()).collect(Collectors.toList());
     }
 }

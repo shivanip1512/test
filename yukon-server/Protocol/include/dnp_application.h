@@ -15,7 +15,7 @@ public:
 
     enum
     {
-        BufferSize = 15932  //  Transport layer maximum, 249 * 64 - RspHeaderSize
+        BufferSize = 16384
     };
 
     using object_block_queue = std::deque<ObjectBlockPtr>;
@@ -121,13 +121,9 @@ private:
     object_block_queue _out_object_blocks,
                        _in_object_blocks;
 
-    unsigned _outboundFragmentSize = BufferSize;  //  Default to largest possible, can be overridden by setOutboundFragmentSize
-
     void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
     void processResponse( void );
-
-    bool fillResponse( void );
 
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
@@ -145,8 +141,6 @@ public:
     void setCommand( FunctionCode fc );
     void setCommand( FunctionCode fc, ObjectBlockPtr obj );
     void setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> objs );
-
-    void setOutboundFragmentSize( unsigned outboundFragmentSize );
 
     void initForOutput( void );
 
@@ -218,3 +212,4 @@ public:
 };
 
 }
+

@@ -1,26 +1,22 @@
 package com.cannontech.common.dr.setup;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class HolidayUsageTest {
 
     @Test
     public void test_getForHoliday_valid() {
         HolidayUsage holidayUsage = HolidayUsage.getForHoliday('E');
-        assertTrue(holidayUsage == HolidayUsage.EXCLUDE, "Holiday Usage mismatch");
+        Assert.assertTrue("Holiday Usage mismatch", holidayUsage == HolidayUsage.EXCLUDE);
         holidayUsage = HolidayUsage.getForHoliday('F');
-        assertTrue(holidayUsage == HolidayUsage.FORCE, "Holiday Usage mismatch");
+        Assert.assertTrue("Holiday Usage mismatch", holidayUsage == HolidayUsage.FORCE);
         holidayUsage = HolidayUsage.getForHoliday('N');
-        assertTrue(holidayUsage == HolidayUsage.NONE, "Holiday Usage mismatch");
+        Assert.assertTrue("Holiday Usage mismatch", holidayUsage == HolidayUsage.NONE);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_getForHoliday_invalid() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            HolidayUsage.getForHoliday('A');
-        });
+        HolidayUsage.getForHoliday('A');
     }
 }

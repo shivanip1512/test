@@ -50,7 +50,7 @@ public:
     {
         return _idlc.getAddress();
     }
-    INT getPostDelay() const override
+    virtual INT  getPostDelay() const
     {
         return _idlc.getPostDelay();
     }

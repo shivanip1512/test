@@ -239,34 +239,8 @@
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_cmd_rfn_Metrology.cpp">
+    <ClCompile Include="test_cmd_rfn_Wifi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_dev_rf_BatteryNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_rfn_uom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_cmd_rfn_MeterRead.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_cmd_rfn_MeterDisconnect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_cmd_rfn_CommStatus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_dev_rf_cellular_relay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_cmd_rfn_DerPayloadDelivery.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\rtdb_test_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

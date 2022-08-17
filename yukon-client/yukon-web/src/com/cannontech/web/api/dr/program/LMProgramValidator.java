@@ -10,14 +10,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
-import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
@@ -27,11 +24,10 @@ import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -39,82 +35,66 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.dr.gear.setup.fields.validator.ProgramGearFieldsValidator;
-import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
+import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableSet;
 
 public class LMProgramValidator extends SimpleValidator<LoadProgram> {
-    
+
     private final static String key = "yukon.web.modules.dr.setup.loadProgram.error.";
 
-    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private IDatabaseCache cache;
     @Autowired LoadGroupDao loadGroupDao;
     @Autowired LoadProgramSetupService programSetupService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
-
-    private MessageSourceAccessor accessor;
 
     private Map <GearControlMethod, ProgramGearFieldsValidator<? extends ProgramGearFields>> gearFieldsValidatorMap = new HashMap<>();
 
     public LMProgramValidator() {
         super(LoadProgram.class);
     }
-    
-    @PostConstruct
-    public void init() {
-        accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
-    }
 
     @Override
     protected void doValidation(LoadProgram loadProgram, Errors errors) {
-        yukonApiValidationUtils.checkIfFieldRequired("type", errors, loadProgram.getType(), "Type");
+        lmValidatorHelper.checkIfFieldRequired("type", errors, loadProgram.getType(), "Type");
 
         if (!errors.hasFieldErrors("type")) {
-            yukonApiValidationUtils.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Name");
+            lmValidatorHelper.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Name");
             if (!loadProgram.getType().isDirectProgram()) {
-                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedProgramType", loadProgram.getType());
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText }, "");
+                errors.reject(key + "notSupportedProgramType", new Object[] { loadProgram.getType() }, "");
             }
         }
-        yukonApiValidationUtils.checkIfFieldRequired("operationalState", errors, loadProgram.getOperationalState(), "Operational State");
+        lmValidatorHelper.checkIfFieldRequired("operationalState", errors, loadProgram.getOperationalState(), "Operational State");
         if (!errors.hasFieldErrors("operationalState")) {
             if (loadProgram.getType() == PaoType.LM_NEST_PROGRAM && loadProgram.getOperationalState() != OperationalState.ManualOnly) {
-                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedOperationalState", PaoType.LM_NEST_PROGRAM,
-                        loadProgram.getOperationalState());
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText },
-                        "");
+                errors.reject(key + "notSupportedOperationalState", new Object[] { PaoType.LM_NEST_PROGRAM, loadProgram.getOperationalState() }, "");
             }
         }
 
-        yukonApiValidationUtils.checkIfFieldRequired("constraint", errors, loadProgram.getConstraint(), "Program Constraint");
+        lmValidatorHelper.checkIfFieldRequired("constraint", errors, loadProgram.getConstraint(), "Program Constraint");
 
         if (!errors.hasFieldErrors("constraint")) {
             Integer constraintId = loadProgram.getConstraint().getConstraintId();
             errors.pushNestedPath("constraint");
-            yukonApiValidationUtils.checkIfFieldRequired("constraintId", errors, constraintId, "Constraint");
+            lmValidatorHelper.checkIfFieldRequired("constraintId", errors, constraintId, "Constraint");
             if (!errors.hasFieldErrors("constraintId")) {
                 Set<Integer> constraintIds = cache.getAllLMProgramConstraints().stream()
                                                                                .map(lmConstraint -> lmConstraint.getConstraintID())
                                                                                .collect(Collectors.toSet());
                 if (!constraintIds.contains(constraintId)) {
-                    errors.rejectValue("constraintId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                            new Object[] { constraintId }, "");
+                    errors.rejectValue("constraintId", key + "constraintId.doesNotExist");
                 }
             }
             errors.popNestedPath();
         }
 
-        yukonApiValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), 0.0, 99999.9999, false);
-        yukonApiValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), -9999.9999, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "triggerOffset", loadProgram.getTriggerOffset(), 0.0, 99999.9999, false);
+        YukonValidationUtils.checkRange(errors, "restoreOffset", loadProgram.getRestoreOffset(), -9999.9999, 99999.9999, false);
 
         if (!errors.hasFieldErrors("type")) {
             Integer programId = null;
@@ -136,51 +116,44 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
                 for (Integer groupId : assignedGroupsDiff) {
                     if (groupId != null && loadGroupDao.isLoadGroupInUse(groupId)) {
-                        String loadGroupI18nText = accessor.getMessage(key + "groupEnrollmentConflict",
-                                String.valueOf(cache.getAllPaosMap().get(groupId).getPaoName()));
-                        errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                                new Object[] { "load group", loadGroupI18nText }, "");
+                        errors.reject(key + "groupEnrollmentConflict", new Object[] { cache.getAllPaosMap().get(groupId).getPaoName() }, "");
                     }
                 }
 
             } catch (SQLException e) {}
 
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
-                String noGroupI18nText = accessor.getMessage(key + "noGroup");
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGroupI18nText }, "");
+                errors.reject(key + "noGroup");
             } else {
 
                 for (int i = 0; i < loadProgram.getAssignedGroups().size(); i++) {
                     errors.pushNestedPath("assignedGroups[" + i + "]");
                     ProgramGroup group = loadProgram.getAssignedGroups().get(i);
 
-                    yukonApiValidationUtils.checkIfFieldRequired("groupId", errors, group.getGroupId(), "Group Id");
+                    lmValidatorHelper.checkIfFieldRequired("groupId", errors, group.getGroupId(), "Group Id");
 
                     if (!errors.hasFieldErrors("groupId")) {
                         Optional<ProgramGroup> programGroup = getProgramGroup(group, loadProgram.getType());
                         if (programGroup.isEmpty()) {
-                            errors.rejectValue("groupId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                                    new Object[] {loadProgram.getAssignedGroups().get(i).getGroupId()}, "");
+                            errors.rejectValue("groupId", key + "groupId.doesNotExist");
                         } else {
 
 
 
                             if (PaoType.LM_GROUP_NEST == programGroup.get().getType() && i > 0) {
-                                errors.reject(ApiErrorDetails.ONLY_ONE_ALLOWED.getCodeString(), new Object[] { "One Load Group", "Nest Program" }, "");
+                                errors.reject(key + "nestGroup", new Object[] { programGroup.get().getGroupName() }, "");
                             }
                             if (CollectionUtils.isNotEmpty(loadProgram.getGears())) {
                                 Boolean isLatchGear = loadProgram.getGears().stream()
                                                                             .allMatch(gear -> gear.getControlMethod() == GearControlMethod.Latching);
                                 if (PaoType.LM_GROUP_POINT == programGroup.get().getType() && !isLatchGear) {
-                                    String groupPointI18nText = accessor.getMessage(key + "notAllowedGroupPoint");
-                                    errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                                            new Object[] { "LMGroup Point groups", groupPointI18nText }, "");
+                                    errors.reject(key + "notAllowedGroupPoint");
                                 }
                             }
                         }
                     }
                     if (i > 0) {
-                        yukonApiValidationUtils.checkIfFieldRequired("groupOrder", errors, group.getGroupOrder(),
+                        lmValidatorHelper.checkIfFieldRequired("groupOrder", errors, group.getGroupOrder(),
                             "Group Order");
                     }
                     errors.popNestedPath();
@@ -189,34 +162,28 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         }
         if (!errors.hasFieldErrors("type")) {
             if (CollectionUtils.isEmpty(loadProgram.getGears())) {
-                String noGearI18nText = accessor.getMessage(key + "noGear");
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGearI18nText }, "");
+                errors.reject(key + "noGear");
             } else {
 
                 if (loadProgram.getGears().size() >= IlmDefines.MAX_GEAR_COUNT) {
-                    String maxGearCountI18nText = accessor.getMessage(key + "maxGearCount",
-                            String.valueOf(loadProgram.getGears().size()));
-                    errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                            new Object[] { "Gear Count", maxGearCountI18nText }, "");
+                    errors.reject(key + "maxGearCount", new Object[] { loadProgram.getGears().size()}, "");
                 }
 
                 Long latchCount = loadProgram.getGears().stream()
                                                         .filter(gear -> gear.getControlMethod() == GearControlMethod.Latching)
                                                         .count();
                 if (latchCount > 1) {
-                    errors.reject(ApiErrorDetails.ONLY_ONE_ALLOWED.getCodeString(), new Object[] { 1, "Latching gear" }, "");
+                    errors.reject(key + "oneLatchAllowed");
                 }
 
                 if (latchCount == 1 && loadProgram.getGears().size() > 1) {
-                    String latchGearsI18nText = accessor.getMessage(key + "latchNotAllowedWithOtherGears");
-                    errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                            new Object[] { "Latch Gears", latchGearsI18nText }, "");
+                    errors.reject(key + "latchNotAllowedWithOtherGears");
                 }
 
                 for (int i = 0; i < loadProgram.getGears().size(); i++) {
 
                     ProgramGear gear = loadProgram.getGears().get(i);
-                    yukonApiValidationUtils.checkIfFieldRequired("gears[" + i + "].controlMethod", errors,
+                    lmValidatorHelper.checkIfFieldRequired("gears[" + i + "].controlMethod", errors,
                         gear.getControlMethod(), "Control Method");
                     if (!errors.hasFieldErrors("gears[" + i + "].controlMethod")) {
                         ImmutableSet<PaoType> supportedProgramTypesForGearType =
@@ -225,24 +192,20 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                         if (supportedProgramTypesForGearType.contains(loadProgram.getType())) {
                             errors.pushNestedPath("gears[" + i + "]");
                             if (gear.getGearName() == null || !StringUtils.hasText(gear.getGearName().toString())) {
-                                errors.rejectValue("gearName", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
-                                        new Object[] { "Gear Name" }, "");
+                                errors.rejectValue("gearName", "yukon.web.modules.dr.setup.error.required",
+                                    new Object[] { "Gear Name" }, "");
                             }
 
                             if (!errors.hasFieldErrors("gearName")) {
-                                yukonApiValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 30);
+                                YukonValidationUtils.checkExceedsMaxLength(errors, "gearName", gear.getGearName(), 30);
                                 if (!PaoUtils.isValidPaoName(gear.getGearName())
                                     && !errors.hasFieldErrors("gearName")) {
-                                    errors.rejectValue("gearName", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "gearName" }, "");
+                                    errors.rejectValue("gearName", "yukon.web.error.paoName.containsIllegalChars");
                                 }
                             }
 
-                            yukonApiValidationUtils.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
-                                    "Gear Number");
-                            if (!errors.hasFieldErrors("gearNumber") && gear.getGearNumber() != i + 1) {
-                                errors.rejectValue("gearNumber", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                        new Object[] { i + 1 }, "");
-                            }
+                            lmValidatorHelper.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
+                                "Gear Number");
                             errors.popNestedPath();
 
                             // Validate Gear Fields
@@ -256,16 +219,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                     || gear.getControlMethod() == GearControlMethod.NestCriticalCycle) {
                                     // Do not display error as these gears types do not have any validation
                                 } else {
-                                    String gearsI18nText = accessor.getMessage("yukon.web.modules.dr.setup.error.required", "Gear fields");
-                                    errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { gearsI18nText },
-                                            "");
+                                    errors.reject("yukon.web.modules.dr.setup.error.required",
+                                        new Object[] { "Gear fields" }, "");
                                 }
                             }
                         } else {
-                            String controlMethodI18nText = accessor.getMessage(key + "notSupportedControlMethod",
-                                    String.valueOf(gear.getControlMethod().name()), String.valueOf(loadProgram.getType()));
-                            errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                                    new Object[] { "Control Method", controlMethodI18nText }, "");
+                            errors.reject(key + "notSupportedControlMethod",
+                                new Object[] { gear.getControlMethod().name(), loadProgram.getType() }, "");
                         }
                     }
                 }
@@ -280,8 +240,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                               .collect(Collectors.toSet());
 
                     if (!duplicatedGearNumbers.isEmpty()) {
-                        errors.reject(ApiErrorDetails.DUPLICATE_VALUE.getCodeString(),
-                                new Object[] { "Gear Number", "Gear Number ID", duplicatedGearNumbers }, "");
+                        errors.reject("yukon.web.modules.dr.setup.gear.error.uniqueGearNumber",
+                            new Object[] { duplicatedGearNumbers }, "");
                     }
                 }
             }
@@ -295,9 +255,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                 || (loadProgram.getControlWindow().getControlWindowOne().getAvailableStopTimeInMinutes() % 1440 == 0 &&
                    loadProgram.getControlWindow().getControlWindowOne().getAvailableStartTimeInMinutes()  == 0))) {
 
-            String timedSupportedControlWindowI18nText = accessor.getMessage(key + "timedSupportedControlWindow");
-            errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(),
-                    new Object[] { "Timed Supported Control Window", timedSupportedControlWindowI18nText }, "");
+            errors.reject(key + "timedSupportedControlWindow");
         }
 
         if (loadProgram.getControlWindow() != null) {
@@ -317,27 +275,19 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
 
         if (loadProgram.getNotification() != null) {
             List<NotificationGroup> notificationGroups = loadProgram.getNotification().getAssignedNotificationGroups();
-            if ((loadProgram.getNotification().getProgramStartInMinutes() != null
-                    || loadProgram.getNotification().getProgramStopInMinutes() != null
-                    || loadProgram.getNotification().getNotifyOnAdjust() || loadProgram.getNotification().getEnableOnSchedule())
-                    && CollectionUtils.isEmpty(notificationGroups)) {
-                String notificationGrpI18nText = accessor.getMessage(key + "notificationGrp.notAssigned");
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { notificationGrpI18nText }, "");
-            }
             if (CollectionUtils.isNotEmpty(notificationGroups)) {
                 for (int i = 0; i < notificationGroups.size(); i++) {
                     errors.pushNestedPath("notification.assignedNotificationGroups[" + i + "]");
                     NotificationGroup notificationGroup = notificationGroups.get(i);
                    
-                    yukonApiValidationUtils.checkIfFieldRequired("notificationGrpID", errors,
+                    lmValidatorHelper.checkIfFieldRequired("notificationGrpID", errors,
                         notificationGroup.getNotificationGrpID(), "Notification GroupId");
                     List<Integer> notifIds = cache.getAllContactNotificationGroups().stream()
                                                                                     .map(group -> group.getNotificationGroupID())
                                                                                     .collect(Collectors.toList());
                     if (!errors.hasFieldErrors("notificationGrpID")) {
                         if (!notifIds.contains(notificationGroup.getNotificationGrpID())) {
-                            errors.rejectValue("notificationGrpID", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                                    new Object[] {notificationGroup.getNotificationGrpID()}, "");
+                            errors.rejectValue("notificationGrpID", key + "notificationGrpID.doesNotExist");
                         }
                     }
                     errors.popNestedPath(); 
@@ -352,13 +302,12 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                 for (int i = 0; i < loadProgram.getMemberControl().size(); i++) {
                     errors.pushNestedPath("memberControl[" + i + "]");
                     ProgramDirectMemberControl memberControl = loadProgram.getMemberControl().get(i);
-                    yukonApiValidationUtils.checkIfFieldRequired("subordinateProgId", errors,
+                    lmValidatorHelper.checkIfFieldRequired("subordinateProgId", errors,
                         memberControl.getSubordinateProgId(), "Subordinate ProgId");
 
                     if (!errors.hasFieldErrors("subordinateProgId")) {
                         if (!cache.getAllPaosMap().containsKey(memberControl.getSubordinateProgId())) {
-                            errors.rejectValue("subordinateProgId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                                    new Object[] { memberControl.getSubordinateProgId() }, "");
+                            errors.rejectValue("subordinateProgId", key + "subordinateProgId.doesNotExist");
                         }
                     }
                     errors.popNestedPath();
@@ -369,8 +318,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         if (CollectionUtils.isNotEmpty(loadProgram.getAssignedGroups())) {
             Set<Integer> duplicateLoadGroupsIds = getDuplicateLoadGroupsIds(loadProgram.getAssignedGroups());
             if (CollectionUtils.isNotEmpty(duplicateLoadGroupsIds)) {
-                errors.reject(ApiErrorDetails.DUPLICATE_VALUE.getCodeString(),
-                        new Object[] { "Load Group", "Load Group ID", duplicateLoadGroupsIds }, "");
+                errors.reject("yukon.web.modules.dr.setup.loadGroup.error.assignedLoadGroup.duplicate.notAllowed",
+                    new Object[] { duplicateLoadGroupsIds }, "");
             }
         }
     }
@@ -379,13 +328,13 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             Integer availableStopTimeInMinutes) {
         errors.pushNestedPath(nestedPath);
         if (availableStartTimeInMinutes != null && availableStopTimeInMinutes != null) {
-            yukonApiValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
-            yukonApiValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1440, false);
+            YukonValidationUtils.checkRange(errors, "availableStartTimeInMinutes", availableStartTimeInMinutes, 0, 1439, false);
+            YukonValidationUtils.checkRange(errors, "availableStopTimeInMinutes", availableStopTimeInMinutes, 0, 1440, false);
         } else if (availableStartTimeInMinutes == null && availableStopTimeInMinutes != null) {
-            yukonApiValidationUtils.checkIfFieldRequired("availableStartTimeInMinutes", errors, availableStartTimeInMinutes,
+            lmValidatorHelper.checkIfFieldRequired("availableStartTimeInMinutes", errors, availableStartTimeInMinutes,
                 "Start Time");
         } else if (availableStopTimeInMinutes == null && availableStartTimeInMinutes != null) {
-            yukonApiValidationUtils.checkIfFieldRequired("availableStopTimeInMinutes", errors, availableStopTimeInMinutes,
+            lmValidatorHelper.checkIfFieldRequired("availableStopTimeInMinutes", errors, availableStopTimeInMinutes,
                 "Stop Time");
         }
         errors.popNestedPath();
@@ -413,7 +362,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         List<Integer> groupIds = assignedLoadGroups.stream()
                                                    .map(ProgramGroup::getGroupId)
                                                    .collect(Collectors.toList());
-        return lmApiValidatorHelper.findDuplicates(groupIds);
+        return lmValidatorHelper.findDuplicates(groupIds);
 
     }
 

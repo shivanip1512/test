@@ -31,15 +31,13 @@
 <entry key="yukon.web.picker.cbcSubBusPicker.dialogTitle">Select Substation Bus</entry>
 <entry key="yukon.web.picker.capControlAreaPicker.dialogTitle">Select Area</entry>
 <entry key="yukon.web.picker.categoryAndClassFilteredPaoPicker.dialogTitle">Select Device</entry>
-<entry key="yukon.web.picker.paoTypeFilteredPaoPicker.dialogTitle">Select Signal Transmitter</entry>
 <entry key="yukon.web.picker.cbcPicker.dialogTitle">Select Controller</entry>
 <entry key="yukon.web.picker.lmDevicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.lmProgramOrScenarioPicker.dialogTitle">Select Program or Scenario</entry>
 <entry key="yukon.web.picker.controlAreaOrProgramOrScenarioPicker.dialogTitle">Select Control Area or Program or Scenario</entry>
 <entry key="yukon.web.picker.devicePicker.dialogTitle">Select Device</entry>
-<entry key="yukon.web.picker.dataExportPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.meterPicker.dialogTitle">Select Meter</entry>
-<entry key="yukon.web.picker.meterEventsDevicesPicker.dialogTitle">Select Device</entry>
+<entry key="yukon.web.picker.meterAndRelayPicker.dialogTitle">Select Meter</entry>
 <entry key="yukon.web.picker.voltageRegulatorPicker.dialogTitle">Select Regulator</entry>
 <entry key="yukon.web.picker.twoWayLcrPicker.dialogTitle">Select Two Way Device</entry>
 <entry key="yukon.web.picker.availableMctPicker.dialogTitle">Select An MCT</entry>
@@ -61,9 +59,6 @@
 <entry key="yukon.web.picker.lmGroupPaoPermissionCheckingPicker.dialogTitle">Select Group</entry>
 <entry key="yukon.web.picker.lmControlAreaPaoPermissionCheckingPicker.dialogTitle">Select Control Area</entry>
 <entry key="yukon.web.picker.lmScenarioPaoPermissionCheckingPicker.dialogTitle">Select Scenario</entry>
-
-<entry key="yukon.web.picker.versacomGroupPicker.dialogTitle">Select VersaCom Group</entry>
-<entry key="yukon.web.picker.expresscomGroupPicker.dialogTitle">Select ExpressCom Group</entry>
 
 <entry key="yukon.web.picker.portPicker.dialogTitle">Select Comm Channels</entry>
 
@@ -232,12 +227,4 @@
 <entry key="yukon.web.picker.trendPicker.name">Name</entry>
 <entry key="yukon.web.picker.trendPicker.graphDefinitionId">Trend Id</entry>
 
-<!-- RF Gateway Picker -->
-<entry key="yukon.web.picker.rfGatewayLegacyPicker.dialogTitle">Gateways</entry>
-
-<!-- Gateway NM IP Address/Port Picker -->
-<entry key="yukon.web.picker.gatewayNmIpAddressPortPicker.dialogTitle">Select Gateway(s)</entry>
-
-<!-- Signal Transmitter Picker -->
-<entry key="yukon.web.picker.signalTransmitterPicker.dialogTitle">Select Signal Transmitter</entry>
 </properties>

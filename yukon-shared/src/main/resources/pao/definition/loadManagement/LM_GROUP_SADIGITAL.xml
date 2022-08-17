@@ -5,7 +5,6 @@
     </pointFiles>
     <tags>
         <tag name="LM_GROUP"/>
-        <tag name="SUPPORTS_PING"/>
     </tags>
     <pointInfos>
         <pointInfo name="Control Status" init="true" attributes="LM_GROUP_STATUS"/>
@@ -14,10 +13,5 @@
         <pointInfo name="Season History" init="true" attributes="LM_SEASON_HISTORY"/>
         <pointInfo name="Annual History" init="true" attributes="LM_ANNUAL_HISTORY"/>
         <pointInfo name="Control Countdown" init="true" attributes="LM_CONTROL_COUNTDOWN"/>
-        <pointInfo name="Asset Availability Active Devices" init="true" attributes="LM_ASSET_AVAILABILITY_ACTIVE_DEVICES"/>
-        <pointInfo name="Asset Availability Opted Out Devices" init="true" attributes="LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES"/>
-        <pointInfo name="Asset Availability Inactive Devices" init="true" attributes="LM_ASSET_AVAILABILITY_INACTIVE_DEVICES"/>
-        <pointInfo name="Asset Availability Unavailable Devices" init="true" attributes="LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES"/>
-        <pointInfo name="Asset Availability Total Devices" init="true" attributes="LM_ASSET_AVAILABILITY_TOTAL_DEVICES"/>
     </pointInfos>
 </pao>

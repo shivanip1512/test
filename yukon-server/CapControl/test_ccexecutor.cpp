@@ -26,24 +26,27 @@ struct overrideGlobals
     {
         using CtiCapController::porterReturnMsg;
 
-        Cti::CapControl::PorterRequests requests;
+        boost::ptr_vector<CtiRequestMsg> requests;
         boost::ptr_vector<CtiMultiMsg> points;
-        std::vector<Cti::CapControl::PorterRequests> pilMultiMsgs;
+        boost::ptr_vector<CtiMultiMsg> pilMultiMsgs;
 
-        void confirmCapBankControl(Cti::CapControl::PorterRequests pilMultiMsg, CtiMultiMsg* multiMsg) override
+        void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg) override
         {
-            pilMultiMsgs.push_back( std::move( pilMultiMsg ) );
+            if (pilMultiMsg)
+            {
+                pilMultiMsgs.push_back(pilMultiMsg);
+            }
             if (multiMsg)
             {
                 points.push_back(multiMsg);
             }
         }
 
-        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg) override
+        void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg) override
         {
             if (pilRequest)
             {
-                requests.emplace_back(std::move(pilRequest));
+                requests.push_back(pilRequest);
             }
             if (multiMsg)
             {
@@ -147,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_flip, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -163,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_send_open, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control open");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -179,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_send_close, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control close");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -195,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_confirm_close, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control close");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -211,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test_default_confirm_open, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control open");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -229,11 +232,13 @@ BOOST_FIXTURE_TEST_CASE(test_default_feeder_control_open, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -253,11 +258,13 @@ BOOST_FIXTURE_TEST_CASE(test_default_feeder_control_close, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -277,11 +284,13 @@ BOOST_FIXTURE_TEST_CASE(test_default_subbus_control_open, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -301,11 +310,13 @@ BOOST_FIXTURE_TEST_CASE(test_default_subbus_control_close, defaultGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -323,7 +334,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_flip, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -339,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_send_open, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -355,7 +366,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_send_close, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -371,7 +382,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_confirm_close, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -387,7 +398,7 @@ BOOST_FIXTURE_TEST_CASE(test_custom_confirm_open, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiRequestMsg &request = *cc->requests[0].message;
+    CtiRequestMsg &request = cc->requests[0];
 
     BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
     BOOST_CHECK_EQUAL(request.DeviceId(), 6);
@@ -405,11 +416,13 @@ BOOST_FIXTURE_TEST_CASE(test_custom_feeder_control_open, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -429,11 +442,13 @@ BOOST_FIXTURE_TEST_CASE(test_custom_feeder_control_close, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -453,11 +468,13 @@ BOOST_FIXTURE_TEST_CASE(test_custom_subbus_control_open, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 
@@ -477,11 +494,13 @@ BOOST_FIXTURE_TEST_CASE(test_custom_subbus_control_close, customGlobals)
 
     BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-    auto& pilRequests = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
     BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-    CtiRequestMsg *pilRequest = pilRequests[0].get();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
     BOOST_REQUIRE(pilRequest);
 

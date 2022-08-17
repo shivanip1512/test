@@ -1,15 +1,11 @@
 package com.cannontech.common.device.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 /**
  * Test class for PointServiceImpl
  */
 import org.springframework.test.util.ReflectionTestUtils;
+
+import junit.framework.TestCase;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
@@ -21,12 +17,11 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 
-public class PointServiceImplTest {
+public class PointServiceImplTest extends TestCase {
 
     private PointService service = null;
     private SimpleDevice pao = null;
 
-    @BeforeEach
     protected void setUp() throws Exception {
 
         PointServiceImpl impl = new PointServiceImpl();
@@ -40,7 +35,6 @@ public class PointServiceImplTest {
     /**
      * Test getPointForDevice()
      */
-    @Test
     public void testGetPointForDevice() {
 
         // Test for point that exists for the device
@@ -65,16 +59,16 @@ public class PointServiceImplTest {
     /**
      * Test pointExistsForDevice()
      */
-    @Test
     public void testPointExistsForDevice() {
 
         // Test for point that exists for the device
         PointIdentifier testTemplate = new PointIdentifier(PointType.getForId(1), 0);
-        assertTrue(service.pointExistsForPao(pao, testTemplate), "The point should exist");
+        assertTrue("The point should exist", service.pointExistsForPao(pao, testTemplate));
 
         // Test for point that doesn't exist for the device
         testTemplate = new PointIdentifier(PointType.getForId(4), 0);
-        assertTrue(!service.pointExistsForPao(pao, testTemplate), "The point should not exist");
+        assertTrue("The point should not exist",
+                   !service.pointExistsForPao(pao, testTemplate));
     }
 
     /**
@@ -86,11 +80,22 @@ public class PointServiceImplTest {
      */
     private void compareLitePoints(String testName, LitePoint expected, LitePoint actual) {
 
-        assertEquals(expected.getPointName(), actual.getPointName(), testName + " Point name incorrect");
-        assertEquals(expected.getPointOffset(), actual.getPointOffset(), testName + " Point offset incorrect");
-        assertEquals(expected.getPointType(), actual.getPointType(), testName + " Point type incorrect");
-        assertEquals(expected.getUofmID(), actual.getUofmID(), testName + " Unit of measure incorrect");
-        assertEquals(expected.getStateGroupID(), actual.getStateGroupID(), testName + " State group incorrect");
+        assertEquals(testName + " Point name incorrect",
+                     expected.getPointName(),
+                     actual.getPointName());
+        assertEquals(testName + " Point offset incorrect",
+                     expected.getPointOffset(),
+                     actual.getPointOffset());
+        assertEquals(testName + " Point type incorrect",
+                     expected.getPointType(),
+                     actual.getPointType());
+        assertEquals(testName + " Unit of measure incorrect",
+                     expected.getUofmID(),
+                     actual.getUofmID());
+        assertEquals(testName + " State group incorrect",
+                     expected.getStateGroupID(),
+                     actual.getStateGroupID());
+
     }
 
 }

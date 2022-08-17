@@ -5,7 +5,6 @@
 #include "cccapbank.h"
 #include "PointDataRequest.h"
 #include "ccutil.h"
-#include "VoltageRegulator.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -96,8 +95,6 @@ class IVVCState
 
         std::set<long>  dmvWattVarPointIDs;
 
-        std::set<long>  pausedRegulatorIDs;
-
         bool dmvRegulatorInAutoMode;
 
         enum
@@ -116,9 +113,6 @@ class IVVCState
         TapOperationZoneMap     _tapOps;
         CtiTime                 _tapOpDelay;
         TapOperationZoneMap     _undoTapOps;    // keeps track of bump restoration to original state
-
-        using TapOperationInhibitMap = std::map<long, Cti::CapControl::VoltageRegulator::TapInhibit>;
-        TapOperationInhibitMap _tapOpInhibit;
 
         bool isIvvcOnline() const;
 
@@ -203,24 +197,6 @@ class IVVCState
         VerificationHelper _verification;
 
         bool showZoneRegulatorConfigMsg;
-
-
-        struct DeviceInformationEntry
-        {
-            long deviceID, pointID;
-            std::string deviceName, pointName;
-        };
-
-        using DeviceInformation = std::map<long, DeviceInformationEntry>;
-
-        DeviceInformation   deviceInformation;
-
-        std::set<long> disabledRegulators;
-
-        std::set<long> pfIndeterminateRegulators;
-        std::set<long> pfErrorRegulators;
-
-        std::set<std::string> commViolations;
 
     private:
 

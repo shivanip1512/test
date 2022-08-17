@@ -14,7 +14,7 @@ Policy::AttributeList NoKeepAlivePolicy::getSupportedAttributes() const
     };
 }
 
-Policy::Actions NoKeepAlivePolicy::SendKeepAlive( const long keepAliveValue, std::chrono::seconds regulatorTimeout)
+Policy::Actions NoKeepAlivePolicy::SendKeepAlive( const long keepAliveValue )
 {
     return
     {

@@ -1,9 +1,7 @@
 package com.cannontech.common.gui.wizard.state;
 
-import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.editor.state.GroupStateEditorPanel;
 import com.cannontech.database.data.state.GroupState;
-import com.cannontech.database.db.state.State;
 import com.cannontech.database.db.state.StateGroupUtils;
 
 /**
@@ -87,13 +85,13 @@ private com.klg.jclass.field.JCSpinField getStateNumberSpinner() {
 			ivjStateNumberSpinner.setDataProperties(
 				new com.klg.jclass.field.DataProperties(
 					new com.klg.jclass.field.validate.JCIntegerValidator(null, 
-						Integer.valueOf(2), Integer.valueOf(GroupStateEditorPanel.STATE_COUNT), null, true, null, 
-						Integer.valueOf(1), "#,##0.###;-#,##0.###", false, false, false, 
-						null, Integer.valueOf(2)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
-							Integer.valueOf(1)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), 
+						new Integer(2), new Integer(GroupStateEditorPanel.STATE_COUNT), null, true, null, 
+						new Integer(1), "#,##0.###;-#,##0.###", false, false, false, 
+						null, new Integer(2)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
+							new Integer(1)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), 
 							new java.awt.Color(255, 255, 255, 255))));
 
-			ivjStateNumberSpinner.setValue( Integer.valueOf(2) );
+			ivjStateNumberSpinner.setValue( new Integer(2) );
 
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
@@ -109,51 +107,62 @@ public Object getValue(Object val) {
 
     GroupState gs = (GroupState) val;
 
-    String stateGroupName = getStateGroupNameTextField().getText();
-    if (stateGroupName != null) {
+	String stateGroupName = getStateGroupNameTextField().getText();
+	if( stateGroupName != null ) {
         gs.getStateGroup().setName(stateGroupName);
     }
 
-    gs.getStatesVector().removeAllElements();
 
-    com.cannontech.database.data.state.State tempStateData = new com.cannontech.database.data.state.State();
 
-    // Add an 'Any' state to all state groups!!! 12-6-2000
-    tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(),
-                                     Integer.valueOf(State.ANY_ID),
-                                     State.ANY,
-                                     YukonColorPalette.BLACK.getColorId(),
-                                     YukonColorPalette.WHITE.getColorId()));
+	gs.getStatesVector().removeAllElements();
+   
+   com.cannontech.database.data.state.State
+         tempStateData = new com.cannontech.database.data.state.State();
 
-    gs.getStatesVector().add(tempStateData);
+	// Add an 'Any' state to all state groups!!!  12-6-2000
+	tempStateData.setState( new com.cannontech.database.db.state.State( gs.getStateGroup().getStateGroupID(),
+										new Integer(com.cannontech.database.db.state.State.ANY_ID),
+										com.cannontech.database.db.state.State.ANY,
+										new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID),
+										new Integer(com.cannontech.common.gui.util.Colors.WHITE_ID) ) );
 
-    if (gs.getStateGroup().getGroupType().equalsIgnoreCase(StateGroupUtils.GROUP_TYPE_STATUS)) {
+   gs.getStatesVector().add( tempStateData );
+   
+
+   com.cannontech.database.db.state.State tempState = null;
+
+    if(gs.getStateGroup().getGroupType().equalsIgnoreCase(StateGroupUtils.GROUP_TYPE_STATUS))
+    {
         Object stateNumberSpinVal = getStateNumberSpinner().getValue();
         Integer numberOfStates = null;
-        if (stateNumberSpinVal instanceof Long) {
-            numberOfStates = Integer.valueOf(((Long) stateNumberSpinVal).intValue());
-        } else if (stateNumberSpinVal instanceof Integer) {
-            numberOfStates = Integer.valueOf(((Integer) stateNumberSpinVal).intValue());
+        if( stateNumberSpinVal instanceof Long ) {
+            numberOfStates = new Integer( ((Long)stateNumberSpinVal).intValue() );
+        } else if( stateNumberSpinVal instanceof Integer ) {
+            numberOfStates = new Integer( ((Integer)stateNumberSpinVal).intValue() );
         }
-
-        // add the rest of the states below
-        for (int i = 0; i < numberOfStates.intValue(); i++) {
+        
+    	// add the rest of the states below
+    	for(int i=0;i<numberOfStates.intValue();i++)
+    	{
             tempStateData = new com.cannontech.database.data.state.State();
-
-            tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(),
-                                             Integer.valueOf(i),
-                                             "DefaultStateName" + (Integer.toString(i)),
-                                             YukonColorPalette.getColor(i).getColorId(),
-                                             YukonColorPalette.BLACK.getColorId()));
-
-            gs.getStatesVector().add(tempStateData);
-        }
-    } else if (gs.getStateGroup().getGroupType().equalsIgnoreCase(StateGroupUtils.GROUP_TYPE_ANALOG)) {
-
+          
+    		tempStateData.setState( new com.cannontech.database.db.state.State(	
+                                     gs.getStateGroup().getStateGroupID(),
+                                     new Integer(i),
+          									"DefaultStateName" + (Integer.toString(i)),
+          									new Integer(i),
+          									new Integer(com.cannontech.common.gui.util.Colors.BLACK_ID) ) );
+    
+    		gs.getStatesVector().add(tempStateData);
+    	}
+    }else if(gs.getStateGroup().getGroupType().equalsIgnoreCase(StateGroupUtils.GROUP_TYPE_ANALOG))
+    {
+        
         gs = StateGroupUtils.buildAnalogStateGroup(gs);
+        
     }
 
-    return gs;
+	return gs;
 }
 /**
  * Called whenever the part throws an exception.

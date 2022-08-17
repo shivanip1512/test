@@ -2,42 +2,29 @@ package com.cannontech.common.rfn.message.node;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 public class NodeData implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
-
+    
     private String nodeSerialNumber;
-
+    
     private NodeType nodeType;
-
-    private Long inNetworkTimestamp;
-
+    
+    private long inNetworkTimestamp;
+    
     private String macAddress;
-
+    
     private String networkAddress; // A propriety EkaNet network address
 
     private String hardwareVersion;
-
+    
     private String firmwareVersion; // Software Version
-
+    
     private String productNumber;
-
+    
     private String meterConfigID;
-
-    private String secondaryModuleFirmwareVersion;
-
-    private Long bootLoaderVersion;
-
+    
     private WifiSuperMeterData wifiSuperMeterData;
-
-    private CellularIplinkRelayData cellularIplinkRelayData;
-
-    // A string represents an ipv6 address, e.x., "FD30:0000:0000:0001:0214:08FF:FE0A:BF91"
-    // Yukon UI can display it directly without adding colons.
-    private String nodeIpv6Address;
 
     public String getNodeSerialNumber() {
         return nodeSerialNumber;
@@ -55,11 +42,11 @@ public class NodeData implements Serializable {
         this.nodeType = nodeType;
     }
 
-    public Long getInNetworkTimestamp() {
+    public long getInNetworkTimestamp() {
         return inNetworkTimestamp;
     }
 
-    public void setInNetworkTimestamp(Long inNetworkTimestamp) {
+    public void setInNetworkTimestamp(long inNetworkTimestamp) {
         this.inNetworkTimestamp = inNetworkTimestamp;
     }
 
@@ -110,23 +97,7 @@ public class NodeData implements Serializable {
     public void setMeterConfigID(String meterConfigID) {
         this.meterConfigID = meterConfigID;
     }
-
-    public String getSecondaryModuleFirmwareVersion() {
-        return secondaryModuleFirmwareVersion;
-    }
-
-    public void setSecondaryModuleFirmwareVersion(String secondaryModuleFirmwareVersion) {
-        this.secondaryModuleFirmwareVersion = secondaryModuleFirmwareVersion;
-    }
-
-    public Long getBootLoaderVersion() {
-        return bootLoaderVersion;
-    }
-
-    public void setBootLoaderVersion(Long bootLoaderVersion) {
-        this.bootLoaderVersion = bootLoaderVersion;
-    }
-
+    
     public WifiSuperMeterData getWifiSuperMeterData() {
         return wifiSuperMeterData;
     }
@@ -135,42 +106,21 @@ public class NodeData implements Serializable {
         this.wifiSuperMeterData = wifiSuperMeterData;
     }
 
-    public CellularIplinkRelayData getCellularIplinkRelayData() {
-        return cellularIplinkRelayData;
-    }
-
-    public void setCellularIplinkRelayData(CellularIplinkRelayData cellularIplinkRelayData) {
-        this.cellularIplinkRelayData = cellularIplinkRelayData;
-    }
-
-    public String getNodeIpv6Address() {
-        return nodeIpv6Address;
-    }
-
-    public void setNodeIpv6Address(String nodeIpv6Address) {
-        this.nodeIpv6Address = nodeIpv6Address;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((bootLoaderVersion == null) ? 0 : bootLoaderVersion.hashCode());
-        result = prime * result
-                + ((cellularIplinkRelayData == null) ? 0 : cellularIplinkRelayData.hashCode());
         result = prime * result + ((firmwareVersion == null) ? 0 : firmwareVersion.hashCode());
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
-        result = prime * result + ((inNetworkTimestamp == null) ? 0 : inNetworkTimestamp.hashCode());
+        result = prime * result + (int) (inNetworkTimestamp ^ (inNetworkTimestamp >>> 32));
         result = prime * result + ((macAddress == null) ? 0 : macAddress.hashCode());
         result = prime * result + ((meterConfigID == null) ? 0 : meterConfigID.hashCode());
         result = prime * result + ((networkAddress == null) ? 0 : networkAddress.hashCode());
-        result = prime * result + ((nodeIpv6Address == null) ? 0 : nodeIpv6Address.hashCode());
         result = prime * result + ((nodeSerialNumber == null) ? 0 : nodeSerialNumber.hashCode());
         result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
         result = prime * result + ((productNumber == null) ? 0 : productNumber.hashCode());
-        result = prime * result + ((secondaryModuleFirmwareVersion == null) ? 0
-                : secondaryModuleFirmwareVersion.hashCode());
-        result = prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
+        result =
+            prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
         return result;
     }
 
@@ -183,16 +133,6 @@ public class NodeData implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         NodeData other = (NodeData) obj;
-        if (bootLoaderVersion == null) {
-            if (other.bootLoaderVersion != null)
-                return false;
-        } else if (!bootLoaderVersion.equals(other.bootLoaderVersion))
-            return false;
-        if (cellularIplinkRelayData == null) {
-            if (other.cellularIplinkRelayData != null)
-                return false;
-        } else if (!cellularIplinkRelayData.equals(other.cellularIplinkRelayData))
-            return false;
         if (firmwareVersion == null) {
             if (other.firmwareVersion != null)
                 return false;
@@ -203,10 +143,7 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!hardwareVersion.equals(other.hardwareVersion))
             return false;
-        if (inNetworkTimestamp == null) {
-            if (other.inNetworkTimestamp != null)
-                return false;
-        } else if (!inNetworkTimestamp.equals(other.inNetworkTimestamp))
+        if (inNetworkTimestamp != other.inNetworkTimestamp)
             return false;
         if (macAddress == null) {
             if (other.macAddress != null)
@@ -223,11 +160,6 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!networkAddress.equals(other.networkAddress))
             return false;
-        if (nodeIpv6Address == null) {
-            if (other.nodeIpv6Address != null)
-                return false;
-        } else if (!nodeIpv6Address.equals(other.nodeIpv6Address))
-            return false;
         if (nodeSerialNumber == null) {
             if (other.nodeSerialNumber != null)
                 return false;
@@ -240,11 +172,6 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!productNumber.equals(other.productNumber))
             return false;
-        if (secondaryModuleFirmwareVersion == null) {
-            if (other.secondaryModuleFirmwareVersion != null)
-                return false;
-        } else if (!secondaryModuleFirmwareVersion.equals(other.secondaryModuleFirmwareVersion))
-            return false;
         if (wifiSuperMeterData == null) {
             if (other.wifiSuperMeterData != null)
                 return false;
@@ -255,6 +182,12 @@ public class NodeData implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        return "NodeData [nodeSerialNumber=" + nodeSerialNumber + ", nodeType=" + nodeType
+            + ", inNetworkTimestamp=" + inNetworkTimestamp + ", macAddress=" + macAddress
+            + ", networkAddress=" + networkAddress + ", hardwareVersion=" + hardwareVersion
+            + ", firmwareVersion=" + firmwareVersion + ", productNumber=" + productNumber
+            + ", meterConfigID=" + meterConfigID + ", wifiSuperMeterData=" + wifiSuperMeterData
+            + "]";
     }
+
 }

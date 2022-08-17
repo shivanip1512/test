@@ -5,14 +5,12 @@
 
 <tags:nameValueContainer2>
 
-    <input type="hidden" id="baseUrl" value="/stars/wifiConnection"/>
-
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.COMM_STATUS">
         <c:choose>
             <c:when test="${wifiData.commStatusPoint.pointID != null}">
                 <cti:pointStatus pointId="${wifiData.commStatusPoint.pointID}"/>
                 <cti:pointValue pointId="${wifiData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
-                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}" format="DATE_QUALITY"/>
+                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}"/>
             </c:when>
             <c:otherwise>
                 <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
@@ -30,8 +28,8 @@
 
 <div class="action-area">
     <cti:msg2 var="labelBusy" key="yukon.web.components.button.query.labelBusy"/>
-    <cti:button nameKey="query" data-busy="${labelBusy}" icon="icon-read" classes="js-refresh-status" data-device-id="${device.paoIdentifier.paoId}"/>
+    <cti:button nameKey="query" data-busy="${labelBusy}" icon="icon-read" classes="js-refresh-wifi" data-device-id="${device.paoIdentifier.paoId}"/>
 </div>
 
-<cti:includeScript link="/resources/js/pages/yukon.assets.gateway.connectedDevices.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.assets.wifi.connection.js"/>
 

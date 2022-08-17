@@ -1,6 +1,6 @@
 package com.cannontech.tools.email;
 
-import jakarta.mail.MessagingException;
+import javax.mail.MessagingException;
 
 public interface EmailService {
     /**

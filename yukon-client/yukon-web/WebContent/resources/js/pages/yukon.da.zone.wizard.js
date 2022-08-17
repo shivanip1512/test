@@ -51,8 +51,8 @@ yukon.da.zone.wizard = (function () {
              click: function () {
                  submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null);
                  $('#zoneWizardPopup').dialog({
-                     width: '700',
-                     height: '700',
+                     width: 'auto',
+                     height: 'auto',
                      buttons: _zoneDetailButtons
                  });
              }
@@ -81,40 +81,32 @@ yukon.da.zone.wizard = (function () {
       ],
     
     _zoneEditorButtons = [
-         {
-             text: yg.text.deleteButton,
-             'class': "delete",
-              click: function () {
-                  var popup = $('#zoneWizardPopup'),
-                      confirmText = popup.find('.js-confirm-delete')[0].value;
-                  yukon.ui.confirm({
-                      confirmText: confirmText,
-                      dialog: popup,
-                      event: 'yukon:da:zone:delete',
-                  });
-                  if ($(".js-simple-dialog-confirm-msg").exists()) {
-                      $(".js-simple-dialog-confirm-msg").addClass("MT10 MR10");
-                  }
-              }
-          },
           {
-              text: yg.text.cancel,
+              text: yg.text.deleteButton,
+              'class': "delete",
               click: function () {
-                  $("#zoneWizardPopup").dialog("close");
+                  var zoneId = $('#zoneId').val();
+                  window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
               }
           },
-          { 
-              text: yg.text.save, 
-              'class': "primary",
-              click: function () { 
-                  submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
-              }
-          }
+         {
+             text: yg.text.cancel,
+             click: function () {
+                 $("#zoneWizardPopup").dialog("close");
+             }
+         },
+         { 
+             text: yg.text.save, 
+             'class': "primary",
+             click: function () { 
+                 submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
+             }
+         }
 
      ];
 
-    var mod = {
-
+   var mod = {
+              
         showZoneCreationWizard : function (url, title) {
             openSimpleDialog('zoneWizardPopup', url, title, null, 'get', { height: "auto", width: "auto" });
             $('#zoneWizardPopup').dialog({
@@ -152,13 +144,11 @@ yukon.da.zone.wizard = (function () {
         },
         
         addPointHandler : function(selectedPointInfo, picker) {
-            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint')),
-                zoneType = $('#zoneType').val(),
-                regulatorPhase = $('#regulatorPhase').val(),
-                subBusId = $('#selectedBusId').val();
+            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
+            var zoneType = $('#zoneType').val();
+            var regulatorPhase = $('#regulatorPhase').val();
             for(var i = 0; i < selectedPointInfo.length; i++) {
                 var request = mod.buildRequest(selectedPointInfo[i].pointId);
-                request.extraParameters.subBusId = subBusId;
                 if (zoneType != 'THREE_PHASE' && regulatorPhase != null) {
                     request.extraParameters.phase = regulatorPhase;
                 }
@@ -197,7 +187,7 @@ yukon.da.zone.wizard = (function () {
             if (_initialized)
                 return;
         
-            $(document).on('click', '.js-zone-editor', function () {
+            $('.js-zone-editor').click(function () {
                 var info = $('#zone-editor-info'),
                     url = info.data('editorUrl'),
                     title = info.data('editorTitle');
@@ -210,12 +200,6 @@ yukon.da.zone.wizard = (function () {
             });
 
             _initialized = true;
-            
-            $(document).on('yukon:da:zone:delete', function (ev) {
-                var zoneId = $('#zoneId').val();
-                window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
-            });
-            
         }
 
     };

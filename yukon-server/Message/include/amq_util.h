@@ -160,7 +160,7 @@ inline std::string destPhysicalName( const cms::Destination& dest )
 class IM_EX_MSG ManagedDestination
 {
 public:
-    virtual ~ManagedDestination () = default;
+    virtual ~ManagedDestination ();
 
     std::string getDestPhysicalName () const;
 
@@ -179,7 +179,7 @@ protected:
     ManagedProducer ( cms::MessageProducer* producer );
 
 public:
-    virtual ~ManagedProducer () = default;
+    virtual ~ManagedProducer ();
 
     virtual void close();
 
@@ -200,7 +200,7 @@ protected:
     ManagedConsumer ( cms::MessageConsumer* consumer );
 
 public:
-    virtual ~ManagedConsumer () = default;
+    virtual ~ManagedConsumer ();
 
     virtual void close();
 
@@ -228,7 +228,7 @@ public:
     // allow the creation of destination producer for responding to replyTo destinations
     DestinationProducer ( cms::Session &session, cms::Destination *dest );
 
-    virtual ~DestinationProducer () = default;
+    virtual ~DestinationProducer ();
 
     const cms::Destination* getDestination () const;
 };
@@ -244,7 +244,7 @@ protected:
     DestinationConsumer ( cms::MessageConsumer* consumer, cms::Destination *dest );
 public:
 
-    virtual ~DestinationConsumer () = default;
+    virtual ~DestinationConsumer ();
 
     const cms::Destination* getDestination () const;
 };
@@ -257,7 +257,7 @@ class IM_EX_MSG QueueProducer : public DestinationProducer
 public:
     QueueProducer ( cms::Session &session, cms::Queue* dest );
 
-    virtual ~QueueProducer () = default;
+    virtual ~QueueProducer ();
 };
 
 /*-----------------------------------------------------------------------------
@@ -268,18 +268,7 @@ class IM_EX_MSG QueueConsumer : public DestinationConsumer
 public:
     QueueConsumer ( cms::Session &session, cms::Queue* dest );
 
-    virtual ~QueueConsumer () = default;
-};
-
-/*-----------------------------------------------------------------------------
-  Managed topic message producer
------------------------------------------------------------------------------*/
-class IM_EX_MSG TopicProducer : public DestinationProducer
-{
-public:
-    TopicProducer(cms::Session& session, cms::Topic* dest);
-
-    virtual ~TopicProducer() = default;
+    virtual ~QueueConsumer ();
 };
 
 /*-----------------------------------------------------------------------------
@@ -292,7 +281,7 @@ public:
 
     TopicConsumer ( cms::Session &session, cms::Topic* dest, const std::string &selector );
 
-    virtual ~TopicConsumer () = default;
+    virtual ~TopicConsumer ();
 };
 
 /*-----------------------------------------------------------------------------
@@ -325,11 +314,6 @@ inline std::unique_ptr<QueueProducer> createQueueProducer( cms::Session &session
 inline std::unique_ptr<QueueConsumer> createQueueConsumer( cms::Session &session, const std::string &queueName )
 {
     return std::make_unique<QueueConsumer>( session, session.createQueue( queueName ));
-}
-
-inline std::unique_ptr<TopicProducer> createTopicProducer(cms::Session& session, const std::string& topicName)
-{
-    return std::make_unique<TopicProducer>(session, session.createTopic(topicName));
 }
 
 inline std::unique_ptr<TopicConsumer> createTopicConsumer( cms::Session &session, const std::string &topicName )

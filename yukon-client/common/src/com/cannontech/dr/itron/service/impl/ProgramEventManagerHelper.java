@@ -16,7 +16,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventRequest;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventType;
-import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelAllHANLoadControlProgramEventOnDevicesRequest;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesRequest;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.EventControlType;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.LoadControlProgramEventD2GParamsType;
@@ -29,18 +29,18 @@ public class ProgramEventManagerHelper implements SoapFaultParser {
         1, EventControlType.ADVANCED_OPTION_1,   // True Cycle
         2, EventControlType.ADVANCED_OPTION_2 ); // Smart Cycle
 
-    public static CancelAllHANLoadControlProgramEventOnDevicesRequest buildRestoreRequest(Long itronGroupId,
+    public static CancelHANLoadControlProgramEventOnDevicesRequest buildRestoreRequest(Long itronGroupId, long eventID, 
             String macAddress, boolean enableRandomization) {
-
-        CancelAllHANLoadControlProgramEventOnDevicesRequest request = new CancelAllHANLoadControlProgramEventOnDevicesRequest();
-        if (itronGroupId != null) {
+        
+        CancelHANLoadControlProgramEventOnDevicesRequest request = new CancelHANLoadControlProgramEventOnDevicesRequest();
+        if(itronGroupId != null) {
             request.getDeviceGroupIDs().add(itronGroupId);
         }
-        if (macAddress != null) {
+        if(macAddress != null) {
             request.getNicMacIDs().add(macAddress);
         }
-
-        request.setEnableDRLCRandomization(enableRandomization);
+        request.setEventID(eventID);
+        request.setEnableRandomization(enableRandomization);
         return request;
     }
     

@@ -14,11 +14,14 @@ using std::endl;
 using std::vector;
 //Boolean if debug messages are printed
 ULONG _LM_DEBUG = 0L;
-//Boolean if point events messages are created and sent to Dispatch
+//Boolean if point enevts messages are created and sent to Dispatch
 BOOL _LM_POINT_EVENT_LOGGING = FALSE;
 
-const CtiTime gInvalidCtiTime { { 1, 1, 1990 } };
-const CtiTime gEndOfCtiTime   { { 1, 1, 2035 } };
+CtiTime gInvalidCtiTime = CtiTime(CtiDate(1,1,1990),0,0,0);
+ULONG gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
+
+CtiTime gEndOfCtiTime = CtiTime(CtiDate(1,1,2035),0,0,0);
+ULONG gEndOfCtiTimeSeconds = gEndOfCtiTime.seconds();
 
 //Use this to indicate globally when ctrl-c was pressed
 //Kinda ugly... The Run() member function watches this

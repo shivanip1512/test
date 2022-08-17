@@ -59,8 +59,8 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEv
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsResponse;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventRequest;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddProgramEventResponseType;
-import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelAllHANLoadControlProgramEventOnDevicesRequest;
-import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelAllHANLoadControlProgramEventOnDevicesResponse;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesRequest;
+import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.CancelHANLoadControlProgramEventOnDevicesResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramRequest;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.AddProgramResponse;
 import com.cannontech.dr.itron.model.jaxb.programManagerTypes_v1_1.SetServicePointEnrollmentRequest;
@@ -119,6 +119,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                                                                           "Done.programEventID");
     
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
+    private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
     private DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
     
@@ -169,7 +170,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     }
     
     @Override
-    public boolean findAndSaveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress) {
+    public void saveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress) {
         FindHANDeviceRequest request = new FindHANDeviceRequest();
         request.setESIMacID(primaryMacAddress);
         PaginationType pagination = new PaginationType();
@@ -186,8 +187,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             
             FindDeviceResponseType response = responseElement.getValue();
             if (response.getDeviceCount() == 0) {
-                log.debug("No secondary mac found for device with primary mac {}", primaryMacAddress);
-                return false;
+                log.info("No secondary mac found for device with primary mac {}", primaryMacAddress);
+                return;
             }
             
             // 1 or more results found
@@ -198,10 +199,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 log.debug("Secondary macs: {}", secondaryMacs);
             }
             deviceDao.updateSecondaryMacAddress(type, deviceId, response.getMacIDs().get(0));
-            return true;
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.DEVICE);
-            return false;
         }
     }
     
@@ -339,6 +338,32 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         return new RecentEventParticipationItronData(programId, eventId);
     }
+    
+    /** 
+     * Sends message to Itron to update device logs for all itron groups
+     */
+    private void updateDeviceLogs() {
+        List<Long> itronIds = itronDao.getAllItronGroupIds();
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().addAll(itronIds);
+        updateDeviceLogs(updateLogsRequest);
+    }
+    
+    /**
+     * 1. Finds Itron group id used for reads
+     * 2. Sends message to Itron to add the devices we are attempting to read to the group
+     * 3. Sends message to Itron to update device logs
+     */
+    private long updateDeviceLogsBeforeRead(List<Integer> deviceIds) {      
+        //add new mac addresses to group
+        List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
+        long itronReadGroupId = createOrUpdateGroup(READ_GROUP, macAddresses);
+        //update event logs
+        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
+        updateLogsRequest.getGroupIDs().add(itronReadGroupId);
+        updateDeviceLogs(updateLogsRequest);
+        return itronReadGroupId;
+    }
 
     /**
      * Attempt to edit the specified group, setting the mac addresses. If that operation fails, assume that the group
@@ -383,19 +408,22 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      */
     void sendRestore(int yukonGroupId, String macAddress, Long itronGroupId, boolean enableRandomization) {
         LiteYukonPAObject group = getGroup(yukonGroupId);
+
+        long eventId = itronDao.getActiveEvent(yukonGroupId)
+                               .orElseThrow(() -> new ItronEventNotFoundException("Unable to restore, Itron event id doesn't exist."));
         
         String url = ItronEndpointManager.PROGRAM_EVENT.getUrl(settingDao);
         try {
-            CancelAllHANLoadControlProgramEventOnDevicesRequest request =
-                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, macAddress, enableRandomization);
+            CancelHANLoadControlProgramEventOnDevicesRequest request =
+                ProgramEventManagerHelper.buildRestoreRequest(itronGroupId, eventId, macAddress, enableRandomization);
             log.debug(XmlUtils.getPrettyXml(request));
-            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{}.", url, macAddress,
-                    group.getPaoName());
-            CancelAllHANLoadControlProgramEventOnDevicesResponse response =
-                (CancelAllHANLoadControlProgramEventOnDevicesResponse) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
+            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{}.", url, macAddress,
+                group.getPaoName(), eventId);
+            CancelHANLoadControlProgramEventOnDevicesResponse response =
+                (CancelHANLoadControlProgramEventOnDevicesResponse) ItronEndpointManager.PROGRAM_EVENT.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
-            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} result:{}.", url,
-                macAddress, group.getPaoName(), "success");
+            log.debug("ITRON-sendRestore url:{} mac address:{} yukon group:{} itron event id:{} result:{}.", url,
+                macAddress, group.getPaoName(), eventId, "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.PROGRAM_EVENT);
@@ -439,38 +467,30 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         inventoryIds.removeAll(optOuts);
         return inventoryIds;
     }
-    
-    @Override
-    public long createOrUpdateItronGroup(String groupName, List<Integer> deviceIds) {
-        List<String> macAddresses = Lists.newArrayList(deviceDao.getDeviceMacAddresses(deviceIds).values());
-        return createOrUpdateGroup(groupName, macAddresses);
-    }
-    
-    @Override
-    public void updateDeviceLogsForAllGroups() {
-        List<Long> itronIds = itronDao.getAllItronGroupIds();
-        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
-        updateLogsRequest.getGroupIDs().addAll(itronIds);
-        updateDeviceLogs(updateLogsRequest);
-    }
-    
-    @Override
-    public void updateDeviceLogsForItronGroup(long itronGroupId) {
-        UpdateDeviceEventLogsRequest updateLogsRequest = new UpdateDeviceEventLogsRequest();
-        updateLogsRequest.getGroupIDs().add(itronGroupId);
-        updateDeviceLogs(updateLogsRequest);
-    }
-    
+        
     @Override
     public ZipFile exportDeviceLogs(Long startRecordId, Long endRecordId) {
-        ExportDeviceLogRequest request = ReportManagerHelper.buildExportDeviceLogRequest(startRecordId, endRecordId);
+        updateDeviceLogs();
+        
+        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+        request.setRecordIDRangeStart(startRecordId);
+        if(endRecordId != null) {
+            request.setRecordIDRangeEnd(endRecordId);
+        }
+        itronEventLogService.exportDeviceLogs(startRecordId, endRecordId);
         return exportDeviceLogs(request, ExportType.ALL);
     }
     
     @Override
-    public ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, long itronGroupId) {
-        ExportDeviceLogRequest request = 
-                ReportManagerHelper.buildExportDeviceLogRequest(startRecordId, endRecordId, itronGroupId);
+    public synchronized ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId) {
+        long itronReadGroup = updateDeviceLogsBeforeRead(deviceId);
+        
+        ExportDeviceLogRequest request = new ExportDeviceLogRequest();
+        request.setRecordIDRangeStart(startRecordId);
+        if (endRecordId != null) {
+            request.setRecordIDRangeEnd(endRecordId);
+        }
+        request.getDeviceGroupIDs().add(itronReadGroup);
         return exportDeviceLogs(request, ExportType.READ);
     }
 
@@ -807,7 +827,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             } else {
                 request = new ObjectFactory().createEditESIGroupRequest(requestType);
             }
-
+            macAddresses.forEach(macAddress ->
+                itronEventLogService.addMacAddressToGroup(macAddress, lmGroupId)
+            );
             log.debug("ITRON-addMacAddressToGroup url:{} lm group id:{} mac addresses:{} create group: {}.", url, lmGroupId,
                 macAddresses, createGroup);
             log.debug(XmlUtils.getPrettyXml(new ESIGroupRequestTypeHolder(request.getValue())));

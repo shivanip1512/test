@@ -40,20 +40,6 @@ NetworkManagerRequestHeader AppSessionId::makeNmHeader( const long long groupId,
     return header;
 }
 
-NetworkManagerRequestHeader AppSessionId::makeNmHeader( const char priority )
-{
-    NetworkManagerRequestHeader header;
-
-    header.clientGuid   = _sessionInfo.appGuid;
-    header.sessionId    = _sessionInfo.sessionId;
-
-    header.messageId    = ++_messageId;
-
-    header.priority     = priority;
-
-    return header;
-}
-
 bool AppSessionId::isActive() const
 {
     //  If we've generated a message, we're active
@@ -86,18 +72,6 @@ NetworkManagerRequestHeader SessionInfoManager::getNmHeader( const long long gro
     if ( _appSession )
     {
         return _appSession->makeNmHeader( groupId, expiration, priority );
-    }
-
-    CTILOG_ERROR( dout, "Failed to generate Network Manager Request header" );
-
-    throw std::runtime_error( "Failed to generate Network Manager Request header" );
-}
-
-NetworkManagerRequestHeader SessionInfoManager::getNmHeader( const char priority )
-{
-    if ( _appSession )
-    {
-        return _appSession->makeNmHeader( priority );
     }
 
     CTILOG_ERROR( dout, "Failed to generate Network Manager Request header" );

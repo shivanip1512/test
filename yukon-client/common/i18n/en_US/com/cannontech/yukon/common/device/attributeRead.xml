@@ -9,8 +9,6 @@
     <entry key="yukon.common.device.attributeRead.general.readError">Read error: {0}</entry>
     <entry key="yukon.common.device.attributeRead.general.timeout">Request timed out.</entry>
     
-    <entry key="yukon.common.device.attributeRead.timeoutWarning">Process is taking longer than expected. Please check back for updated results, as the process may still complete successfully.</entry>
-    
     <entry key="yukon.common.device.attributeRead.plc.exception">Unknown error: {0}</entry>
     <entry key="yukon.common.device.attributeRead.plc.unknownError">Unknown Error</entry>
     

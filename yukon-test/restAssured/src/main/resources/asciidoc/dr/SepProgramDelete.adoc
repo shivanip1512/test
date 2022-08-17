@@ -1,0 +1,21 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== SEP Program
+
+*Request Properties* :
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/request-fields.adoc[]
+
+*Request JSON* :
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/http-request.adoc[]
+
+*Response Properties* :
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/response-fields.adoc[]
+
+*Response JSON* :
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/http-response.adoc[]
+

@@ -1,10 +1,10 @@
 package com.cannontech.common.weather;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.cannontech.common.weather.GeographicCoordinate;
 
@@ -18,12 +18,13 @@ public class GeographicCoordinateTest {
         GeographicCoordinate anotherLoc = new GeographicCoordinate(56, -50);
         GeographicCoordinate anotherLoc2 = new GeographicCoordinate(56, -50);
 
-        assertTrue(loc.distanceTo(loc2) == 0.0, "Distance should be zero.");
-        assertTrue(loc.distanceTo(loc2) == loc2.distanceTo(loc), "Distance should be equal.");
-        assertTrue(anotherLoc.distanceTo(anotherLoc2) == 0.0, "Distance should be zero.");
-        assertTrue(anotherLoc.distanceTo(anotherLoc2) == anotherLoc2.distanceTo(anotherLoc), "Distance should be equal.");
+        assertTrue("Distance should be zero.", loc.distanceTo(loc2) == 0.0);
+        assertTrue("Distance should be equal.", loc.distanceTo(loc2) == loc2.distanceTo(loc));
+        assertTrue("Distance should be zero.", anotherLoc.distanceTo(anotherLoc2) == 0.0);
+        assertTrue("Distance should be equal.",
+                   anotherLoc.distanceTo(anotherLoc2) == anotherLoc2.distanceTo(anotherLoc));
         
-        assertFalse(loc.distanceTo(anotherLoc) == 0.0, "Distance should be zero.");
+        assertFalse("Distance should be zero.", loc.distanceTo(anotherLoc) == 0.0);
     }
 
     @Test
@@ -48,7 +49,7 @@ public class GeographicCoordinateTest {
 
     private void assertCloseEnough(String message, double a, double b) {
         if (!(Math.floor(a * 10) == Math.floor(b * 10))) {
-            fail(message);
+            Assert.fail(message);
         }
     }
 }

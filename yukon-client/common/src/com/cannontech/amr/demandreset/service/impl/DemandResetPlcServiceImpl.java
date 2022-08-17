@@ -176,7 +176,7 @@ public class DemandResetPlcServiceImpl implements DemandResetStrategyService {
         public void cancel() {
             if (callback.getResult() != null && callback.getResult().getVerificationExecution() != null) {
                 collectionActionService.addUnsupportedToResult(CollectionActionDetail.CANCELED, callback.getResult(),
-                    callback.getResult().getVerificationExecution().getId(), new ArrayList<>(meters), null);
+                    callback.getResult().getVerificationExecution().getId(), new ArrayList<>(meters));
             }
             complete();
         }

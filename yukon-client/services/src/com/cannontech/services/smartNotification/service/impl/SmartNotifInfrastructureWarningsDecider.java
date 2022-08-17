@@ -18,6 +18,7 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
     {
         eventType = SmartNotificationEventType.INFRASTRUCTURE_WARNING;
     }
+
     @Override
     public List<SmartNotificationEvent> validate(List<SmartNotificationEvent> events) {
         return events.stream().filter(e -> isValidDevice(e)).collect(Collectors.toList());
@@ -53,15 +54,5 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
             subscriptions.putAll(sub, allEvents);
         });
         return subscriptions;
-    }
-
-    @Override
-    protected List<SmartNotificationEvent> getUnprocessedGroupedEvents(String cacheKey) {
-       return eventDao.getUnprocessedGroupedEvents(eventType);
-    }
-
-    @Override
-    protected String getCacheKey(SmartNotificationSubscription subscription) {
-        return eventType.toString();
     }
 }

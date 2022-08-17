@@ -1,4 +1,3 @@
-
 #include <error.h>
 
 #include "yukon.h"
@@ -286,12 +285,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("The configuration file contains a Write Key TLV, but the node is unable to write the key.")
     ("If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.")
     ("No meter program assigned.")
-    ("Invalid meter program.")
-    ("Meter program not found.")
-    ("Meter program password not valid.")
-    ("Node timed out while waiting for a response from Yukon.")
-    ("Node received an error response from Yukon.")
-    .repeat(10, UnknownErrorHelper(340));
+    .repeat(15, UnknownErrorHelper(335));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

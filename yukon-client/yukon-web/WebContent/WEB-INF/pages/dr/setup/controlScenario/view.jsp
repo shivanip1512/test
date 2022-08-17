@@ -28,7 +28,7 @@
             <!-- Delete -->
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="js-delete-option" data-ok-event="yukon:control-scenario:delete"/>
             
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${controlScenario.name}" />
@@ -79,33 +79,31 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
-                <div class="js-table-container scroll-lg">
-                    <table id="js-assigned-programs-table" class="compact-results-table dashed">
-                        <thead>
+                <table id="js-assigned-programs-table" class="compact-results-table dashed">
+                    <thead>
+                        <tr>
+                            <th width="45%"><i:inline key=".name"/></th>
+                            <th width="15%"><i:inline key=".startOffset"/></th>
+                            <th width="15%"><i:inline key=".stopOffset"/></th>
+                            <th width="25%"><i:inline key=".startGear"/></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="program" items="${controlScenario.allPrograms}">
                             <tr>
-                                <th width="45%"><i:inline key=".name"/></th>
-                                <th width="15%"><i:inline key=".startOffset"/></th>
-                                <th width="15%"><i:inline key=".stopOffset"/></th>
-                                <th width="25%"><i:inline key=".startGear"/></th>
+                                <td>
+                                    <cti:url var="viewProgramUrl" value='/dr/setup/loadProgram/${program.programId}'/>
+                                    <a href="${viewProgramUrl}">
+                                        <cti:deviceName deviceId="${program.programId}"/>
+                                    </a>
+                                </td>
+                                <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
+                                <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
+                                <td>${fn:escapeXml(program.gears[0].name)}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="program" items="${controlScenario.allPrograms}">
-                                <tr>
-                                    <td>
-                                        <cti:url var="viewProgramUrl" value='/dr/setup/loadProgram/${program.programId}'/>
-                                        <a href="${viewProgramUrl}">
-                                            <cti:deviceName deviceId="${program.programId}"/>
-                                        </a>
-                                    </td>
-                                    <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
-                                    <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
-                                    <td>${fn:escapeXml(program.gears[0].gearName)}</td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
+                        </c:forEach>
+                    </tbody>
+                </table>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
 
@@ -126,5 +124,6 @@
         </div>
     </form:form>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlScenario.js" />
+    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
     <dt:pickerIncludes/>
 </cti:standardPage>

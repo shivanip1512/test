@@ -4,5 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public enum IOTDataType {
     @SerializedName("Telemetry")
-    TELEMETRY;
+    TELEMETRY,
+    @SerializedName("Property")
+    PROPERTY,
+    @SerializedName("Both")
+    BOTH;
 }

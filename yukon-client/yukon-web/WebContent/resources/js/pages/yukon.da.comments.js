@@ -29,15 +29,15 @@ yukon.da.comments = (function () {
         /** Adds a new comment to the Cap Bank*/  
         addComment : function () {
             var newComment = $('#newCommentInput').val(),
-                commentsUrl;
+                commentsUrl,
+                escapedText;
             if ($.trim(newComment).length !== 0) {
                 commentsUrl = $('#commentForm').data('commentsUrl');
                 $('#commentForm').attr('action', commentsUrl + 'add');
-                $('#comment').val(newComment);
+                escapedText = $('<div />').text(newComment).html();
+                $('#comment').val(escapedText);
                 _submitForm();
                 $('#newCommentInput').prop('disabled', true);
-            } else {
-                yukon.ui.unbusy('.js-save-comment');
             }
         },
 
@@ -45,6 +45,19 @@ yukon.da.comments = (function () {
         hideNewRow : function () {
             $('#newCommentInput').val('');
             $('#newRow').hide();
+        },
+
+        /** Create a new row for adding a new comment.*/
+        showNewRow : function () {
+            $("input[name='editCommentInput']").each(function (index, elem) {
+                var elemsCommentId = elem.id.split('_')[1];
+                $('#editCommentSpan_' + elemsCommentId).hide();
+                $('#comment_' + elemsCommentId).show();
+            });
+            $('#newRow').show();
+            $('#newCommentInput').prop('disabled', false);
+            $('#newCommentInput').focus();
+            $('#newRow').flash();
         },
 
         /** Saves a new comment or cancels the operation.

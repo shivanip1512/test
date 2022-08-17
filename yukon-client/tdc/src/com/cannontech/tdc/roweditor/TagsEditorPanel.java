@@ -19,7 +19,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.YukonColorPalette;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
@@ -68,7 +68,7 @@ public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialo
 					setIcon( null );
 				
 				setText( tag.getTagName() );
-				setForeground(YukonColorPalette.getColor(tag.getColorId()).getAwtColor());
+				setForeground( Colors.getColor(tag.getColorId()) );		
 	
 				setEnabled(list.isEnabled());
 				setBorder((cellHasFocus) ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);

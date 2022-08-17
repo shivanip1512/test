@@ -65,10 +65,3 @@ CtiServerRequestMsg& CtiServerRequestMsg::setPayload(CtiMessage* payload)
     _payload = payload;
     return *this;
 }
-
-std::size_t CtiServerRequestMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   calculateMemoryConsumption( _payload );
-}
-

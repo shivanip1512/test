@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import jakarta.activation.DataSource;
-import jakarta.activation.FileDataSource;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 
 /**
  * @author yao
@@ -50,7 +50,7 @@ public class EmailFileDataSource implements DataSource {
 	}
 
 	/* (non-Javadoc)
-	 * @see jakarta.activation.DataSource#getContentType()
+	 * @see javax.activation.DataSource#getContentType()
 	 */
 	public String getContentType() {
 		if (contentType != null)
@@ -59,14 +59,14 @@ public class EmailFileDataSource implements DataSource {
 	}
 
 	/* (non-Javadoc)
-	 * @see jakarta.activation.DataSource#getInputStream()
+	 * @see javax.activation.DataSource#getInputStream()
 	 */
 	public InputStream getInputStream() throws IOException {
 		return getFileDataSource().getInputStream();
 	}
 
 	/* (non-Javadoc)
-	 * @see jakarta.activation.DataSource#getName()
+	 * @see javax.activation.DataSource#getName()
 	 */
 	public String getName() {
 		if (name != null)
@@ -75,7 +75,7 @@ public class EmailFileDataSource implements DataSource {
 	}
 
 	/* (non-Javadoc)
-	 * @see jakarta.activation.DataSource#getOutputStream()
+	 * @see javax.activation.DataSource#getOutputStream()
 	 */
 	public OutputStream getOutputStream() throws IOException {
 		throw new IOException(getClass() + ": this method is not supported.");

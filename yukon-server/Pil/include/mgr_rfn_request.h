@@ -7,16 +7,8 @@
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
 #include "mgr_device.h"
-#include "RfnBroadcastMessaging.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
-
-#include <chrono>
-
-namespace Cti::Messaging::Rfn {
-    struct MeterProgramStatusArchiveRequestMsg;
-    struct EdgeDrBroadcastRequest;
-}
 
 namespace Cti::Pil {
 
@@ -97,13 +89,9 @@ public:
     using RfnDeviceRequestList = std::vector<RfnDeviceRequest>;
     using UnsolicitedReports   = std::vector<UnsolicitedReport>;
 
-    using Token = std::uint32_t;
-
     void tick();
 
     void submitRequests(RfnDeviceRequestList requests);
-
-    void submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroadcastRequest & request, const short messageId );
 
     ResultQueue getResults(unsigned max);
     UnsolicitedReports getUnsolicitedReports();
@@ -112,22 +100,15 @@ public:
     size_t countByGroupMessageId(long groupMessageId);
 
     void start();
-    virtual void initializeActiveMQHandlers();
 
 protected:
 
     virtual EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
-    virtual Bytes createE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const Token token);
-    virtual Bytes createE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const Token token);
-    virtual Bytes createE2eDtPut(const Bytes& payload, const RfnIdentifier endpointId);
-    virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const Token token);
-    virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const Token token);
-    virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const Token token, Block block);
-    virtual void sendMeterProgramStatusUpdate(Messaging::Rfn::MeterProgramStatusArchiveRequestMsg msg);
-
-    virtual bool isE2eServerDisabled() const;
-
-    virtual Bytes oscoreEncrypt(const Bytes& payload, const RfnIdentifier endpointId);
+    virtual Bytes createE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const unsigned long token);
+    virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const unsigned long token, Block block);
 
 private:
 
@@ -136,13 +117,11 @@ private:
     RfnIdentifierSet handleConfirms();
     RfnIdentifierSet handleIndications();
     RfnIdentifierSet handleTimeouts();
-    void             handleReplies();
     void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
     void             postResults();
     void             reportStatistics();
 
     using ApplicationServiceIdentifiers = Messaging::Rfn::ApplicationServiceIdentifiers;
-    using PriorityClass = Messaging::Rfn::PriorityClass;
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
@@ -150,7 +129,7 @@ private:
     {
         Bytes    payloadSent;
         CtiTime  timeSent;
-        std::chrono::seconds retransmissionDelay;
+        unsigned retransmissionDelay;
         unsigned retransmits;
         unsigned maxRetransmits;
     };
@@ -160,21 +139,17 @@ private:
         BadRequest
     };
 
-    PacketInfo sendE2eDataRequestPacket(const Bytes& e2ePacket, const ApplicationServiceIdentifiers &asid, const PriorityClass priorityClass, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
-    void sendE2eDataAck  (const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const PriorityClass priorityClass, const RfnIdentifier &rfnIdentifier);
-    void sendMeterProgrammingBlock(const unsigned short id, const Bytes data, const ApplicationServiceIdentifiers& asid, const RfnIdentifier& rfnIdentifier, const Token token, const Block block);
-    void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent);
+    PacketInfo sendE2eDataRequestPacket(const Bytes& e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
+    void sendE2eDataAck  (const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
+    void sendE2eDataReply(const unsigned short id, const Bytes data, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned long token, std::optional<Block> block);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
-    template <typename ValueType>
-    using RfnIdTo = std::map<RfnIdentifier, ValueType>;
-
     using IndicationQueue  = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
     using ConfirmQueue     = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
-    using ExpirationCauses = RfnIdTo<YukonError_t>;
+    using ExpirationCauses = std::map<RfnIdentifier, YukonError_t>;
     using RequestHeap      = std::vector<RfnDeviceRequest>;
-    using RfnIdToRequestHeap = RfnIdTo<RequestHeap>;
+    using RfnIdToRequestHeap = std::map<RfnIdentifier, RequestHeap>;
 
     using Mutex     = std::mutex;
     using LockGuard = std::lock_guard<std::mutex>;
@@ -205,13 +180,14 @@ private:
     struct RfnRequestIdentifier
     {
         RfnIdentifier rfnId;
-        Token token;
+        unsigned long token;
     };
 
-    using RfnTimeouts = std::multimap<std::chrono::system_clock::time_point, RfnRequestIdentifier>;
+    using RfnTimeouts = std::multimap<CtiTime, RfnRequestIdentifier>;
+    using NodeTokens = std::map<RfnIdentifier, unsigned long>;
 
-    RfnTimeouts    _awaitingIndications;
-    RfnIdTo<Token> _activeTokens;
+    RfnTimeouts _awaitingIndications;
+    NodeTokens  _activeTokens;
 
     struct ActiveRfnRequest
     {
@@ -221,47 +197,17 @@ private:
         Devices::Commands::RfnCommand::RfnResponsePayload response;
     };
 
-    Mutex _activeRequestsMux;  //  needed for countByGroupMessageId
-    RfnIdTo<ActiveRfnRequest> _activeRequests;
+    typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
 
-    struct MeterProgrammingRequest
-    {
-        std::chrono::system_clock::time_point timeout;
-        std::string guid;
-        Token token;
-    };
+    Mutex                _activeRequestsMux;
+    RfnIdToActiveRequest _activeRequests;
 
-    RfnTimeouts _awaitingMeterProgrammingRequest;
-    RfnIdTo<MeterProgrammingRequest> _meterProgrammingRequests;
-
-    // Broadcast requests
-    using BroadcastTimeoutCallback = std::function<void()>;
-    using BroadcastResponseCallback = std::function<void(const Messaging::Rfn::RfnBroadcastReply &)>;
-
-    struct BroadcastCallbacks
-    {
-        BroadcastResponseCallback response;
-        BroadcastTimeoutCallback  timeout;
-    };
-
-    std::multimap<std::chrono::system_clock::time_point, long long> _broadcastTimeouts;
-    std::map<long long, BroadcastCallbacks> _broadcastCallbacks;
-
-    using BroadcastReplyQueue = std::vector<Messaging::Rfn::RfnBroadcastReply>;
-
-    Mutex                _broadcastReplyMux;
-    BroadcastReplyQueue  _broadcastReplies;
-
-    using SerializedMessage = std::vector<unsigned char>;
-
-    void handleRfnBroadcastReplyMsg( const SerializedMessage & msg );
-    
     using OptionalResult = std::optional<RfnDeviceResult>;
 
     void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid);
     OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message);
-    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const Block block);
-    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const bool oscoreEncrypted);
+    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Block block);
+    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload);
     RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 

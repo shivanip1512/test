@@ -23,19 +23,17 @@
 <tags:nameValueContainer>
 	
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
-		<cti:url var="loadLocalFileUrl" value="/support/database/migration/loadLocalFile"/>
-		<form id="loadLocalFileForm" action="${loadLocalFileUrl}" method="post" enctype="multipart/form-data">
+		<form id="loadLocalFileForm" action="/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
             <cti:csrfToken/>
             <tags:file name="dataFile"/>
             <cti:button nameKey="load" type="submit"/>
 		</form>
 	</tags:nameValue>
-
+	
 	<tags:nameValueGap gapHeight="15px"/>
 	
 	<tags:nameValue name="Server File">
-		<cti:url var="loadServerFileUrl" value="/support/database/migration/loadServerFile"/>
-		<form id="loadServerFileForm" action="${loadServerFileUrl}" method="post">
+		<form id="loadServerFileForm" action="/support/database/migration/loadServerFile" method="post">
             <cti:csrfToken/>
 			<select name="dataFilePath">
 				<c:forEach var="serverFile" items="${serverFiles}">

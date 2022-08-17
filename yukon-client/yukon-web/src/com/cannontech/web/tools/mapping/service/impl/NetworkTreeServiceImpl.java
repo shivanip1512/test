@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_TREE;
 
 import java.io.Serializable;
@@ -10,6 +12,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +39,11 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
-import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataResponse;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -51,19 +54,15 @@ import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
-import com.cannontech.common.util.ExceptionToNullHelper;
-import com.cannontech.common.util.jms.RequestReplyTemplate;
-import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NetworkTreeService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -100,10 +99,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private ConfigurationSource configSource;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
-    private YukonJmsTemplate networkTreeUpdateRequestJmsTemplate;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    protected JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -114,16 +112,14 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     private Instant nextForceReloadTime;
     private int reloadFrequencyInMinutes = 30;
     private int MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE = 3;
-    private RequestReplyTemplate<RfnDeviceDataResponse> deviceDataRequestTemplate;
 
     
     @PostConstruct
     public void init() {
-        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
         scheduledExecutorService.schedule(() -> {
             NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
             log.info("Sending NetworkTreeUpdateTimeRequest message to request network tree information.");
-            networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
+            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
         }, MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE, TimeUnit.MINUTES);
     }
      
@@ -170,7 +166,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
         log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
-        networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
         return true;
     }
   
@@ -205,7 +201,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
        
         if (treeUpdateResponse == null) {
             log.debug("Network tree generation time was not found, sending request to NM to get the time");
-            networkTreeUpdateRequestJmsTemplate.convertAndSend(new NetworkTreeUpdateTimeRequest());
+            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), new NetworkTreeUpdateTimeRequest());
         }
         List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>();
       
@@ -323,7 +319,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(rfnIdentifier));
+        RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
         if (device == null) {
             yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device
@@ -359,9 +355,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
-        deviceDataRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getName(),
-                configSource, jmsTemplate);
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 
     @Override
@@ -370,54 +366,76 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 Serializable object = objMessage.getObject();
-
+       
+                
                 if (object instanceof NetworkTreeUpdateTimeResponse) {
                     NetworkTreeUpdateTimeResponse response = (NetworkTreeUpdateTimeResponse) object;
-                    logUpdateTime(response, false);
-                    Boolean isSuccess = sendRfnDeviceDataRequest(new Instant(response.getTreeGenerationEndTimeMillis()));
-                    if(isSuccess != null) {
-                        if (isSuccess) {
-                            // Reloads only cached trees
-                            reloadNetworkTrees();
-                            treeUpdateResponse = response;
-                        } else {
-                            logUpdateTime(response, true);
-                        }
+                    
+                    Instant lastUpdateTime =
+                            persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME);
+                    
+                    if (lastUpdateTime == null
+                            || response.getTreeGenerationEndTimeMillis() > lastUpdateTime.getMillis()) {
+                        updateDeviceToGatewayMapping(new Instant(response.getTreeGenerationEndTimeMillis()));
+                        persistedSystemValueDao.setValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME, new Instant(response.getTreeGenerationEndTimeMillis()));
                     }
-                }
+                    
+                    if (treeUpdateResponse == null || response.getTreeGenerationEndTimeMillis() > treeUpdateResponse.getTreeGenerationEndTimeMillis()) {
+                        log.info(
+                                "Received Network Tree Update Time - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
+                                format(response.getTreeGenerationStartTimeMillis()),
+                                format(response.getTreeGenerationEndTimeMillis()),
+                                format(response.getNextScheduledRefreshTimeMillis()),
+                                format(response.getNoForceRefreshBeforeTimeMillis()));
+
+                        //Reloads only cached trees
+                        reloadNetworkTrees();
+                    }
+                    treeUpdateResponse = response;                   
+                } 
             } catch (JMSException e) {
                 log.warn("Unable to extract NetworkTreeUpdateTimeResponse from message", e);
             }
-        }
+        }   
     }
-
-    private void logUpdateTime(NetworkTreeUpdateTimeResponse response, boolean failure) {
-        String info = "Received Network Tree Update Time";
-        if (failure) {
-            info = "Failed to update DynamicRfnDeviceData and reload Network Trees";
-        }
-        log.info(
-                info + " - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
-                format(response.getTreeGenerationStartTimeMillis()),
-                format(response.getTreeGenerationEndTimeMillis()),
-                format(response.getNextScheduledRefreshTimeMillis()),
-                format(response.getNoForceRefreshBeforeTimeMillis()));
-    }
-
+    
     /**
-     * Returns true is the table was updated
+     * Sends message to NM to get device to gateway mapping information for all gateways. When message is received the device to
+     * gateway mapping is persisted in DynamicRfnDeviceData.
      */
-    private Boolean sendRfnDeviceDataRequest(Instant treeGenerationEndTimeMillis) {
-        BlockingJmsReplyHandler<RfnDeviceDataResponse> reply = new BlockingJmsReplyHandler<>(
-                RfnDeviceDataResponse.class);
-        RfnDeviceDataRequest request = new RfnDeviceDataRequest(treeGenerationEndTimeMillis);
-        deviceDataRequestTemplate.send(request, reply);
+    private void updateDeviceToGatewayMapping(Instant treeGenerationEndTime) {
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        String gatewayNames = gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(", "));
+        log.info("Sending request to NM for device to gateway mapping information for {}", gatewayNames);
+        Map<RfnIdentifier, RfnDevice> gatewayIds = gateways.stream()
+                .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
         try {
-            RfnDeviceDataResponse response = reply.waitForCompletion();
-            return response.isSuccess();
-        } catch (Exception e) {
-            log.debug("Error updating DynamicRfnDeviceData", e);
-            return false;
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
+                    .getMetadataForGatewayRfnIdentifiers(gatewayIds.keySet(),
+                            Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_DESCENDANT_COUNT));
+            Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
+            response.forEach((deviceRfnIdentifier, queryResult) -> {
+                RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
+                // Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
+                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
+                        && queryResult.isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                    RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
+                    // if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
+                    if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
+                        int descendantCount = (Integer) queryResult.getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
+                        DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gatewayIds.get(gatewayRfnIdentifier),
+                                descendantCount, treeGenerationEndTime);
+                        deviceData.add(data);
+                    }
+                }
+            });
+
+            log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
+            rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
+            log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
+
+        } catch (NmCommunicationException e) {
+            log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }
     }
 

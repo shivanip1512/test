@@ -33,7 +33,6 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -44,8 +43,9 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
+import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
-import com.cannontech.common.device.model.DevicePointDetail;
+import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.common.search.result.SearchResults;
@@ -221,18 +221,14 @@ public class RtuController {
     public String copy(@ModelAttribute("rtu") RtuDnp newRtu, BindingResult result, ModelMap model, FlashScope flash,
             HttpServletResponse response) throws JsonGenerationException, JsonMappingException, IOException {
         rtuDnpValidationUtil.validateName(newRtu, result, true);
-        rtuDnpValidationUtil.validateAddressing(
-                null, // no ID for this copy until rtuService.copyRtu() creates it in the DB
-                newRtu.getDeviceDirectCommSettings(), 
-                newRtu.getDeviceAddress(), 
-                newRtu.getIpAddress(),
-                newRtu.getPort(),
-                result, baseKey + "error.masterSlave");
+        rtuDnpValidationUtil.validateMasterSlaveAddress(newRtu, result, true);
         if (result.hasErrors()) {
-            var hasPoints = !rtuDnpService.getRtuPointDetail(newRtu.getId()).isEmpty();
-            model.addAttribute("isPointsAvailable", hasPoints);
-            var commChannel = cache.getAllPaosMap().get(newRtu.getDeviceDirectCommSettings().getPortID());
-            model.addAttribute("commChannelName", commChannel.getPaoName());
+            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(newRtu.getId());
+            if (CollectionUtils.isNotEmpty(rtuPointDetails)) {
+                model.addAttribute("isPointsAvailable", true);
+            } else {
+                model.addAttribute("isPointsAvailable", false);
+            }
             model.addAttribute("rtu", newRtu);
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return "rtu/copyRtuPopup.jsp";
@@ -252,15 +248,20 @@ public class RtuController {
     @RequestMapping(value = "rtu/{rtuId}/render-copy-rtu", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String renderCopyRtuPopup(@PathVariable int rtuId, ModelMap model, YukonUserContext userContext) {
-        if (!model.containsAttribute("rtu")) {
-            var rtuDnp = rtuDnpService.getRtuDnp(rtuId);
-            var hasPoints = !rtuDnpService.getRtuPointDetail(rtuId).isEmpty();
-            model.addAttribute("isPointsAvailable", hasPoints);
-            rtuDnp.setCopyPointFlag(hasPoints);
+        RtuDnp rtuDnp = null;
+        if (model.containsAttribute("rtu")) {
+            rtuDnp = (RtuDnp) model.get("rtu");
+        } else {
+            rtuDnp = rtuDnpService.getRtuDnp(rtuId);
+            List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(rtuId);
+            if (!CollectionUtils.isEmpty(rtuPointDetails)) {
+                model.addAttribute("isPointsAvailable", true);
+                rtuDnp.setCopyPointFlag(true);
+            } else {
+                model.addAttribute("isPointsAvailable", false);
+            }
             MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
             rtuDnp.setName(messageSourceAccessor.getMessage("yukon.common.copyof", rtuDnp.getName()));
-            var commChannel = cache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID());
-            model.addAttribute("commChannelName", commChannel.getPaoName());
             model.addAttribute("rtu", rtuDnp);
         }
         return "rtu/copyRtuPopup.jsp";
@@ -303,20 +304,20 @@ public class RtuController {
         RtuPointsSortBy sortBy = RtuPointsSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
-        SearchResults<DevicePointDetail> details = rtuDnpService.getRtuPointDetail(id, filter, dir, sortBy.getValue(), paging);
+        SearchResults<RtuPointDetail> details = rtuDnpService.getRtuPointDetail(id, filter, dir, sortBy.getValue(), paging);
         
-        Map<DevicePointDetail, String> pointFormats = cbcHelperService.getPaoTypePointFormats(rtu.getPaoType(), details.getResultList(), DevicePointDetail::getPointId, r -> r.getPaoPointIdentifier().getPointIdentifier());
+        Map<RtuPointDetail, String> pointFormats = cbcHelperService.getPaoTypePointFormats(rtu.getPaoType(), details.getResultList(), RtuPointDetail::getPointId, r -> r.getPaoPointIdentifier().getPointIdentifier());
         
         pointFormats.forEach((rpd, format) -> rpd.setFormat(format));
 
-        List<DevicePointDetail> devicePointDetails = rtuDnpService.getRtuPointDetail(id);
-        List<PointType> types = devicePointDetails.stream()
+        List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(id);
+        List<PointType> types = rtuPointDetails.stream()
                                                .map(p -> p.getPaoPointIdentifier().getPointIdentifier().getPointType())
                                                .distinct()
                                                .sorted(Comparator.comparing(PointType::getPointTypeString))
                                                .collect(Collectors.toList());
 
-        List<String> allPointNames = devicePointDetails.stream()
+        List<String> allPointNames = rtuPointDetails.stream()
                                                     .map(p -> p.getPointName())
                                                     .distinct()
                                                     .sorted()
@@ -427,10 +428,11 @@ public class RtuController {
 
     public enum RtuPointsSortBy implements DisplayableEnum {
 
-        pointName(SortBy.pointName),
-        offset(SortBy.pointOffset),
-        deviceName(SortBy.deviceName),
-        pointType(SortBy.pointType);
+        pointName(SortBy.POINT_NAME),
+        offset(SortBy.POINT_OFFSET),
+        deviceName(SortBy.DEVICE_NAME),
+        pointType(SortBy.POINT_TYPE);
+
 
         private RtuPointsSortBy(SortBy value) {
             this.value = value;

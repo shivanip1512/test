@@ -55,10 +55,4 @@ public class MockLoadGroupDao implements LoadGroupDao {
         throw new MethodNotImplementedException();
     }
 
-    @Override
-    public List<Integer> getProgramIdsByGroupId(int lmGroupId) {
-        // TODO Auto-generated method stub
-        throw new MethodNotImplementedException();
-    }
-
 }

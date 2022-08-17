@@ -26,7 +26,7 @@
 </c:if>
 
 <div id="${pbarId}" class="progress-bar-container clearfix ${pageScope.containerClasses}">
-    <div class="progress dif fl ${pageScope.barClasses}">
+    <div class="progress dib fl ${pageScope.barClasses}">
         <c:choose>
             <c:when test="${empty pageScope.failureCountKey}">
                 <div class="progress-bar"></div>

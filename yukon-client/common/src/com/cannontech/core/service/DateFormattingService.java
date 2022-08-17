@@ -33,9 +33,8 @@ public interface DateFormattingService {
         TIMEZONE(MidnightMode.NORMAL),
         TIMEZONE_EXTENDED(MidnightMode.NORMAL),
         DATE(MidnightMode.NORMAL), 
-        BOTH(MidnightMode.NORMAL),
-        FULL(MidnightMode.NORMAL),
-        FULLHM(MidnightMode.NORMAL),
+        BOTH(MidnightMode.NORMAL), 
+        FULL(MidnightMode.NORMAL), 
         DATEHM(MidnightMode.NORMAL), 
         DATEHM_12(MidnightMode.NORMAL), 
         DATEHMS_12(MidnightMode.NORMAL), 
@@ -50,9 +49,6 @@ public interface DateFormattingService {
         MONTH_YEAR(MidnightMode.NORMAL),
         MONTH_DAY_HM(MidnightMode.NORMAL),
         FILE_TIMESTAMP(MidnightMode.NORMAL),
-        FILE_DATA_BOTH(MidnightMode.NORMAL),
-        FILE_DATA_DATE(MidnightMode.NORMAL),
-        FILE_DATA_TIME(MidnightMode.NORMAL),
         ;
         
         private final MidnightMode midnightMode;

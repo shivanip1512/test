@@ -35,11 +35,6 @@ CtiLMMessage::CtiLMMessage(const string& message) :  _message(message)
 {
 }
 
-std::size_t CtiLMMessage::getVariableSize() const
-{
-    return  CtiMessage::getVariableSize()
-        +   dynamic_sizeof( _message );
-}
 
 /*===========================================================================
     CtiLMCommand
@@ -132,11 +127,6 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
     }
 
     return *this;
-}
-
-std::size_t CtiLMCommand::getVariableSize() const
-{
-    return CtiLMMessage::getVariableSize();
 }
 
 
@@ -346,12 +336,6 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
     return *this;
 }
 
-std::size_t CtiLMManualControlRequest::getVariableSize() const
-{
-    return CtiLMMessage::getVariableSize()
-        +   dynamic_sizeof( _additionalinfo )
-        +   dynamic_sizeof( _origin );
-}
 
 /*===========================================================================
     CtiLMManualControlResponse
@@ -448,19 +432,6 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(
 {
     _constraintViolations = constraintViolations;
     return *this;
-}
-
-std::size_t CtiLMManualControlResponse::getVariableSize() const
-{
-    std::size_t sz = CtiLMMessage::getVariableSize()
-        +   dynamic_sizeof( _best_fit_action );
-
-    for ( const auto & entry : _constraintViolations )
-    {
-        sz += entry.getMemoryConsumption();
-    }
-
-    return sz;
 }
 
 // end response
@@ -663,11 +634,6 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
     return *this;
 }
 
-std::size_t CtiLMEnergyExchangeControlMsg::getVariableSize() const
-{
-    return  CtiLMMessage::getVariableSize()
-        +   dynamic_sizeof( _additionalinfo );
-}
 
 /*===========================================================================
     CtiLMEnergyExchangeAcceptMsg
@@ -849,15 +815,6 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
     return *this;
 }
 
-std::size_t CtiLMEnergyExchangeAcceptMsg::getVariableSize() const
-{
-    return  CtiLMMessage::getVariableSize()
-        +   dynamic_sizeof( _acceptstatus )
-        +   dynamic_sizeof( _ipaddressofacceptuser )
-        +   dynamic_sizeof( _useridname )
-        +   dynamic_sizeof( _nameofacceptperson )
-        +   dynamic_sizeof( _energyexchangenotes );
-}
 
 /*===========================================================================
     CtiLMControlAreaMsg
@@ -925,22 +882,6 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
     return *this;
 }
 
-std::size_t CtiLMControlAreaMsg::getVariableSize() const
-{
-    std::size_t sz = CtiLMMessage::getVariableSize();
-
-    if ( _controlAreas )
-    {
-        sz += _controlAreas->capacity() * sizeof( CtiLMControlArea* );
-
-        for ( const auto & area : *_controlAreas )
-        {
-            sz += area->getMemoryConsumption();
-        }
-    }
-
-    return sz;
-}
 
 // Static Members
 ULONG CtiLMControlAreaMsg::AllControlAreasSent = 0x00000001;
@@ -1073,15 +1014,6 @@ CtiLMCurtailmentAcknowledgeMsg& CtiLMCurtailmentAcknowledgeMsg::operator=(const 
     return *this;
 }
 
-std::size_t CtiLMCurtailmentAcknowledgeMsg::getVariableSize() const
-{
-    return  CtiLMMessage::getVariableSize()
-        +   dynamic_sizeof( _acknowledgestatus )
-        +   dynamic_sizeof( _ipaddressofackuser )
-        +   dynamic_sizeof( _useridname )
-        +   dynamic_sizeof( _nameofackperson )
-        +   dynamic_sizeof( _curtailmentnotes );
-}
 
 DEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
 DEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID )
@@ -1329,26 +1261,3 @@ CtiMessage* CtiLMDynamicTriggerDataMsg::replicateMessage() const
     msg->_projectedpointvalue = _projectedpointvalue;
     return msg;
 }
-
-std::size_t CtiLMDynamicGroupDataMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize();
-}
-
-std::size_t CtiLMDynamicProgramDataMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   dynamic_sizeof( _origin );
-}
-
-std::size_t CtiLMDynamicControlAreaDataMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize()
-        +   _triggers.capacity() * sizeof( CtiLMDynamicTriggerDataMsg );
-}
-
-std::size_t CtiLMDynamicTriggerDataMsg::getVariableSize() const
-{
-    return  Inherited::getVariableSize();
-}
-

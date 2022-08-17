@@ -16,6 +16,6 @@ public interface RfnLcrParsingStrategy {
      * message based on message format (TLV or EXI)
      * 
      */
-    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings,
-            AtomicInteger pointDatasProduced) throws ParseException;
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings)
+            throws ParseException;
 }

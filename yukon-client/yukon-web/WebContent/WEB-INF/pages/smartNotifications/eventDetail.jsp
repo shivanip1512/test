@@ -16,7 +16,6 @@
     <c:if test="${!empty parameter}">
         <c:set var="urlPath" value="${urlPath}/${parameter}"/>
     </c:if>
-    <c:if test="${not empty errorMsg}"><tags:alertBox>${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <cti:url var="detailUrl" value="${urlPath}"/>
     <form:form id="filter-form" action="${detailUrl}" method="GET" modelAttribute="filter">
         <div class="column-14-10 clearfix stacked">
@@ -91,7 +90,7 @@
                         <cti:url var="mapUrl" value="/tools/map">
                             <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
                         <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                             <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                                 <cti:param name="${cp.key}" value="${cp.value}"/>

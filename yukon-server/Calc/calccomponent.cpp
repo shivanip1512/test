@@ -113,7 +113,7 @@ CtiCalcComponent &CtiCalcComponent::operator=( const CtiCalcComponent &copyFrom 
     return *this;
 }
 
-BOOL CtiCalcComponent::isUpdated( CalcUpdateType calcsUpdateType, const CtiTime &calcsLastUpdateTime )
+BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastUpdateTime )
 {
     //  you can only be updated (or non-) if you're a point...
     if( _componentType == operation )
@@ -141,7 +141,7 @@ BOOL CtiCalcComponent::isUpdated( CalcUpdateType calcsUpdateType, const CtiTime 
         {
             return TRUE;
         }
-        else if( (calcsUpdateType == CalcUpdateType::PeriodicPlusUpdate) )
+        else if( (calcsUpdateType == periodicPlusUpdate) )
         {
             if( componentPointPtr->getPointTime() >= calcsLastUpdateTime)
                 return TRUE;
@@ -181,8 +181,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
                 component_quality = QuestionableQuality;
             }
 
-            if( _calcpoint->getUpdateType() == CalcUpdateType::Historical ||
-                _calcpoint->getUpdateType() == CalcUpdateType::BackfillingHistorical )
+            if( _calcpoint->getUpdateType() == historical )
             {
                 if( _calcpoint->push( componentPointPtr->getHistoricValue() ) )
                     input = componentPointPtr->getHistoricValue();
@@ -878,7 +877,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                 {
                     CtiTime pointTime;
                     CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId);
-                    if( _calcpoint->getUpdateType() != CalcUpdateType::Periodic && componentPointPtr != NULL )
+                    if( _calcpoint->getUpdateType() != periodic && componentPointPtr != NULL )
                     {
                         pointTime = componentPointPtr->getPointTime();
                     }
@@ -893,7 +892,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
                     double slope, intercept, xAtLimit, yNow;
 
-                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == CalcUpdateType::AnyUpdate)
+                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
                     {
                         if( componentPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
                         {
@@ -963,7 +962,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                     calcPointPtr->setRegressionMinDepth(mindepth);
                     calcPointPtr->setRegressionDepth(depth);
 
-                    if( _calcpoint->getUpdateType() != CalcUpdateType::Periodic && componentPointPtr != NULL )
+                    if( _calcpoint->getUpdateType() != periodic && componentPointPtr != NULL )
                     {
                         pointTime = componentPointPtr->getPointTime();
                     }
@@ -975,7 +974,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
                     double slope, intercept, xAtLimit, yNow;
 
-                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == CalcUpdateType::AnyUpdate)
+                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
                     {
                         if( componentPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
                         {

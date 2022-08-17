@@ -35,7 +35,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigLicenseKey;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -62,7 +62,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
@@ -91,8 +90,6 @@ import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
-import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel.PointCreation;
 import com.google.common.base.Function;
@@ -133,8 +130,6 @@ public class MeterController {
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PaoNotesService paoNotesService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
@@ -236,25 +231,18 @@ public class MeterController {
     
     @CheckRole({ YukonRole.METERING })
     @RequestMapping(value = "home", method = RequestMethod.GET)
-    public String home(HttpServletRequest request, ModelMap model, YukonUserContext userContext, int deviceId) {
-        
-        LiteYukonUser user = userContext.getYukonUser();
+    public String home(HttpServletRequest request, ModelMap model, LiteYukonUser user, int deviceId) {
         
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         PaoType type = device.getDeviceType();
 
         // Redirecting water meters to WaterMeterController
-        if (type.isWaterMeter() || type.isGasMeter() || type.isVirtual()) {
+        if (type.isWaterMeter() || type.isGasMeter()) {
             return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
         }
 
         // The set of attributes in this device's definition. See paoDefinition.xml
         Set<Attribute> deviceAttributes = attributeService.getAvailableAttributes(device);
-        
-        model.addAttribute("deviceId", deviceId);
-        
-        String deviceName = paoLoadingService.getDisplayablePao(device).getName();
-        model.addAttribute("deviceName", deviceName);
         
         /** User Permissions */
         boolean commanderUser = rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER, user);
@@ -265,7 +253,6 @@ public class MeterController {
         boolean mct4xxDevice = DeviceTypesFuncs.isMCT4XX(type);
         boolean rfDevice = type.isRfn();
         boolean showMapNetwork = rfDevice || type.isPlc();
-        boolean showInfrastructureWarnings = type.isCellularDevice() || type.isWifiDevice();
         
         /** Device Tags */
         boolean commanderDevice = paoDefDao.isTagSupported(type, PaoTag.COMMANDER_REQUESTS);
@@ -280,7 +267,6 @@ public class MeterController {
         boolean voltageThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_VOLTAGE); 
         boolean currentThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_CURRENT);
         boolean touDevice = paoDefDao.isTagSupported(type, PaoTag.TOU);
-        boolean derEdgeCooordinatorDisplayable = paoDefDao.isTagSupported(type, PaoTag.DER_EDGE_COORDINATOR_DISPLAYABLE);
         
         /** Device Attributes */
         boolean outageLogAttribute = deviceAttributes.contains(BuiltInAttribute.OUTAGE_LOG);
@@ -289,21 +275,7 @@ public class MeterController {
         
         /** Other Device Properties */
         boolean configurableDevice = !deviceConfigDao.getAllConfigurationsByType(type).isEmpty();
-        boolean dataStreamingEnabled = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
-        //check for meter programming
-        boolean deviceHasMeterProgram = false;
-        boolean meterProgrammingEnabled = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
-        if (meterProgrammingEnabled) {
-            boolean deviceSupportsMeterProgramming = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.METER_PROGRAMMING);
-            if (deviceSupportsMeterProgramming) {
-                try {
-                    MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
-                    deviceHasMeterProgram = program != null;
-                } catch (NotFoundException e) {
-                    log.info("No meter program exists for meter " + deviceName, e);
-                }
-            }
-        }
+        boolean dataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
         boolean streamableDevice = dataStreamingEnabled && !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached
@@ -318,7 +290,11 @@ public class MeterController {
                 || voltageAndTouDevice // Voltage and Tou Page
                 || (commanderUser && commanderDevice) // Web Commander Page
                 || (porterCommandsDevice && locateRouteUser); // Locate Route Page
-
+        
+        model.addAttribute("deviceId", deviceId);
+        
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        
         // Do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         pointFormattingService.addLitePointsToCache(litePoints);
@@ -327,7 +303,7 @@ public class MeterController {
         CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
         model.addAttribute("cisInfoWidgetName", cisDetail.getWidgetName());
         model.addAttribute("showCis", cisDetail != CisDetailRolePropertyEnum.NONE);
-        model.addAttribute("showConfig", configurableDevice || streamableDevice || deviceHasMeterProgram);
+        model.addAttribute("showConfig", configurableDevice || streamableDevice);
         model.addAttribute("configurableDevice", configurableDevice);
         model.addAttribute("streamableDevice", streamableDevice);
         model.addAttribute("showDisconnect", disconnectDevice);
@@ -338,10 +314,7 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
-        model.addAttribute("showCellularConnection", type.isCellularDevice());
-        model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
-        model.addAttribute("showInfrastructureWarnings", showInfrastructureWarnings);
-
+        
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);
         model.addAttribute("showHighBill", highBillDevice && highBillUser);
@@ -391,9 +364,6 @@ public class MeterController {
         }
         else if (meter.getType().isPlc()) {
             model.addAttribute("showCarrierSettings", true);
-        }
-        if (meter.getType().isIed()) {
-            model.addAttribute("showCommChannel", true);
         }
     }
 
@@ -518,9 +488,6 @@ public class MeterController {
         Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
         model.addAttribute("rfMeterTypes", rfMeterTypes);
         
-        Set<PaoType> virtualMeterTypes = PaoType.getVirtualTypes();
-        model.addAttribute("virtualMeterType", virtualMeterTypes);
-        
         Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
         model.addAttribute("mctMeterTypes", mctMeterTypes);
         
@@ -541,7 +508,7 @@ public class MeterController {
             return "redirect:/meter/start";
         }
         catch (Exception e) {
-            log.error("Unable to delete meter with id " + meter.getPaoIdentifier().getPaoId(), e);
+            log.error("Unable to delete meter with id " + meter.getPaoName(), e);
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meter.getPaoName()));
             return "redirect:/meter/home?deviceId="+id;
         }
@@ -571,8 +538,6 @@ public class MeterController {
             RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
             device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId,
                 true);
-        } else if (meter.getType().isVirtual()) {
-            device = deviceCreationService.createDeviceByDeviceType(meter.getType(), meter.getName());
         } else {
             device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),
                 meter.getPortId(), true);

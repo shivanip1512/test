@@ -1,17 +1,11 @@
 package com.cannontech.common.bulk.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import junit.framework.TestCase;
 
 import com.cannontech.common.bulk.callbackResult.CollectingBulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -22,13 +16,13 @@ import com.cannontech.common.util.ObjectMapper;
 /**
  * Test class for OneAtATimeProcessor
  */
-public class OneAtATimeProcessorTest {
+public class OneAtATimeProcessorTest extends TestCase {
 
     private OneAtATimeProcessor oneAtATimeProcessor = null;
     private ObjectMapper<String, String> mapper = null;
     private Processor<String> processor = null;
 
-    @BeforeEach
+    @Override
     protected void setUp() throws Exception {
 
         oneAtATimeProcessor = new OneAtATimeProcessor();
@@ -69,7 +63,6 @@ public class OneAtATimeProcessorTest {
 
     }
 
-    @Test
     public void testBackgroundBulkProcess() {
 
         // Test one at a time processor with functioning mapper and processor
@@ -86,22 +79,26 @@ public class OneAtATimeProcessorTest {
             holder = callback;
         }
 
-        assertEquals(3, holder.getProcessingExceptionCount() + holder.getSuccessCount(), 
-                "Didn't process correct number of items");
+        assertEquals("Didn't process correct number of items",
+                     3,
+                     holder.getProcessingExceptionCount() + holder.getSuccessCount());
 
-        assertEquals(1, holder.getSuccessCount(),
-                     "Didn't process the correct number items successfully");
+        assertEquals("Didn't process the correct number items successfully",
+                     1,
+                     holder.getSuccessCount());
 
-        assertEquals(2, holder.getProcessingExceptionCount(),
-                "Didn't process the correct number items unsuccessfully ");
+        assertEquals("Didn't process the correct number items unsuccessfully ",
+                     2,
+                     holder.getProcessingExceptionCount());
 
-        assertEquals(2, holder.getProcessingExceptionList().size(), 
-                "Processing exception list not populated");
+        assertEquals("Processing exception list not populated",
+                     2,
+                     holder.getProcessingExceptionList().size());
 
-        assertTrue(holder.isComplete(), "Should be complete");
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertTrue(holder.isSuccessfull(), "Should have succeeded");
-        assertFalse(holder.isProcessingFailed(), "Should not have failed");
+        assertTrue("Should have succeeded", holder.isSuccessfull());
+        assertFalse("Should not have failed", holder.isProcessingFailed());
 
         // Test one at a time processor with functioning processor and failing
         // mapper
@@ -121,12 +118,12 @@ public class OneAtATimeProcessorTest {
             holder = callback;
         }
 
-        assertNotNull(holder.getFailedException(), "There should be a fail exception");
+        assertNotNull("There should be a fail exception", holder.getFailedException());
 
-        assertTrue(holder.isComplete(), "Should be complete");
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertTrue(holder.isProcessingFailed(), "Should have failed");
-        assertFalse(holder.isSuccessfull(), "Should have not succeeded");
+        assertTrue("Should have failed", holder.isProcessingFailed());
+        assertFalse("Should have not succeeded", holder.isSuccessfull());
 
         // Test one at a time processor with functioning mapper and failing
         // processor
@@ -150,12 +147,12 @@ public class OneAtATimeProcessorTest {
             holder = callback;
         }
 
-        assertNotNull(holder.getFailedException(), "There should be a fail exception");
+        assertNotNull("There should be a fail exception", holder.getFailedException());
 
-        assertTrue(holder.isComplete(), "Should be complete");
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertTrue(holder.isProcessingFailed(), "Should have failed");
-        assertFalse(holder.isSuccessfull(), "Should not have succeeded");
+        assertTrue("Should have failed", holder.isProcessingFailed());
+        assertFalse("Should not have succeeded", holder.isSuccessfull());
 
     }
 

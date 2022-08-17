@@ -47,6 +47,7 @@
     <entry key="yukon.web.modules.adminSetup.auth.user.unavailable.username">Username is unavailable</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.updateSuccessful">User Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.groupConflict">Could not add user to group(s). The groups this user is already a member of and the new group(s) {0} have conflicting roles.</entry>
+    <entry key="yukon.web.modules.adminSetup.auth.user.delete.confirm.title">Delete User</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.delete.confirm.message">Are you sure you want to delete this user?</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.delete.success">User {0} delete successfully.</entry>
     <entry key="yukon.web.modules.adminSetup.auth.user.delete.failed.self">You cannot delete your own user.</entry>

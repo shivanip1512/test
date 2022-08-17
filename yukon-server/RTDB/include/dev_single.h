@@ -37,7 +37,6 @@ class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 
 public:
     using ReturnMsgList = std::vector<std::unique_ptr<CtiReturnMsg>>;
-    using RequestMsgList = std::vector<std::unique_ptr<CtiRequestMsg>>;
 
     enum ScanFlags
     {
@@ -243,7 +242,7 @@ public:
     virtual void getVerificationObjects(std::queue< CtiVerificationBase * > &work_queue);
     virtual std::vector<queued_result_t> getQueuedResults();
 
-    virtual YukonError_t ProcessInMessageResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    virtual YukonError_t ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     virtual CtiTime adjustNextScanTime(const INT scanType = ScanRateGeneral);
     CtiTime         firstScan( const CtiTime &When, INT rate );

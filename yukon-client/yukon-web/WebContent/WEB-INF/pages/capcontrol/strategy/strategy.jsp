@@ -170,7 +170,7 @@
 
             <div class="column two nogutter">
             
-                <table class="stacked-lg full-width section-table compact-results-table no-stripes ${tableClass}">
+                <table class="stacked-lg full-width section-table striped ${tableClass}">
                     <thead>
                         <tr class="js-not-time-of-day">
                             <th><i:inline key=".targetSetting"/></th>
@@ -264,7 +264,7 @@
                     
                 <tags:sectionContainer2 nameKey="voltViolations" styleClass="js-ivvc-only">
                 
-                    <table class="compact-results-table no-stripes">
+                    <table>
                         <thead>
                             <th></th>
                             <th class="tar"><i:inline key="yukon.common.low"/></th>

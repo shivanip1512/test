@@ -35,8 +35,6 @@ import com.cannontech.common.util.BootstrapUtils;
 @Plugin(name = "YukonRfnRollingFile", category = "Core", elementType = "appender", printObject = true)
 public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
 
-    private static final String logFileSuffix = "_RfnComms";
-
     private static volatile YukonRfnRollingFileAppender instance;
 
     public YukonRfnRollingFileAppender(String name, Filter filter, Layout<? extends Serializable> layout, String fileName,
@@ -57,7 +55,7 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
         String directory = BootstrapUtils.getServerLogDir();
         String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
         // Create RfnComms log for each application separately. Example : ServiceManager_RfnComms.log and Webserver_RfnComms.log
-        String applicationName = BootstrapUtils.getApplicationName() + logFileSuffix;
+        String applicationName = BootstrapUtils.getApplicationName() + "_" + "RfnComms";
         String fileName = directory + applicationName + "_" + creationDate +".log";
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
@@ -96,10 +94,5 @@ public class YukonRfnRollingFileAppender extends YukonRollingFileAppender {
         // Call YukonRollingFileAppender for actual append.
         super.append(event);
     }
-
-    @Override
-    public String getApplicationName() {
-        return super.getApplicationName() + logFileSuffix;
-    }
-
+    
 }

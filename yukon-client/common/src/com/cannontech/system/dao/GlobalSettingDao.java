@@ -144,10 +144,4 @@ public interface GlobalSettingDao {
      * Returns true when the event's Id matches the Id of globalSetting.
      */
     public boolean isDbChangeForSetting(DatabaseChangeEvent event, GlobalSettingType globalSettingType);
-
-
-    /**
-     * Returns true if globalSetting was changed.
-     */
-    boolean isDbChangeForSetting(DatabaseChangeEvent event);
 }

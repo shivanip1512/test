@@ -32,7 +32,6 @@
 
 </style>
 
-    <hr>
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
@@ -50,20 +49,12 @@
     <input type="hidden" id="getGatewaysUrl" value="${getGatewaysUrl}"/>
     
     <div style="height:800px">
-    
-        <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
-    
         <div id="map-container" style="height:100%;width:100%;background:white;">
     
             <div class="column-10-14 clearfix stacked">
                 <div class="column one">
                 </div>
                 <div class="column two nogutter fr">
-                    <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
-                    <cti:msg2 var="helpTitle" key=".helpTitle"/>
-                    <div id="map-help" class="dn" data-width="715" data-height="200" data-title="${helpTitle}">
-                        <%@ include file="/WEB-INF/pages/common/mapping/deviceTypeMarkerLenends.jsp" %>
-                    </div>
                     <c:if test="${empty dynamic}">
                         <div class="fr">
                             <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
@@ -104,7 +95,7 @@
             </div>
             
             <div class="column-18-6 clearfix stacked">
-                <div class="column one fl MT20">
+                <div class="column one fl">
                 
                     <c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
                     <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}" />
@@ -212,8 +203,9 @@
                     </span>
                 </div>
             </div>
-            <hr>
+            
             <div id="map" class="map" style="height:75%;" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+            
             <div class="buffered">
                 <div id="mouse-position" class="fl detail"></div>
                 <div id="scale-line" class="fl"></div>

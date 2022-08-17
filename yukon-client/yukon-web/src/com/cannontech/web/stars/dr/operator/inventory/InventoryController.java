@@ -35,7 +35,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -153,9 +152,6 @@ public class InventoryController {
             int deviceId = inventoryDao.getDeviceId(inventoryId);
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showMapNetwork", true);
-        } else if (hardware.getHardwareType().isEatonCloud()) {
-            model.addAttribute("IMEI", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.IMEI));
-            model.addAttribute("ICCID", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.ICCID));
         }
         setupModel(model, userContext, hardware);
 
@@ -233,7 +229,6 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
-        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         if (type.isZigbee()) {
             model.addAttribute("macAddressEditable", true);
@@ -478,19 +473,12 @@ public class InventoryController {
         // Setup elements to hide/show based on device type/class
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
-        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
-        
-        if (type.isEatonCloud()) {
-            model.addAttribute("showFirmwareVersion", true);
-        }
-        
         if (type.isZigbee()) {
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
-                model.addAttribute("firmwareVersionEditable", true);
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showDeviceVendorUserId", true);

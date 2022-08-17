@@ -72,7 +72,6 @@
     
     <xsd:complexType name="RequireRoleProperty">
         <xsd:attribute name="value" type="xsd:string"/>
-        <xsd:attribute name="level" type="xsd:string"/>
     </xsd:complexType>
     
     <xsd:complexType name="Pages">

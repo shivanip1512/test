@@ -3,23 +3,11 @@ package com.cannontech.web.tools.points.service;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.device.dao.DevicePointDao.SortBy;
-import com.cannontech.common.device.model.DevicePointsFilter;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.model.Direction;
-import com.cannontech.common.model.PagingParameters;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.editor.point.AlarmTableEntry;
-import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
-import com.cannontech.web.tools.points.model.PaoPointModel;
-import com.cannontech.web.tools.points.model.PointBaseModel;
-import com.cannontech.web.tools.points.model.PointCopy;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -34,13 +22,7 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointBase base, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
-
-    /**
-     * Save staleData
-     * @param staleData
-     */
-    public void saveStaleData(StaleData staleData);
+    int save(PointModel model, YukonUserContext userContext);
 
     /**
      * @param interfaceType
@@ -127,9 +109,10 @@ public interface PointEditorService {
 
     /**
      * Attempts to delete the point with the given id.
+     * 
      * @throws AttachedException if the point has attachments that prevent it from being deleted
      */
-    int delete(int id, YukonUserContext userContext) throws AttachedException;
+    void delete(int id, YukonUserContext userContext) throws AttachedException;
 
     /**
      * Creates a new point with the specified parent id
@@ -156,36 +139,4 @@ public interface PointEditorService {
      * @return LitePointModel
      */
     LitePointModel getLitePointModel(Integer pointId);
-    
-    /**
-     * Create the Point.
-     */
-    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
-
-    /**
-     * Update the Point.
-     */
-    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
-
-    /**
-     * Retrieve Point for passed pointId.
-     */
-    PointBaseModel<? extends PointBase> retrieve(int pointId);
-    
-    /**
-     * Copy Point.
-     */
-    PointBaseModel<? extends PointBase> copy(int portId, PointCopy pointCopy);
-    
-    /**
-     * Retrieve Points info for passed paoId.
-     */
-    PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
-                                       SortBy sortBy, PagingParameters paging);
-
-    /**
-     * Retrieve states for point Id.
-     */
-    List<LMDto> retrieveStates(int pointId);
-
 }

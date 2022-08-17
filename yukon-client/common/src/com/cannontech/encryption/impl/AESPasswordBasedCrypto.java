@@ -34,7 +34,6 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     private final byte[] initVector;
     private final byte[] hmacKey;
     private final byte[] aesKey;
-    private static final BouncyCastleFipsProvider bouncyCastle = new BouncyCastleFipsProvider();
 
 
     /************************
@@ -81,7 +80,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      */
     private AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
         try {
-            Security.addProvider(bouncyCastle);
+            Security.addProvider(new BouncyCastleFipsProvider());
 
             salt = CryptoUtils.pbkdf2(password, keyByteLength, CryptoUtils.getYukonsalt(), saltIters);
             initVector = CryptoUtils.pbkdf2(password, keyByteLength, salt, ivIters);
@@ -105,10 +104,10 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
             hMac.init(hMacKey);
 
             Key aesSpec = new SecretKeySpec(aesKey,ENCRYPTION_ALGORITHM);
-            encryptingCipher = Cipher.getInstance(TRANSFORMATION, bouncyCastle);
+            encryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             encryptingCipher.init(Cipher.ENCRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
 
-            decryptingCipher = Cipher.getInstance(TRANSFORMATION, bouncyCastle);
+            decryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             decryptingCipher.init(Cipher.DECRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
         } catch (Exception e) {
             throw new CryptoException(e);

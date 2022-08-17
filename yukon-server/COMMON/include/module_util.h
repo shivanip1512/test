@@ -12,6 +12,7 @@ struct compileinfo_t
 {
    const char *project;
    const char *version;
+   const char *details;
    const char *date;
 };
 
@@ -44,11 +45,15 @@ extern Cti::compileinfo_t CompileInfo;
 #define BUILD_VERSION (untagged)
 #endif
 
+#ifndef BUILD_VERSION_DETAILS
+#define BUILD_VERSION_DETAILS __TIMESTAMP__
+#endif
+
 // needed to turn a #define into a string
 #define STRINGIZE( x ) #x
 
 //  common info across all projects
-#define SETCOMPILEINFO( x, y ) Cti::compileinfo_t CompileInfo = { x, STRINGIZE(y), __TIMESTAMP__ }
+#define SETCOMPILEINFO( x, y, z ) Cti::compileinfo_t CompileInfo = { x, STRINGIZE(y), STRINGIZE(z), __TIMESTAMP__ }
 
-#define PROJECT_ID( x ) SETCOMPILEINFO( x, BUILD_VERSION )
+#define PROJECT_ID( x ) SETCOMPILEINFO( x, BUILD_VERSION, BUILD_VERSION_DETAILS )
 

@@ -1,9 +1,8 @@
 package com.cannontech.web.picker;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
 
-import org.junit.jupiter.api.Test;
-
+import org.junit.Test;
 import com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.vendor.DatabaseVendor;

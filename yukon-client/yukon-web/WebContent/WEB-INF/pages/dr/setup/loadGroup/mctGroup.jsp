@@ -40,8 +40,30 @@
             </c:choose>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".relayUsage">
-            <c:set var="items" value="${isViewMode ? loadGroup.relayUsage : relayUsageList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="relayUsage"/>
+            <c:choose>
+                <c:when test="${not isViewMode}">
+                    <div class="button-group stacked relayUsage" style="margin-left: -5px;">
+                        <c:forEach var="relayUsageValue" items="${relayUsageList}">
+                            <tags:check path="relayUsage" value="${relayUsageValue}" key="${relayUsageValue}"/>
+                        </c:forEach>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <c:choose>
+                        <c:when test="${fn:length(loadGroup.relayUsage) < 1}">
+                            <i:inline key="yukon.common.none.choice"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="relayUsageValue" items="${loadGroup.relayUsage}" varStatus="status">
+                                <c:if test="${!status.first}">
+                                    <i:inline key="yukon.common.comma"/>&nbsp;
+                                </c:if>
+                                <i:inline key="${relayUsageValue}"/>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </c:otherwise>
+            </c:choose>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>

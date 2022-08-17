@@ -17,6 +17,7 @@ struct OwnerInfo
 {
     std::string _project;
     std::string _version;
+    std::string _details;
     std::string _date;
 };
 

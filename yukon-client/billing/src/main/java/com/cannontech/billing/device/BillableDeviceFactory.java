@@ -108,8 +108,7 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFWMETER:
         case DeviceTypes.RFW201:
         case DeviceTypes.RFG201:
-        case DeviceTypes.RFG301A:
-        case DeviceTypes.RFG301R:
+        case DeviceTypes.RFG301:
         case DeviceTypes.RFN430SL0:
         case DeviceTypes.RFN430SL1:
         case DeviceTypes.RFN430SL2:
@@ -120,24 +119,13 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFN520FRX:
         case DeviceTypes.RFN520FAXD:
         case DeviceTypes.RFN520FRXD:
-        case DeviceTypes.RFN520FAXE:
-        case DeviceTypes.RFN520FRXE:
-        case DeviceTypes.RFN520FAXED:
-        case DeviceTypes.RFN520FRXED:
         case DeviceTypes.RFN530FAX:
         case DeviceTypes.RFN530FRX:
-        case DeviceTypes.RFN530FAXE:
-        case DeviceTypes.RFN530FRXE:
         case DeviceTypes.RFN530S4X:
         case DeviceTypes.RFN530S4EAX:
         case DeviceTypes.RFN530S4EAXR:
         case DeviceTypes.RFN530S4ERX:
         case DeviceTypes.RFN530S4ERXR:
-        case DeviceTypes.CRL520FAXE:
-        case DeviceTypes.CRL520FAXED:
-        case DeviceTypes.CRL530S4X:
-        case DeviceTypes.CRL520FRXE:
-        case DeviceTypes.CRL520FRXED:
             device = new RFN410();
             break;
 

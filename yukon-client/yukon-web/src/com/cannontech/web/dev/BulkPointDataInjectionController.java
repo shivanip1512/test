@@ -43,7 +43,6 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -233,7 +232,8 @@ public class BulkPointDataInjectionController {
                     injectionStatus.setAttribute(attribute);
                     injectionStatus.setDeviceGroupName(deviceGroupName);
                     DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(deviceGroupName);
-                    List<SimpleDevice> supportedDevices = attributeService.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
+                    List<SimpleDevice> supportedDevices =
+                        attributeService.getDevicesInGroupThatSupportAttribute(deviceGroup, attribute);
                     TimeRangeSplitter timeSplitter = new TimeRangeSplitter(start, stop, standardDuration);
                     RateLimiter throttle = RateLimiter.create(throttlePerSecond);
                     injectionStatus.setNumTotal((long) timeSplitter.getTotal() * supportedDevices.size());
@@ -427,7 +427,8 @@ public class BulkPointDataInjectionController {
         model.addAttribute("bulkInjection", bulkInjection);
 
         // attributes
-        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
+        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes =
+            objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("qualities", PointQuality.values());
     }

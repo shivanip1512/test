@@ -30,7 +30,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -897,21 +896,4 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             return enrollmentMessage;
         }
     };
-
-    @Override
-    public List<Integer> getActiveEnrolmentProgramIds(int inventoryId, int lmGroupId, int accountId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceID FROM LMProgramWebPublishing WHERE ProgramID");
-
-        SqlStatementBuilder innerSql = new SqlStatementBuilder();
-        innerSql.append("SELECT DISTINCT ProgramID FROM");
-        innerSql.append(TABLE_NAME);
-        innerSql.append("WHERE InventoryID").eq(inventoryId);
-        innerSql.append("AND LMGroupID").eq(lmGroupId);
-        innerSql.append("AND AccountID").eq(accountId);
-        innerSql.append("AND GroupEnrollStop IS NULL");
-        innerSql.append("AND OptOutStart IS NULL");
-        sql.in(innerSql);
-        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-    }
 }

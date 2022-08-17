@@ -81,7 +81,7 @@
                                                             id="disableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.disable.label"
                                                             data-href="${disableUrl}"
-                                                            icon="icon-disable" />
+                                                            icon="icon-delete" />
                                                     </c:if>
                                                     </c:when>
                                                     <c:otherwise>
@@ -99,7 +99,7 @@
                                                         <cm:dropdownOption
                                                             id="disableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.disable.label"
-                                                            icon="icon-disable"
+                                                            icon="icon-delete"
                                                             disabled="true" />
                                                     </c:if>
                                                     </c:otherwise>
@@ -108,7 +108,7 @@
                                             data-job-id="${job.id}"
                                             id="deleteScheduleItem_${job.id}"
                                             classes="js-delete-schedule-item"
-                                            icon="icon-delete"/>
+                                            icon="icon-cross"/>
                                     </cm:dropdown>
                                 </td>
                             </tr>

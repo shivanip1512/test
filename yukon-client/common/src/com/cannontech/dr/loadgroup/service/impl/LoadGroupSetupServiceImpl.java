@@ -3,12 +3,15 @@ package com.cannontech.dr.loadgroup.service.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
@@ -16,8 +19,7 @@ import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
 import com.cannontech.common.dr.setup.LoadGroupRoute;
-import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.DeletionFailureException;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -31,7 +33,6 @@ import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
@@ -44,42 +45,47 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private DemandResponseEventLogService logService;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DbChangeManager dbChangeManager;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupServiceImpl.class);
 
+    @Override
+    public List<LMPaoDto> retrieveAvailableLoadGroup() {
+        List<LiteYukonPAObject> list = dbCache.getAllLMGroups();
+
+        if (list.size() == 0) {
+            throw new NotFoundException("No load group available.");
+        }
+        
+        List<LMPaoDto> availableLoadGroups = list.stream()
+                                                 .filter(yukonPAObject -> yukonPAObject.getPaoType().supportsMacroGroup() && yukonPAObject.getPaoType() != PaoType.MACRO_GROUP)
+                                                 .map(yukonPAObject -> createLMPaoDto(yukonPAObject))
+                                                 .collect(Collectors.toList());
+        return availableLoadGroups;
+    }
+    
     private LMPaoDto createLMPaoDto(LiteYukonPAObject yukonPAObject) {
         return new LMPaoDto(yukonPAObject.getYukonID(), yukonPAObject.getPaoName(), yukonPAObject.getPaoType());
     }
 
     @Override
     @Transactional
-    public LoadGroupBase create(LoadGroupBase loadGroup, LiteYukonUser liteYukonUser) {
+    public int create(LoadGroupBase loadGroup) {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
 
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
-        loadGroup.buildModel(lmGroup);
-        if (loadGroup instanceof LoadGroupRoute) {
-            setRouteName((LoadGroupRoute) loadGroup);
-        }
-        if (loadGroup instanceof LoadGroupPoint) {
-            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
-            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
-            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
-        }
-        logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
-        return loadGroup;
+
+        return lmGroup.getPAObjectID();
     }
 
     @Override
     @Transactional
-    public LoadGroupBase update(int loadGroupId, LoadGroupBase loadGroup, LiteYukonUser liteYukonUser) {
+    public int update(int loadGroupId, LoadGroupBase loadGroup) {
         Optional<LiteYukonPAObject> liteLoadGroup =
             dbCache.getAllLMGroups().stream().filter(group -> group.getLiteID() == loadGroupId).findFirst();
 
@@ -90,23 +96,13 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
-        loadGroup.buildModel(lmGroup);
-        if (loadGroup instanceof LoadGroupRoute) {
-            setRouteName((LoadGroupRoute) loadGroup);
-        }
-        if (loadGroup instanceof LoadGroupPoint) {
-            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
-            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroup;
-            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
-        }
-        logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(), liteYukonUser);
-        return loadGroup;
+        return lmGroup.getPAObjectID();
     }
 
     @Override
-    public LoadGroupBase retrieve(int loadGroupId, LiteYukonUser liteYukonUser) {
+    public LoadGroupBase retrieve(int loadGroupId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(loadGroupId);
-        if (pao == null || !pao.getPaoType().isLoadGroupSupportedFromWeb()) {
+        if (pao == null || pao.getPaoType() == PaoType.MACRO_GROUP) {
             throw new NotFoundException("Id not found");
         }
         LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(pao);
@@ -116,69 +112,63 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             setRouteName((LoadGroupRoute)loadGroupBase);
         }
         if (loadGroupBase instanceof LoadGroupPoint) {
+
             LMGroupPoint lmGroupPoint = (LMGroupPoint) loadGroup;
             LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
-            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
+            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+            loadGroupPoint.setStartControlRawState(
+                    new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+
         }
         return loadGroupBase;
     }
 
     @Override
     @Transactional
-    public int delete(int loadGroupId, LiteYukonUser liteYukonUser) {
+    public int delete(int loadGroupId, String loadGroupName) {
         Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
                                                            .stream()
-                                                           .filter(group -> group.getLiteID() == loadGroupId)
+                                                           .filter(group -> group.getLiteID() == loadGroupId && group.getPaoName().equalsIgnoreCase(loadGroupName))
                                                            .findFirst();
-        if (liteLoadGroup.isEmpty() || !liteLoadGroup.get().getPaoType().isLoadGroupSupportedFromWeb()) {
-            throw new NotFoundException("Id not found");
+        if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
+            throw new NotFoundException("Id and Name combination not found");
         }
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         checkIfGroupIsUsed(liteLoadGroup.get().getPaoName(), paoId);
         YukonPAObject lmGroup = (YukonPAObject) LiteFactory.createDBPersistent(liteLoadGroup.get());
         dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
-        logService.loadGroupDeleted(liteLoadGroup.get().getPaoName(), liteLoadGroup.get().getPaoType(), liteYukonUser);
         return lmGroup.getPAObjectID();
     }
 
     @Override
     @Transactional
-    public LoadGroupBase copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
-    
+    public int copy(int loadGroupId, LMCopy lmCopy) {
         Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
                                                           .stream()
                                                           .filter(group -> group.getLiteID() == loadGroupId)
                                                           .findFirst();
-        if (liteLoadGroup.isEmpty() || !liteLoadGroup.get().getPaoType().isLoadGroupSupportedFromWeb()) {
+        if (liteLoadGroup.isEmpty() || liteLoadGroup.get().getPaoType() == PaoType.MACRO_GROUP) {
             throw new NotFoundException("Id not found");
         }
 
-        LMGroup lmGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
-        int oldLoadGroupId = lmGroup.getPAObjectID();
-        lmCopy.buildModel(lmGroup);
-        lmGroup.setPAObjectID(null);
+        LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
+        int oldLoadGroupId = loadGroup.getPAObjectID();
+        lmCopy.buildModel(loadGroup);
+        loadGroup.setPAObjectID(null);
 
-        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        dbPersistentDao.performDBChange(loadGroup, TransactionType.INSERT);
 
         List<PointBase> points = pointDao.getPointsForPao(oldLoadGroupId);
-        SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
+        SimpleDevice device = SimpleDevice.of(loadGroup.getPAObjectID(), loadGroup.getPaoType());
         paoCreationHelper.applyPoints(device, points);
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
-    
-        LoadGroupBase loadGroupBase = getModel(lmGroup.getPaoType());
-        loadGroupBase.buildModel(lmGroup);
-        if (loadGroupBase instanceof LoadGroupRoute) {
-            setRouteName((LoadGroupRoute) loadGroupBase);
-        }
-        if (loadGroupBase instanceof LoadGroupPoint) {
-            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
-            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
-            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
-        }
-        logService.loadGroupCreated(loadGroupBase.getName(), loadGroupBase.getType(), liteYukonUser);
-        
-        
-        return loadGroupBase;
+
+        return loadGroup.getPAObjectID();
     }
 
     /**
@@ -220,13 +210,22 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             if ((program = com.cannontech.database.db.device.lm.LMGroup.isGroupUsed(paoId)) != null) {
                 String message = "You cannot delete the device '" + Groupname
                     + "' because it is utilized by the LM program named '" + program + "'";
-                throw new DeletionFailureException(message);
+                throw new LMObjectDeletionFailureException(message);
             }
         } catch (SQLException e) {
             String message = "Unable to delete load group with name : " + Groupname + e;
             log.error(message);
-            throw new DeletionFailureException(message);
+            throw new LMObjectDeletionFailureException(message);
         }
+    }
+
+    @Override
+    public List<ControlRawState> getPointGroupStartState(int pointId) {
+        List<LiteState> stateList = stateGroupDao.getStateList(pointId);
+        return stateList.stream()
+                        .filter(state -> isValidPointGroupRawState(state))
+                        .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
+                        .collect(Collectors.toList());
     }
 
     /**
@@ -235,18 +234,4 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     public static boolean isValidPointGroupRawState(LiteState liteState) {
         return (liteState.getStateRawState() == 0 || liteState.getStateRawState() == 1);
     }
-
-    /**
-     * Update deviceUsageName,pointUsageName and rawStateName
-     */
-    private void updateLoadGroupPoint(LMGroupPoint lmGroupPoint, LoadGroupPoint loadGroupPoint) {
-        String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
-        String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
-        String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
-                lmGroupPoint.getLMGroupPoint().getStartControlRawState());
-        loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
-        loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
-        loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
-    }
-
 }

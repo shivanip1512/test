@@ -25,33 +25,32 @@ yukon.da.busview = (function () {
 
         $(".js-events-timeline").each(function () {
             
-            var _id = $(this).data('zoneId'),
-                timeline = $(this);
-            if (timeline.is(':visible')) {
-                $.ajax({
-                    url : yukon.url('/capcontrol/zones/' + _id + '/events'),
-                    data : {
-                        'range' : range
-                    }
-                }).done(function (events) {
-                    var toAdd = [],
-                        options = {},
-                        now = new Date(),
-                        hoursAgo = _range_hours[range],
-                        begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
-                    options.end = new Date().getTime();
-                    options.begin = begin.getTime();
-                    options.showLabels = true;
-    
-                    // Reverse order to add oldest first.
-                    events.reverse().forEach(function (event) {
-                        toAdd.push(event);
-                    });
-                    options.events = toAdd;
-                    timeline.timeline(options);
-                    timeline.timeline('draw');
+            var _id = $(this).data('zoneId');
+            $.ajax({
+                url : yukon.url('/capcontrol/zones/' + _id + '/events'),
+                data : {
+                    'range' : range
+                }
+            }).done(function (events) {
+
+                var timeline = $('.js-events-timeline[data-zone-id="' + _id + '"]');
+                var toAdd = [];
+                var options = {};
+                options.end = new Date().getTime();
+                var now = new Date();
+                var hoursAgo = _range_hours[range];
+                var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
+                options.begin = begin.getTime();
+                options.showLabels = true;
+
+                // Reverse order to add oldest first.
+                events.reverse().forEach(function (event) {
+                    toAdd.push(event);
                 });
-            }
+                options.events = toAdd;
+                timeline.timeline(options);
+                timeline.timeline('draw');
+            });
 
         });
         _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
@@ -136,17 +135,6 @@ yukon.da.busview = (function () {
         setTimeout(_updateRecentEventsTable, yg.rp.updater_delay);
 
     };
-    
-    var _zoneHierarchyTreeClick = function (event, data) {
-        var node = data.node;
-        node.setSelected(true);
-        $.ajax({
-            url : yukon.url('/capcontrol/ivvc/zone/selectedZoneDetail?zoneId=' + node.data.id),
-        }).done(function (zoneDetail) {
-            $('.js-selected-zone-details').html(zoneDetail);
-            yukon.ui.block($('#selectedZoneEvents'), 200);
-        });
-    };
 
    var mod = {
 
@@ -158,8 +146,6 @@ yukon.da.busview = (function () {
             
             _range_hours = yukon.fromJson('#range-hours');
             
-            $('#zoneHierarchyTree').fancytree('option', 'activate', _zoneHierarchyTreeClick);
-            
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {
                 var url = yukon.url('/user/updateDisplayEventRangePreference.json'),
@@ -170,14 +156,6 @@ yukon.da.busview = (function () {
                 clearTimeout(_events_token);
                 _updateRecentEvents();
                 _updateRecentEventsTable();
-            });
-            
-            $(document).on('click', '.js-command-button', function (event) {
-                var button = $(this),
-                    paoId = button.data('paoId'),
-                    cmdId = button.data('commandId');
-                
-                doItemCommand(paoId, cmdId, event);
             });
 
             _updateRecentEvents();

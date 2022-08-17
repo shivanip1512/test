@@ -42,9 +42,6 @@ public:
 
     virtual CtiLMProgramDirectGear* replicate() const;
 
-   std::size_t getFixedSize() const override    { return sizeof( *this ); }
-   std::size_t getVariableSize() const override;
-
 protected:
     void restore(Cti::RowReader &rdr);
 

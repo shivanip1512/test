@@ -44,17 +44,3 @@ void CtiLMGroupMacro::restore(Cti::RowReader &rdr)
     CtiLMGroupBase::restore(rdr);
 }
 
-std::size_t CtiLMGroupMacro::getVariableSize() const
-{
-    std::size_t sz = CtiLMGroupBase::getVariableSize();
-
-    sz += _children.capacity() * sizeof( CtiLMGroupBase* );
-
-    for ( const auto & child : _children )
-    {
-//        sz += calculateMemoryConsumption( child );    // -- do we need this?? -- jmoc
-    }
-
-    return sz;
-}
-

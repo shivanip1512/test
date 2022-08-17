@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -19,8 +18,6 @@ import javax.xml.soap.SOAPException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +29,8 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
@@ -61,7 +56,6 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public RolePropertyDao rolePropertyDao;
     @Autowired public HttpComponentsMessageSender messageSender;
-    @Autowired private ConfigurationSource configurationSource;
 
     /** A method that loads the response header. */
     public abstract void loadResponseHeader() throws MultispeakWebServiceException;
@@ -309,18 +303,17 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
      */
     public MultiSpeakVersion getPrimaryCISVersion(MultispeakVendor mspVendor) {
         MultispeakInterface cb_server_v3 = mspVendor.getMspInterfaceMap()
-                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V3));
-        MultispeakInterface cb_server_v4 = mspVendor.getMspInterfaceMap()
-                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V4));
-        MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
-                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V5));
-
+                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V3));
+        
         if (cb_server_v3 != null) {
             return cb_server_v3.getVersion();
-        } else if (cb_server_v4 != null) {
-            return cb_server_v4.getVersion();
-        } else if (cb_server_v5 != null) {
-            return cb_server_v5.getVersion();
+        } else {
+            MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
+                    .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V5));
+            
+            if (cb_server_v5 != null) {
+                return cb_server_v5.getVersion();
+            }
         }
         return null;
     }
@@ -332,13 +325,8 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         int timeOut = (int) mspVendor.getRequestMessageTimeout();
         messageSender.setReadTimeout(timeOut);
         messageSender.setConnectionTimeout(timeOut);
-        messageSender.setMaxTotalConnections(configurationSource.getInteger("MSP_HTTP_TOTAL_CONNECTIONS", 20));
-
-        HttpClient httpClient = messageSender.getHttpClient();
-        PoolingClientConnectionManager clientConnectionManager = (PoolingClientConnectionManager) httpClient.getConnectionManager();
-        clientConnectionManager.setDefaultMaxPerRoute(configurationSource.getInteger("MSP_HTTP_NUMBER_OF_CONNECTIONS_PER_ROUTE", 2));
     }
-
+    
     /**
      * Sets message sender/SSL message sender based on vendor settings.
      */
@@ -348,7 +336,6 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
             webServiceTemplate.setMessageSender(messageSender);
         } else {
             int timeOut = (int) mspVendor.getRequestMessageTimeout();
-            
             webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance(timeOut));
         }
 
@@ -362,31 +349,4 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         mspCisVendorList.add(0, MultispeakVendor.noneVendor);
         return mspCisVendorList;
     }
-
-    /**
-     * return Outgoing Credentials from multispeak vendor based on interface name and Use Vendor Authentication Settings.
-     */
-    public Credentials getOutgoingCredentials(MultispeakVendor mspVendor, String interfaceName) {
-        MultispeakInterface mspInterface = mspVendor.getMspInterfaces()
-                                                    .stream()
-                                                    .filter(m -> m.getMspInterface().equals(interfaceName) && !m.getUseVendorAuth())
-                                                    .findFirst()
-                                                    .orElse(null);
-
-        if (mspInterface != null) {
-            return new Credentials(mspInterface.getOutUserName(), mspInterface.getOutPassword());
-        } else {
-            return new Credentials(mspVendor.getOutUserName(), mspVendor.getOutPassword());
-        }
-    }
-    
-    public EnumSet<BuiltInAttribute> getBuiltInAttributesForVendor(List<MspAttribute> vendorAttributes) {
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
-
-        for (MspAttribute attribute : vendorAttributes) {
-            attributesToLoad.addAll(attribute.getBuiltInAttributes());
-        }
-        return attributesToLoad;
-    }
-    
 }

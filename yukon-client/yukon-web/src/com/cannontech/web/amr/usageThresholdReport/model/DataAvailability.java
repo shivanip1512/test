@@ -1,26 +1,20 @@
 package com.cannontech.web.amr.usageThresholdReport.model;
 
-import com.cannontech.common.YukonColorPalette;
-
 public enum DataAvailability {
     
-    COMPLETE(YukonColorPalette.GREEN), 
-    PARTIAL(YukonColorPalette.BLUE),
-    NONE(YukonColorPalette.ORANGE),
-    UNSUPPORTED(YukonColorPalette.GRAY);
+    COMPLETE("#009933"), 
+    PARTIAL("#4d90fe"),
+    NONE("#ec971f"),
+    UNSUPPORTED("#888");
     
-    private DataAvailability(YukonColorPalette color) {
+    private DataAvailability(String color) {
         this.color = color;
     }
 
-    private final YukonColorPalette color;
+    private final String color;
     
-    public YukonColorPalette getColor() {
+    public String getColor() {
         return color;
-    }
-    
-    public String getColorHex() {
-        return color.getHexValue();
     }
 
 }

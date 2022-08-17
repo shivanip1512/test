@@ -5,7 +5,6 @@
     </pointFiles>
     <tags>
         <tag name="METER_DETAIL_DISPLAYABLE"/>
-        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
     </tags>
     <pointInfos>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND"/>

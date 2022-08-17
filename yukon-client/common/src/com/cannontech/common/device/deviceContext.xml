@@ -19,7 +19,7 @@
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionServiceImpl"/>
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLogDetailServiceImpl"/>
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLoggingHelperServiceImpl"/>
-
+    
     <bean id="commandRequestExecutionDao"
         class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl"/>
 
@@ -47,8 +47,6 @@
     <bean id="paoDefinitionDao" class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl"/>
     
     <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
-    
-     <bean class="com.cannontech.common.pao.attribute.dao.impl.AttributeDaoImpl"/>
     
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
@@ -255,10 +253,5 @@
     
     <bean class="com.cannontech.common.device.programming.dao.impl.MeterProgrammingDaoImpl"/>
     
-    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgrammingServiceImpl"/>
-    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgramValidationServiceImpl"/>
-    
-    <bean class="com.cannontech.common.device.port.dao.impl.PortDaoImpl"/>
-    
-    <bean class="com.cannontech.common.device.terminal.dao.impl.PagingTerminalDaoImpl"/>
+    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgrammingServiceImpl"/>    
 </beans>

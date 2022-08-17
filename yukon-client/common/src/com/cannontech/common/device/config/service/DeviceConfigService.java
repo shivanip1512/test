@@ -4,43 +4,32 @@ import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
 import com.cannontech.user.YukonUserContext;
 
 public interface DeviceConfigService {
 
-    int sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<CollectionActionResult> callback,
-            YukonUserContext context);
+    public int sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+    
+    public int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+    
+    public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
 
-    int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
+    public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
+    
+    public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception;
 
-    VerifyResult verifyConfig(SimpleDevice device, LiteYukonUser user);
+    public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception;
 
-    void readConfig(SimpleDevice device, LiteYukonUser user);
-
-    void sendConfig(SimpleDevice device, LiteYukonUser user);
-
-    enum LogAction {
+    public enum LogAction {
         READ, SEND, VERIFY
     }
-
-    /**
-     * Updates device config state for success results for assign and unassign collection action
-     */
-    void updateConfigStateForAssignAndUnassign(CollectionActionResult result);
-
-    /**
-     * Updates status to "In Progress", used by Commander
-     */
-    void processCommandRequest(List<Request> commandRequests);
-
-    /**
-     * Updates status based on return value from Porter, used by Commander
-     */
-    void processCommandReturn(Return response);
+    
+    int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context);
 }

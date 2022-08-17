@@ -4,10 +4,13 @@
 #include "std_helper.h"
 #include "msg_pdata.h"
 #include "ccutil.h"
-#include "Requests.h"
 
 
-namespace Cti::CapControl {
+extern unsigned long _MSG_PRIORITY;
+
+
+namespace Cti           {
+namespace CapControl    {
 
 void Policy::loadAttributes( AttributeService & service, const long paoID )
 {
@@ -108,23 +111,23 @@ std::unique_ptr<CtiSignalMsg> Policy::makeSignalTemplate( const long ID, const l
     return signal;
 }
 
-PorterRequest Policy::makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType )
+std::unique_ptr<CtiRequestMsg> Policy::makeRequestTemplate( const long ID, const std::string & command )
 {
-    PorterRequest request { requestType, std::make_unique<CtiRequestMsg>( ID, command ) };
+    auto request = std::make_unique<CtiRequestMsg>( ID, command );
 
+    request->setMessagePriority( _MSG_PRIORITY );
     request->setSOE( 5 );
 
     return request;
 }
 
-Policy::Action Policy::makeStandardDigitalControl( const LitePoint & point, const std::string & description, const RequestType requestType )
+Policy::Action Policy::makeStandardDigitalControl( const LitePoint & point, const std::string & description )
 {
     return 
     {
         makeSignalTemplate( point.getPointId(), 0, description ),
         makeRequestTemplate( point.getPaoId(),
-                             point.getStateOneControl() + " select pointid " + std::to_string( point.getPointId() ),
-                             requestType )
+                             point.getStateOneControl() + " select pointid " + std::to_string( point.getPointId() ) )
     };
 }
 
@@ -165,3 +168,5 @@ const Attribute & UninitializedPointValue::attribute() const
 }
 
 }
+}
+

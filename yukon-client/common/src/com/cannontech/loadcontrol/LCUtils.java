@@ -1,12 +1,12 @@
 package com.cannontech.loadcontrol;
 
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ConstraintContainer;
@@ -22,6 +22,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.util.ServletUtil;
 import com.google.common.collect.Lists;
 
 /**
@@ -35,19 +36,21 @@ public class LCUtils {
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
     public static final SimpleDateFormat TEMPORAL_FORMATTER = new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
 
-    public static final YukonColorPalette[] CELL_COLORS = {
+    public static final Color[] CELL_COLORS = {
         // Inactive
-        YukonColorPalette.BLACK,
+        Color.BLACK,
         // Active, Manual Active & Fully Active
-        YukonColorPalette.GREEN,
+        Color.GREEN,
         // Scheduled
-        YukonColorPalette.YELLOW,
+        Color.YELLOW,
+
         // Disabled program
-        YukonColorPalette.RED,
+        Color.RED,
+
         // Scheduled
-        YukonColorPalette.TEAL,
+        Color.CYAN,
         // Notified
-        YukonColorPalette.ORANGE };
+        Color.ORANGE };
 
     // available times a group can be shed for
     public static final String[] SHED_STRS = { "5 minutes", "7 minutes", "10 minutes", "15 minutes", "20 minutes",
@@ -61,7 +64,7 @@ public class LCUtils {
     }
 
     public static synchronized String getFgColor(LMControlArea area) {
-        YukonColorPalette retColor = YukonColorPalette.BLACK;
+        Color retColor = Color.BLACK;
 
         if (area != null) {
             if (area.getDisableFlag().booleanValue()) {
@@ -80,11 +83,11 @@ public class LCUtils {
 
         }
 
-        return retColor.getHexValue();
+        return "#" + ServletUtil.getHTMLColor(retColor);
     }
 
     public static synchronized String getFgColor(LMProgramBase prg) {
-        YukonColorPalette retColor = YukonColorPalette.BLACK;
+        Color retColor = Color.BLACK;
 
         if (prg != null) {
             if (prg.getDisableFlag().booleanValue()) {
@@ -107,11 +110,11 @@ public class LCUtils {
             }
         }
 
-        return retColor.getHexValue();
+        return "#" + ServletUtil.getHTMLColor(retColor);
     }
 
     public static synchronized String getFgColor(ILMGroup grp) {
-        YukonColorPalette retColor = YukonColorPalette.BLACK;
+        Color retColor = Color.BLACK;
 
         if (grp != null) {
             String state = grp.getGroupControlStateString();
@@ -133,7 +136,7 @@ public class LCUtils {
             }
         }
 
-        return retColor.getHexValue();
+        return "#" + ServletUtil.getHTMLColor(retColor);
     }
 
     public static synchronized String getProgAvailChgStr(LMProgramBase prog) {

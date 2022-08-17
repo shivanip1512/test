@@ -22,11 +22,8 @@ yukon.historical.readings = (function () {
             $(".js-trend-container_" + pointId).removeClass("dn");
             $("#trend-graph_" + pointId).html(response);
             $("#duration_" + pointId).closest(".ui-widget-content").dialog({
-                width : 830,
-                height : 500,
-                resizeStop: function(event, ui) {
-                    yukon.highChart.redrawTrendChart($(this), ui);
-                }
+                width : 800,
+                height : 500
             });
         }).always(function () {
             yukon.ui.unblock($(".js-trend-container_" + pointId));
@@ -105,7 +102,10 @@ yukon.historical.readings = (function () {
             });
             
             $(document).on('click', '.js-close-trend-btn', function (event) {
-                $(this).closest(".ui-widget-content").dialog();
+                $(this).closest(".ui-widget-content").dialog({
+                    width : 500,
+                    height : 400
+                });
                 $(this).closest("div[class^='js-trend-container_']").addClass("dn");
             });
             

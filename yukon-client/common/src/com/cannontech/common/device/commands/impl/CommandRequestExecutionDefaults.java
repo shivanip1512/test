@@ -88,7 +88,6 @@ public final class CommandRequestExecutionDefaults {
         b.put(METER_PROGRAM_STATUS_READ,                          new ExecutionInfo(false, 7, false));
         b.put(METER_PROGRAM_UPLOAD_CANCEL,                        new ExecutionInfo(false, 8, false));
         b.put(WIFI_METER_CONNECTION_STATUS_REFRESH,               new ExecutionInfo(false, 14, false));
-        b.put(CELLULAR_CONNECTION_STATUS_REFRESH,                 new ExecutionInfo(false, 14, false));
         infoLookup = b.build();
     }
 

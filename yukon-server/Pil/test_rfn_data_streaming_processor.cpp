@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
 
     test_RfDataStreamingProcessor p { dm, pm };
 
-    const auto tz_override = Cti::Test::set_to_eastern_timezone();
+    Cti::Test::set_to_eastern_timezone();
 
     {
         test_RfDataStreamingProcessor::DeviceReport r {

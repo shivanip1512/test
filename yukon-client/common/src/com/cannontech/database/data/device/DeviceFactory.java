@@ -19,7 +19,6 @@ import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
 import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
 import com.cannontech.database.data.device.lm.LMGroupDigiSep;
-import com.cannontech.database.data.device.lm.LMGroupEatonCloud;
 import com.cannontech.database.data.device.lm.LMGroupEcobee;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupGolay;
@@ -201,8 +200,7 @@ public final class DeviceFactory {
         case RFWMETER:
         case RFW201:
         case RFG201:
-        case RFG301A:
-        case RFG301R:
+        case RFG301:
         case RFN430SL0:
         case RFN430SL1:
         case RFN430SL2:
@@ -213,24 +211,13 @@ public final class DeviceFactory {
         case RFN520FRX:
         case RFN520FAXD:
         case RFN520FRXD:
-        case RFN520FAXE:
-        case RFN520FRXE:
-        case RFN520FAXED:
-        case RFN520FRXED:
         case RFN530FAX:
         case RFN530FRX:
-        case RFN530FAXE:
-        case RFN530FRXE:
         case RFN530S4X:
-        case CRL530S4X:
         case RFN530S4EAX:
         case RFN530S4EAXR:
         case RFN530S4ERX:
         case RFN530S4ERXR:
-        case CRL520FAXE:
-        case CRL520FAXED:
-        case CRL520FRXE:
-        case CRL520FRXED:
             returnDevice = new RfnMeterBase(paoType);
             break;
             
@@ -245,21 +232,11 @@ public final class DeviceFactory {
             break;
 
         //ITRON (SilverSpring) type devices
-        case LCR6200S:
-            returnDevice = new Lcr6200S();
-            break;
         case LCR6600S:
             returnDevice = new Lcr6600S();
             break;
         case LCR6601S:
             returnDevice = new Lcr6601S();
-            break;
-            
-        case LCR6200C:
-            returnDevice = new Lcr6200C();
-            break;
-        case LCR6600C:
-            returnDevice = new Lcr6600C();
             break;
         
         //Carrier type devices
@@ -451,9 +428,6 @@ public final class DeviceFactory {
         case LM_GROUP_METER_DISCONNECT:
             returnDevice = new LMGroupMeterDisconnect();
             break;    
-        case LM_GROUP_EATON_CLOUD:
-            returnDevice = new LMGroupEatonCloud();
-            break;
 
         case CAPBANK:
             returnDevice = new CapBank();
@@ -543,23 +517,11 @@ public final class DeviceFactory {
         case GWY800:
             returnDevice = new RfnGwy800();
             break;
-        case GWY801:
-            returnDevice = new RfnGwy801();
-            break;
         case RFN_RELAY:
             returnDevice = new RfnRelay();
             break;
-        case CRLY856:
-            returnDevice = new CellularRelay856();
-            break;
         case VIRTUAL_GATEWAY:
             returnDevice = new RfnVirtualGateway();
-            break;
-        case VIRTUAL_METER:
-            returnDevice = new VirtualMeter();
-            break;
-        case RFN530S4X_DER:
-            returnDevice = new Rfn530S4XDer();
             break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");

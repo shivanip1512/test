@@ -9,10 +9,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
-import com.cannontech.amr.archivedValueExporter.model.CMEPUnitEnum;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.billing.model.CMEPCommodityEnum;
+import com.cannontech.billing.model.CMEPUnitEnum;
 import com.cannontech.billing.model.CMEP_MEPMD01Record;
 import com.cannontech.billing.model.CMEP_MEPMD01Record.DataEntry;
 import com.cannontech.clientutils.CTILogger;

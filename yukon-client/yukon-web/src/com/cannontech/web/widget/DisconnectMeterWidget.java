@@ -154,8 +154,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "query", method = RequestMethod.POST)
     public String query(ModelMap model, YukonUserContext userContext, Integer deviceId) {
     	
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, HierarchyPermissionLevel.INTERACT, userContext.getYukonUser());
-        RfnMeter meter = (RfnMeter) meterDao.getForId(deviceId);
+    	RfnMeter meter = (RfnMeter) meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
 
         class WaitableCallback implements RfnMeterDisconnectCallback {
@@ -254,7 +253,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "connect", method = RequestMethod.POST)
     public String connect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, HierarchyPermissionLevel.INTERACT, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
         
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
@@ -270,7 +269,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "disconnect", method = RequestMethod.POST)
     public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, HierarchyPermissionLevel.OWNER, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
         
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);
@@ -285,7 +284,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "arm", method = RequestMethod.POST)
     public String arm(ModelMap model, YukonUserContext userContext, int deviceId) {
         
-        rolePropertyDao.verifyLevel(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, HierarchyPermissionLevel.INTERACT, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
         
         YukonMeter meter = meterDao.getForId(deviceId);
         initModel(model, userContext, meter);

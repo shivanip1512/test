@@ -1,0 +1,20 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Honeywell
+
+*Request JSON* :
+
+include::{snippets}/HoneywellLoadGroupSetupApiControllerTest/Test_LmHoneywell_Get/http-request.adoc[]
+
+*Response Parameter's* :
+
+include::{snippets}/HoneywellLoadGroupSetupApiControllerTest/Test_LmHoneywell_Get/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/HoneywellLoadGroupSetupApiControllerTest/Test_LmHoneywell_Get/http-response.adoc[]

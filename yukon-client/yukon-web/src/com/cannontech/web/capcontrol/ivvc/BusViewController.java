@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -47,11 +46,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.capcontrol.models.ViewableFeeder;
-import com.cannontech.web.capcontrol.service.BusService;
-import com.cannontech.web.common.chart.service.HighChartService;
+import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.util.JsTreeNode;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -67,12 +63,11 @@ public class BusViewController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private VoltageFlatnessGraphService voltageFlatness;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
-    @Autowired private HighChartService highChartService;
+    @Autowired private FlotChartService flotChartService;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private IvvcHelper ivvcHelper;
-    @Autowired private BusService busService;
     
-    @GetMapping("detail")
+    @RequestMapping(value="detail", method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
         
         setupDetails(model, userContext, subBusId, req);
@@ -114,13 +109,10 @@ public class BusViewController {
             hours.put(range.name(), range.getHours());
         }
         model.put("hours", hours);
-        
-        List<ViewableFeeder> feederList = busService.getFeedersForBus(subBusId);
-        model.addAttribute("feederList", feederList);
 
     }
     
-    @GetMapping("chart")
+    @RequestMapping(value="chart", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext, int subBusId) {
         
         boolean zoneAttributesExist = voltageFlatness.
@@ -129,44 +121,11 @@ public class BusViewController {
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatness.getSubBusGraph(userContext, subBusId);
             Map<String, Object> graphAsJson = 
-                    highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
+                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             return graphAsJson;
         }
         
         return Collections.emptyMap();
-    }
-    
-    @GetMapping("{id}/zoneHierarchy")
-    public @ResponseBody Map<String, Object> zoneHierarchy(@PathVariable int id) {
-        ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(id);
-        //system root node - needed for display
-        JsTreeNode systemRoot = new JsTreeNode();
-        
-        if (hierarchy != null) {
-            JsTreeNode rootZone = new JsTreeNode();
-            rootZone.setAttribute("id", hierarchy.getZone().getZoneId());
-            rootZone.setAttribute("text", hierarchy.getZone().getName());
-            rootZone.setAttribute("expanded", true);
-
-            // recursively add child zones
-            addChildren(hierarchy, rootZone);
-            
-            systemRoot.addChild(rootZone);
-        }
-                
-        JsTreeNode.setLeaf(systemRoot);
-        
-        return systemRoot.toMap();
-    }
-    
-    private void addChildren(ZoneHierarchy hierarchy, JsTreeNode node) {
-        for (ZoneHierarchy child : hierarchy.getChildren()) {
-            JsTreeNode childNode = new JsTreeNode();
-            childNode.setAttribute("id", child.getZone().getZoneId());
-            childNode.setAttribute("text", child.getZone().getName());
-            addChildren(child, childNode);
-            node.addChild(childNode);
-        }
     }
     
     private VfGraph setupChart(ModelMap model, YukonUserContext userContext, int subBusId) {
@@ -178,7 +137,7 @@ public class BusViewController {
         if (zoneAttributesExist) {
             graph = voltageFlatness.getSubBusGraph(userContext, subBusId);
             Map<String, Object> graphAsJSON = 
-                    highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
+                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());
@@ -222,7 +181,7 @@ public class BusViewController {
     private void setupZoneList(ModelMap model, int subBusId) {
         
         ZoneHierarchy hierarchy = zoneService.getZoneHierarchyBySubBusId(subBusId);
-        model.addAttribute("zones", hierarchy);
+        model.addAttribute("zones",hierarchy);
         
         Map<String, Phase> phaseMap = Maps.newHashMapWithExpectedSize(3);
         for (Phase phase : Phase.getRealPhases()) {

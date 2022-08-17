@@ -2,7 +2,6 @@
 
 #include <boost/lexical_cast.hpp>
 #include "macro_offset.h"
-#include <cassert>
 
 namespace Cti {
 

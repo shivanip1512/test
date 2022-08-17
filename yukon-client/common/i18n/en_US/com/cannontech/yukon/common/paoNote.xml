@@ -9,6 +9,7 @@
     <entry key="yukon.web.common.paoNote.confirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.common.paoNote.confirmDelete.message">Are you sure you want to delete this note?</entry>
     <entry key="yukon.web.common.paoNote.confirmDelete.ok">Delete</entry>
+    <entry key="yukon.web.common.paoNote.cancel.hoverText">Cancel changes</entry>
     <entry key="yukon.web.common.paoNote.delete.hoverText">Delete note</entry>
     <entry key="yukon.web.common.paoNote.edit.hoverText">Edit note</entry>
     <entry key="yukon.web.common.paoNote.createDate">Create Date</entry>
@@ -21,7 +22,6 @@
     <entry key="yukon.web.common.paoNotesSearch.noDeviceGroupSelected">Please select at least one device group.</entry>
     
     <entry key="yukon.web.common.paoNotesSearch.noResults">No results found.</entry>
-    <entry key="yukon.web.common.paoNotesSearch.createNote">Create Note</entry>
     <entry key="yukon.web.common.paoNotesSearch.viewAllNotes">View All Notes</entry>
     <entry key="yukon.web.common.paoNotesSearch.mapDevices">Map Devices</entry>
     <entry key="yukon.web.common.paoNotesSearch.readAttribute">Read Attribute</entry>

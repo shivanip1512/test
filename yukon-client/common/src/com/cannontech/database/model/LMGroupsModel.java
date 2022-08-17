@@ -36,8 +36,8 @@ public class LMGroupsModel extends AbstractDeviceTreeModel {
 
     @Override
     protected DBTreeNode getNewDeviceNode(LiteYukonPAObject pao) {
-        if (pao.getPaoType() == PaoType.LM_GROUP_METER_DISCONNECT || pao.getPaoType() == PaoType.LM_GROUP_EATON_CLOUD) {
-            // Meter Disconnect and Eaton Cloud groups can only be edited on the web 
+        if (pao.getPaoType() == PaoType.LM_GROUP_METER_DISCONNECT) {
+            // Meter Disconnect programs can only be edited on the web 
             DBTreeNode warningNode = new DBTreeNode(new WebOnlyEditWarning(pao));
             warningNode.setIsSystemReserved(true);
             return warningNode;

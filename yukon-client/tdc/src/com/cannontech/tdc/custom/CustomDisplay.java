@@ -6,9 +6,9 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.spring.YukonSpringHook;
 
 
@@ -93,20 +93,20 @@ public class CustomDisplay
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_UOFM) )
 			{
-				UnitOfMeasure uom = YukonSpringHook.getBean(UnitMeasureDao.class).getUnitMeasureByPointID(litePoint.getPointID());
+				LiteUnitMeasure lum = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(
+											litePoint.getPointID());
 
-				if( uom != null ) {
-                    retValues[i] = uom.getAbbreviation();
-                } else {
-                    retValues[i] = CtiUtilities.STRING_NONE;
-                }
+				if( lum != null )	
+					retValues[i] = lum.getUnitMeasureName();
+				else
+					retValues[i] = CtiUtilities.STRING_NONE;
 			}
 			else if( types[i].equalsIgnoreCase(COLUMN_TYPE_TXT_MSG) )
 			{
 				retValues[i] = litePAO.getPaoDescription();
-			} else {
-                retValues[i] = DYNAMIC_ROW;
-            }
+			}
+			else
+				retValues[i] = DYNAMIC_ROW;
 		}
 		
 		return retValues;

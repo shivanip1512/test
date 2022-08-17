@@ -10,14 +10,14 @@ public class RfnNodeWiFiCommArchiveRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Map referenceID to nodeWiFiComm
+    // Map referenceID to nodeComm
     private Map<Long, NodeWiFiComm> nodeWiFiComms;
 
     public Map<Long, NodeWiFiComm> getNodeWiFiComms() {
         return nodeWiFiComms;
     }
 
-    public void setNodeWiFiComms(Map<Long, NodeWiFiComm> nodeWiFiComms) {
+    public void setNodeComms(Map<Long, NodeWiFiComm> nodeWiFiComms) {
         this.nodeWiFiComms = nodeWiFiComms;
     }
 
@@ -48,7 +48,6 @@ public class RfnNodeWiFiCommArchiveRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnNodeWiFiCommArchiveRequest [nodeWiFiComms=%s]",
-                                                             nodeWiFiComms);
+        return String.format("RfnNodeWiFiCommArchiveRequest [nodeComms=%s]", nodeWiFiComms);
     }
 }

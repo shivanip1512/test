@@ -1,7 +1,5 @@
 package com.cannontech.web.support.waterNode.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +9,9 @@ import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -30,7 +29,7 @@ public class WaterNodeServiceImplTest {
     Instant stopTime = startTime.plus(Duration.standardDays(6));
     List<WaterNodeDetails> nodeDetails;
     
-    @BeforeEach
+    @Before
     public void init() {
           WaterNodeDao mockWaterNodeDao = EasyMock.createNiceMock(WaterNodeDao.class);
           WaterNodeFileUploadDao mockWaterNodeCSVDao = EasyMock.createNiceMock(WaterNodeFileUploadDao.class);
@@ -53,7 +52,7 @@ public class WaterNodeServiceImplTest {
         }
         
         ReflectionTestUtils.invokeMethod(waterNodeServiceImplTest, "setHighSleepingCurrent", testHSCDetails);
-        assertEquals(true, testHSCDetails.getHighSleepingCurrentIndicator(), "High sleeping current not present");
+        Assert.assertEquals("High sleeping current not present", true, testHSCDetails.getHighSleepingCurrentIndicator());
         
         Double lowVoltage = 3.42;
         WaterNodeDetails testLOWDetails = new WaterNodeDetails();//this node has a high sleeping current
@@ -69,7 +68,7 @@ public class WaterNodeServiceImplTest {
         }
         
         ReflectionTestUtils.invokeMethod(waterNodeServiceImplTest, "setNodeCategory", testLOWDetails, stopTime);
-        assertEquals(WaterNodeBatteryLevel.LOW, testLOWDetails.getBatteryLevel(), "Battery voltage not in LOW category");
+        Assert.assertEquals("Battery voltage not in LOW category", WaterNodeBatteryLevel.LOW, testLOWDetails.getBatteryLevel());
         
     }
 }

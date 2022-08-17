@@ -16,7 +16,6 @@
 
 #include "coroutine_util.h"
 #include "std_helper.h"
-#include "DispatchMetricTracker.h"
 
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -32,7 +31,7 @@ namespace Cti {
 namespace Dispatch {
 
 RawPointHistoryArchiver::RawPointHistoryArchiver(const bool &shutdownOnThreadTimeout, void (*shutdownFunc)(const std::string& who))
-    :   _archiverThread { WorkerThread::Function([this]{ mainThread(); }).name("RawPointHistory archiver thread") },
+    :   _archiverThread { [this]{ mainThread(); } },
         ShutdownOnThreadTimeout(shutdownOnThreadTimeout),
         ShutdownFunc(shutdownFunc)
 {}
@@ -97,15 +96,10 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
 
         auto trackingIds = writeRawPointHistory(conn, std::move(rowsToWrite));
 
-        const auto duration = timer.elapsed();
-
         if( ! trackingIds.empty() )
         {
             const unsigned rowsWritten = trackingIds.size();
             const unsigned rowsRemaining = archiverQueueSize();
-            
-            tracker.submitRows(rowsWritten, std::chrono::milliseconds{ duration });
-            tracker.submitQueueSize(rowsRemaining);
 
             std::string trackingInfo = 
                 boost::accumulate(trackingIds, ""s, [](std::string s1, std::string s2) {
@@ -120,7 +114,7 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
                 trackingInfo = " Tracking: " + trackingInfo;
             }
 
-            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << duration << "ms. Inserted " << rowsWritten << " rows. remaining: " << rowsRemaining << " rows." << trackingInfo);
+            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted " << rowsWritten << " rows. remaining: " << rowsRemaining << " rows." << trackingInfo);
 
             return rowsRemaining > MinRowsToWrite;
         }
@@ -387,7 +381,6 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
 void RawPointHistoryArchiver::start()
 {
     _archiverThread.start();
-    tracker.start();
 }
 
 bool RawPointHistoryArchiver::isRunning()
@@ -398,7 +391,6 @@ bool RawPointHistoryArchiver::isRunning()
 void RawPointHistoryArchiver::interrupt()
 {
     _archiverThread.interrupt();
-    tracker.interrupt();
 }
 
 bool RawPointHistoryArchiver::tryJoinFor(const std::chrono::seconds duration)
@@ -409,7 +401,6 @@ bool RawPointHistoryArchiver::tryJoinFor(const std::chrono::seconds duration)
 void RawPointHistoryArchiver::terminate()
 {
     _archiverThread.terminateThread();
-    tracker.terminateThread();
 }
 
 
@@ -543,7 +534,7 @@ void RawPointHistoryArchiver::submitRows(std::vector<std::unique_ptr<CtiTableRaw
 unsigned RawPointHistoryArchiver::archiverQueueSize()
 {
     std::lock_guard<std::mutex> lock(_archiverLock);
-    
+
     return _archiverQueue.size();
 }
 

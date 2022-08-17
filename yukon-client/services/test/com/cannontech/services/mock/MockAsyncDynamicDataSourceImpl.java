@@ -1,7 +1,8 @@
 package com.cannontech.services.mock;
 
-import static com.cannontech.common.point.PointQuality.*;
-import static com.cannontech.database.data.point.PointType.*;
+import static com.cannontech.common.point.PointQuality.Normal;
+import static com.cannontech.database.data.point.PointType.DemandAccumulator;
+import static com.cannontech.database.data.point.PointType.PulseAccumulator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,7 +173,7 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     }
 
     @Override
-    public PointValueQualityTagHolder getPointValue(int pointId) {
+    public PointValueQualityHolder getPointValue(int pointId) {
         throw new MethodNotImplementedException();  
     }
 

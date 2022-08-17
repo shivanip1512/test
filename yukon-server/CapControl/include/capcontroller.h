@@ -20,7 +20,6 @@
 #include "yukon.h"
 #include "ctdpcptrq.h"
 #include "DispatchPointRegistry.h"
-#include "Requests.h"
 
 #include <boost/thread.hpp>
 
@@ -41,14 +40,14 @@ class CtiCapController : public MessageListener
         void start();
         void stop();
 
-        static void sendCapBankRequestAndPoints(Cti::CapControl::PorterRequest request, CtiMultiMsg* multiMsg = nullptr);
+        static void sendCapBankRequestAndPoints(std::unique_ptr<CtiRequestMsg> msg, CtiMultiMsg* multiMsg = NULL);
 
         virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs);
-        virtual void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = nullptr);
+        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
         static void submitEventLogEntry(const Cti::CapControl::EventLogEntry &event);
         static void submitEventLogEntries(const Cti::CapControl::EventLogEntries &events);
 
-        virtual void confirmCapBankControl(Cti::CapControl::PorterRequests pilMultiMsg, CtiMultiMsg* multiMsg);
+        virtual void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
         static CtiConnection::Que_t& getInClientMsgQueueHandle();
         CtiPCPtrQueue< CtiMessage > &getOutClientMsgQueueHandle();
 
@@ -60,14 +59,14 @@ class CtiCapController : public MessageListener
                                         CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints & twoWayPts);
 
         void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries& ccEvents, Cti::CapControl::PorterRequests& pilMessages,
+                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
                                 CtiMultiMsg_vec& capMessages);
 
         void broadcastMessagesToClient(CtiCCSubstationBus_vec& substationBusChanges, CtiCCSubstation_vec& stationChanges,
                                        CtiCCArea_vec& areaChanges, long broadCastMask);
         void readClientMsgQueue();
         void checkBusForNeededControl(CtiCCAreaPtr currentArea, CtiCCSubstationPtr currentSubstation, CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
-                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, Cti::CapControl::PorterRequests& pilMessages);
+                                CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
 
         DispatchConnectionPtr getDispatchConnection();
         boost::shared_ptr<CtiClientConnection> getPorterConnection();
@@ -88,7 +87,7 @@ class CtiCapController : public MessageListener
 
         void analyzeVerificationBusIvvc( CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
                                          CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                         Cti::CapControl::PorterRequests& pilMessages, CtiMultiMsg_vec& capMessages);
+                                         CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
 
     private:
 

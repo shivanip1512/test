@@ -7,7 +7,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 public class DrProgramStatusJmsMessage extends DrJmsMessage {
 
     private static final long serialVersionUID = 1L;
-    private Integer programHistId;
+    private Integer programGearHistId;
     private String programName;
     private ProgramStatusType programStatusType;
     private String gearName;
@@ -15,12 +15,12 @@ public class DrProgramStatusJmsMessage extends DrJmsMessage {
     private Date stopDateTime;
     private Date gearChangeTime;
 
-    public Integer getProgramHistId() {
-        return programHistId;
+    public Integer getProgramGearHistId() {
+        return programGearHistId;
     }
 
-    public void setProgramHistId(Integer programHistId) {
-        this.programHistId = programHistId;
+    public void setProgramGearHistId(Integer programGearHistId) {
+        this.programGearHistId = programGearHistId;
     }
 
     public String getProgramName() {

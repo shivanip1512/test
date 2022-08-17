@@ -7,7 +7,6 @@ import com.cannontech.common.model.Phase;
 public class VfLine {
     
     private int id;
-    private Integer feederId;
     private String lineName;
     private String zoneName;
     private Phase phase;
@@ -79,13 +78,5 @@ public class VfLine {
 
     public void setPhase(Phase phase) {
         this.phase = phase;
-    }
-
-    public Integer getFeederId() {
-        return feederId;
-    }
-
-    public void setFeederId(Integer feederId) {
-        this.feederId = feederId;
     }
 }

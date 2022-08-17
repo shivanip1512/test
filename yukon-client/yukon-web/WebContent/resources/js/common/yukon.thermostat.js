@@ -966,7 +966,7 @@ yukon.Thermostat = function(args){
         case 'COOL':
             return this["calc"+temperatureMode+"Color"](this[temperatureMode]["temperature"]);
         default:
-            return yg.colors.GRAY_LIGHT;
+            return "#CCC";
         }
     };
     

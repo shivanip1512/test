@@ -8,35 +8,32 @@
 
 <cti:msg2 key=".showAll.title" var="metadataShowAllDialogTitle"/>
 <div class="dn" id="metadata_showAll" title="${metadataShowAllDialogTitle}">
-    <div class="scroll-xl">
-        <tags:nameValueContainer altRowOn="true">
-            <c:forEach var="pair" items="${metadata}">
-                <%@ include file="metadataRow.jspf" %>
-            </c:forEach>
-            
-            <c:if test="${!empty reverseLookup}">
-                <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
-                <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
-            </c:if>
-    
-            <c:if test="${!empty wifiSuperMeterData}">
-                <cti:msgScope paths="widgets.RfnDeviceMetadataWidget,widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
-                    <cti:msg2 var="label" key=".virtualGatewayIpv6Address"/>
-                    <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.virtualGwIpv6Addr)}</tags:nameValue>
-                    <cti:msg2 var="label" key=".configuredApBssid"/>
-                    <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.configuredApBssid)}</tags:nameValue>
-                    <cti:msg2 var="label" key=".connectedApBssid"/>
-                    <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.connectedApBssid)}</tags:nameValue>
-                    <cti:msg2 var="label" key=".apSsid"/>
-                    <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apSsid)}</tags:nameValue>
-                    <cti:msg2 var="label" key=".securityType"/>
-                    <cti:msg2 var="type" key=".securityType.${fn:escapeXml(wifiSuperMeterData.securityType)}"/>
-                    <tags:nameValue name="${label}">${type}</tags:nameValue>
-                </cti:msgScope>
-            </c:if>
-            
-        </tags:nameValueContainer>
-    </div>
+    <tags:nameValueContainer altRowOn="true">
+        <c:forEach var="pair" items="${metadata}">
+            <%@ include file="metadataRow.jspf" %>
+        </c:forEach>
+        
+        <c:if test="${!empty reverseLookup}">
+            <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
+            <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
+        </c:if>
+
+        <c:if test="${!empty wifiSuperMeterData}">
+            <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
+                <cti:msg2 var="label" key=".configuredApBssid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.configuredApBssid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".connectedApBssid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.connectedApBssid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".apSsid"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.apSsid)}</tags:nameValue>
+                <cti:msg2 var="label" key=".securityType"/>
+                <cti:msg2 var="type" key=".securityType.${fn:escapeXml(wifiSuperMeterData.securityType)}"/>
+                <tags:nameValue name="${label}">${type}</tags:nameValue>
+                <cti:msg2 var="label" key=".virtualGatewayIpv6Address"/>
+                <tags:nameValue name="${label}">${fn:escapeXml(wifiSuperMeterData.virtualGatewayIpv6Address)}</tags:nameValue>
+            </cti:msgScope>
+        </c:if>
+    </tags:nameValueContainer>
 </div>
 
 <c:choose>

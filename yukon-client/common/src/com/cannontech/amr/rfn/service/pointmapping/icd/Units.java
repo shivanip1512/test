@@ -23,6 +23,7 @@ public enum Units {
     GALLONS             ("gal",                 UnitOfMeasure.GALLONS),
     CUBIC_FEET          ("ft^3",                UnitOfMeasure.CUBIC_FEET),
     CUBIC_METERS        ("m^3",                 UnitOfMeasure.CUBIC_METERS),
+    NONE                ("none"),
     WATTS               ("W",                   UnitOfMeasure.KW,   0.001),
     VARS                ("Var",                 UnitOfMeasure.KVAR, 0.001),
     Q                   ("Q",                   UnitOfMeasure.KQ,   0.001),

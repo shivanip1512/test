@@ -175,15 +175,6 @@ void CtiLMCICustomerBase::restore(Cti::RowReader &rdr)
     rdr["customerorder"] >> _customerorder;
 }
 
-std::size_t CtiLMCICustomerBase::getMemoryConsumption() const
-{
-    // This only returns the dynamically allocated stuff - the total consumption is
-    //  calculated in the leaf nodes.
-    return  dynamic_sizeof( _companyname )
-        +   dynamic_sizeof( _curtailmentagreement )
-        +   dynamic_sizeof( _time_zone );
-}
-
 // Static Members
 
 // Possible acknowledge statuses

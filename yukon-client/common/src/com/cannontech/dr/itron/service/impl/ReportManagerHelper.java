@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.service.impl;
 
-import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.transform.Source;
@@ -17,28 +16,12 @@ import com.cannontech.dr.itron.model.jaxb.reportManagerTypes_v1_2.ResultActionEn
 
 public class ReportManagerHelper implements SoapFaultParser {
     
-    private static ExportDeviceLogRequest buildExportDeviceLogRequest(long startRecordId, Optional<Long> endRecordId, 
-            Optional<Long> itronGroupId) {
-        
+    public static ExportDeviceLogRequest buildExportDeviceLogRequest(long startRecordId, long endRecordId) {
         ExportDeviceLogRequest request =  new ExportDeviceLogRequest();
-        
-        //Tell Itron to "secure copy" the report to SFTP location after generating it
         request.getResultActions().add(ResultActionEnumeration.SCP);
         request.setRecordIDRangeStart(startRecordId);
-        
-        endRecordId.ifPresent(id -> request.setRecordIDRangeEnd(id));
-        itronGroupId.ifPresent(groupId -> request.getDeviceGroupIDs().add(groupId));
-        
+        request.setRecordIDRangeEnd(endRecordId);
         return request;
-    }
-    
-    public static ExportDeviceLogRequest buildExportDeviceLogRequest(long startRecordId, Long endRecordId) {
-        return buildExportDeviceLogRequest(startRecordId, Optional.ofNullable(endRecordId), Optional.empty());
-    }
-    
-    public static ExportDeviceLogRequest buildExportDeviceLogRequest(long startRecordId, Long endRecordId, 
-            long itronGroupId) {
-        return buildExportDeviceLogRequest(startRecordId, Optional.ofNullable(endRecordId), Optional.of(itronGroupId));
     }
     
     @Override

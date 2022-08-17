@@ -64,23 +64,17 @@ public class RelayStateInjectionServiceImpl implements RelayStateInjectionServic
     public void init() {
         supportedTypesAndRelays.putAll(
                 PaoType.LCR6600S, Lists.newArrayList(
-                    BuiltInAttribute.RELAY_1_LOAD_STATE,
-                    BuiltInAttribute.RELAY_2_LOAD_STATE,
-                    BuiltInAttribute.RELAY_3_LOAD_STATE,
-                    BuiltInAttribute.RELAY_4_LOAD_STATE
+                    BuiltInAttribute.RELAY_1_RELAY_STATE,
+                    BuiltInAttribute.RELAY_2_RELAY_STATE,
+                    BuiltInAttribute.RELAY_3_RELAY_STATE,
+                    BuiltInAttribute.RELAY_4_RELAY_STATE
                 )
         );
         
         supportedTypesAndRelays.putAll(
                 PaoType.LCR6601S, Lists.newArrayList(
-                    BuiltInAttribute.RELAY_1_LOAD_STATE,
-                    BuiltInAttribute.RELAY_2_LOAD_STATE
-                )
-        );
-        
-        supportedTypesAndRelays.putAll(
-                PaoType.LCR6200S, Lists.newArrayList(
-                    BuiltInAttribute.RELAY_1_LOAD_STATE
+                    BuiltInAttribute.RELAY_1_RELAY_STATE,
+                    BuiltInAttribute.RELAY_2_RELAY_STATE
                 )
         );
     }

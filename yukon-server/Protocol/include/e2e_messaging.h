@@ -34,7 +34,7 @@ namespace Cti::Protocols::Coap {
     private:
 
         uint8_t szx;
-        constexpr BlockSize(uint8_t szx_) : szx { szx_ } {}
+        BlockSize(uint8_t szx_) : szx { szx_ } {}
     };
 
     struct Block
@@ -69,7 +69,5 @@ namespace Cti::Protocols::E2e {
         bool confirmable;
 
         std::optional<Coap::Block> block;
-
-        bool oscoreEncrypted;
     };
 }

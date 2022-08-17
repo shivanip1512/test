@@ -12,7 +12,6 @@ import com.cannontech.amr.rfn.service.processor.RfnOutageLogEventConditionDataPr
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEventConditionDataProcessorHelper {
@@ -29,13 +28,6 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEven
                 BuiltInAttribute.RFN_BLINK_COUNT,
                 eventInstant,
                 getLongEventData(event, RfnConditionDataType.COUNT),
-                now);
-        
-        rfnMeterEventService.processAttributePointData(device, 
-                pointDatas, 
-                BuiltInAttribute.RFN_BLINK_REPORTED, 
-                eventInstant, 
-                EventStatus.CLEARED.getRawState(),
                 now);
 
         // The OUTAGE_BLINK event SHOULD contain RfnConditionDataType.EVENT_END_TIME (time outage ended)

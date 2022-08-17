@@ -21,7 +21,7 @@ ZoneManager::ZoneMap ZoneDBLoader::load(const long Id)
     loadBankParameters(Id, loaded);
     loadPointParameters(Id, loaded);
     loadRegulatorParameters(Id, loaded);
-    
+
     return loaded;
 }
 
@@ -132,27 +132,17 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
     static const std::string sql =
         "SELECT "
             "P.PointId, "
-            "P.pointname, "
-            "P.POINTTYPE, "
-            "Y.PAObjectID, "
-            "Y.PAOName, "
-            "Y.Type, "
-            "PTZ.ZoneId, "
-            "PTZ.Ignore, "
+            "P.ZoneId, "
+            "P.Ignore, "
             "M.Phase "
-
         "FROM "
-            "PointToZoneMapping PTZ "
-                "JOIN POINT P "
-                    "ON P.PointId = PTZ.PointId "
-                "JOIN YukonPAObject Y "
-                    "ON P.PAObjectID = Y.PAObjectID "
+            "PointToZoneMapping P "
                 "LEFT OUTER JOIN CCMonitorBankList M "
-                    "ON PTZ.PointId = M.PointId";
+                    "ON P.PointId = M.PointId";
 
     static const std::string sqlID = sql +
         " WHERE "
-            "PTZ.ZoneId = ?";
+            "P.ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr(connection);
@@ -197,16 +187,6 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
                 phase = resolvePhase( phaseStr );
             }
 
-            LoggingHelperCacheEntry entry
-            {
-                Id,
-                rdr["PAObjectID"].as<long>(),
-                rdr["pointname"].as<std::string>(),
-                rdr["POINTTYPE"].as<std::string>(),
-                rdr["PAOName"].as<std::string>(),
-                rdr["Type"].as<std::string>()
-            };
-
             /*
                 The ccmonitorbanklist table allows NULL entries for the Phase column.  The UI shouldn't allow a
                     NULL entry to be created or a polyphase assignment.  Check and warn if either of these conditions
@@ -227,7 +207,6 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
             if ( ! isIgnored )
             {
                 zone->second->addPointId( phase, Id );
-                zone->second->addCacheEntry(Id, entry);
             }
         }
     }

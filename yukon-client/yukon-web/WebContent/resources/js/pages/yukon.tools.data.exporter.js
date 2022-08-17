@@ -23,24 +23,16 @@ yukon.tools.dataExporter = (function () {
     
     /** Exports the format. */
     _runOkPressed = function() {
-        var selectedIndex = $('.js-run-inputs').find('select.js-intervals').prop('selectedIndex');
-        
         $('#run-dialog').dialog('close');
         $('.js-run-inputs').clone().appendTo('#exporter-form');
-        // Clone doesn't copy select values, so manually copy.
-        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('generateReport');
         $('#exporter-form').find('.js-run-inputs').remove();
     },
     
     /** Opens the schedule details form. */
     _scheduleOkPressed = function() {
-        var selectedIndex = $('.js-schedule-inputs').find('select.js-intervals').prop('selectedIndex');
-        
         $('#schedule-dialog').dialog('close');
         $('.js-schedule-inputs').clone().appendTo('#exporter-form');
-        // Clone doesn't copy select values, so manually copy.
-        $('#exporter-form').find('select.js-intervals').prop('selectedIndex', selectedIndex);
         _submitForm('scheduleReport');
         $('#exporter-form').find('.js-schedule-inputs').remove();
     },
@@ -108,31 +100,6 @@ yukon.tools.dataExporter = (function () {
                 $(dataRangeTypeDiv).addClass('dn');
             }
         }
-    },
-    
-    _displayCreateFormatDialogContent = function (formatOptionRadioButton) {
-        if (formatOptionRadioButton.hasClass("js-use-template")) {
-            $(".js-create-format-option.js-do-not-use-template").prop("checked", false);
-            $.getJSON(yukon.url("/tools/data-export/getAvaliableFormatTemplates"), function (json) {
-                $(".js-template-formats-dropdown").find("option").remove();
-                if (json.hasOwnProperty('templateFileNames')) {
-                    $.each(json.templateFileNames, function (key, val) {
-                        $(".js-template-formats-dropdown").append(new Option(val, val));
-                    });
-                } else {
-                    $("#create-format-dialog").find(".user-message").remove();
-                    $("#create-format-dialog").addMessage({
-                        message: json.errorMessage,
-                        messageClass: 'error'
-                    }); 
-                }
-                $(".js-avaliable-template-formats").toggleClass("dn", json.hasOwnProperty('errorMessage'));
-            });
-        } else {
-            $("#create-format-dialog").find(".user-message").remove();
-            $(".js-create-format-option.js-use-template").prop("checked", false);
-            $(".js-avaliable-template-formats").addClass("dn");
-        }
     };
 
     mod = {
@@ -173,13 +140,7 @@ yukon.tools.dataExporter = (function () {
                 var buttons = [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
                                {text: _config.text.create, 
                                     click: function() {
-                                        var useTemplate = $('.js-use-template').is(':checked'),
-                                            fileName = "",
-                                            selectedFormat = $('input[name=newFormatType]:checked').exists() ? $('input[name=newFormatType]:checked').val() : '';
-                                        if (useTemplate) {
-                                            fileName = $(".js-avaliable-template-formats option:selected").val();
-                                        }
-                                        window.location.href = 'format/create?formatType=' + selectedFormat + '&useTemplate=' + useTemplate + '&fileName=' + fileName;
+                                        window.location.href = 'format/create?formatType=' + $('input[name=newFormatType]:checked').val();
                                     },
                                     'class': 'primary action'}
                                ];
@@ -195,28 +156,12 @@ yukon.tools.dataExporter = (function () {
                 _submitForm('selectDevices');
             });
             
-            $('.js-time-check').each(function() {
+            $('.js-time-check').each( function () {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
             });
             
-            $('.js-time-check').click(function() {
+            $('.js-time-check').click(function () {
                 $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
-                if ($(this).is(':checked')) {
-                    $(this).closest('.js-dynamic,.js-fixed').find('.js-on-interval-check').prop('checked', false);
-                    $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', true);
-                }
-            });
-            
-            $('.js-on-interval-check').each(function() {
-                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
-            });
-            
-            $('.js-on-interval-check').click(function() {
-                $(this).closest('.js-dynamic,.js-fixed').find('.js-intervals').prop('disabled', ! $(this).is(':checked'));
-                if ($(this).is(':checked')) {
-                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time-check').prop('checked', false);
-                    $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', true);
-                }
             });
             
             $('#format-id').change(function(event) {
@@ -226,19 +171,6 @@ yukon.tools.dataExporter = (function () {
                 _submitForm('view');
             });
             
-            $(document).on("click", ".js-create-format-option", function () {
-                _displayCreateFormatDialogContent($(this));
-            });
-            
-            $(document).on("click", ".js-template-preview-link", function (event) {
-                event.preventDefault();	
-                window.open(yukon.url("/tools/data-exporter/format/renderTemplatePreview/" + $(".js-avaliable-template-formats option:selected").val()));
-            });
-            
-            $("#create-format-dialog").on("dialogopen", function (event, ui) {
-                _displayCreateFormatDialogContent($(this).find(".js-create-format-option:checked"));
-            });
-
             _initialized = true;
         }
     };

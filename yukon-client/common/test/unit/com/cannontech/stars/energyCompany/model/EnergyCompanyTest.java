@@ -1,14 +1,12 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
@@ -39,9 +37,9 @@ public class EnergyCompanyTest {
     Map<Integer, EnergyCompany> energyCompanies;
 
     private void basicTests(EnergyCompany ec, String name, int numberOfChildrenExpected, EnergyCompany parent) {
-        assertEquals(name, ec.getName(), "Wrong name for ecId " + ec.getId() + ".");
-        assertEquals(numberOfChildrenExpected, ec.getChildren().size(),
-                "Incorrect number of children of " + name + " EnergyCompany.");
+        assertEquals("Wrong name for ecId " + ec.getId() + ".", name, ec.getName());
+        assertEquals("Incorrect number of children of " + name + " EnergyCompany.",
+            numberOfChildrenExpected, ec.getChildren().size());
 
         // The parent should be the exact same object as the one in the map (not just equivalent).
         assertTrue(parent == ec.getParent());
@@ -79,7 +77,7 @@ public class EnergyCompanyTest {
         assertEquals(assertion, gotExpected);
     }
 
-    @BeforeEach
+    @Before
     public void setupEnergyCompanies() {
         Builder builder = new EnergyCompany.Builder();
         int userId = 7000;
@@ -94,8 +92,8 @@ public class EnergyCompanyTest {
         }
         energyCompanies = builder.build();
 
-        assertEquals(sampleEnergyCompaniesInfo.length, energyCompanies.size(),
-                "Incorrect number of EnergyCompany objects in map.");
+        assertEquals("Incorrect number of EnergyCompany objects in map.",
+            sampleEnergyCompaniesInfo.length, energyCompanies.size());
     }
 
     @Test

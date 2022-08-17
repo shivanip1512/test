@@ -24,7 +24,7 @@ yukon.ui.passwords = (function () {
                 for (j = 0; j < data[validations[i]].length; j++) {
                     console.debug("validations:" + data[errors[i]][j]);
                     if ($.inArray(data[validations[i]][j], reqNames) > -1) {
-                        $('.' + data[validations[i]][j] + ' .icon').addClass('icon-tick').html(yg.iconSvg.iconTick);
+                        $('.' + data[validations[i]][j] + ' .icon').addClass('icon-tick');
                         $('.' + data[validations[i]][j] + ' .icon').removeClass('icon-cross');
                     }
                     else {
@@ -42,7 +42,7 @@ yukon.ui.passwords = (function () {
                     console.debug("Errors:" + data[errors[i]][j]);
                     if ($.inArray(data[errors[i]][j], reqNames) > -1) {
                         $('.' + data[errors[i]][j] + ' .icon').removeClass('icon-tick');
-                        $('.' + data[errors[i]][j] + ' .icon').addClass('icon-cross').html(yg.iconSvg.iconCross);
+                        $('.' + data[errors[i]][j] + ' .icon').addClass('icon-cross');
                     }
                     else {
                         $('.' + data[errors[i]][j] + ' .icon').addClass('vh');    

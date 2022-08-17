@@ -1,0 +1,22 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Expresscom
+
+*Request JSON* :
+
+include::{snippets}/ExpresscomLoadGroupSetupApiControllerTest/Test_LmExpresscom_Get/http-request.adoc[]
+
+*Response Parameter's* :
+
+include::{snippets}/ExpresscomLoadGroupSetupApiControllerTest/Test_LmExpresscom_Get/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/ExpresscomLoadGroupSetupApiControllerTest/Test_LmExpresscom_Get/http-response.adoc[]
+
+

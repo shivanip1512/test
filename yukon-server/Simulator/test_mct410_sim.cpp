@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
 
 BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     struct ConsumptionTestCase
     {
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 
 BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     struct HectoWattTestCase
     {
@@ -168,8 +168,6 @@ BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
 
 BOOST_AUTO_TEST_CASE( test_get_table_pointer )
 {
-    const auto tzOverride = Cti::Test::set_to_central_timezone();
-
     struct TablePointerTestCase
     {
         CtiTime  time;
@@ -196,7 +194,7 @@ BOOST_AUTO_TEST_CASE( test_get_table_pointer )
 
 BOOST_AUTO_TEST_CASE( test_fill_load_profile )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     const unsigned address(0);
     const CtiDate startDate(4, 4, 2012);
@@ -220,7 +218,7 @@ BOOST_AUTO_TEST_CASE( test_fill_load_profile )
 
 BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     const unsigned address(0);
     const unsigned interval(3600);
@@ -268,7 +266,7 @@ BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
 
 BOOST_AUTO_TEST_CASE( test_peak_demand )
 {
-    const auto tz_override = Cti::Test::set_to_central_timezone();
+    Cti::Test::set_to_central_timezone();
 
     CtiTime lastFreeze(CtiDate(6, 5, 2012), 10, 0, 0);
     CtiTime nowTime(CtiDate(28, 5, 2012), 2, 0, 0);

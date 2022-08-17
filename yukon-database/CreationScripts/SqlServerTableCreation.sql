@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/5/2022 5:27:41 AM                          */
+/* Created on:     3/18/2020 10:48:55 AM                        */
 /*==============================================================*/
 
 
@@ -520,27 +520,6 @@ create table ArchiveValuesExportFormat (
    ExcludeAbnormal      char(1)              not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 )
-go
-
-/*==============================================================*/
-/* Table: AttributeAssignment                                   */
-/*==============================================================*/
-create table AttributeAssignment (
-   AttributeAssignmentId numeric              not null,
-   AttributeId          numeric              not null,
-   PaoType              varchar(30)          not null,
-   PointType            varchar(30)          not null,
-   PointOffset          numeric              not null,
-   constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
-)
-go
-
-alter table AttributeAssignment
-   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset)
-go
-
-alter table AttributeAssignment
-   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType)
 go
 
 /*==============================================================*/
@@ -1358,10 +1337,6 @@ create table CCurtProgramType (
 )
 go
 
-alter table CCurtProgramType
-   add constraint AK_CCurtProgramType_Strategy unique (CCurtProgramTypeStrategy)
-go
-
 /*==============================================================*/
 /* Table: CICUSTOMERPOINTDATA                                   */
 /*==============================================================*/
@@ -2034,15 +2009,6 @@ Type ASC
 go
 
 /*==============================================================*/
-/* Index: INDX_CREUns_ExecId_DevId                              */
-/*==============================================================*/
-create index INDX_CREUns_ExecId_DevId on CommandRequestUnsupported (
-CommandRequestExecId ASC,
-DeviceId ASC
-)
-go
-
-/*==============================================================*/
 /* Table: CommandSchedule                                       */
 /*==============================================================*/
 create table CommandSchedule (
@@ -2151,7 +2117,6 @@ create table ControlEvent (
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
    ProgramId            numeric              not null default 0,
-   ExternalEventId      varchar(36)          null,
    constraint PK_ControlEvent primary key (ControlEventId)
 )
 go
@@ -2165,24 +2130,8 @@ create table ControlEventDevice (
    OptOutEventId        numeric              null,
    Result               varchar(30)          not null,
    DeviceReceivedTime   datetime             null,
-   FailReason           varchar(100)         null,
-   RetryTime            datetime             null,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 )
-go
-
-/*==============================================================*/
-/* Table: CustomAttribute                                       */
-/*==============================================================*/
-create table CustomAttribute (
-   AttributeId          numeric              not null,
-   AttributeName        varchar(60)          not null,
-   constraint PK_CUSTOMATTRIBUTE primary key (AttributeId)
-)
-go
-
-alter table CustomAttribute
-   add constraint AK_ATTRIBUTENAME unique (AttributeName)
 go
 
 /*==============================================================*/
@@ -3238,17 +3187,14 @@ INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'timeOffset', 'UTC');
 INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessagesClass1', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesClass2', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
-INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'minTapPosition', '-16');
-INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'maxTapPosition', '16');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 1, 'voltageChangePerTap', '0.75');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 1, 'voltageControlMode', 'DIRECT_TAP');
-INSERT INTO DeviceConfigCategoryItem VALUES (11, 1, 'installOrientation', 'FORWARD');
-INSERT INTO DeviceConfigCategoryItem VALUES (12, 2, 'regulatorHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (13, 2, 'regulatorHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (14, 2, 'regulatorHeartbeatMode', 'NONE');
-INSERT INTO DeviceConfigCategoryItem VALUES (15, 3, 'cbcHeartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (16, 3, 'cbcHeartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (17, 3, 'cbcHeartbeatMode', 'DISABLED');
+INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
+INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 2, 'regulatorHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (12, 3, 'cbcHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatMode', 'DISABLED');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
@@ -3358,7 +3304,6 @@ create table DeviceDataMonitor (
    Name                 varchar(255)         not null,
    GroupName            varchar(255)         not null,
    Enabled              char(1)              not null,
-   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_DeviceDataMonitor primary key (MonitorId)
 )
 go
@@ -3465,9 +3410,6 @@ INSERT INTO DeviceGroup VALUES (53, 'Load Programs', 51, 'NOEDIT_NOMOD', 'LOAD_P
 INSERT INTO DeviceGroup VALUES (54, 'All RFG Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFG_METERS', '18-JUN-2018', 'ALL_RFG_METERS');
 INSERT INTO DeviceGroup VALUES (55, 'CIS DeviceClass', 1, 'NOEDIT_MOD', 'STATIC', '08-JAN-2018', 'CIS_DEVICECLASS');
 INSERT INTO DeviceGroup VALUES (56, 'Meter Programming', 15, 'NOEDIT_NOMOD', 'METERS_METER_PROGRAMMING', '08-NOV-2019', 'METER_PROGRAMMING');
-INSERT INTO DeviceGroup VALUES (57, 'Service', 0, 'NOEDIT_NOMOD', 'STATIC', '04-JUN-2020', 'SERVICE');
-INSERT INTO DeviceGroup VALUES (58, 'Active RF Electric Meters', 57, 'NOEDIT_NOMOD', 'COMPOSED', '04-JUN-2020', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS');
-INSERT INTO DeviceGroup VALUES (59, 'Active RFW Meters', 57, 'NOEDIT_NOMOD', 'COMPOSED', '04-JUN-2020', 'SERVICE_ACTIVE_RFW_METERS');
 
 alter table DeviceGroup
    add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId)
@@ -3484,9 +3426,6 @@ create table DeviceGroupComposed (
 )
 go
 
-INSERT INTO DeviceGroupComposed VALUES (1, 58, 'INTERSECTION');
-INSERT INTO DeviceGroupComposed VALUES (2, 59, 'INTERSECTION');
-
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
 /*==============================================================*/
@@ -3497,27 +3436,6 @@ create table DeviceGroupComposedGroup (
    IsNot                char(1)              not null,
    constraint PK_DevGroupCompGroup primary key (DeviceGroupComposedGroupId)
 )
-go
-
-INSERT INTO DeviceGroupComposedGroup VALUES (1, 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (2, 1, '/Meters/Billing', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/System/Meters/Disabled', 'Y');
-INSERT INTO DeviceGroupComposedGroup VALUES (4, 2, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (5, 2, '/Meters/Billing', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (6, 2, '/System/Meters/Disabled', 'Y');
-
-/*==============================================================*/
-/* Table: DeviceGuid                                            */
-/*==============================================================*/
-create table DeviceGuid (
-   DeviceId             numeric              not null,
-   Guid                 char(36)             not null,
-   constraint PK_DeviceGuid primary key nonclustered (DeviceId)
-)
-go
-
-alter table DeviceGuid
-   add constraint AK_DeviceGuid_Guid unique (Guid)
 go
 
 /*==============================================================*/
@@ -5851,7 +5769,7 @@ go
 /*==============================================================*/
 create table EventLog (
    EventLogId           numeric              not null,
-   EventTypeId          numeric              not null,
+   EventType            varchar(250)         not null,
    EventTime            datetime             null,
    String1              varchar(2000)        null,
    String2              varchar(2000)        null,
@@ -5870,36 +5788,11 @@ create table EventLog (
 go
 
 /*==============================================================*/
-/* Index: INDX_EventLog_EventTypeId_EventTime                   */
+/* Index: INDX_EventType                                        */
 /*==============================================================*/
-create index INDX_EventLog_EventTypeId_EventTime on EventLog (
-EventTypeId DESC,
-EventTime DESC
+create index INDX_EventType on EventLog (
+EventType ASC
 )
-go
-
-/*==============================================================*/
-/* Index: INDX_EventLog_EventTypeId_EventTime_EventLogId        */
-/*==============================================================*/
-create index INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
-EventTypeId ASC,
-EventTime ASC,
-EventLogId ASC
-)
-go
-
-/*==============================================================*/
-/* Table: EventLogType                                          */
-/*==============================================================*/
-create table EventLogType (
-   EventTypeId          numeric              not null,
-   EventType            varchar(255)         not null,
-   constraint PK_EVENTLOGTYPE primary key (EventTypeId)
-)
-go
-
-alter table EventLogType
-   add constraint AK_EventLogType_EventType unique (EventType)
 go
 
 /*==============================================================*/
@@ -6514,6 +6407,7 @@ create table JOB (
 )
 go
 
+INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-3, 'spSmartIndexMaintanenceJobDefinition', 'N', -3);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
@@ -6555,6 +6449,7 @@ create table JOBSCHEDULEDREPEATING (
 )
 go
 
+INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-3, '0 0 22 ? * 7');
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
@@ -6592,16 +6487,6 @@ create table LMCONTROLAREAPROGRAM (
    StartPriority        numeric              not null,
    StopPriority         numeric              not null,
    constraint PK_LMCONTROLAREAPROGRAM primary key (DEVICEID, LMPROGRAMDEVICEID)
-)
-go
-
-/*==============================================================*/
-/* Table: LMConfigurableCycleGear                               */
-/*==============================================================*/
-create table LMConfigurableCycleGear (
-   GearId               numeric              not null,
-   CycleOption          nvarchar(20)         not null,
-   constraint PK_LMCONFIGURABLECYCLEGEAR primary key nonclustered (GearId)
 )
 go
 
@@ -6970,16 +6855,6 @@ go
 insert into lmgroup values( 0, 0 );
 
 /*==============================================================*/
-/* Table: LMGroupEatonCloud                                     */
-/*==============================================================*/
-create table LMGroupEatonCloud (
-   YukonGroupId         numeric              not null,
-   RelayUsage           varchar(15)          not null,
-   constraint PK_LMGROUPEATONCLOUD primary key (YukonGroupId)
-)
-go
-
-/*==============================================================*/
 /* Table: LMGroupEmetcon                                        */
 /*==============================================================*/
 create table LMGroupEmetcon (
@@ -7180,19 +7055,6 @@ create table LMGroupVersacom (
 go
 
 /*==============================================================*/
-/* Table: LMGroupZeusMapping                                    */
-/*==============================================================*/
-create table LMGroupZeusMapping (
-   YukonGroupId         numeric              not null,
-   EcobeeGroupId        varchar(32)          not null,
-   EcobeeEventId        varchar(50)          null,
-   EcobeeGroupName      varchar(255)         null,
-   ProgramId            numeric              not null,
-   constraint PK_LMGROUPZEUSMAPPING primary key (YukonGroupId, EcobeeGroupId)
-)
-go
-
-/*==============================================================*/
 /* Table: LMHardwareBase                                        */
 /*==============================================================*/
 create table LMHardwareBase (
@@ -7297,20 +7159,22 @@ create table LMHardwareEvent (
 go
 
 /*==============================================================*/
-/* Index: INDX_LMHardwareEvent_InventoryID                      */
-/*==============================================================*/
-create index INDX_LMHardwareEvent_InventoryID on LMHardwareEvent (
-InventoryID ASC
-)
-go
-
-/*==============================================================*/
 /* Table: LMHardwareToMeterMapping                              */
 /*==============================================================*/
 create table LMHardwareToMeterMapping (
    LMHardwareInventoryID numeric              not null,
    MeterInventoryID     numeric              not null,
    constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMItronCycleGear                                      */
+/*==============================================================*/
+create table LMItronCycleGear (
+   GearId               numeric              not null,
+   CycleOption          nvarchar(20)         not null,
+   constraint PK_LMItronCycleGear primary key (GearId)
 )
 go
 
@@ -7748,31 +7612,18 @@ create table MSPInterface (
    Interface            varchar(20)          not null,
    Endpoint             varchar(255)         not null,
    Version              varchar(12)          not null,
-   UseVendorAuth        char(1)              not null,
-   InUserName           varchar(64)          null,
-   InPassword           varchar(64)          null,
-   OutUserName          varchar(64)          null,
-   OutPassword          varchar(64)          null,
-   ValidateCertificate  char(1)              null,
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 )
 go
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0');
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v4/MR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v4/OD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v4/CD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'DR_Server', 'http://127.0.0.1:8080/multispeak/v4/DR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'SCADA_Server', 'http://127.0.0.1:8080/multispeak/v4/SCADA_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v4/NOT_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0');
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
@@ -7790,12 +7641,11 @@ create table MSPVendor (
    MaxInitiateRequestObjects int                  not null,
    TemplateNameDefault  varchar(50)          not null,
    ValidateCertificate  char(1)              not null,
-   Attributes           varchar(500)         not null,
    constraint PK_MSPVENDOR primary key (VendorID)
 )
 go
 
-INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1, 'Peak Demand , Usage');
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1);
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */
@@ -8671,7 +8521,6 @@ create table PointToZoneMapping (
    GraphPositionOffset  float                null,
    Distance             float                null,
    Ignore               varchar(1)           not null,
-   FeederId             numeric              null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go
@@ -8686,7 +8535,6 @@ create table PortTiming (
    POSTTXWAIT           numeric              not null,
    RECEIVEDATAWAIT      numeric              not null,
    EXTRATIMEOUT         numeric              not null,
-   PostCommWait         numeric              not null,
    constraint PK_PORTTIMING primary key (PORTID)
 )
 go
@@ -8902,7 +8750,6 @@ go
 create table RegulatorToZoneMapping (
    RegulatorId          numeric              not null,
    ZoneId               numeric              not null,
-   FeederId             numeric              null,
    constraint PK_RegToZoneMap primary key (RegulatorId)
 )
 go
@@ -9035,18 +8882,6 @@ create table RfnBroadcastEventSummary (
    Failure              numeric              not null,
    Unknown              numeric              not null,
    constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
-)
-go
-
-/*==============================================================*/
-/* Table: RfnModelChange                                        */
-/*==============================================================*/
-create table RfnModelChange (
-   DeviceID             numeric              not null,
-   OldModel             varchar(80)          not null,
-   NewModel             varchar(80)          not null,
-   DataTimestamp        datetime             not null,
-   constraint PK_RfnModelChange primary key (DeviceID)
 )
 go
 
@@ -9269,77 +9104,6 @@ go
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
-/* Table: SmartNotifEmailHistory                                */
-/*==============================================================*/
-create table SmartNotifEmailHistory (
-   HistoryId            numeric              not null,
-   EventType            varchar(50)          not null,
-   Verbosity            varchar(20)          not null,
-   Media                varchar(20)          not null,
-   ProcessingType       varchar(20)          not null,
-   IntervalMinutes      numeric              not null,
-   TotalEvents          numeric              not null,
-   SendTime             datetime             not null,
-   constraint PK_SmartNotificationEmailHistory primary key (HistoryId)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_SmartNotifEmailHistory_EventType                 */
-/*==============================================================*/
-create index INDX_SmartNotifEmailHistory_EventType on SmartNotifEmailHistory (
-EventType ASC
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_SmartNotifEmailHistory_SendTime                  */
-/*==============================================================*/
-create index INDX_SmartNotifEmailHistory_SendTime on SmartNotifEmailHistory (
-SendTime ASC
-)
-go
-
-/*==============================================================*/
-/* Table: SmartNotifEventHistory                                */
-/*==============================================================*/
-create table SmartNotifEventHistory (
-   EventHistoryId       numeric              not null,
-   HistoryId            numeric              not null,
-   constraint PK_SmartNotificationEventHistory primary key (EventHistoryId)
-)
-go
-
-/*==============================================================*/
-/* Table: SmartNotifEventParamHistory                           */
-/*==============================================================*/
-create table SmartNotifEventParamHistory (
-   EventHistoryId       numeric              not null,
-   Name                 varchar(30)          not null,
-   Value                varchar(500)         not null,
-   constraint PK_SmartNotificationEventParamHistory primary key (EventHistoryId, Name, Value)
-)
-go
-
-/*==============================================================*/
-/* Table: SmartNotifRecipientHistory                            */
-/*==============================================================*/
-create table SmartNotifRecipientHistory (
-   HistoryId            numeric              not null,
-   Recipient            varchar(254)         not null,
-   constraint PK_SmartNotificationRecipientHistory primary key (HistoryId, Recipient)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_SmartNotifRecipientHistory_Recipient             */
-/*==============================================================*/
-create index INDX_SmartNotifRecipientHistory_Recipient on SmartNotifRecipientHistory (
-Recipient ASC
-)
-go
-
-/*==============================================================*/
 /* Table: SmartNotificationEvent                                */
 /*==============================================================*/
 create table SmartNotificationEvent (
@@ -9420,29 +9184,6 @@ create table State (
 )
 go
 
-INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
-INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
-INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
-INSERT INTO State VALUES(-32, 1, 'Regulate Reverse', 1, 6, 0);
-INSERT INTO State VALUES(-32, 2, 'Regulator Forward', 2, 6, 0);
-INSERT INTO State VALUES(-32, 3, 'Return to Neutral', 3, 6, 0);
-INSERT INTO State VALUES(-32, 4, 'Regulate in Reverse', 4, 6, 0);
-INSERT INTO State VALUES(-32, 5, 'Distributed Generation', 5, 6, 0);
-INSERT INTO State VALUES(-32, 7, 'Auto Determination', 7, 6, 0);
-INSERT INTO State VALUES(-31, 0, 'Locked Forward', 0, 6, 0);
-INSERT INTO State VALUES(-31, 1, 'Locked Reverse', 1, 6, 0);
-INSERT INTO State VALUES(-31, 2, 'Reverse Idle', 2, 6, 0);
-INSERT INTO State VALUES(-31, 3, 'Bidirectional', 3, 6, 0);
-INSERT INTO State VALUES(-31, 4, 'Neutral Idle', 4, 6, 0);
-INSERT INTO State VALUES(-31, 5, 'Cogeneration', 5, 6, 0);
-INSERT INTO State VALUES(-31, 6, 'Reactive Bidirectional', 7, 6, 0);
-INSERT INTO State VALUES(-31, 7, 'Bias Bidirectional', 8, 6, 0);
-INSERT INTO State VALUES(-31, 8, 'Bias Cogeneration', 9, 6, 0);
-INSERT INTO State VALUES(-31, 9, 'Reverse Cogeneration', 10, 6, 0);
-INSERT INTO State VALUES(-30, 0, 'Received and Waiting', 7, 6, 0);
-INSERT INTO State VALUES(-30, 1, 'Nothing Pending', 9, 6, 0);
-INSERT INTO State VALUES(-30, 2, 'Success', 0, 6, 0);
-INSERT INTO State VALUES(-30, 3, 'Failed', 1, 6, 0);
 INSERT INTO State VALUES(-29, 0, 'Success', 0, 6, 0);
 INSERT INTO State VALUES(-29, 1, 'Failure', 1, 6, 0);
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
@@ -9550,8 +9291,8 @@ INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
 INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
-INSERT INTO State VALUES(-8, 0, 'Inactive', 1, 6, 0);
-INSERT INTO State VALUES(-8, 1, 'Active', 0, 6, 0);
+INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
+INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
 INSERT INTO State VALUES(-7, 0, 'Normal',0,6,0);
 INSERT INTO State VALUES(-7, 1, 'NonCriticalFailure',1,6,0);
 INSERT INTO State VALUES(-7, 2, 'CriticalFailure',2,6,0);
@@ -9627,10 +9368,6 @@ create table StateGroup (
 )
 go
 
-INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
-INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
-INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
-INSERT INTO StateGroup VALUES(-30, 'LCR Firmware Update Status', 'Status');
 INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
@@ -9729,14 +9466,13 @@ create table StatusPointMonitorProcessor (
    PrevState            varchar(255)         not null,
    NextState            varchar(255)         not null,
    ActionType           varchar(255)         not null,
-   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 )
 go
 
-INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse', 0);
-INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration', 0);
-INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
+INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
 
 /*==============================================================*/
 /* Table: StoredProcedureLog                                    */
@@ -10037,7 +9773,7 @@ create table Theme (
 )
 go
 
-INSERT INTO Theme VALUES (-1, 'Default', 1);
+INSERT INTO Theme VALUES (-1, 'Yukon Gray', 1);
 
 /*==============================================================*/
 /* Table: ThemeProperty                                         */
@@ -10050,22 +9786,22 @@ create table ThemeProperty (
 )
 go
 
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#727e84');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
 INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#727e84');
-INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
+INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', '-2');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', '#727e84');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '-1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
-INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#007bc1');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#007bc1');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#007bc1');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#4da3d4');
+INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#1c49a6');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#777');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#666');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#888');
 
 /*==============================================================*/
 /* Table: ThermostatEventHistory                                */
@@ -10158,9 +9894,6 @@ INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
-INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
-INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
-INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */
@@ -10998,10 +10731,6 @@ INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
-INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200S', 1344);
-
-INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6200C', 1342);
-INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-6600C', 1343);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
@@ -11041,19 +10770,6 @@ insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 /*==============================================================*/
 create index Indx_YkLstDefID on YukonListEntry (
 YukonDefinitionID ASC
-)
-go
-
-/*==============================================================*/
-/* Table: YukonLogging                                          */
-/*==============================================================*/
-create table YukonLogging (
-   LoggerId             numeric              not null,
-   LoggerName           varchar(200)         not null,
-   LoggerLevel          varchar(5)           not null,
-   ExpirationDate       datetime             null,
-   Notes                varchar(300)         null,
-   constraint PK_YUKONLOGGING primary key (LoggerId)
 )
 go
 
@@ -11207,7 +10923,7 @@ INSERT INTO YukonRoleProperty VALUES(-10108,-101,'decimal_places','2','How many 
 INSERT INTO YukonRoleProperty VALUES(-10111,-101,'lc_reduction_col','true','Tells TDC to show the LoadControl reduction column or not');
 
 /* Trending Role */
-insert into YukonRoleProperty values(-10200, -102, 'Manage Trends','VIEW','Controls access to view, create, edit, or delete Trends.');
+insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','true','<description>');
 insert into YukonRoleProperty values(-10202, -102, 'Trending Disclaimer',' ','The disclaimer that appears with trends.');
 insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 'Controls access to retrieve meter data on demand.');
 insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events.');
@@ -11324,7 +11040,6 @@ INSERT INTO YukonRoleProperty VALUES(-20018,-200,'Event Logs','false','Controls 
 INSERT INTO YukonRoleProperty VALUES(-20019,-200,'Admin Super User','false','Allows full control of all energy companies and other administrator features.'); 
 INSERT INTO YukonRoleProperty VALUES(-20020,-200,'Network Manager Access','false','Controls access to Network Manager.');
 INSERT INTO YukonRoleProperty VALUES(-20021,-200,'Manage Dashboards','false','Controls access to manage all user defined dashboards.');
-INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
@@ -11340,7 +11055,7 @@ INSERT INTO YukonRoleProperty VALUES(-20216,-202,'Validation Engine','false','Co
 INSERT INTO YukonRoleProperty VALUES(-20217,-202,'Status Point Monitor','false','Controls access to the Status Point Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20218,-202,'Porter Response Monitor','false','Controls access to the Porter Response Monitor');
 INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Controls access to Meter Events.');
-INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','NO_ACCESS','Controls access to Disconnect, Connect, and Arm operations.');
+INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
 INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
 INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
@@ -11397,7 +11112,10 @@ INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Control
 INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
 
 /* Device Management Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Manage Infrastructure', 'NO_ACCESS', 'Controls access to manage infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
 INSERT INTO YukonRoleProperty VALUES(-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
 INSERT INTO YukonRoleProperty VALUES(-21405, -214, 'Manage Point Data', 'UPDATE', 'Controls the ability to edit, delete, or manually add point data values.');
 INSERT INTO YukonRoleProperty VALUES(-21406, -214, 'Manage Points', 'UPDATE', 'Controls the ability to view, create, edit, or delete points.');
@@ -11429,6 +11147,7 @@ INSERT INTO YukonRoleProperty VALUES(-40300,-400,'Auto Thermostat Mode Enabled',
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
+insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets the visibility of reports.');
 insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
 insert into YukonRoleProperty values(-70008,-700,'Allow OV/UV','false','Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.'); 
@@ -11483,7 +11202,6 @@ INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Contr
 INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','VIEW','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
-INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
@@ -11733,16 +11451,6 @@ create table ZBGatewayToDeviceMapping (
 go
 
 /*==============================================================*/
-/* Table: ZeusGroupInventoryMapping                             */
-/*==============================================================*/
-create table ZeusGroupInventoryMapping (
-   InventoryID          numeric              not null,
-   EcobeeGroupId        varchar(32)          not null,
-   constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
-)
-go
-
-/*==============================================================*/
 /* Table: Zone                                                  */
 /*==============================================================*/
 create table Zone (
@@ -11754,10 +11462,6 @@ create table Zone (
    ZoneType             varchar(40)          not null,
    constraint PK_Zone primary key (ZoneId)
 )
-go
-
-alter table Zone
-   add constraint AK_ZONENAME_ZONE unique (ZoneName)
 go
 
 /*==============================================================*/
@@ -12470,12 +12174,6 @@ go
 alter table ArchiveDataAnalysisSlotValue
    add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
-         on delete cascade
-go
-
-alter table AttributeAssignment
-   add constraint FK_ATTRASSIGN_CUSTATTR foreign key (AttributeId)
-      references CustomAttribute (AttributeId)
          on delete cascade
 go
 
@@ -13527,12 +13225,6 @@ alter table DeviceGroupComposedGroup
          on delete cascade
 go
 
-alter table DeviceGuid
-   add constraint FK_DeviceGuid_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
-
 alter table DeviceMCT400Series
    add constraint FK_Dev4_DevC foreign key (DeviceID)
       references DEVICECARRIERSETTINGS (DEVICEID)
@@ -14021,11 +13713,6 @@ alter table EventInventory
       references InventoryBase (InventoryID)
 go
 
-alter table EventLog
-   add constraint FK_EventLog_EventLogType foreign key (EventTypeId)
-      references EventLogType (EventTypeId)
-go
-
 alter table EventWorkOrder
    add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)
       references EventBase (EventID)
@@ -14266,12 +13953,6 @@ alter table LMCONTROLAREAPROGRAM
       references LMPROGRAM (DeviceID)
 go
 
-alter table LMConfigurableCycleGear
-   add constraint FK_LMConfigurableCycleGear_LMPDirGear foreign key (GearId)
-      references LMProgramDirectGear (GearID)
-         on delete cascade
-go
-
 alter table LMConfigurationExpressCom
    add constraint FK_LMCfgXcom_LMCfg foreign key (ConfigurationID)
       references LMConfigurationBase (ConfigurationID)
@@ -14427,12 +14108,6 @@ alter table LMGroup
       references DEVICE (DEVICEID)
 go
 
-alter table LMGroupEatonCloud
-   add constraint FK_LMGroupEatonCloud_LMGroup foreign key (YukonGroupId)
-      references LMGroup (DeviceID)
-         on delete cascade
-go
-
 alter table LMGroupEmetcon
    add constraint FK_LmGroupEmetcon_LMGroup foreign key (DEVICEID)
       references LMGroup (DeviceID)
@@ -14582,11 +14257,6 @@ alter table LMGroupVersacom
       references LMGroup (DeviceID)
 go
 
-alter table LMGroupZeusMapping
-   add constraint FK_LMGroupZeusMapping_LMGroup foreign key (YukonGroupId)
-      references LMGroup (DeviceID)
-go
-
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
       references Route (RouteID)
@@ -14640,6 +14310,12 @@ go
 alter table LMHardwareToMeterMapping
    add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
       references MeterHardwareBase (InventoryID)
+go
+
+alter table LMItronCycleGear
+   add constraint FK_LMItronCycleGear_LMPDirGear foreign key (GearId)
+      references LMProgramDirectGear (GearID)
+         on delete cascade
 go
 
 alter table LMMacsScheduleCustomerList
@@ -15283,12 +14959,6 @@ alter table RfnBroadcastEventSummary
          on delete cascade
 go
 
-alter table RfnModelChange
-   add constraint FK_RfnModelChange_Device foreign key (DeviceID)
-      references DEVICE (DEVICEID)
-         on delete cascade
-go
-
 alter table Route
    add constraint FK_Route_DevID foreign key (DeviceID)
       references DEVICE (DEVICEID)
@@ -15343,24 +15013,6 @@ go
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
-go
-
-alter table SmartNotifEventHistory
-   add constraint FK_SmrtNotifEventHist_SmrtNotifEmailHist foreign key (HistoryId)
-      references SmartNotifEmailHistory (HistoryId)
-         on delete cascade
-go
-
-alter table SmartNotifEventParamHistory
-   add constraint FK_SmrtNotifEvntPHist_SmrtNotifEmailHist foreign key (EventHistoryId)
-      references SmartNotifEventHistory (EventHistoryId)
-         on delete cascade
-go
-
-alter table SmartNotifRecipientHistory
-   add constraint FK_SmrtNotifRecipHist_SmrtNotifEmailHist foreign key (HistoryId)
-      references SmartNotifEmailHistory (HistoryId)
-         on delete cascade
 go
 
 alter table SmartNotificationEventParam
@@ -15733,11 +15385,6 @@ alter table ZBGatewayToDeviceMapping
          on delete cascade
 go
 
-alter table ZeusGroupInventoryMapping
-   add constraint FK_ZeusGroupIM_IBase foreign key (InventoryID)
-      references InventoryBase (InventoryID)
-go
-
 alter table Zone
    add constraint FK_ZONE_CapContSubBus foreign key (SubstationBusId)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
@@ -15881,4 +15528,5 @@ INSERT INTO StoredProcedureLog VALUES (
             'sp_SmartIndexMaintenance', 
             GETDATE(), 'Smart Index Maintenance Complete');
 go
+
 

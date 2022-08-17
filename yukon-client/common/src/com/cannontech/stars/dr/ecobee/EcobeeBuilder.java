@@ -14,11 +14,10 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteDevice;
 import com.cannontech.common.pao.service.PaoPersistenceService;
-import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
+import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
@@ -37,32 +36,34 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private EcobeeZeusCommunicationService ecobeeZeusCommunicationService;
+    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
     
     @Override
     public void createDevice(Hardware hardware) {
-        createZeusDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
     }
-
-    /**
-     * Create a Ecobee device if the provided thermostat serial number is valid and the its already enrolled.
-     */
-    public PaoIdentifier createZeusDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
+    
+    public PaoIdentifier createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
-            ecobeeZeusCommunicationService.createDevice(serialNumber);
+            ecobeeCommunicationService.registerDevice(serialNumber);
+            
             CompleteDevice ecobeePao = new CompleteDevice();
             ecobeePao.setPaoName(serialNumber);
             paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
+
             // Update the Stars table with the device id
             inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
+            ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
             return ecobeePao.getPaoIdentifier();
         } catch (Exception e) {
+            //Catch any exception here - only ecobee exceptions (most often communications) are expected, but we might
+            //also have authentication exceptions (which cannot be explicitly caught here) or something unexpected.
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
         }
     }
-
+    
     @Override
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
         //Get the inventory, while it still exists, and cache the serial number so we can send the ecobee delete request.
@@ -72,14 +73,10 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void deleteDevice(YukonPao pao, InventoryIdentifier inventoryId) {
-        if (!pao.getPaoIdentifier().equals(PaoUtils.SYSTEM_PAOIDENTIFIER)) {
-            paoPersistenceService.deletePao(pao.getPaoIdentifier());
-        }
-        // Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
+        paoPersistenceService.deletePao(pao.getPaoIdentifier());
+        //Inventory has been deleted, so get the serial number from the cache and send the ecobee delete request.
         String serialNumber = inventoryIdToSerialNumber.remove(inventoryId.getInventoryId());
-
-        ecobeeZeusCommunicationService.deleteDevice(serialNumber);
-
+        ecobeeCommunicationService.deleteDevice(serialNumber);
     }
 
     @Override

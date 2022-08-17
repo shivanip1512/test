@@ -7,9 +7,7 @@
 
 #include "boost_test_helpers.h"
 
-#include <boost/range/adaptor/indexed.hpp>
-
-BOOST_FIXTURE_TEST_SUITE( test_fdrdnpslave, Cti::Test::Override_GlobalSettings )
+BOOST_AUTO_TEST_SUITE( test_fdrdnpslave )
 
 using Cti::Test::byte_str;
 
@@ -595,7 +593,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_scan_request_full_application_fragment )
+BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -615,14 +613,15 @@ BOOST_AUTO_TEST_CASE( test_scan_request_full_application_fragment )
 
     for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
     {
-        for( int pointoffset = 1; pointoffset <= 120; ++pointoffset, ++pointid )
+        for( int pointoffset = 1; pointoffset <= 900; ++pointoffset, ++pointid )
+        //  Pulse Accumulator offset 17, point ID 42
         {
             //Initialize the interface to have a point in a group.
             CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
             fdrPoint->setPointID(pointid);
             fdrPoint->setPaoID(52);
-            fdrPoint->setOffset(pointoffset);
+            fdrPoint->setOffset(pointoffset * 25 / 24);
             fdrPoint->setPointType(PulseAccumulatorPointType);
             fdrPoint->setValue(
                     (pointtype == StatusPointType || pointtype == StatusOutputPointType)
@@ -656,155 +655,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_full_application_fragment )
 
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    BOOST_REQUIRE_EQUAL(connection.messages.size(), 8);
-
-    //  Start of the application fragment, full packet
-    BOOST_REQUIRE_EQUAL(connection.messages[0].size(), 292);
-    BOOST_CHECK_EQUAL(connection.messages[0][10], 0x40);  //  transport header, first
-    BOOST_CHECK_EQUAL(connection.messages[0][11], 0xca);  //  application header, first+final + seq 0x0a
-
-    //  End of the application fragment, partial packet
-    BOOST_REQUIRE_EQUAL(connection.messages[7].size(), 238);
-    BOOST_CHECK_EQUAL(connection.messages[7][10], 0x87);  //  transport header, final
-}
-
-
-BOOST_AUTO_TEST_CASE(test_scan_request_multiple_application_fragments)
-{
-    Test_FdrDnpSlave dnpSlave;
-
-    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
-
-    CtiFDRPointList fdrPointList;
-
-    fdrPointList.setPointList(fdrManager);
-
-    dnpSlave.getSendToList().deletePointList();
-    dnpSlave.setSendToList(fdrPointList);
-
-    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(nullptr);
-
-    unsigned pointid = 37;
-
-    for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
-    {
-        for( int pointoffset = 1; pointoffset <= 250; ++pointoffset, ++pointid )
-        {
-            //Initialize the interface to have a point in a group.
-            CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
-
-            fdrPoint->setPointID(pointid);
-            fdrPoint->setPaoID(52);
-            fdrPoint->setOffset(pointoffset);
-            fdrPoint->setPointType(PulseAccumulatorPointType);
-            fdrPoint->setValue(
-                (pointtype == StatusPointType || pointtype == StatusOutputPointType)
-                    ? pointoffset % 2
-                    : pointoffset);
-
-            CtiFDRDestination pointDestination(
-                fdrPoint->getPointID(),
-                "MasterId:2;SlaveId:30;"
-                "POINTTYPE:" + desolvePointType(pointtype) + ";"
-                "Offset:" + std::to_string(pointoffset), "Test Destination");
-
-            vector<CtiFDRDestination> destinationList;
-
-            destinationList.push_back(pointDestination);
-
-            fdrPoint->setDestinationList(destinationList);
-
-            fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
-
-            dnpSlave.translateSinglePoint(fdrPoint, true);
-        }
-    }
-
-    const byte_str request(
-        "05 64 17 c4 1e 00 02 00 78 b5 "
-        "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
-        "01 06 75 e1");
-
-    Test_ServerConnection connection;
-
-    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
-
-    BOOST_REQUIRE_EQUAL(connection.messages.size(), 19);
-
-    for( const auto& indexedMsg : connection.messages | boost::adaptors::indexed() )
-    {
-        BOOST_TEST_CONTEXT("Message index " << indexedMsg.index())
-        {
-            const auto packetSize = indexedMsg.value().size();
-
-            constexpr auto 
-                TC_First = 0x40, 
-                TC_Final = 0x80, 
-                AC_First = 0x80,
-                AC_Final = 0x40,
-                Neither = 0x00;
-
-            const auto transportControl = indexedMsg.value()[10] & 0xc0;
-            const auto transportSequence = indexedMsg.value()[10] & 0x3f;
-            
-            //  Only valid for the first packet in an application fragment, meaningless otherwise
-            const auto applicationControl = indexedMsg.value()[11] & 0xc0;
-            const auto applicationSequence = indexedMsg.value()[11] & 0x3f;
-
-            switch( indexedMsg.index() )
-            {
-                case 0:
-                    //  Start of the first application fragment, full packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_First);
-                    BOOST_CHECK_EQUAL(transportSequence, 0);
-                    BOOST_CHECK_EQUAL(applicationControl, AC_First);
-                    BOOST_CHECK_EQUAL(applicationSequence, 10);
-                    BOOST_CHECK_EQUAL(packetSize, 292);
-                    break;
-                case 6:
-                    //  End of the first application fragment, partial packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
-                    BOOST_CHECK_EQUAL(transportSequence, 6);
-                    BOOST_CHECK_EQUAL(packetSize, 35);
-                    break;
-                case 7:
-                    //  Start of the second application fragment, full packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_First);
-                    BOOST_CHECK_EQUAL(transportSequence, 0);
-                    BOOST_CHECK_EQUAL(applicationControl, Neither);
-                    BOOST_CHECK_EQUAL(applicationSequence, 11);
-                    BOOST_CHECK_EQUAL(packetSize, 292);
-                    break;
-                case 12:
-                    //  End of the second application fragment, partial packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
-                    BOOST_CHECK_EQUAL(transportSequence, 5);
-                    BOOST_CHECK_EQUAL(packetSize, 27);
-                    break;
-                case 13:
-                    //  Start of the third and final application fragment, full packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_First);
-                    BOOST_CHECK_EQUAL(transportSequence, 0);
-                    BOOST_CHECK_EQUAL(applicationControl, AC_Final);
-                    BOOST_CHECK_EQUAL(applicationSequence, 12);
-                    BOOST_CHECK_EQUAL(packetSize, 292);
-                    break;
-                case 18:
-                    //  End of the third application fragment, partial packet
-                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
-                    BOOST_CHECK_EQUAL(transportSequence, 5);
-                    BOOST_CHECK_EQUAL(packetSize, 27);
-                    break;
-                default:
-                    //  All others are in the middle of an application fragment, neither first nor final, full packet
-                    BOOST_CHECK_EQUAL(transportControl, Neither);
-                    BOOST_CHECK_EQUAL(packetSize, 292);
-                    break;
-            }
-        }
-    }
-
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 58);
 }
 
 
@@ -1336,7 +1187,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 17");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1413,7 +1263,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close direct offset 17");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1469,7 +1318,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 17");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -1580,7 +1428,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_selectonly");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1611,7 +1458,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_operate");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1711,7 +1557,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_selectonly");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1738,7 +1583,6 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_operate");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -2199,7 +2043,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 19");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2301,7 +2144,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 19");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -2412,7 +2254,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_selectonly");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2443,7 +2284,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_operate");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2543,7 +2383,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_selectonly");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2570,7 +2409,6 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_operate");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -3005,11 +2843,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
     BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
     BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
 
-    auto multi = dynamic_cast<const CtiMultiMsg *>(dnpSlave.pointMessages.front().get());
-
-    BOOST_REQUIRE_EQUAL(multi->getCount(), 1);
-
-    auto msg = (*multi)[0];
+    auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
 
     BOOST_REQUIRE(msg);
 
@@ -3156,7 +2990,6 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3180,7 +3013,6 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
@@ -3250,7 +3082,6 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3274,7 +3105,6 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
@@ -3345,7 +3175,6 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3370,123 +3199,9 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
-
-/** 
- * Validate passthrough control functionality 
- */
-BOOST_AUTO_TEST_CASE( test_control_open_or_close_sbo_porter_passthrough )
-{
-    Test_FdrDnpSlave dnpSlave;
-
-    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
-
-    CtiFDRPointList fdrPointList;
-
-    fdrPointList.setPointList(fdrManager);
-
-    dnpSlave.getReceiveFromList().deletePointList();
-    dnpSlave.setReceiveFromList(fdrPointList);
-
-    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
-    fdrPointList.setPointList(nullptr);
-
-    {
-        //Initialize the interface to have a point in a group.
-        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
-
-        fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
-        fdrPoint->setOffset(12);
-        fdrPoint->setPointType(StatusPointType);
-        fdrPoint->setValue(0);
-        fdrPoint->setControllable(true);
-
-        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
-
-        vector<CtiFDRDestination> destinationList;
-
-        destinationList.push_back(pointDestination);
-
-        fdrPoint->setDestinationList(destinationList);
-
-        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
-
-        dnpSlave.translateSinglePoint(fdrPoint, false);
-    }
-
-    dnpSlave.point.setControlOffset(72);
-    dnpSlave.point.setPaoId(153);
-    dnpSlave.point.setPointId(43);
-    dnpSlave.point.setControlType(ControlType_SBOPulse);
-    dnpSlave.point.setStateZeroControl("scan integrity");       // passthrough
-    dnpSlave.point.setStateOneControl("putconfig timesync");    // passthrough
-    dnpSlave.point.setCloseTime1(1000);
-    dnpSlave.point.setCloseTime2(1000);
-
-    //  Trip, pulse on (0x81), select
-    {
-        const byte_str request(
-                "05 64 18 c4 f6 01 e8 03 36 79 "
-                "c0 c1 03 0c 01 17 01 00 81 01 e8 03 00 00 00 00 db 00 "
-                "00 00 00 ff ff");
-
-        Test_ServerConnection connection;
-
-        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
-
-        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
-
-        const byte_str expected(
-                "05 64 1a 44 e8 03 f6 01 20 bb "
-                "c0 c1 81 00 00 0c 01 17 01 00 81 01 e8 03 00 00 3b da "
-                "00 00 00 00 00 ff ff");
-
-        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
-
-        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
-
-        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "scan integrity");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 11);
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
-    }
-
-    dnpSlave.lastRequestMsg.reset();
-
-    //  Close, pulse on (0x41), select
-    {
-        const byte_str request(
-                "05 64 18 c4 f6 01 e8 03 36 79 "
-                "c0 c1 03 0c 01 17 01 00 41 01 e8 03 00 00 00 00 0e 9e "
-                "00 00 00 ff ff");
-
-        Test_ServerConnection connection;
-
-        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
-
-        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
-
-        const byte_str expected(
-                "05 64 1a 44 e8 03 f6 01 20 bb "
-                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
-                "00 00 00 00 00 ff ff");
-
-        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
-        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
-
-        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
-
-        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putconfig timesync");
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 12);
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
-    }
-}
 
 BOOST_AUTO_TEST_SUITE_END()
 

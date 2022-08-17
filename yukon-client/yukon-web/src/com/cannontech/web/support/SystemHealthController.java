@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +15,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -44,6 +46,7 @@ import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
 @RequestMapping("/systemHealth/*")
 public class SystemHealthController {
     private static final Logger log = YukonLogManager.getLogger(SystemHealthController.class);
+    private static JmsTemplate jmsTemplate;
     private static Instant lastResync;
     
     @Autowired private SystemHealthService systemHealthService;
@@ -51,7 +54,13 @@ public class SystemHealthController {
     @Autowired private PorterQueueCountsWidgetService porterQueueCountsWidgetService;
     @Autowired private NmSyncService nmSyncService;
     
-
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
+    }
+    
     @RequestMapping("/home")
     public String home(ModelMap model, LiteYukonUser user) throws MessageConversionException, JMSException {
         

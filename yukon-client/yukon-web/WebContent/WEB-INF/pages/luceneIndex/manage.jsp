@@ -23,9 +23,8 @@
                 <td>${names[index.indexName]}</td>
                 <td><span class="js-date">${index.dateCreated}</span></td>
                 <td>
-                    <div class="progress dn push-down-4">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
-                            aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                    <div class="progress progress-striped active dn push-down-4">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
                     </div>
                     <cti:button classes="MR0 fr js-build-btn" nameKey="build" icon="icon-database-refresh"/>
                 </td>

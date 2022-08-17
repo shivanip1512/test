@@ -5,20 +5,20 @@
 #include "AttributeService.h"
 #include "PointValueHolder.h"
 #include "msg_signal.h"
-#include "Requests.h"
+#include "msg_pcrequest.h"
 
 class CtiPointDataMsg;
 class CtiCCTwoWayPoints;
 
-namespace Cti::CapControl {
 
-enum class RequestType;
+namespace Cti           {
+namespace CapControl    {
 
 struct Policy
 {
     using IDSet = std::set<long>;
     using Action = std::pair<std::unique_ptr<CtiSignalMsg>,
-                             PorterRequest>;
+                             std::unique_ptr<CtiRequestMsg>>;
     using Actions = std::vector<Action>;
 
     void loadAttributes( AttributeService & service, const long paoID );
@@ -47,9 +47,9 @@ protected:
     virtual AttributeList getSupportedAttributes() const = 0;
 
     std::unique_ptr<CtiSignalMsg>   makeSignalTemplate( const long ID, const long pointValue, const std::string & description );
-    PorterRequest                   makeRequestTemplate( const long ID, const std::string & command, const RequestType requestType );
+    std::unique_ptr<CtiRequestMsg>  makeRequestTemplate( const long ID, const std::string & command );
 
-    Action makeStandardDigitalControl( const LitePoint & point, const std::string & description, const RequestType requestType );
+    Action makeStandardDigitalControl( const LitePoint & point, const std::string & description );
 
     template <typename T>
     std::string putvalueAnalogCommand( const LitePoint & point, const T value )
@@ -93,3 +93,5 @@ protected:
 };
 
 }
+}
+

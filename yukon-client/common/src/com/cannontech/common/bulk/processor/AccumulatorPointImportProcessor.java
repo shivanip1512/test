@@ -8,6 +8,7 @@ import static com.cannontech.common.bulk.model.PointImportParameters.DISABLED;
 import static com.cannontech.common.bulk.model.PointImportParameters.METER_DIALS;
 import static com.cannontech.common.bulk.model.PointImportParameters.MULTIPLIER;
 import static com.cannontech.common.bulk.model.PointImportParameters.POINT_NAME;
+import static com.cannontech.common.bulk.model.PointImportParameters.POINT_OFFSET;
 
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportRow;
@@ -42,7 +43,19 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
         
         AccumulatorPointBuilder builder = pointBuilderFactory.getAccumulatorPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled, accumulatorType);
         
-        setPointOffset(builder, row, paoId, deviceName);
+        if (row.hasValue(POINT_OFFSET.NAME)) {
+            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
+            if (pointOffset > 0) {
+                if ((accumulatorType == AccumulatorType.PULSE
+                    && pointDao.deviceHasPoint(paoId, pointOffset, PointType.PulseAccumulator))
+                    || (accumulatorType == AccumulatorType.DEMAND
+                        && pointDao.deviceHasPoint(paoId, pointOffset, PointType.DemandAccumulator))) {
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
+                    throw new ProcessingException(error, "pointOffsetInUse", pointOffset, deviceName);
+                }
+            }
+            builder.setPointOffset(pointOffset);
+        }
         
         doSharedProcessing(builder, row);
     
@@ -56,14 +69,5 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
         builder.setMeterDials(meterDials);
         
         builder.insert();
-    }
-    
-    @Override
-    protected PointType getPointType(ImportRow row) {
-        AccumulatorType accumulatorType = AccumulatorType.valueOf(row.getValue(ACCUMULATOR_TYPE.NAME));
-        if (accumulatorType == AccumulatorType.PULSE)
-            return PointType.PulseAccumulator;
-        else // if (accumulatorType == AccumulatorType.DEMAND)
-            return PointType.DemandAccumulator;
     }
 }

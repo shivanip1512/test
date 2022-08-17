@@ -495,19 +495,15 @@ public class OperatorOptOutController {
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         helper.checkInventoryAgainstAccount(inventoryId, accountInfoFragment.getAccountId());
-        try {
-            optOutService.resendOptOut(
-                    inventoryId,
-                    customerAccount.getAccountId(),
-                    userContext);
 
-            flashScope.setConfirm(
-                    new YukonMessageSourceResolvable(
-                            "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
-        } catch (CommandCompletionException e) {
-            flashScope.setError(
-                    new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.resendOptOut.error"));
-        }
+        optOutService.resendOptOut(
+                inventoryId,
+                customerAccount.getAccountId(),
+                userContext);
+
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
 
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
         return "redirect:view";

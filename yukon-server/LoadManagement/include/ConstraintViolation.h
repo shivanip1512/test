@@ -77,8 +77,7 @@ public:
         CV_NP_IdenticalGearID                  = 124,
         CV_NP_CannotChangeFromLatching         = 125,
         CV_NP_GearCannotChangeStopping         = 126,
-        CV_NP_GearCannotChangeInactive         = 127,
-        CV_NP_ControlWindowSpansMidnight       = 150
+        CV_NP_GearCannotChangeInactive         = 127
     };
 
     enum CV_Type_ThreeTimes
@@ -148,5 +147,4 @@ public:
     const std::vector<std::string>& getStringParams()   const;
     const std::vector<CtiTime>&     getDateTimeParams() const;
 
-    std::size_t getMemoryConsumption() const;
 };

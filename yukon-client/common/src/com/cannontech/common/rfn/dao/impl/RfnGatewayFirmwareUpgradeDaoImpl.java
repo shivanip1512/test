@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -36,9 +39,6 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -54,23 +54,26 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     private static final Duration upgradeTimeoutMinutes = Duration.standardMinutes(45);
     private static final String rfnUpdateServerAvailableVersionRequestCparm =
             "RFN_UPDATE_SERVER_AVAILABLE_VERSION_REQUEST";
-
+    private static final String updateServerAvailableVersionRequestQueue =
+            "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
+    
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
+    
     private GatewayFirmwareUpdateSummaryRowMapper summaryRowMapper = new GatewayFirmwareUpdateSummaryRowMapper();
     private GatewayFirmwareUpdateResultRowMapper resultRowMapper = new GatewayFirmwareUpdateResultRowMapper();
     private RequestReplyTemplate<RfnUpdateServerAvailableVersionResponse> rfnUpdateServerAvailableVersionTemplate;
     
     @PostConstruct
     public void init() {
-        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION);
-        rfnUpdateServerAvailableVersionTemplate = new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm,
-                configSource, jmsTemplate, true);
+        rfnUpdateServerAvailableVersionTemplate =
+                new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm, configSource,
+                    connectionFactory, updateServerAvailableVersionRequestQueue, false, true);
     }
     
     @Override

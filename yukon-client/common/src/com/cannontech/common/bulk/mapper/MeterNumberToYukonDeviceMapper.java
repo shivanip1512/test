@@ -22,9 +22,6 @@ public final class MeterNumberToYukonDeviceMapper implements ObjectMapper<String
         try {
             return deviceDao.getYukonDeviceObjectByMeterNumber(from);
         } catch (IncorrectResultSizeDataAccessException  e) {
-            if (e.getActualSize() > 1) {
-                throw new ObjectMappingException("More than one device with meter number: '" + from + "' was found.", "duplicateMeterNumber", from, e);
-            }
             throw new ObjectMappingException("Device with meter number: '" + from + "' not found.","invalidMeterNumber", from, e);
         }
     }

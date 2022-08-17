@@ -38,8 +38,6 @@ public:
     int operator==(const CtiLMEnergyExchangeHourlyCustomer& right) const;
     int operator!=(const CtiLMEnergyExchangeHourlyCustomer& right) const;
 
-    std::size_t getMemoryConsumption() const;
-
     // Static Members
 
     // Possible

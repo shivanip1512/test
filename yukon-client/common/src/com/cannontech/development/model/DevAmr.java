@@ -28,7 +28,6 @@ public class DevAmr extends DevObject {
             }
         }
         meterTypes.add(new DevPaoType(PaoType.RFN_RELAY));
-        meterTypes.add(new DevPaoType(PaoType.CRLY856));
     }
     
     public boolean isCreateRfnTemplates() {

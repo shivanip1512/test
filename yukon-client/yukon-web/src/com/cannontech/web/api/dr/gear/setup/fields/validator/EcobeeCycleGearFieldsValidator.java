@@ -30,8 +30,11 @@ public class EcobeeCycleGearFieldsValidator extends ProgramGearFieldsValidator<E
         // Check Mandatory
         lmValidatorHelper.checkIfFieldRequired("mandatory", errors, ecobeeCycleGear.getMandatory(), "Mandatory");
 
-        // Check Ramp In/Out
-        lmValidatorHelper.checkIfFieldRequired("rampInOut", errors, ecobeeCycleGear.getRampInOut(), "Ramp In/Out");
+        // Check Ramp In
+        gearValidatorHelper.checkRampIn(ecobeeCycleGear.getRampIn(), errors);
+
+        // Check for Ramp Out
+        gearValidatorHelper.checkRampOut(ecobeeCycleGear.getRampOut(), errors);
 
         // Check for Control Percent
         gearValidatorHelper.checkControlPercent(ecobeeCycleGear.getControlPercent(), errors);

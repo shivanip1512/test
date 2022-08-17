@@ -1,7 +1,5 @@
 package com.cannontech.web.tools.commander.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class CommandParams {
 
     private CommandTarget target;
@@ -57,7 +55,7 @@ public class CommandParams {
     }
     
     public void setSerialNumber(String serialNumber) {
-        this.serialNumber = StringUtils.trim(serialNumber);
+        this.serialNumber = serialNumber;
     }
     
     public String getCommand() {

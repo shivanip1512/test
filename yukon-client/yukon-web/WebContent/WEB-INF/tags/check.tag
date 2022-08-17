@@ -45,7 +45,7 @@
             <c:set var="checked" value="${status.value}" />
         </spring:bind>
     </c:if>
-    <c:if test="${not empty checked && checked}">
+    <c:if test="${not empty checked}">
         <c:choose>
             <c:when test="${not empty pageScope.key}">
                 <cti:msgScope paths=", yukon.web.components.button, yukon.common">
