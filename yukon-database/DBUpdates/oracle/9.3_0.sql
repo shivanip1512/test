@@ -113,6 +113,13 @@ UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Nam
 INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', SYSDATE);
 /* @end YUK-27139 */
 
+/* @start YUK-27043 */
+UPDATE YukonRoleProperty
+SET Description = 'Allow access to DER Edge Coordinator features and APIs. Warning: This setting should only be enabled for dedicated DER Edge API users. It will remove access to other Yukon features.'
+WHERE RolePropertyID = -90050;
+
+INSERT INTO DBUpdates VALUES ('YUK-27043', '9.3.0', SYSDATE);
+/* @end YUK-27043 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

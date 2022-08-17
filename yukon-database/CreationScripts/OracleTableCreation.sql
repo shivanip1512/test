@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/5/2022 5:25:49 AM                          */
+/* Created on:     8/17/2022 1:03:31 PM                         */
 /*==============================================================*/
 
 
@@ -10839,7 +10839,7 @@ INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Contr
 INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','VIEW','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
-INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs.');
+INSERT INTO YukonRoleProperty VALUES (-90050,-900,'Allow access to DER Edge Coordinator features and APIs. Warning: This setting should only be enabled for dedicated DER Edge API users. It will remove access to other Yukon features.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
