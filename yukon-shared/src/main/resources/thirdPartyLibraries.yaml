@@ -4278,18 +4278,18 @@ Network Manager :
     jira : NM-1555
     notes : 
 
-  - filename : commons-configuration2-2.7.jar
+  - filename : commons-configuration2-2.8.0.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.7
+    version : 2.8.0
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.7"
-    md5 : 3307f404282a5040f14fd8cb8e0783ca
-    sha1 : 593326399e5fb5e1f986607f06f63c1250ab36b4
-    updated : 2021-02-02
-    jira : NM-1854
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.8.0"
+    md5 : 4bb1f1ad26727cf5966554cb6b9eb073
+    sha1 : 6a76acbe14d2c01d4758a57171f3f6a150dbd462
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW
 
   - filename : commons-dbcp-1.2.2.jar
@@ -4348,18 +4348,18 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : commons-io-2.6.jar
+  - filename : commons-io-2.11.0.jar
     yukon group : Apache Commons
     project : Apache Commons IO
-    version : 2.6
+    version : 2.11.0
     project URL : "http://commons.apache.org/proper/commons-io/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.6"
-    md5 : 467c2a1f64319c99b5faf03fc78572af
-    sha1 : 815893df5f31da2ece4040fe0a12fd44b577afaf
-    updated : 2017-10-15
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.11.0"
+    md5 : 3b4b7ccfaeceeac240b804839ee1a1ca
+    sha1 : a2503f302b11ebde7ebc3df41daebe0e4eea3689
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW
 
   - filename : commons-lang-2.4.jar
@@ -5159,32 +5159,32 @@ Network Manager :
     jira : NM-1023
     notes : 
 
-  - filename : jna-5.3.1.jar
+  - filename : jna-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.3.1"
-    md5 : df3ad04f50fb50840eeb674210200f64
-    sha1 : 6eb9d07456c56b9c2560722e90382252f0f98405
-    updated : 2019-04-28
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.10.0"
+    md5 : 2b884b01ad2f62d4f5dd11387a8bf799
+    sha1 : 7cf4c87dd802db50721db66947aa237d7ad09418
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW
 
-  - filename : jna-platform-5.3.1.jar
+  - filename : jna-platform-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.3.1"
-    md5 : 078fb626e8879c55e7a0035f389ec30c
-    sha1 : 925049dd00b3def5ab561709a56b96055fa67011
-    updated : 2019-04-28
-    jira : NM-1421
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.10.0"
+    md5 : c1ab841070c388ec32b77cdc05f084fb
+    sha1 : fbed7d9669dba47714ad0d4f4454290a997aee69
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW Java Native Access Platform
 
   - filename : jsp-api.jar
@@ -5411,18 +5411,88 @@ Network Manager :
     jira : NM-909
     notes : 
 
-  - filename : netty-all-4.1.53.Final.jar
+  - filename : netty-buffer-4.1.73.Final.jar
     yukon group : Yet Another Java Service Wrapper
     project : Netty
-    version : 4.1.53
+    version : 4.1.73
     project URL : "https://github.com/netty"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.53.Final"
-    md5 : da7460591b1e37a90393ab435f305a36
-    sha1 : fe61db8de0babb6ac5b87a8dd9ba017658f2f10d
-    updated : 2021-02-02
-    jira : NM-1854
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.73.Final"
+    md5 : 7cd16c99e55b6a0212c8fca39a7f6067
+    sha1 : 244a569c9aae973f6f485ac9801d79c1eca36daa
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
+
+  - filename : netty-codec-4.1.73.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.73
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.73.Final"
+    md5 : 9dc40888b6597cd1b2c9958184a7ccc7
+    sha1 : 9496a30a349863a4c6fa10d5c36b4f3b495d3a31
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
+
+  - filename : netty-common-4.1.73.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.73
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.73.Final"
+    md5 : 55336fe69d48c60885c49750985f8dfb
+    sha1 : 27731b58d741b6faa6a00fa3285e7a55cc47be01
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
+
+  - filename : netty-handler-4.1.73.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.73
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.73.Final"
+    md5 : e619dcddc4a29623b4292b75abbf87d5
+    sha1 : 1a2231c0074f88254865c3769a4b5842939ea04d
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
+
+  - filename : netty-resolver-4.1.73.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.73
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.73.Final"
+    md5 : a1a90cfbfaf9f4a482347909570def5c
+    sha1 : bfe83710f0c1739019613e81a06101020ca65def
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
+
+  - filename : netty-transport-4.1.73.Final.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Netty
+    version : 4.1.73
+    project URL : "https://github.com/netty"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.73.Final"
+    md5 : af5451a8a9549a3ae148ca58fc71e4d3
+    sha1 : abb155ddff196ccedfe85b810d4b9375ef85fcfa
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW
 
   - filename : nimbus.jar
@@ -5466,6 +5536,20 @@ Network Manager :
     updated : 2020-06-19
     jira : NM-708
     notes : ojdbc10 for Java 6+
+
+  - filename : permit-reflect-0.4.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : permit-reflect
+    version : 0.4
+    project URL : "https://github.com/nqzero/permit-reflect"
+    license : MIT
+    license URLs : "https://opensource.org/licenses/MIT" 
+    maven URL : "https://mvnrepository.com/artifact/com.nqzero/permit-reflect/0.4"
+    md5 : 143be6361e27f5126710f60e907d6811
+    sha1 : abb155ddff196ccedfe85b810d4b9375ef85fcfa
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW
 
   - filename : powermock-easymock-1.7.1-full.jar
     yukon group : PowerMock
@@ -5974,30 +6058,43 @@ Network Manager :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : 593e33f29cfc57a73fdece620a826f16
-    sha1 : 1b6b85fea00360e9e95f7ced5157a141fc80542c
-    updated : 2021-02-02
-    jira : NM-1854
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.15.
+    md5 : fe818e120770fef87e3a9d6e39ac250f
+    sha1 : 9113ba4d698c943199087aacb40c35147e267445
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.
 
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : cf9f8dbfc234f4a46fa7552cf29db70e
-    sha1 : 90f6003543f184a8fd8de08fca66311b43946129
-    updated : 2021-02-02
-    jira : NM-1854
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.
+    md5 : 676fa1db83d4e17805d2a745589464eb
+    sha1 : ef991f4f4154c25fa55e1084aac2066a55ea0631
+    updated : 2022-08-12
+    jira : NM-2437
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.
+
+  - filename : wrapperApp9.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : YAJSW
+    version : 13.02
+    project URL : "http://yajsw.sourceforge.net/"
+    license : Apache 2.0, LGPL 2.1
+    license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
+    maven URL : n/a
+    md5 : 722af70cf1594a6ba090802db9b5d2ee
+    sha1 : 864da7b9fba596e2ddc3c962619af5bee7857702
+    updated : 2022-08-12
+    jira : NM-2437
 
   - filename : xstream.jar
     yukon group : Launch4j
