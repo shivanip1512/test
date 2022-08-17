@@ -95,7 +95,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
             String name = liteYukonPao.getPaoName();
             String type = liteYukonPao.getPaoType().getDbString();
             String payload = new String(edgeDrDataNotification.getPayload(), StandardCharsets.UTF_8);
-            String errorMsg = edgeDrDataNotification.getError().toString();
+            String errorMsg = String.valueOf(edgeDrDataNotification.getError());
 
             // Build requestEntity
             EdgeDrWebhookRequest edgeDrWebhookRequest = new EdgeDrWebhookRequest(token, name, type, payload, errorMsg);
