@@ -50,7 +50,8 @@
                                         name="maskExistingPointsSubmitButton" 
                                         label="${maskExistingPointsFalseOptionText}" 
                                         value="${maskExistingPointsFalseOptionText}" 
-                                        title="${maskExistingPointsFalseOptionTooltip}"/>
+                                        title="${maskExistingPointsFalseOptionTooltip}"
+                                        classes="w200"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:button type="submit" 

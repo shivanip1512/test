@@ -18,7 +18,14 @@ public class DerEdgeMultipointValidator extends SimpleValidator<EdgeMultipointRe
     
     @Override
     protected void doValidation(EdgeMultipointRequest request, Errors errors) {
-        validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 1280);
+        // Check if GroupId is NULL
+        validationUtils.checkIfFieldRequired("groupId", errors, request.getGroupId(), "GroupId");
+        // Check if Payload is NULL
+        validationUtils.checkIfFieldRequired("payload", errors, request.getPayload(), "Payload");
+        // If Payload is not null or blank, check if Payload is valid Hex Byte String
+        if (request.getPayload() != null && !request.getPayload().isBlank()) {
+            validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 1280);
+        }
     }
 
 }

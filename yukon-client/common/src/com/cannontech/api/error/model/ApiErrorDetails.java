@@ -47,7 +47,8 @@ public enum ApiErrorDetails {
     FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."), // code : 101116
     INVALID_LENGTH_EVEN(ApiErrorCategory.VALIDATION_FAILED, 117, "Length must be even", "Field length must be even."), // code: 101117
     HEXIDECIMAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 118, "Non-hexidecimal characters", "Invalid hexidecimal characters."), // code : 101118
-    FIELD_NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED, 119, "Field not supported", "Field not supported."); // code : 101119
+    FIELD_NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED, 119, "Field not supported", "Field not supported."), // code : 101119
+    SYSTEM_RESERVED(ApiErrorCategory.VALIDATION_FAILED, 120, "System Reserved", "System Reserved.");
     ;
 
     private ApiErrorCategory category;

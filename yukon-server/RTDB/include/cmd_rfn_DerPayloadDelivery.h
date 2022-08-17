@@ -17,6 +17,8 @@ public:
 
     std::string getCommandName() const override;
 
+    ASID getApplicationServiceId() const override;
+
     bool isOscoreEncrypted() const override;
 
     long getUserMessageId() const;

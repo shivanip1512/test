@@ -1,6 +1,12 @@
 package com.cannontech.services.eatonCloud.secretRotation.service;
 
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET;
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET2;
+
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,12 +35,14 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
-import com.cannontech.services.eatonCloud.authToken.service.EatonCloudAuthTokenServiceV1;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -48,12 +56,12 @@ public class EatonCloudSecretRotationServiceV1 {
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private GlobalSettingUpdateDao settingUpdateDao;
-    @Autowired private EatonCloudAuthTokenServiceV1 eatonCloudAuthTokenServiceV1;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudSecretRotationServiceV1.class);
@@ -68,6 +76,7 @@ public class EatonCloudSecretRotationServiceV1 {
     
     private final int numberOfTimesToRetry = 3;
     private int retryIntervalMinutes = 10;
+
     
     @PostConstruct
     public void init() {
@@ -75,17 +84,40 @@ public class EatonCloudSecretRotationServiceV1 {
         if (Strings.isNullOrEmpty(serviceAccountId)) {
             return;
         }
-        
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
-        executor.schedule(() -> {
-            log.info("Scheduling Eaton Cloud Secret rotation and validation");
-            executor.scheduleAtFixedRate(() -> {
-                rotateSecrets();
-            }, 0, 1, TimeUnit.DAYS);
-        }, 15, TimeUnit.MINUTES);
+        Long minutesTo10Pm = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay().minusHours(2), ChronoUnit.MINUTES);
+        log.info("Secret Rotation scheduled to run in {} minutes", minutesTo10Pm);
+        Long minutesInADay = 1440L;
+        executor.scheduleAtFixedRate(() -> {
+           rotateSecrets();
+        }, minutesTo10Pm, minutesInADay, TimeUnit.MINUTES);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
         initDebugOptions();
     }
 
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+        try {
+            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET);
+            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET2);
+        } catch (Exception e) {
+            log.error("Unable to retrieve token", e);
+        }
+    }
+    
+    /**
+     * Validates secret 1 minute after rotation was performed
+     */
+    private void checkEventForSecretUpdate(DatabaseChangeEvent event,
+            GlobalSettingType rotatedSecret) {
+        if (settingDao.isDbChangeForSetting(event, rotatedSecret)) {
+            secretValidations.remove(rotatedSecret);
+            executor.schedule(() -> validateSecret(rotatedSecret), 1, TimeUnit.MINUTES);
+        }
+    }
+    
     /**
      * master.cfg DEV_FORCE_SECRET_ROTATION
      * secret1 - rotates secret1
@@ -142,11 +174,10 @@ public class EatonCloudSecretRotationServiceV1 {
      */
     private void validateSecret(GlobalSettingType type) {
         synchronized (this) {
-            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
             String secret = "secret" + globalSettingsToSecret.get(type);
             AtomicInteger currentTry = secretValidations.getOrDefault(type, new AtomicInteger(1));
             try {
-                eatonCloudAuthTokenServiceV1.retrieveNewToken(type, serviceAccountId);
+                eatonCloudCommunicationService.retrieveNewToken(type);
                 secretValidations.remove(type);
                 log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
             } catch (EatonCloudCommunicationExceptionV1 e) {
@@ -184,7 +215,6 @@ public class EatonCloudSecretRotationServiceV1 {
                 secretRotations.remove(type);
                 log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
                 eatonCloudEventLogService.secretRotationSuccess(secret, YukonUserContext.system.getYukonUser(), currentTry.get());
-                validateSecret(type);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 if (currentTry.get() == numberOfTimesToRetry) {
                     log.error("({} of {}) {} rotation failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,

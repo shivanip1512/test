@@ -178,12 +178,17 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     }
 
     /**
-     *  Build API error to show Authentication message.
+     *  Build API error to show Authentication or Authorization message.
      */
     private void buildApiError(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
-        apiLog.error(uniqueKey + " Expired or invalid token", e);
-        ApiExceptionHandler.authorizationRequired(request, response, uniqueKey);
+        if (e instanceof NotAuthorizedException) {
+            apiLog.error(uniqueKey + "Access Denied", e);
+            ApiExceptionHandler.notAuthorized(request, response, uniqueKey);
+        } else {
+            apiLog.error(uniqueKey + " Expired or invalid token", e);
+            ApiExceptionHandler.authenticationRequired(request, response, uniqueKey);
+        }
     }
 
     @Override

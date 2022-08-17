@@ -556,17 +556,19 @@ public class MultispeakController {
         // Try to get the values from the request first, then get from the system.
         // If these values were just updated, the db change may not have been received/processed yet and
         // the values returned from multispeakFuncs may be outdated.
-        multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
-        multispeak.setMspInterfaceList(mspInterfaceList);
-        multispeak.setMspVendor(mspVendor);
-
-        multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
         String paoNameAliasExtension = multispeakFuncs.getPaoNameAliasExtension();
-
-        multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
-        multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeakFuncs.getMeterLookupField();
-        multispeak.setMeterLookupField(mspMeterLookupField);
+        multispeak.setMspInterfaceList(mspInterfaceList);
+        
+        if (modelMultispeak == null) {
+            multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
+            multispeak.setMspVendor(mspVendor);
+            multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
+            multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
+            multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
+            multispeak.setMeterLookupField(mspMeterLookupField);
+        }
+
         map.addAttribute("mspVersionList", mspVersionList);
         map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("multispeak", multispeak);

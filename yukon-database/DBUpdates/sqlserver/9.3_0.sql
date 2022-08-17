@@ -78,18 +78,6 @@ INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permissi
 INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', GETDATE());
 /* @end YUK-26210 */
 
-/* @start YUK-26210-2 */
-UPDATE YukonRoleProperty
-SET KeyName = 'DER Edge Coordinator Permission'
-WHERE RolePropertyID = -90050;
-
-UPDATE YukonRoleProperty
-SET Description = 'Allow access to DER Edge Coordinator features and APIs.'
-WHERE RolePropertyID = -90050;
-
-INSERT INTO DBUpdates VALUES ('YUK-26210-2', '9.3.0', GETDATE());
-/* @end YUK-26210-2 */
-
 /* @start YUK-26401 */
 ALTER TABLE RegulatorToZoneMapping
 ADD FeederId NUMERIC NULL;
@@ -107,6 +95,13 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', GETDATE());
 /* @end YUK-26847 */
+
+/* @start YUK-27139 */
+UPDATE InfrastructureWarnings SET WarningType = 'INFRASTRUCTURE_OUTAGE' WHERE WarningType = 'RELAY_OUTAGE';
+UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Name = 'WarningType' AND Value = 'RELAY_OUTAGE';
+
+INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', GETDATE());
+/* @end YUK-27139 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

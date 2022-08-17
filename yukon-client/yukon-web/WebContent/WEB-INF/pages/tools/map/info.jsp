@@ -83,11 +83,11 @@
             <tags:nameValue2 nameKey=".virtualGatewayIpv6Address">${fn:escapeXml(virtualGatewayIpv6Address)}</tags:nameValue2>
         </c:if> --%>
     </cti:msgScope>
-    <c:if test="${!empty commStatus}">
-        <tags:nameValue2 nameKey=".commStatus">${fn:escapeXml(commStatus)}</tags:nameValue2>
+    <c:if test="${!empty connectionMethod}">
+        <tags:nameValue2 nameKey=".connectionMethod">${fn:escapeXml(connectionMethod)}</tags:nameValue2>
     </c:if>
     <c:if test="${!empty deviceStatus}">
-        <tags:nameValue2 nameKey=".status" valueClass="js-status">${fn:escapeXml(deviceStatus)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".commStatus" valueClass="js-status">${fn:escapeXml(deviceStatus)}</tags:nameValue2>
     </c:if>
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>

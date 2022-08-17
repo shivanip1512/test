@@ -14,8 +14,8 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.LOW">Data streaming capacity at {0}%.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.HIGH">Data streaming capacity at {0}%.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.CLEAR">Data streaming capacity is now below warning threshold.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.CLEAR">An outage restoration has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.INFRASTRUCTURE_OUTAGE.LOW">An outage notification has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.INFRASTRUCTURE_OUTAGE.CLEAR">An outage restoration has been received.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.CLEAR">Communication status is connected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected.</entry>
@@ -46,9 +46,9 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_DEVICE_CONNECTION_STATUS.LOW">Cellular device communications interrupted since {0}.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_DEVICE_CONNECTION_STATUS.CLEAR">Cellular device communications restored.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.LOW">Cellular Relay''s descendant count {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.LOW">Cellular Relay''s descendant count of {0} is higher than recommended.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.CLEAR">Cellular Relay''s descendant count is now below the recommended limit.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_METER_DESCENDANT_COUNT.LOW">Cellular Meter''s descendant count {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_METER_DESCENDANT_COUNT.LOW">Cellular Meter''s descendant count of {0} is higher than recommended.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_METER_DESCENDANT_COUNT.CLEAR">Cellular Meter''s descendant count is now below the recommended limit.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>

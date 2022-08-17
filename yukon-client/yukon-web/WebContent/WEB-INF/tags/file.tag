@@ -38,6 +38,6 @@
         <span class="b-label"><cti:msg2 key="${buttonKey}"/></span>
         <input type="file" name="${name}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> 
             <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
-    </div>&nbsp;<span class="file-name form-control"><cti:msg2 key="${promptKey}"/></span>
+    </div>&nbsp;<span class="file-name form-control clear"><cti:msg2 key="${promptKey}"/></span>
 </span>
 </cti:msgScope>

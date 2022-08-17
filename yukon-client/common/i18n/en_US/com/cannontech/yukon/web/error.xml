@@ -101,6 +101,7 @@
     <entry key="yukon.web.error.101117">{0} length must be even.</entry>
     <entry key="yukon.web.error.101118">{0} must contain only hexidecimal characters: 0-9 A-F a-f.</entry>
     <entry key="yukon.web.error.101119">{0} field is not supported.</entry>
+    <entry key="yukon.web.error.101120">{0} is reserved for System.</entry>
     
     <!-- Theme and Image Validation -->
     <entry key="yukon.web.theme.error.THEME_NOT_FOUND">Theme Not Found</entry>

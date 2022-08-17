@@ -477,7 +477,7 @@ TERMINAL_COPY:
 Terminals Response List:
   type: object
   properties:
-    pagerNumber:
+    pageNumber:
       type: integer
       default: 1
       description: 'Number of Pages for the terminals.'
@@ -631,7 +631,7 @@ components:
 
     List of Terminals:
       value:
-        pagerNumber: 1
+        pageNumber: 1
         itemsPerPage: 250
         totalItems: 5
         items:

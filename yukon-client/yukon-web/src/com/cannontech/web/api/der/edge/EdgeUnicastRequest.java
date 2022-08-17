@@ -11,8 +11,8 @@ public class EdgeUnicastRequest {
     private String name;
     private PaoType type;
     private String payload;
-    @JsonInclude(Include.NON_NULL) private EdgeUnicastPriority queuePriority = EdgeUnicastPriority.HIGH;
-    @JsonInclude(Include.NON_NULL) private EdgeUnicastPriority networkPriority = EdgeUnicastPriority.HIGH;
+    private EdgeUnicastPriority queuePriority = EdgeUnicastPriority.HIGH;
+    private EdgeUnicastPriority networkPriority = EdgeUnicastPriority.HIGH;
     
     public String getName() {
         return name;

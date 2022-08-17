@@ -27,7 +27,7 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayFailsafeEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayConnectionStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayReadyNodesEvaluator"/>
-    <bean class="com.cannontech.services.infrastructure.service.impl.RelayOutageStatusEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.InfrastructureOutageStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.CCUCommStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.RepeaterCommStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayTimeSyncFailedEvaluator"/>

@@ -95,7 +95,7 @@
     <c:if test="${!displayValidationToRight}">
         <br>
     </c:if>
-    <form:errors path="${path}" cssClass="error ${errorClass}"/>
+    <form:errors path="${path}" cssClass="error ${errorClass}" data-toggle-group="${pageScope.toggleGroup}"/>
 </c:if>
 
 </cti:displayForPageEditModes>
