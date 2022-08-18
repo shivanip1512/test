@@ -40,6 +40,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 import com.cannontech.web.login.impl.SessionInfo;
 import com.cannontech.web.util.YukonUserContextResolver;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 public class LoginFilter implements Filter {
@@ -51,6 +52,7 @@ public class LoginFilter implements Filter {
     private RolePropertyDao rolePropertyDao;
     private LoginService loginService;
     private LoginCookieHelper loginCookieHelper;
+    private IDatabaseCache cache;
 
     // Setup ant-style paths that should be processed even if the user is not logged in.
     // All paths should start with a slash because that's just the way it works.
@@ -138,7 +140,14 @@ public class LoginFilter implements Filter {
             doRememberMeCookieLogin(request, response);
             return;
         }
-
+        try {
+            // check for active user
+            verifyForActiveUser(request);
+        } catch (BadAuthenticationException e) {
+            loginService.invalidateSession(request, "DISBALED_USER");
+            doLoginRedirect(isAjaxRequest, request, response);
+            return;
+        }
         // Check for access authorization
         try {
             verifyPathAccess(request);
@@ -149,6 +158,16 @@ public class LoginFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    private void verifyForActiveUser(HttpServletRequest request) throws BadAuthenticationException {
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        if (!cache.getActiveUsers().contains(user.getUserID())) {
+            log.info("Authentication failed (disabled): username=" + user.getUsername() + ", id=" + user.getUserID() +
+                    ", status=" + user.getLoginStatus());
+            throw new BadAuthenticationException(BadAuthenticationException.Type.DISABLED_USER);
+        }
+
     }
 
     private void checkSessionTimeout(HttpServletRequest request, boolean isAjaxRequest) {
@@ -302,6 +321,7 @@ public class LoginFilter implements Filter {
         urlAccessChecker = applicationContext.getBean(UrlAccessChecker.class);
         rolePropertyDao = applicationContext.getBean(RolePropertyDao.class);
         loginService = applicationContext.getBean(LoginService.class);
+        cache = applicationContext.getBean(IDatabaseCache.class);
     }
 
     @Override

@@ -40,6 +40,7 @@ import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.SavedSession;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LoginServiceImpl implements LoginService {
     
@@ -51,7 +52,8 @@ public class LoginServiceImpl implements LoginService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonUserDao yukonUserDao;
-    
+    @Autowired private IDatabaseCache cache;
+
     private final Logger log = YukonLogManager.getLogger(LoginServiceImpl.class);
     
     private static final String INVALID_PARAMS = "failed=true";
@@ -81,6 +83,8 @@ public class LoginServiceImpl implements LoginService {
             createSession(request, user);
             log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " 
                     + request.getRemoteAddr());
+            // logged in users are active by default
+            cache.updateActiveUsers(user.getUserID());
         } catch (AuthenticationThrottleException e) {
             log.info("Login attempt as " + username + " failed from " + request.getRemoteAddr()
                 + "due to incorrect Password!Account Locked, throttleSeconds=" + e.getThrottleSeconds());

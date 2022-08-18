@@ -141,7 +141,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<>(1000, .75f, 30);
     private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<>(1000, .75f, 30);
-    
+    private final Set<Integer> activeUsers = new HashSet<Integer>();
+
     // derived from allYukonUsers,allYukonRoles,allYukonGroups
     // see type info in IDatabaseCache
     private Map<Integer, LiteDeviceTypeCommand> allDeviceTypeCommands;
@@ -1501,8 +1502,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             break;
 
         case UPDATE:
+            lu = yukonUserDao.getLiteYukonUser(id);
+            if (!lu.isEnabled()) {
+                activeUsers.remove(id);
+            }
             if (!noObjectNeeded) {
-                lu = yukonUserDao.getLiteYukonUser(id);
                 lBase = lu;
             }
             adjustUserMappings(id);
@@ -1811,4 +1815,13 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         
         return;
     }
+    
+    public synchronized void updateActiveUsers(int userID) {
+        activeUsers.add(userID);
+    }
+
+    public Set<Integer> getActiveUsers() {
+        return activeUsers;
+    }
+
 }
