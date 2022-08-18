@@ -64,6 +64,7 @@ public class MeterEventStatusTypeGroupings {
         //RFN
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_OTHER_EVENT));
         builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.RFN_SOFTWARE_EVENT));
+        builder.addAll(BuiltInAttribute.getRfnEventGroupedAttributes().get(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT));
         
         general = builder.build();
     }
