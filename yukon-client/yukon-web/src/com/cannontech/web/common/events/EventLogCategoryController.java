@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventCategory;
@@ -111,24 +112,8 @@ public class EventLogCategoryController {
         return successView;
     }
     
-    @GetMapping("filterByCategory")
+    @RequestMapping(value = "filterByCategory", method = { RequestMethod.GET, RequestMethod.POST })
     public String filterEventsByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
-                               BindingResult bindingResult, FlashScope flashScope,
-                               YukonUserContext userContext, ModelMap model, HttpServletResponse response,
-                               @DefaultItemsPerPage(50) PagingParameters paging) {
-        return filterEventLog(filter,
-                              bindingResult,
-                              flashScope,
-                              userContext,
-                              response,
-                              model,
-                              paging,
-                              "eventLog/filteredResults.jsp");
-                
-    }
-    
-    @PostMapping("filterByCategory")
-    public String filterByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
                                BindingResult bindingResult, FlashScope flashScope,
                                YukonUserContext userContext, ModelMap model, HttpServletResponse response,
                                @DefaultItemsPerPage(50) PagingParameters paging) {
