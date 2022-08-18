@@ -1816,10 +1816,12 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return;
     }
     
+    @Override
     public synchronized void updateActiveUsers(int userID) {
         activeUsers.add(userID);
     }
-
+    
+    @Override
     public Set<Integer> getActiveUsers() {
         return activeUsers;
     }
