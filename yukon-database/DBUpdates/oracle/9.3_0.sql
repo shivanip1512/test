@@ -113,6 +113,17 @@ UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Nam
 INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', SYSDATE);
 /* @end YUK-27139 */
 
+/* @start YUK-26753 */
+ALTER TABLE LMGroupZeusMapping DROP CONSTRAINT PK_LMGROUPZEUSMAPPING;
+ALTER TABLE LMGroupZeusMapping MODIFY EcobeeGroupId VARCHAR2(40);
+ALTER TABLE LMGroupZeusMapping ADD CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId);
+
+ALTER TABLE ZeusGroupInventoryMapping DROP CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING;
+ALTER TABLE ZeusGroupInventoryMapping MODIFY EcobeeGroupId VARCHAR2(40);
+ALTER TABLE ZeusGroupInventoryMapping ADD CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING PRIMARY KEY (InventoryID, EcobeeGroupId);
+
+INSERT INTO DBUpdates VALUES ('YUK-26753', '9.3.0', SYSDATE);
+/* @end YUK-26753 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
