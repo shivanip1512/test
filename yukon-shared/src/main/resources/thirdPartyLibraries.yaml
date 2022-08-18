@@ -4852,46 +4852,46 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : jackson-annotations-2.12.1.jar
+  - filename : jackson-annotations-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.1"
-    md5 : ac96cb6fdf09ba1e2c41f461047f1eb4
-    sha1 : aa079f822ddce5548018286d19ccb15c2fc202d7
-    updated : 2021-02-10
-    jira : NM-1908
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.3"
+    md5 : 3fb8ee542a62a113fa7474fe88bb97e8
+    sha1 : 7198b3aac15285a49e218e08441c5f70af00fc51
+    updated : 2022-08-17
+    jira : NM-2433
     notes : Jackson Annotations
   
-  - filename : jackson-core-2.12.1.jar
+  - filename : jackson-core-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.1"
-    md5 : 6a65df7a5e62df2754726857b4ab0257
-    sha1 : 7c5493930e439be6fcec80a9afd6516b8e5e8760
-    updated : 2021-02-10
-    jira : NM-1908
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.3"
+    md5 : 9a6679e6a2f7d601a9f212576fda550c
+    sha1 : a27014716e4421684416e5fa83d896ddb87002da
+    updated : 2022-08-17
+    jira : NM-2433
     notes : Jackson Core
   
-  - filename : jackson-databind-2.12.1.jar
+  - filename : jackson-databind-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.1
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.1"
-    md5 : 1925b6e2feac7e63e164f57e6fb42c9d
-    sha1 : 8a97e00e429c42f74757b0a8cd1d39dddd41524f
-    updated : 2021-02-10
-    jira : NM-1908
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.3"
+    md5 : e35e2adf33b2eed8e9f538a911244175
+    sha1 : 56deb9ea2c93a7a556b3afbedd616d342963464e
+    updated : 2022-08-17
+    jira : NM-2433
     notes : Jackson Databind
     
   - filename : jackson-datatype-joda-2.12.1.jar
