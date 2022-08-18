@@ -28,6 +28,8 @@ public enum AttributeGroup implements DisplayableEnum {
     RFN_SOFTWARE_EVENT,
     RFN_VOLTAGE_EVENT,
     
+    // Needed a group for events that are informational but also carry a state with them that needs to be processed
+    // making them more complicated than a basic status event. Feel free to build on / rename this group. 
     CELLULAR_ENUMERATED_VALUE_EVENT,
     
     GATEWAY_STATISTICS,

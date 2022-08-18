@@ -1132,7 +1132,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.DEMAND_RESPONSE, lookupByGroup.get(AttributeGroup.DEMAND_RESPONSE));
         allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
         allGroupedBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
-
+        allGroupedBuilder.put(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT, lookupByGroup.get(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT));
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
         allGroupedAttributes = allGroupedBuilder.build();
