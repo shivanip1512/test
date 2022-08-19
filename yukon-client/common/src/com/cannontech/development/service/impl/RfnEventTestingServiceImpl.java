@@ -614,6 +614,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, testEvent.getOutageStartTime());
         rfnEventMap.put(RfnConditionDataType.THRESHOLD_VALUE, testEvent.getThresholdValue());
         rfnEventMap.put(RfnConditionDataType.UOM, testEvent.getUom());
+        rfnEventMap.put(RfnConditionDataType.SIM_CARD_STATUS, testEvent.getSimCardStatus());
         if (RfnConditionType.REMOTE_METER_CONFIGURATION_FAILURE.equals(testEvent.getRfnConditionType()) ||
             RfnConditionType.REMOTE_METER_CONFIGURATION_FINISHED.equals(testEvent.getRfnConditionType())) {
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_ID, testEvent.getMeterConfigurationId());

@@ -36,10 +36,9 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
                 yukonValidationHelper.getMessage(key + ".type"));
 
         // Validate Name
-        if (!errors.hasFieldErrors("type")) {
-        yukonValidationHelper.validatePaoName(terminalBase.getName(), terminalBase.getType(), errors,
+        yukonValidationHelper.validatePaoName(terminalBase.getName(),
+                terminalBase.getType() == null ? null : terminalBase.getType(), errors,
                 yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
-        }
 
         // validate commChannel
         yukonValidationHelper.checkIfFieldRequired("commChannel.id", errors,

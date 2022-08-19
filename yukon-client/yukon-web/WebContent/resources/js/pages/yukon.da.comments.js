@@ -10,16 +10,18 @@ yukon.da.comments = (function () {
     
     var mod,
         _submitForm = function () {
-            var submitNormal = $('#commentForm').data('submitNormal');
+            var submitNormal = $('#commentForm').data('submitNormal'),
+                form = $('#commentForm'),
+                dialog = form.closest('.ui-dialog-content');
             if (submitNormal) {
-                $('#commentForm').submit();
+                form.submit();
             } else {
                 $.ajax({
-                    url: $("#commentForm").attr("action"),
-                    data: $("#commentForm").serialize(),
+                    url: form.attr("action"),
+                    data: form.serialize(),
                     type: "POST"
                 }).done(function (data) {
-                    $("#contentPopup").html(data);
+                    dialog.html(data);
                 });
             }
         };

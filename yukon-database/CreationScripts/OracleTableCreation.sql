@@ -9030,6 +9030,9 @@ INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
 INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
+INSERT INTO State VALUES( 8, 0, 'Removed', 1, 6, 0);
+INSERT INTO State VALUES( 8, 1, 'Inserted', 0, 6, 0);
+INSERT INTO State VALUES( 8, 2, 'Unknown', 9, 6, 0);
 
 /*==============================================================*/
 /* Index: Indx_StateRaw                                         */
@@ -9087,6 +9090,7 @@ INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status');
 INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status');
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
+INSERT INTO StateGroup VALUES( 8, 'InsertedRemoved', 'Status');
 
 /*==============================================================*/
 /* Index: Indx_StateGroup_Name_UNQ                              */
