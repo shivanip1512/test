@@ -366,6 +366,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .getBindingResult();
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildValidationErrorResponse(bindingResult, request, uniqueKey);
+            log.debug("New ApiError: {}", apiErrorModel.toString());
             return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
             List<ApiFieldError> apiFieldErrors = bindingResult
@@ -388,6 +389,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", apiFieldErrors,
                     apiGlobalErrors, uniqueKey);
+            log.debug("ApiError: {}", apiError.toString());
             return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

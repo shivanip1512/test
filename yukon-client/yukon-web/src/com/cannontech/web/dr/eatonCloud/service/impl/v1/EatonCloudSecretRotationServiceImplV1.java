@@ -1,8 +1,12 @@
 package com.cannontech.web.dr.eatonCloud.service.impl.v1;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,11 +27,15 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private GlobalSettingUpdateDao settingDao;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
-    private static final Logger log = YukonLogManager.getLogger(EatonCloudSecretRotationServiceImplV1.class);
     
+    private static final Logger log = YukonLogManager.getLogger(EatonCloudSecretRotationServiceImplV1.class);
+    private static final int minimumRotationInterval = 5;
+    
+    
+    private Instant nextRotationTime = new Instant();
     private Map<Integer, GlobalSettingType> secretToGlobalSettings = Map.of(1, GlobalSettingType.EATON_CLOUD_SECRET, 2,
             GlobalSettingType.EATON_CLOUD_SECRET2);
-
+    
     @Override
     public EatonCloudSecretExpiryTime getSecretExpiryTime() {
         EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationService.getServiceAccountDetail();
@@ -40,6 +48,19 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
         EatonCloudSecretValueV1 value = eatonCloudCommunicationService.rotateAccountSecret(secretNumber);
         settingDao.updateSetting(new GlobalSetting(secretToGlobalSettings.get(secretNumber), value.getSecret()), user);
         eatonCloudEventLogService.secretRotationSuccess("secret" + secretNumber, user, 1);
+        if (value.getExpiryTime() != null) {
+            nextRotationTime = new Instant().plus(Duration.standardMinutes(minimumRotationInterval));
+        }
         return value.getExpiryTime() == null ? null : new Instant(value.getExpiryTime());
+    }
+
+    @Override
+    public Boolean secretRotationAllowed() {
+        return nextRotationTime.isBeforeNow();
+    }
+
+    @Override
+    public Instant timeNextRotationAllowed() {
+        return nextRotationTime;
     }
 }

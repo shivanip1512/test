@@ -1064,7 +1064,7 @@ yukon.ui = (function () {
                    'class': 'js-secondary-action '
                 };
             var confirmSpan = $('<span>')
-                .attr('class', 'fr')
+                .attr('class', 'fr js-simple-dialog-confirm-msg')
                 .css({'line-height': '36px'})
                 .text(confirmText)
                 .flash({

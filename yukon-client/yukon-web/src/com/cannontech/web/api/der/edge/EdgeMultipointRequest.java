@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class EdgeMultipointRequest {
     private String groupId;
     private String payload;
-    @JsonInclude(Include.NON_NULL) private EdgeUnicastPriority queuePriority = EdgeUnicastPriority.HIGH;
-    @JsonInclude(Include.NON_NULL) private EdgeUnicastPriority networkPriority = EdgeUnicastPriority.HIGH;
+    private EdgeUnicastPriority queuePriority = EdgeUnicastPriority.HIGH;
+    private EdgeUnicastPriority networkPriority = EdgeUnicastPriority.HIGH;
 
     public String getGroupId() {
         return groupId;

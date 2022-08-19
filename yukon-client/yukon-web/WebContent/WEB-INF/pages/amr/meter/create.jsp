@@ -23,7 +23,7 @@
         
         <tags:selectNameValue nameKey=".ports" items="${ports}" path="portId" itemLabel="paoName" itemValue="liteID" rowClass="js-ied-fields dn"/>
         
-        <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" itemValue="liteID" rowClass="js-mct-fields dn"/>
+        <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" itemValue="liteID" rowClass="js-mct-fields dn" inputClass="w300"/>
         <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields"/>
         <tags:inputNameValue nameKey=".manufacturer" path="manufacturer" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields"/>
         <tags:inputNameValue nameKey=".model" path="model" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields"/>

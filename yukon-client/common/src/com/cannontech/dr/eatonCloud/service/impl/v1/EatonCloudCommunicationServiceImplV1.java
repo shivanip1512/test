@@ -1,5 +1,7 @@
 package com.cannontech.dr.eatonCloud.service.impl.v1;
 
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID;
+
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
@@ -376,6 +379,28 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             throw e;
         } catch (Exception e) {
             commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
+        }
+    }
+    
+    @Override
+    public EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type) {
+        String serviceAccountId = settingDao.getString(EATON_CLOUD_SERVICE_ACCOUNT_ID);
+        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
+        String secret = settingDao.getString(type);
+        long requestIdentifier = requestIncrementer.getAndIncrement();
+        EatonCloudCredentialsV1 credentials = new EatonCloudCredentialsV1(serviceAccountId, secret);
+        try {
+            commsLogger.info("<<< [{}] Sent request to:{} account id:{} type:{}", requestIdentifier, url, serviceAccountId, type);
+            EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
+            commsLogger.info(">>> [{}] Request to:{} Response:success", requestIdentifier, url);
+            return newToken;
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, url, e);
+            e.setRequestIdentifier(requestIdentifier);
+            throw e;
+        } catch (Exception e) {
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, url, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }

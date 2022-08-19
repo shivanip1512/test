@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.ContactDao;
@@ -348,16 +349,21 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
             yukonApiValidationUtils.checkIfFieldRequired("name", errors, notificationGroupName, nameI18nText);
         }
         if (!errors.hasFieldErrors("name")) {
-            yukonApiValidationUtils.checkExceedsMaxLength(errors, "name", notificationGroupName, 40);
-            databaseCache.getAllContactNotificationGroups().stream()
-                    .filter(liteGroup -> liteGroup.getNotificationGroupName().equalsIgnoreCase(notificationGroupName.trim()))
-                    .findAny()
-                    .ifPresent(group -> {
-                        if (notificationGroupId == null || group.getNotificationGroupID() != notificationGroupId) {
-                            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
-                                    new Object[] { nameI18nText }, "");
-                        }
-                    });
+            if (notificationGroupName.equals(CtiUtilities.STRING_NONE)) {
+                errors.rejectValue("name", ApiErrorDetails.SYSTEM_RESERVED.getCodeString(), new Object[] { nameI18nText }, "");
+            }
+            if (!errors.hasFieldErrors("name")) {
+                yukonApiValidationUtils.checkExceedsMaxLength(errors, "name", notificationGroupName, 40);
+                databaseCache.getAllContactNotificationGroups().stream()
+                        .filter(liteGroup -> liteGroup.getNotificationGroupName().equalsIgnoreCase(notificationGroupName.trim()))
+                        .findAny()
+                        .ifPresent(group -> {
+                            if (notificationGroupId == null || group.getNotificationGroupID() != notificationGroupId) {
+                                errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(),
+                                        new Object[] { nameI18nText }, "");
+                            }
+                        });
+            }
         }
     }
 

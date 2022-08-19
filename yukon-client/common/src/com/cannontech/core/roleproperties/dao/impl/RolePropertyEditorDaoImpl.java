@@ -15,6 +15,8 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RoleDao;
@@ -64,6 +66,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         }
     }
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RoleDao roleDao;
@@ -104,6 +107,10 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                 /* TODO Do this the right way */
 //                value = new DescriptiveRoleProperty(yukonRoleProperty);
                 continue; // skip rp's that don't exist in the database
+            } else if (value.getYukonRoleProperty() == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                    && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                // Hide DER Edge RP when DER Edge CParm is missing
+                continue;
             }
             builder.put(yukonRoleProperty, value);
         }

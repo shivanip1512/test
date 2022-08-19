@@ -96,7 +96,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             return messageGuid;
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Unicast message.", e);
         }
     }
 
@@ -130,6 +130,9 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
             }
 
+            // Add values to the cache for future responses E2EID --> GUID
+            cacheE2EIDToGUIDResponses(responseMsg.getPaoToE2eId(), messageGuid);
+
             return messageGuid;
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -162,19 +165,23 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             }
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Broadcast message.", e);
         }
     }
 
     @Override
     public void cacheE2EIDToGUIDResponses(Map<Integer, Integer> paoToE2eId, String messageGuid)
             throws EdgeDrCommunicationException {
+        if (paoToE2eId.isEmpty()) {
+            log.debug("No values in response to cache.");
+            return;
+        }
         try {
-            log.debug("Caching paoToE2eId: {} with GUID: {}", paoToE2eId, messageGuid);
+            log.debug("Caching paoToE2eId: {} with GUID: {}.", paoToE2eId, messageGuid);
             paoToE2eId.values().stream().forEach(e -> derEdgeResponseService.addCacheEntry(e, messageGuid));
-            log.debug("Caching response completed");
+            log.debug("Caching response completed.");
         } catch (Exception e) {
-            throw new EdgeDrCommunicationException("An unexpected error occurred while caching the response", e);
+            throw new EdgeDrCommunicationException("An unexpected error occurred while caching the response.", e);
         }
     }
     

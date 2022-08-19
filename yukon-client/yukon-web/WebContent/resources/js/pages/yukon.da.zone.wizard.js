@@ -81,37 +81,40 @@ yukon.da.zone.wizard = (function () {
       ],
     
     _zoneEditorButtons = [
-          {
-              text: yg.text.deleteButton,
-              'class': "delete",
-               click: function () {
-                   var popup = $('#zoneWizardPopup'),
-                       confirmText = popup.find('.js-confirm-delete')[0].value;
-                   yukon.ui.confirm({
-                       confirmText: confirmText,
-                       dialog: popup,
-                       event: 'yukon:da:zone:delete',
-                   });   
+         {
+             text: yg.text.deleteButton,
+             'class': "delete",
+              click: function () {
+                  var popup = $('#zoneWizardPopup'),
+                      confirmText = popup.find('.js-confirm-delete')[0].value;
+                  yukon.ui.confirm({
+                      confirmText: confirmText,
+                      dialog: popup,
+                      event: 'yukon:da:zone:delete',
+                  });
+                  if ($(".js-simple-dialog-confirm-msg").exists()) {
+                      $(".js-simple-dialog-confirm-msg").addClass("MT10 MR10");
+                  }
               }
           },
-         {
-             text: yg.text.cancel,
-             click: function () {
-                 $("#zoneWizardPopup").dialog("close");
-             }
-         },
-         { 
-             text: yg.text.save, 
-             'class': "primary",
-             click: function () { 
-                 submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
-             }
-         }
+          {
+              text: yg.text.cancel,
+              click: function () {
+                  $("#zoneWizardPopup").dialog("close");
+              }
+          },
+          { 
+              text: yg.text.save, 
+              'class': "primary",
+              click: function () { 
+                  submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
+              }
+          }
 
      ];
 
-   var mod = {
-              
+    var mod = {
+
         showZoneCreationWizard : function (url, title) {
             openSimpleDialog('zoneWizardPopup', url, title, null, 'get', { height: "auto", width: "auto" });
             $('#zoneWizardPopup').dialog({
@@ -212,6 +215,7 @@ yukon.da.zone.wizard = (function () {
                 var zoneId = $('#zoneId').val();
                 window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
             });
+            
         }
 
     };
