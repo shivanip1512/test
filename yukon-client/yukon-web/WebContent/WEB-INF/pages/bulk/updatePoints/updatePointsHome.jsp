@@ -20,7 +20,7 @@
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 
                 <%-- OPTIONS --%>
-                <tags:sectionContainer2 nameKey="options" styleClass="half-width">
+                <tags:sectionContainer2 nameKey="options">
                     <tags:nameValueContainer2>
                         <cti:msg2 var="sharedPointsOptionLabel" key=".sharedPointsOptionLabel"/>
                         <cti:msg2 var="sharedPointsTrueOptionText" key=".sharedPointsTrueOptionText"/>
@@ -50,8 +50,7 @@
                                         name="maskExistingPointsSubmitButton" 
                                         label="${maskExistingPointsFalseOptionText}" 
                                         value="${maskExistingPointsFalseOptionText}" 
-                                        title="${maskExistingPointsFalseOptionTooltip}"
-                                        classes="w200"/>
+                                        title="${maskExistingPointsFalseOptionTooltip}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:button type="submit" 
