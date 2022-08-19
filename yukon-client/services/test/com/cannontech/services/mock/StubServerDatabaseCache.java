@@ -369,4 +369,13 @@ public class StubServerDatabaseCache implements IDatabaseCache {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
 
+    @Override
+    public void updateActiveUsers(int userId) {
+    }
+
+    @Override
+    public Set<Integer> getActiveUsers() {
+        throw new MethodNotImplementedException("Method not implemented yet.");
+    }
+
 }

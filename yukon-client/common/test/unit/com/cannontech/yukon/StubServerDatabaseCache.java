@@ -36,9 +36,9 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
- * This stub has concrete implementations of all interface methods, but all of them throw a 
- * MethodNotImplementedException. This class can be extended by testing mocks that need to 
- * implement specific methods. 
+ * This stub has concrete implementations of all interface methods, but all of them throw a
+ * MethodNotImplementedException. This class can be extended by testing mocks that need to
+ * implement specific methods.
  */
 public class StubServerDatabaseCache implements IDatabaseCache {
 
@@ -365,6 +365,15 @@ public class StubServerDatabaseCache implements IDatabaseCache {
 
     @Override
     public Set<PaoType> getAllPaoTypes() {
+        throw new MethodNotImplementedException("Method not implemented yet.");
+    }
+
+    @Override
+    public void updateActiveUsers(int userId) {
+    }
+
+    @Override
+    public Set<Integer> getActiveUsers() {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
 
