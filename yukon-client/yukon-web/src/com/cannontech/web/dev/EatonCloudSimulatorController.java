@@ -373,12 +373,22 @@ public class EatonCloudSimulatorController {
         try {
             EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setResetSecretsExpireTime(true);
-            //notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
-            SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
-            if (response.isSuccessful()) {
-                //send request to SM to start secret rotation
+            String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
+            if (url.contains("localhost") || url.contains("127.0.0.1")) {
+                // notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
+                SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+                if (response.isSuccessful()) {
+                    // send request to SM to start secret rotation
+                    jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+                    flashScope.setConfirm(
+                            YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+                    log.info("Sent message to SM to rotate secrets.");
+                } else {
+                    log.info("Unable to send message to SM to rotate secrets. Simulator is not working");
+                }
+            } else {
                 jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
-                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+                log.info("Sent message to SM to rotate secrets.");
             }
         } catch (Exception e) {
             log.error("Error", e);
