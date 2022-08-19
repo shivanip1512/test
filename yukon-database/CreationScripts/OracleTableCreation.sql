@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/11/2022 2:04:37 PM                         */
+/* Created on:     8/19/2022 9:25:14 AM                         */
 /*==============================================================*/
 
 
@@ -8843,6 +8843,9 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-34, 0, 'Removed', 1, 6, 0);
+INSERT INTO State VALUES(-34, 1, 'Inserted', 0, 6, 0);
+INSERT INTO State VALUES(-34, 2, 'Unknown', 9, 6, 0);
 INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
 INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
@@ -9030,9 +9033,6 @@ INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
 INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
-INSERT INTO State VALUES( 8, 0, 'Removed', 1, 6, 0);
-INSERT INTO State VALUES( 8, 1, 'Inserted', 0, 6, 0);
-INSERT INTO State VALUES( 8, 2, 'Unknown', 9, 6, 0);
 
 /*==============================================================*/
 /* Index: Indx_StateRaw                                         */
@@ -9051,6 +9051,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-34, 'InsertedRemoved', 'Status');
 INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
 INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
@@ -9090,7 +9091,6 @@ INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status');
 INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status');
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
-INSERT INTO StateGroup VALUES( 8, 'InsertedRemoved', 'Status');
 
 /*==============================================================*/
 /* Index: Indx_StateGroup_Name_UNQ                              */
