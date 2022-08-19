@@ -70,6 +70,9 @@ public class EatonCloudMessageListener {
                 command.getControlEndDateTime());
         
         if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("[id:{}] Received CONTROL message program:{} group:{} devices:{} command:{}", eventId,
+                    getPaoName(dbCache.getAllLMPrograms(), programId), getPaoName(dbCache.getAllLMGroups(), command.getGroupId()),
+                    devices.size(), command);
             eatonCloudJobService.createJobs(programId, devices, command, eventId);
         } else {
             //legacy
@@ -104,6 +107,9 @@ public class EatonCloudMessageListener {
         Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
         if (eventId != null) {
             if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+                log.info("[id:{}] Received RESTORE message program:{} group:{} devices:{} command:{}", eventId,
+                        getPaoName(dbCache.getAllLMPrograms(), programId), getPaoName(dbCache.getAllLMGroups(), command.getGroupId()),
+                        devices.size(), command);
                 eatonCloudJobRestoreService.createJobs(programId, devices, command, eventId);
             } else {
                 // legacy
@@ -123,5 +129,11 @@ public class EatonCloudMessageListener {
         inventoryIds.removeAll(optOutInventory);
         Set<Integer> deviceIds = inventoryDao.getDeviceIds(inventoryIds).values().stream().collect(Collectors.toSet());
         return deviceIds;
+    }
+    
+    private String getPaoName( List<LiteYukonPAObject> paos, int id) {
+        return paos.stream()
+                .filter(g -> g.getLiteID() == id).findFirst()
+                .map(LiteYukonPAObject::getPaoName).orElse("None");
     }
 }
