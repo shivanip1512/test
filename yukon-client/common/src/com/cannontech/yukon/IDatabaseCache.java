@@ -187,8 +187,4 @@ public interface IDatabaseCache {
     void releaseUserContactMap();
 
     Map<Integer, LiteYukonImage> getImages();
-    
-    void updateActiveUsers(int userId);
-    
-    Set<Integer> getActiveUsers();
 }

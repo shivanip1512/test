@@ -2,8 +2,11 @@ package com.cannontech.web.login.impl;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,13 +28,17 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.LoginService;
@@ -40,7 +47,6 @@ import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.SavedSession;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class LoginServiceImpl implements LoginService {
     
@@ -52,10 +58,11 @@ public class LoginServiceImpl implements LoginService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private IDatabaseCache cache;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private final Logger log = YukonLogManager.getLogger(LoginServiceImpl.class);
-    
+    private final Set<Integer> activeUsers = new HashSet<Integer>();
+
     private static final String INVALID_PARAMS = "failed=true";
     private static final String VOICE_ROOT = "/voice";
     private static final String USERNAME = LoginController.USERNAME;
@@ -65,7 +72,26 @@ public class LoginServiceImpl implements LoginService {
     private static final String SAVED_YUKON_USERS = LoginController.SAVED_YUKON_USERS;
     private static final String LOGIN_CLIENT_ACTIVITY_ACTION = ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
     private static final String LOGOUT_ACTIVITY_LOG = ActivityLogActions.LOGOUT_ACTIVITY_LOG;
-    
+
+    @PostConstruct
+    private void setupActiveUsersDBChangeEvent() {
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
+                    DbChangeType dbChangeType = dbChange.getDbChangeType();
+                    if (dbChangeType == DbChangeType.UPDATE) {
+                        int id = dbChange.getId();
+                        LiteYukonUser user = yukonUserDao.getLiteYukonUser(id);
+                        if (!user.isEnabled() && activeUsers.contains(id)) {
+                            activeUsers.remove(id);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     @Override
     public void login(HttpServletRequest request, String username, String password) 
     throws AuthenticationThrottleException, BadAuthenticationException, PasswordExpiredException {
@@ -84,7 +110,7 @@ public class LoginServiceImpl implements LoginService {
             log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " 
                     + request.getRemoteAddr());
             // logged in users are active by default
-            cache.updateActiveUsers(user.getUserID());
+            updateActiveUsers(user.getUserID());
         } catch (AuthenticationThrottleException e) {
             log.info("Login attempt as " + username + " failed from " + request.getRemoteAddr()
                 + "due to incorrect Password!Account Locked, throttleSeconds=" + e.getThrottleSeconds());
@@ -151,6 +177,7 @@ public class LoginServiceImpl implements LoginService {
         log.info("User " + user + " (userid=" + user.getUserID() + ") has been logged out from "
             + request.getRemoteAddr() + " Reason :" + reason);
         systemEventLogService.logoutWeb(user, request.getRemoteAddr(), reason);
+        releaseCurrentUserFromActiveUsersCache(user.getUserID());
         ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() 
                 + " (userid=" + user.getUserID() + ") has been logged out from " 
                 + request.getRemoteAddr() + ". Reason: " + reason);
@@ -175,6 +202,7 @@ public class LoginServiceImpl implements LoginService {
             log.trace("Role Property: redirect = '" + redirect + "'");
             log.info("User " + user + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             systemEventLogService.logoutWeb(user, request.getRemoteAddr(), "User initiated");
+            releaseCurrentUserFromActiveUsersCache(user.getUserID());
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
                 + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             if (savedUsers != null) {
@@ -328,5 +356,17 @@ public class LoginServiceImpl implements LoginService {
         // Do not log sessionId here for security reasons
         log.info("Created session for user:" + user);
     }
-    
+
+    public void updateActiveUsers(int userID) {
+        activeUsers.add(userID);
+    }
+
+    public boolean isUserActive(int userID) {
+        return activeUsers.contains(userID);
+    }
+
+    public void releaseCurrentUserFromActiveUsersCache(int userID) {
+        activeUsers.remove(userID);
+    }
+
 }
