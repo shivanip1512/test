@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/22/2022 11:14:49 PM                        */
+/* Created on:     8/19/2022 9:25:14 AM                         */
 /*==============================================================*/
 
 
@@ -6779,7 +6779,7 @@ create table LMGroupVersacom  (
 /*==============================================================*/
 create table LMGroupZeusMapping  (
    YukonGroupId         NUMBER                          not null,
-   EcobeeGroupId        VARCHAR2(40)                    not null,
+   EcobeeGroupId        VARCHAR2(32)                    not null,
    EcobeeEventId        VARCHAR2(50),
    EcobeeGroupName      VARCHAR2(255),
    ProgramId            NUMBER                          not null,
@@ -11085,7 +11085,7 @@ create table ZBGatewayToDeviceMapping  (
 /*==============================================================*/
 create table ZeusGroupInventoryMapping  (
    InventoryID          NUMBER                          not null,
-   EcobeeGroupId        VARCHAR2(40)                    not null,
+   EcobeeGroupId        VARCHAR2(32)                    not null,
    constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
 );
 

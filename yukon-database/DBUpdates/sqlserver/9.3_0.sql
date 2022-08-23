@@ -130,24 +130,6 @@ UPDATE DYNAMICPOINTDISPATCH SET VALUE = 2 WHERE POINTID IN (SELECT POINTID FROM 
 INSERT INTO DBUpdates VALUES ('YUK-26089', '9.3.0', GETDATE());
 /* @end YUK-26089 */
 
-/* @start YUK-26753 */
-ALTER TABLE LMGroupZeusMapping DROP CONSTRAINT PK_LMGROUPZEUSMAPPING;
-GO
-ALTER TABLE LMGroupZeusMapping ALTER COLUMN EcobeeGroupId VARCHAR(40) NOT NULL;
-GO
-ALTER TABLE LMGroupZeusMapping ADD CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId);
-GO
-
-ALTER TABLE ZeusGroupInventoryMapping DROP CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING;
-GO
-ALTER TABLE ZeusGroupInventoryMapping ALTER COLUMN EcobeeGroupId VARCHAR(40) NOT NULL;
-GO
-ALTER TABLE ZeusGroupInventoryMapping ADD CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING PRIMARY KEY (InventoryID, EcobeeGroupId);
-GO
-
-INSERT INTO DBUpdates VALUES ('YUK-26753', '9.3.0', GETDATE());
-/* @end YUK-26753 */
-
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
