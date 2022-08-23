@@ -179,8 +179,10 @@
                 <c:if test="${showOutage}"><tags:widget bean="meterOutagesWidget"/></c:if>
                 <c:if test="${showRfOutage}"><tags:widget bean="rfnOutagesWidget"/></c:if>
                 <c:if test="${showTou}"><tags:widget bean="touWidget"/></c:if>
-                <cti:msg var="widgetHelpText" key="yukon.web.widgets.configWidget.helpText"/>
-                <c:if test="${showConfig}"><tags:widget bean="configWidget" helpText="${widgetHelpText}"/></c:if>
+                <c:if test="${showConfig}">
+                    <cti:msg var="widgetHelpText" key="yukon.web.widgets.configWidget.helpText" argument=""/>
+                    <tags:widget bean="configWidget" helpText="${widgetHelpText}"/>
+                </c:if>
             </div>
         </div>
     </tags:widgetContainer>
