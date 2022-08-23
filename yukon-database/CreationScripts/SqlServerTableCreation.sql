@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/19/2022 9:23:44 AM                         */
+/* Created on:     8/22/2022 11:15:45 PM                        */
 /*==============================================================*/
 
 
@@ -7184,7 +7184,7 @@ go
 /*==============================================================*/
 create table LMGroupZeusMapping (
    YukonGroupId         numeric              not null,
-   EcobeeGroupId        varchar(32)          not null,
+   EcobeeGroupId        varchar(40)          not null,
    EcobeeEventId        varchar(50)          null,
    EcobeeGroupName      varchar(255)         null,
    ProgramId            numeric              not null,
@@ -11741,7 +11741,7 @@ go
 /*==============================================================*/
 create table ZeusGroupInventoryMapping (
    InventoryID          numeric              not null,
-   EcobeeGroupId        varchar(32)          not null,
+   EcobeeGroupId        varchar(40)          not null,
    constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
 )
 go
