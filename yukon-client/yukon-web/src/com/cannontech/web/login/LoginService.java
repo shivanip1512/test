@@ -39,6 +39,6 @@ public interface LoginService {
 
     boolean isUserActive(int userID);
 
-    public void releaseCurrentUserFromActiveUsersCache(int userID);
+    public void releaseInactiveUserFromActiveUsersCache(int userID);
     
 }

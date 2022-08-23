@@ -61,6 +61,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private final Logger log = YukonLogManager.getLogger(LoginServiceImpl.class);
+    //cache for enabled users during an active session
     private final Set<Integer> activeUsers = new HashSet<Integer>();
 
     private static final String INVALID_PARAMS = "failed=true";
@@ -78,7 +79,8 @@ public class LoginServiceImpl implements LoginService {
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
-                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB
+                        && dbChange.getCategory().equals(DBChangeMsg.CAT_YUKON_USER)) {
                     DbChangeType dbChangeType = dbChange.getDbChangeType();
                     if (dbChangeType == DbChangeType.UPDATE) {
                         int id = dbChange.getId();
@@ -177,7 +179,7 @@ public class LoginServiceImpl implements LoginService {
         log.info("User " + user + " (userid=" + user.getUserID() + ") has been logged out from "
             + request.getRemoteAddr() + " Reason :" + reason);
         systemEventLogService.logoutWeb(user, request.getRemoteAddr(), reason);
-        releaseCurrentUserFromActiveUsersCache(user.getUserID());
+        releaseInactiveUserFromActiveUsersCache(user.getUserID());
         ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() 
                 + " (userid=" + user.getUserID() + ") has been logged out from " 
                 + request.getRemoteAddr() + ". Reason: " + reason);
@@ -202,7 +204,7 @@ public class LoginServiceImpl implements LoginService {
             log.trace("Role Property: redirect = '" + redirect + "'");
             log.info("User " + user + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             systemEventLogService.logoutWeb(user, request.getRemoteAddr(), "User initiated");
-            releaseCurrentUserFromActiveUsersCache(user.getUserID());
+            releaseInactiveUserFromActiveUsersCache(user.getUserID());
             ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
                 + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
             if (savedUsers != null) {
@@ -365,7 +367,7 @@ public class LoginServiceImpl implements LoginService {
         return activeUsers.contains(userID);
     }
 
-    public void releaseCurrentUserFromActiveUsersCache(int userID) {
+    public void releaseInactiveUserFromActiveUsersCache(int userID) {
         activeUsers.remove(userID);
     }
 
