@@ -25,7 +25,7 @@
                 <span class="js-username-available ML5 MT5" 
                     data-available="${available}" data-unavailable="${unavailable}"></span>
                 <c:if test="${status.error}">
-                    <div><form:errors path="username" cssClass="error"/></div>
+                    <div><form:errors path="username" cssClass="error cl"/></div>
                  </c:if>
             </s:bind>
         </tags:nameValue2>
