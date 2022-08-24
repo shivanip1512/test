@@ -152,6 +152,13 @@ ALTER TABLE ZeusGroupInventoryMapping ADD CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPIN
 INSERT INTO DBUpdates VALUES ('YUK-26753', '9.3.0', SYSDATE);
 /* @end YUK-26753 */
 
+/* @start YUK-27141 */
+UPDATE InfrastructureWarnings SET WarningType = 'CELLULAR_DEVICE_CONNECTION_STATUS' WHERE WarningType = 'CELLULAR_RELAY_CONNECTION_STATUS';
+UPDATE SmartNotificationEventParam SET Value = 'CELLULAR_DEVICE_CONNECTION_STATUS' WHERE Name = 'WarningType' AND Value = 'CELLULAR_RELAY_CONNECTION_STATUS';
+
+INSERT INTO DBUpdates VALUES ('YUK-27141', '9.3.0', SYSDATE);
+/* @end YUK-27141 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
