@@ -15,9 +15,11 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
@@ -52,6 +54,11 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
         String notifGrpId = ServletUtils.getPathVariable("id");
         Integer id = notifGrpId != null ? Integer.valueOf(notifGrpId) : null;
+        if (id != null) {
+            databaseCache.getAllContactNotificationGroups().stream()
+                    .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                    .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        }
         validateNotificationGroupName(errors, notificationGroup.getName(), id);
 
         yukonApiValidationUtils.checkIfFieldRequired("enabled", errors, notificationGroup.getEnabled(), "Enabled");
