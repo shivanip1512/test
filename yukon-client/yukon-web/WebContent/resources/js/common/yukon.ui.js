@@ -258,12 +258,14 @@ yukon.ui = (function () {
         
         /** Paging Handler: Changes the items per page size. */
         $(document).on('change', yg.selectors.pageSize, function (ev) {
+            ev.preventDefault();
             $(this).data('pageSize', $(this).val());
             mod.changePaging($(this));
         });
 
         /** Paging Handler: Get the next or previous page */
         $(document).on('click', yg.selectors.paging, function (ev) {
+            ev.preventDefault();
             mod.changePaging($(this));
         });
 

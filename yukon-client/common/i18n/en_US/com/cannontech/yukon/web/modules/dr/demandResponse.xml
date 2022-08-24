@@ -732,7 +732,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.progress">Device Status</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.pageName">Event Participation Summary</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.dateRange">Date Range</entry>
-<entry key="yukon.web.modules.dr.recentEventParticipation.details.numEvents">Events Found</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.numEvents">Events</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.download">Download</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmed">{0} Confirmed</entry>
 <entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmedAfterRetry">{0} Confirmed After Retry</entry>
