@@ -20,15 +20,18 @@ import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.edgeDr.EdgeDrCommunicationException;
 import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 import com.cannontech.web.api.error.model.YukonApiException;
+import com.cannontech.web.api.error.model.YukonApiValidationException;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -44,6 +47,7 @@ public class DerEdgeApiController {
     @Autowired private DeviceGroupProviderDaoMain deviceGroupProviderDaoMain;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDao paoDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @PostMapping("/unicastMessage")
     public ResponseEntity<Object> create(@Valid @RequestBody EdgeUnicastRequest edgeUnicastRequest, YukonUserContext userContext) {
@@ -85,7 +89,14 @@ public class DerEdgeApiController {
             Set<SimpleDevice> simpleDeviceList = deviceGroupProviderDaoMain.getDevices(targetedAddressingGroup);
             transactionGUID = sendMulticastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
         } catch (NotFoundException e){
-            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.INVALID_VALUE);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            
+            //The DER Edge Addressing group {0} could not be resolved.
+            Object[] parameters = new Object[] { "/EdgeAddressing/" + edgeMultipointRequest.getGroupId() };
+            ApiErrorDetails errorType = ApiErrorDetails.INVALID_VALUE;
+            String i18nDetail = messageSourceAccessor.getMessage(getKeyForErrorType(errorType), parameters);
+            
+            throw new YukonApiValidationException(e, errorType, i18nDetail, "groupId", edgeMultipointRequest.getGroupId(), parameters);
         }
 
         return new ResponseEntity<>(new EdgeUnicastResponse(transactionGUID), HttpStatus.OK);
@@ -130,6 +141,10 @@ public class DerEdgeApiController {
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid unicast payload.", e);
         }
+    }
+    
+    private String getKeyForErrorType(ApiErrorDetails apiErrorType) {
+        return "yukon.web.api.der.edge.multipointMessage." + apiErrorType.getCode();
     }
 
     @InitBinder("edgeUnicastRequest")

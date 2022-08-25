@@ -22,13 +22,23 @@ public class ApiFieldErrorModel {
     }
 
     public ApiFieldErrorModel(ApiErrorDetails errorDetails, FieldError fieldError, String detail) {
-        this.title = errorDetails.getTitle();
-        this.type = errorDetails.getType();
-        this.code = errorDetails.getCode();
+        title = errorDetails.getTitle();
+        type = errorDetails.getType();
+        code = errorDetails.getCode();
         this.detail = detail;
-        this.field = fieldError.getField();
-        this.rejectedValue = String.valueOf(fieldError.getRejectedValue());
-        this.parameters = fieldError.getArguments();
+        field = fieldError.getField();
+        rejectedValue = String.valueOf(fieldError.getRejectedValue());
+        parameters = fieldError.getArguments();
+    }
+    
+    public ApiFieldErrorModel(ApiErrorDetails errorDetails, String detail, String field, String rejectedValue, Object[] parameters) {
+        title = errorDetails.getTitle();
+        type = errorDetails.getType();
+        code = errorDetails.getCode();
+        this.detail = detail;
+        this.field = field;
+        this.rejectedValue = rejectedValue;
+        this.parameters = parameters;
     }
 
     public String getTitle() {

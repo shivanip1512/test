@@ -2,6 +2,10 @@ package com.cannontech.web.api.error.model;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
 
+/**
+ * Exception to be thrown by API code. This will be caught in the ApiExceptionHandler and result in an error response
+ * with HttpStatus.INTERNAL_SERVER_ERROR.
+ */
 public class YukonApiException extends RuntimeException {
     private final ApiErrorDetails errorDetails;
     
