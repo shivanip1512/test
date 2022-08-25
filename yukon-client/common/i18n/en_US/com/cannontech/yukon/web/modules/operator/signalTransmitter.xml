@@ -10,7 +10,7 @@
     <entry key="yukon.web.modules.operator.signalTransmitter.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.VIEW.pageTitle">Signal Transmitter: {0}</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.pageHeading">Edit Signal Transmitter: {0}</entry>
-    <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.crumbTitle">Edit</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.pageTitle">Signal Transmitter: {0}</entry>
     
     <entry key="yukon.web.modules.operator.signalTransmitter.name">Name</entry>
