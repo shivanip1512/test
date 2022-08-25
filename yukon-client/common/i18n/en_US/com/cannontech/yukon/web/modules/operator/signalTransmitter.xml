@@ -42,6 +42,6 @@
     <entry key="yukon.web.modules.operator.signalTransmitter.communication.title">Communication</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.tnppSettings.title">TNPP Settings</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.filter.error">Error filtering signal transmitter records: {0}.</entry>
-    <entry key="yukon.web.modules.operator.signalTransmitter.pagerId.invalidValue">Invalid Pager Id valid value. Please enter an integer between -9999999 and 99999999.</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.pagerId.invalidValue">Must be between -9999999 and 99999999.</entry>
     
 </properties>
