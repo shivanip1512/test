@@ -39,6 +39,7 @@
 <entry key="yukon.common.attributeGroups.GATEWAY_STATISTICS">Gateway Statistics</entry>
 <entry key="yukon.common.attributeGroups.DEMAND_RESPONSE">Demand Response</entry>
 <entry key="yukon.common.attributeGroups.ESTIMATED_LOAD">Estimated Load</entry>
+<entry key="yukon.common.attributeGroups.CELLULAR_ENUMERATED_VALUE_EVENT">Cellular SIM Card Inserted/Removed</entry>
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 <entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
 <entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>
