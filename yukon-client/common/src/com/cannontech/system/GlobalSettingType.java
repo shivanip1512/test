@@ -139,7 +139,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
     EATON_CLOUD_SECRET2(GlobalSettingSubCategory.DR, stringType(), null),
-    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
+    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com/api", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
