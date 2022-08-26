@@ -2,12 +2,12 @@ package com.cannontech.web.api.der.edge.service.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -31,7 +31,6 @@ import com.cannontech.web.api.der.edge.service.DerEdgeResponseService;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -75,6 +74,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
                 });
     }
 
+    @Override
     public void addCacheEntry(Integer e2eID, String guid) {
         e2eIdToGuidCache.put(e2eID, guid);
     }
@@ -94,10 +94,12 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
             String token = e2eIdToGuidCache.getIfPresent(edgeDrDataNotification.getE2eId());
             String name = liteYukonPao.getPaoName();
             String type = liteYukonPao.getPaoType().getDbString();
-            String payload = new String(edgeDrDataNotification.getPayload(), StandardCharsets.UTF_8);
+            String payload = Hex.encodeHexString(edgeDrDataNotification.getPayload());
             String errorMsg = null;
             if (edgeDrDataNotification.getError() != null) {
-                errorMsg = edgeDrDataNotification.getError().toString();
+                int errorId = edgeDrDataNotification.getError().getErrorCode();
+                String errorText = edgeDrDataNotification.getError().getErrorMessage();
+                errorMsg = String.format("%d:%s", errorId, errorText);
             }
 
             // Build requestEntity
