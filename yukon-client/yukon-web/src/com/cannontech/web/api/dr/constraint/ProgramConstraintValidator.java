@@ -35,23 +35,32 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
                         }
                     });
         }
-        
-        if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
-            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+
+        if (programConstraint.getSeasonSchedule() == null) {
+            errors.rejectValue("seasonSchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Season Schedule" }, "");
-        }
-        if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
-            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+        } else if (programConstraint.getSeasonSchedule().getId() == null) {
+            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Season Schedule Id" }, "");
+        } 
+        
+
+        if (programConstraint.getHolidaySchedule() == null) {
+            errors.rejectValue("holidaySchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Holiday Schedule" }, "");
-        }
+        } else if (programConstraint.getHolidaySchedule().getId() == null) {
+            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Holiday Schedule Id" }, "");
+        } 
+
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
-        if (!errors.hasFieldErrors("holidaySchedule")) {
+        if (!errors.hasFieldErrors("holidaySchedule") && (!errors.hasFieldErrors("holidaySchedule.id"))) {
             Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
             if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
                 yukonApiValidationUtils.checkIsBlank(errors, "holidayUsage", programConstraint.getHolidayUsage().toString(), false, "Holiday Usage");
                 if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
-                    errors.rejectValue("holidayUsage", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Holiday Usage" }, "");
+                    errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
                 }
             } else if (programConstraint.getHolidayUsage() != HolidayUsage.NONE) {
                 errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");

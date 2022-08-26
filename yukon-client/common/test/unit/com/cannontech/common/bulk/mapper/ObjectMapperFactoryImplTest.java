@@ -616,5 +616,15 @@ public class ObjectMapperFactoryImplTest {
         public List<Integer> getDeviceIdsWithGuids() {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public int getDeviceIdByName(String name) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Map<String, Integer> getDeviceIds(Iterable<String> guids) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 }

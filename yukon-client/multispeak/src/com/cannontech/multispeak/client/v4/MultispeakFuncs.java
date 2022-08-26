@@ -1,12 +1,20 @@
 package com.cannontech.multispeak.client.v4;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +28,35 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.model.Address;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.Disconnect410State;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
+import com.cannontech.msp.beans.v4.AddressItem;
+import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
+import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
+import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
+import com.cannontech.msp.beans.v4.Customer;
+import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GasMeter;
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.PhoneNumber;
+import com.cannontech.msp.beans.v4.PhoneType;
+import com.cannontech.msp.beans.v4.RCDState;
+import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -30,17 +65,25 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
+import com.cannontech.multispeak.data.v4.MspRCDState;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
     @Autowired public MultispeakDao multispeakDao;
+    @Autowired private ObjectFactory objectFactory;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    
+    private static final QName QNAME_LAST_SENT = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes", "lastSent");
+    private static final QName QNAME_OBJECT_REMAINING = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes", "objectsRemaining");
+    private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/Version_4.1_Release/response", "Result");
 
     @Override
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
     }
-
+    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
@@ -77,8 +120,18 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
     @Override
     public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            SoapEnvelope env = getRequestMessageSOAPEnvelope();
+            SoapHeader soapHeader = env.getHeader();
+            String username = getAtributeFromSOAPHeader(soapHeader, "UserID");
+            String password = getAtributeFromSOAPHeader(soapHeader, "Pwd");
+            LiteYukonUser user = authenticationService.login(username, password);
+            return user;
+        } catch (PasswordExpiredException e) {
+            throw new MultispeakWebServiceException("Password expired", e);
+        } catch (BadAuthenticationException e) {
+            throw new MultispeakWebServiceException("User Authentication Failed", e);
+        }
     }
 
     /**
@@ -226,5 +279,197 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         return attributeValue;
     }
+    
+    public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObjects != null) {
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        }
+        return arrayOfErrorObject;
+    }
 
+    public List<MspMeter> getMspMeters(Meters meters) {
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        ArrayOfElectricMeter ArrOfElectricMeters = meters.getElectricMeters();
+        List<ElectricMeter> electricMeters = (null != ArrOfElectricMeters) ? ArrOfElectricMeters.getElectricMeter() : null;
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            mspMeters.addAll(electricMeters);
+        }
+
+        ArrayOfWaterMeter ArrOfWaterMeters = meters.getWaterMeters();
+        List<WaterMeter> waterMeters = (null != ArrOfWaterMeters) ? ArrOfWaterMeters.getWaterMeter() : null;
+        if (CollectionUtils.isNotEmpty(waterMeters)) {
+            mspMeters.addAll(waterMeters);
+        }
+
+        ArrayOfGasMeter ArrOfGasMeters = meters.getGasMeters();
+        List<GasMeter> gasMeters = null != ArrOfGasMeters ? ArrOfGasMeters.getGasMeter() : null;
+        if (CollectionUtils.isNotEmpty(gasMeters)) {
+            mspMeters.addAll(gasMeters);
+        }
+
+        return mspMeters;
+    }
+    
+    /**
+     * Translates the rawState into a loadActionCode based on the type of meter
+     * and expected state group for that type. Returns loadActionCode.Unknown
+     * when cannot be determined.
+     * 
+     * @param meter
+     * @return
+     */
+    public RCDState getRCDState(YukonDevice yukonDevice, PointValueHolder pointValueHolder) {
+
+        MspRCDState mspRCDState;
+        try {
+
+            log.debug("Returning disconnect status from cache: "
+                    + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, YukonUserContext.system));
+
+            boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(),
+                    PaoTag.DISCONNECT_RFN);
+            if (isRfnDisconnect) {
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForRfnState(pointState);
+                log.debug("returning mspRCDState for RFN: " + mspRCDState);
+            } else { // assume everything else is PLC
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForPlcState(pointState);
+                log.debug("returning loadActionCode for PLC: " + mspRCDState);
+            }
+        } catch (IllegalArgumentException e) {
+            // we were unable to decode the rawState
+            log.warn("Unable to decode rawState. value:" + pointValueHolder.getValue());
+            return RCDState.UNKNOWN;
+        }
+        return mspRCDState.getRCDState();
+    }
+    
+    public void logErrorObjects(String interfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
+            for (ErrorObject errorObject : objects) {
+                log.info("Error Return from " + interfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
+                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+            }
+        }
+    }
+
+    public String getLastSentFromHeader() {
+        return getChildValue(QNAME_LAST_SENT, QNAME_RESULT);
+    }
+    
+    public String getObjectRemainingValueFromHeader() {
+        return getChildValue(QNAME_OBJECT_REMAINING, QNAME_RESULT);
+    }
+
+    /**
+     * This method returns an child value of given qNameToFind from response header.
+     * 
+     * @param qNameToFind - child to find
+     * @param qNameResult - child to find from
+     * @return String - child value.
+     **/
+    private String getChildValue(QName qNameToFind, QName qNameResult) {
+        String nodeValue = null;
+        SOAPHeader header = null;
+        try {
+            header = getResponseSOAPMessage().getSOAPPart().getEnvelope().getHeader();
+            Iterator<?> headerElements = header.examineAllHeaderElements();
+            while (headerElements.hasNext()) {
+                SOAPHeaderElement headerElement = (SOAPHeaderElement) headerElements.next();
+                Iterator<?> childElements = headerElement.getChildElements(qNameResult);
+                while (childElements.hasNext()) {
+                    Node soapNode = (Node) childElements.next();
+                    if (soapNode instanceof SOAPElement) {
+                        SOAPElement element = (SOAPElement) soapNode;
+                        nodeValue = getFirstChildElementValue(element, qNameToFind).getValue();
+                    }
+                }
+            }
+        } catch (SOAPException e) {
+            log.error("Error to fetch child node from header", e);
+        }
+        return nodeValue;
+    }
+
+
+    /**
+     * Returns response soap message
+     * 
+     * @return SOAPMessage
+     * @throws javax.xml.soap.SOAPException
+     */
+    private SOAPMessage getResponseSOAPMessage() throws SOAPException {
+
+        MessageContext ctx = MessageContextHolder.getMessageContext();
+        WebServiceMessage responseMessage = ctx.getResponse();
+        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
+        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
+        SOAPMessage soapMessage = saajSoapMessage.getSaajMessage();
+        return soapMessage;
+
+    }
+    
+
+    /**
+     * This method returns child SOAPElement
+     **/
+
+    private SOAPElement getFirstChildElementValue(SOAPElement soapElement, QName qNameToFind) {
+        SOAPElement childSoapElement = null;
+        Iterator<?> childElements = soapElement.getChildElements(qNameToFind);
+        while (childElements.hasNext()) {
+            childSoapElement = (SOAPElement) childElements.next(); // use first
+        }
+
+        return childSoapElement;
+    }
+    
+    // Returns phone number (Home and Business) of the primary contact
+    public Map<PhoneType, String> getPrimaryContacts(Customer mspCustomer) {
+        Map<PhoneType, String> allPhoneNumbers = new HashMap<>();
+
+        List<PhoneNumber> phoneNumber = new ArrayList<>();
+        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getPhoneList() != null) {
+            phoneNumber = mspCustomer.getContactInfo().getPhoneList().getPhoneNumber();
+            if(phoneNumber != null) {
+                phoneNumber.forEach(phNo -> {
+                    if (phNo.getPhoneType() != null && phNo.getPhone() != null) {
+                        if (phNo.getPhoneType() == PhoneType.HOME
+                            || phNo.getPhoneType() == PhoneType.BUSINESS) {
+    
+                            allPhoneNumbers.put(phNo.getPhoneType(), phoneNumberFormattingService.formatPhone(
+                                phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                        }
+                    }
+                });
+            }
+        }
+        return allPhoneNumbers;
+    }
+    
+    
+    public List<Address> getAddressList(List<AddressItem> addressItems) {
+        List<Address> addressList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(addressItems)) {
+            addressItems.forEach(addressItem -> {
+                if (addressItem.getAddress() != null) {
+                    com.cannontech.msp.beans.v4.Address fetchAddress = addressItem.getAddress();
+                    Address address = new Address();
+                    address.setLocationAddress1(fetchAddress.getAddress1());
+                    address.setLocationAddress2(fetchAddress.getAddress2());
+                    address.setCityName(fetchAddress.getCity());
+                    address.setStateCode(fetchAddress.getState());
+                    address.setCounty(fetchAddress.getCountry());
+                    address.setZipCode(fetchAddress.getPostalCode());
+                    addressList.add(address);
+                }
+            
+            });
+        }
+        return addressList;
+    }
+    
 }

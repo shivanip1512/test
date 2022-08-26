@@ -105,6 +105,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.pageName"/></a></li>
             <li><a href="viewConfigNotification"><i:inline key=".rfnConfigNotification.pageName"/></a></li>
             <li><a href="viewStatusArchiveRequest"><i:inline key=".statusArchiveRequest.pageName"/></a></li>
+            <li><a href="viewCellularArchiveRequest"><i:inline key=".viewCellularCommArchiveRequest.pageName"/></a></li>
         </ul>
     </div>
     <div class="column three nogutter">

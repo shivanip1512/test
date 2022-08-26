@@ -26,7 +26,7 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
     public void doValidation(MultispeakModel multispeak, Errors errors) {
         MultispeakVendor multispeakVendor=multispeak.getMspVendor();
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "mspVendor.companyName", "yukon.web.error.isBlank");
-        
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "mspVendor.attributes", "yukon.web.error.isBlank");
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "mspVendor.templateNameDefault",
             "yukon.web.error.isBlank");
         if (multispeakVendor.getVendorID() != null

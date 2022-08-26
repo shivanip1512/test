@@ -51,7 +51,7 @@ BILLING_ERRORS = {
         <ct:sectionContainer title="${formatSetup}" id="dbgFormatSetup">
             <ct:nameValueContainer2>
                 <ct:nameValue2 nameKey=".nameOfFormat" >
-                    <input type="text" onkeyup="updateFormatName()" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span class="error">*</span>
+                    <input type="text" onkeyup="updateFormatName()" name="formatName" class="fl w300" id="formatName" value="<c:out value="${format.name}"/>" ><span class="error">*</span>
                 </ct:nameValue2>
                 <ct:nameValue2 nameKey=".delimiter">
                     <select  name="delimiterChoice" id="delimiterChoice" onchange="updateDelimiter();">
@@ -90,8 +90,8 @@ BILLING_ERRORS = {
                 <div class="column one">
             <%--  FIELD SETUP --%>
                     <ct:sectionContainer2 nameKey=".fieldSetup" id="dbgFieldSetup">
-                    <div><h4 style="display: inline;"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span></div>
-                    <div>
+                    <div><h4 class="di fl"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span></div>
+                    <div class="clear">
                         <div>
                             <select id="selectedFields" name="selectedFields" style="width:260px;" size="7" onchange="selectedFieldsChanged()" >
                                 <c:forEach var="field" items="${selectedFields}" varStatus="status">

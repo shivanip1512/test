@@ -52,7 +52,7 @@ public class RfnRemoteMeterConfigurationEventProcessorTest {
         EasyMock.expect(mockThriftMessenger.getRequestQueueName())
             .andReturn("Fake queue");
         
-        requestPayload = new Capture<>();
+        requestPayload = Capture.newInstance();
         
         mockThriftMessenger.send(EasyMock.capture(requestPayload));
         

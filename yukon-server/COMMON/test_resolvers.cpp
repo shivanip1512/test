@@ -217,6 +217,10 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frxe"),  TYPE_RFN530FRXE);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxed"), TYPE_RFN520FAXED);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxed"), TYPE_RFN520FRXED);
+    BOOST_CHECK_EQUAL(resolveDeviceType("crl-520faxe"),  TYPE_CRL520FAXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("crl-520faxed"), TYPE_CRL520FAXED);
+    BOOST_CHECK_EQUAL(resolveDeviceType("crl-520frxe"),  TYPE_CRL520FRXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("crl-520frxed"), TYPE_CRL520FRXED);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-410cl"),   TYPE_RFN410CL);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cl"),   TYPE_RFN420CL);
@@ -238,6 +242,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-430sl4"),  TYPE_RFN430SL4);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4x"),      TYPE_RFN530S4X);
+    BOOST_CHECK_EQUAL(resolveDeviceType("crl-530s4x"),      TYPE_CRL530S4X);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4eax"),    TYPE_RFN530S4EAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4eaxr"),   TYPE_RFN530S4EAXR);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4erx"),    TYPE_RFN530S4ERX);
@@ -257,6 +262,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     //  --- RF Cellular IPLink Relays ---
     BOOST_CHECK_EQUAL(resolveDeviceType("crly-856"),    TYPE_CRLY856);
+
+    //  --- DER Edge Coordinator Devices ---
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4x-der"),    TYPE_RFN530S4X_DER);
 
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);

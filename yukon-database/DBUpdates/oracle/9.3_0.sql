@@ -85,6 +85,73 @@ ADD (FeederId NUMBER);
 INSERT INTO DBUpdates VALUES ('YUK-26097', '9.3.0', SYSDATE);
 /* @end YUK-26097 */
 
+/* @start YUK-26210 */
+INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs.');
+
+INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', SYSDATE);
+/* @end YUK-26210 */
+
+/* @start YUK-26401 */
+ALTER TABLE RegulatorToZoneMapping
+ADD (FeederId NUMBER);
+
+INSERT INTO DBUpdates VALUES ('YUK-26401', '9.3.0', SYSDATE);
+/* @end YUK-26401 */
+
+/* @start YUK-26847 */
+ALTER TABLE MSPVendor ADD Attributes VARCHAR2(500);
+UPDATE MSPVendor SET Attributes = 'Peak Demand , Usage';
+ALTER TABLE MSPVendor MODIFY Attributes VARCHAR2(500) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', SYSDATE);
+/* @end YUK-26847 */
+
+/* @start YUK-27139 */
+UPDATE InfrastructureWarnings SET WarningType = 'INFRASTRUCTURE_OUTAGE' WHERE WarningType = 'RELAY_OUTAGE';
+UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Name = 'WarningType' AND Value = 'RELAY_OUTAGE';
+
+INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', SYSDATE);
+/* @end YUK-27139 */
+
+/* @start YUK-27043 */
+UPDATE YukonRoleProperty
+SET Description = 'Allow access to DER Edge Coordinator features and APIs. Warning: This setting should only be enabled for dedicated DER Edge API users. It will remove access to other Yukon features.'
+WHERE RolePropertyID = -90050;
+
+INSERT INTO DBUpdates VALUES ('YUK-27043', '9.3.0', SYSDATE);
+/* @end YUK-27043 */
+
+/* @start YUK-26089 */
+INSERT INTO StateGroup VALUES( -34, 'InsertedRemoved', 'Status');
+
+INSERT INTO State VALUES( -34, 0, 'Removed', 1, 6, 0);
+INSERT INTO State VALUES( -34, 1, 'Inserted', 0, 6, 0);
+INSERT INTO State VALUES( -34, 2, 'Unknown', 9, 6, 0);
+
+UPDATE POINT SET STATEGROUPID = -34 WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type = 'CRLY-856') AND POINTOFFSET = 67 AND POINTTYPE = 'Status';
+UPDATE POINT SET STATEGROUPID = -34 WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type IN ('CRL-520fAXe','CRL-520fRXe','CRL-520fAXeD','CRL-520fRXeD','CRL-530S4x')) AND POINTOFFSET = 106 AND POINTTYPE = 'Status';
+
+UPDATE RAWPOINTHISTORY SET VALUE = 2 WHERE POINTID IN (SELECT POINTID FROM POINT WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type = 'CRLY-856') AND POINTOFFSET = 67 AND POINTTYPE = 'Status');
+UPDATE RAWPOINTHISTORY SET VALUE = 2 WHERE POINTID IN (SELECT POINTID FROM POINT WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type IN ('CRL-520fAXe','CRL-520fRXe','CRL-520fAXeD','CRL-520fRXeD','CRL-530S4x')) AND POINTOFFSET = 106 AND POINTTYPE = 'Status');
+
+UPDATE DYNAMICPOINTDISPATCH SET VALUE = 2 WHERE POINTID IN (SELECT POINTID FROM POINT WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type = 'CRLY-856') AND POINTOFFSET = 67 AND POINTTYPE = 'Status');
+UPDATE DYNAMICPOINTDISPATCH SET VALUE = 2 WHERE POINTID IN (SELECT POINTID FROM POINT WHERE PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE Type IN ('CRL-520fAXe','CRL-520fRXe','CRL-520fAXeD','CRL-520fRXeD','CRL-530S4x')) AND POINTOFFSET = 106 AND POINTTYPE = 'Status');
+
+INSERT INTO DBUpdates VALUES ('YUK-26089', '9.3.0', SYSDATE);
+/* @end YUK-26089 */
+
+/* @start YUK-26753 */
+ALTER TABLE LMGroupZeusMapping DROP CONSTRAINT PK_LMGROUPZEUSMAPPING;
+ALTER TABLE LMGroupZeusMapping MODIFY EcobeeGroupId VARCHAR2(40);
+ALTER TABLE LMGroupZeusMapping ADD CONSTRAINT PK_LMGROUPZEUSMAPPING PRIMARY KEY (YukonGroupId, EcobeeGroupId);
+
+ALTER TABLE ZeusGroupInventoryMapping DROP CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING;
+ALTER TABLE ZeusGroupInventoryMapping MODIFY EcobeeGroupId VARCHAR2(40);
+ALTER TABLE ZeusGroupInventoryMapping ADD CONSTRAINT PK_ZEUSGROUPINVENTORYMAPPING PRIMARY KEY (InventoryID, EcobeeGroupId);
+
+INSERT INTO DBUpdates VALUES ('YUK-26753', '9.3.0', SYSDATE);
+/* @end YUK-26753 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */

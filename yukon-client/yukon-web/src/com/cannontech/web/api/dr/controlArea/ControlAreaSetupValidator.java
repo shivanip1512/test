@@ -87,7 +87,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
         if (CollectionUtils.isNotEmpty(controlArea.getTriggers())) {
             if (controlArea.getTriggers().size() > MAX_TRIGGER_COUNT) {
-                errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(), new Object[] { "Trigger Count", MAX_TRIGGER_COUNT}, "");
+                errors.reject(ApiErrorDetails.CONSTRAINT_VIOLATED.getCodeString(), new Object[] { "Trigger Count", "Maximum two valid triggers are allowed"}, "");
             } else {
                 for (int i = 0; i < controlArea.getTriggers().size(); i++) {
                     errors.pushNestedPath("triggers[" + i + "]");

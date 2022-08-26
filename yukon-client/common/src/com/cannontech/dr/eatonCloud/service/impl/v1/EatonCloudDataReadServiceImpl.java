@@ -1,5 +1,6 @@
 package com.cannontech.dr.eatonCloud.service.impl.v1;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -15,11 +17,14 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -48,6 +53,7 @@ import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDa
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -64,29 +70,37 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
- 
+    @Autowired private ConfigurationSource configurationSource;
+
+    public static int TAGS_PER_TIMESERIES_REQUEST = 1000;
+
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
-        return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
+        return collectDataForRead(Set.of(deviceId), range, true, null, "SINGLE DEVICE");
+    }
+    @Override
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, null, debugReadType);
     }
 
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
-        return collectDataForRead(deviceIds, range, false, debugReadType);
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
+            List<EatonCloudChannel> channels, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, channels, debugReadType);
     }
 
     private Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
-            boolean throwErrorIfFailed, String debugReadType) {
+            boolean throwErrorIfFailed, List<EatonCloudChannel> channels, String debugReadType) {
         Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
                 .filter(pao -> pao.getPaoType().isCloudLcr())
                 .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
 
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
-            Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
-            log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
-                    attr.size());
-            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, throwErrorIfFailed));
+            Set<BuiltInAttribute> attr = channels != null ? getAttributesForChannels(channels, type) : getAttributesForPaoType(type);
+            log.info("Initiating read ({}) for type:{} devices: {} on attributes/channels:{}/{}", debugReadType, type, paos.get(type).size(),
+                    attr.size(), channels != null ? channels : "All");
+            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, channels, throwErrorIfFailed));
         }
 
         log.debug("({}) Retrieved point data:{} for devices:{}", debugReadType, receivedPoints.values().size(),
@@ -97,8 +111,23 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         return receivedPoints;
     }
 
+    /**
+     * We will use the 1000 channels on any read that is within the last 4 hours of current time.
+     * Any further than that and we have to fall back to the 10 channel limit.
+     * 
+     * @return true - read in 1000 channels, false - read in 10 channels
+     */
+    private boolean readIn1kChunks(Range<Instant> queryRange) {
+        Hours hours = Hours.hoursBetween(queryRange.getMin(), queryRange.getMax());
+        if(hours.getHours() > 4) {
+            return false;
+        }
+        return configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false);
+    }
+    
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange, boolean throwErrorIfFailed) {
+            Set<BuiltInAttribute> attributes, Range<Instant> queryRange, List<EatonCloudChannel> channels,
+            boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -106,17 +135,40 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
 
         List<EatonCloudTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<EatonCloudTimeSeriesDeviceResultV1>();
-        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
-        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
-        for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
-            try {
-                List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
-                        .getTimeSeriesValues(List.of(request), queryRange);
-                timeSeriesResults.addAll(result);
-            } catch (Exception e) {
-                log.error("Guid:" + request.getDeviceGuid(), e);
-                if(throwErrorIfFailed) {
-                    throw e;
+        Set<String> tags = channels != null ? getTagsForChannels(channels,
+                paos.iterator().next().getPaoType()) : EatonCloudChannel
+                        .getTagsForAttributes(attributes);
+        
+        if (readIn1kChunks(queryRange)) {
+            List<EatonCloudTimeSeriesDeviceV1> requests = deviceIdGuid.values().stream()
+                    .map(guid -> new EatonCloudTimeSeriesDeviceV1(guid, StringUtils.join(tags, ',')))
+                    .collect(Collectors.toList());
+            List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = chunkRequests(requests);
+            for (List<EatonCloudTimeSeriesDeviceV1> request : chunkedRequests) {
+                try {
+                    List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                            .getTimeSeriesValues(request, queryRange);
+                    timeSeriesResults.addAll(result);
+                } catch (Exception e) {
+                    String guids = request.stream().map(r -> r.getDeviceGuid()).collect(Collectors.joining(","));
+                    log.error("Guid:{}", guids, e);
+                    if (throwErrorIfFailed) {
+                        throw e;
+                    }
+                }
+            }
+        } else {
+            List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+            for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
+                try {
+                    List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                            .getTimeSeriesValues(List.of(request), queryRange);
+                    timeSeriesResults.addAll(result);
+                } catch (Exception e) {
+                    log.error("Guid:" + request.getDeviceGuid(), e);
+                    if(throwErrorIfFailed) {
+                        throw e;
+                    }
                 }
             }
         }
@@ -140,7 +192,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         updateEventParticipation(device, result.getValues());
                     } else if (InfoKey.hasKey(mwChannel)) {
                         updatePaoInfo(InfoKey.getKey(mwChannel), device, result.getValues());
-                    } else if (attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                    } else if (attributes.contains(mwChannel.getBuiltInAttribute())) {
                         createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                     }
                 } catch (Exception e) {
@@ -149,6 +201,44 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
             }
         }
         return pointMap;
+    }
+
+    protected List<List<EatonCloudTimeSeriesDeviceV1>> chunkRequests(List<EatonCloudTimeSeriesDeviceV1> requests) {
+        List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
+        List<EatonCloudTimeSeriesDeviceV1> chunk = new ArrayList<>();
+
+        BigInteger counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
+        for (EatonCloudTimeSeriesDeviceV1 request : requests) {
+            if(Strings.isNullOrEmpty(request.getTagTrait())) {
+                //shouldn't happen
+                continue;
+            }
+            int tagCount = request.getTagTrait().split(",").length;
+            counter = counter.subtract(BigInteger.valueOf(tagCount));
+            if (counter.intValue() < 0) {
+                counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
+                chunkedRequests.add(chunk);
+                chunk = new ArrayList<>();
+                counter = counter.subtract(BigInteger.valueOf(tagCount));
+            }
+            chunk.add(request);
+        }
+        // add last chunk
+        if (!chunk.isEmpty()) {
+            chunkedRequests.add(chunk);
+        }
+
+        int totalTags = getTagsCount(requests);
+        int totalTagsPerGuid = getTagsCount(List.of(chunkedRequests.get(0).get(0)));
+        log.debug("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
+                chunkedRequests.stream().map(r -> getTagsCount(r))
+                        .collect(Collectors.toList()));
+        return chunkedRequests;
+    }
+
+    private int getTagsCount(List<EatonCloudTimeSeriesDeviceV1> requests) {
+        return requests.stream()
+                .collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
     }
 
     private void createPointData(Multimap<PaoIdentifier, PointData> pointMap, String guid,
@@ -307,12 +397,29 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         }
         return chunkedRequests;
     }
+    
     /**
      * Takes a paoTypes and gets all of the tags that have a builtInAttribute for that paoType
      */
     private Set<BuiltInAttribute> getAttributesForPaoType(PaoType paoType) {
          return paoDefinitionDao.getDefinedAttributes(paoType).stream()
                 .map(attributeDefinition -> attributeDefinition.getAttribute())
+                .collect(Collectors.toSet());
+    }
+
+    private Set<BuiltInAttribute> getAttributesForChannels(List<EatonCloudChannel> channels, PaoType type) {
+        return channels.stream()
+                .map(channel -> channel.getBuiltInAttribute())
+                .filter(Objects::nonNull)
+                .filter(attribute -> paoDefinitionDao.findAttributeLookup(type, attribute).isPresent())
+                .collect(Collectors.toSet());
+    }
+    
+    public Set<String> getTagsForChannels(List<EatonCloudChannel> channels, PaoType type) {
+        return channels.stream()
+                .filter(channel -> channel.getBuiltInAttribute() == null
+                        || paoDefinitionDao.findAttributeLookup(type, channel.getBuiltInAttribute()).isPresent())
+                .map(c -> c.getChannelId().toString())
                 .collect(Collectors.toSet());
     }
 

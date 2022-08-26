@@ -29,7 +29,6 @@ import com.google.common.collect.Sets;
 
 @ManagedResource
 public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
-    private static final Logger log = YukonLogManager.getLogger(RfnDeviceArchiveRequestListener.class);
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
@@ -38,7 +37,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private YukonJmsTemplate jmsTemplate;
-    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private Logger log = YukonLogManager.getRfnLogger();
 
     @PostConstruct
     public void init() {
@@ -54,9 +53,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnDeviceArchiveRequest request) {
-        if(rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
-        }
+        log.info("<<< {}", request.toString());
         request.getRfnIdentifiers().entrySet().forEach(entry -> queueHandler.add(this, entry));
     }
     
@@ -124,11 +121,10 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
         RfnDeviceArchiveResponse response = new RfnDeviceArchiveResponse();
         response.setReferenceIds(Sets.newHashSet(entry.getKey()));
         if (entry.getValue().is_Empty_()) {
-            log.info("{} acknowledged empty rfnIdentifier {} referenceId={}", processor, entry.getValue(),
+            log.info("{} acknowledged empty rfnIdentifier {} referenceId {}", processor, entry.getValue(),
                 entry.getKey());
-        } else {
-            log.debug("{} acknowledged referenceId={}", processor, entry.getKey());
         }
+        log.info(">>> {}", response.toString());
         jmsTemplate.convertAndSend(response);
     }
 

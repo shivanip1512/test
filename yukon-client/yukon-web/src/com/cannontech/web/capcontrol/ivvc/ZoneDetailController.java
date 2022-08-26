@@ -69,6 +69,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
+import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -342,6 +343,9 @@ public class ZoneDetailController {
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
         int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, user));
         model.addAttribute("updaterDelay", updaterDelay);
+        
+        List<ViewableFeeder> feederList = zoneDtoHelper.getFeedersAssociatedWithZone(zoneDto);
+        model.addAttribute("feederList", feederList);
     }
 
     private void setupZoneDetails(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {

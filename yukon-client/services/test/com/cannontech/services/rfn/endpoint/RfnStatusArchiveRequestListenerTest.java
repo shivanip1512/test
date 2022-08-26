@@ -40,7 +40,7 @@ import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnStatusArchiveRequestListenerTest {
     private RfnStatusArchiveRequestListener statusListener;
-    private Capture<PointData> pointdataCapture = new Capture<>(CaptureType.ALL);
+    private Capture<PointData> pointdataCapture = Capture.newInstance(CaptureType.ALL);
     private static final long timestamp = 0;
     private static final RfnIdentifier rfnIdentifier = new RfnIdentifier("112358", "ITRN", "C2SX-SD");
     private static final LitePoint disconnectStatusPoint = new LitePoint(176827, "Disconnect status point", PointType.Status.getPointTypeId(), 71, 77, -18);
@@ -71,13 +71,13 @@ public class RfnStatusArchiveRequestListenerTest {
         var rfnDeviceLookupService = EasyMock.createNiceMock(RfnDeviceLookupService.class);
         ReflectionTestUtils.setField(statusListener, "rfnDeviceLookupService", rfnDeviceLookupService, RfnDeviceLookupService.class);
         
-        var attributeService = EasyMock.createStrictMock(AttributeService.class);
+        AttributeService attributeService = EasyMock.createStrictMock(AttributeService.class);
         EasyMock.expect(attributeService.createAndFindPointForAttribute(null, BuiltInAttribute.DISCONNECT_STATUS))
             .andReturn(disconnectStatusPoint);
         EasyMock.replay(attributeService);
         ReflectionTestUtils.setField(statusListener, "attributeService", attributeService, AttributeService.class);
         
-        var asyncDynamicDataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
+        AsyncDynamicDataSource asyncDynamicDataSource = EasyMock.createStrictMock(AsyncDynamicDataSource.class);
         asyncDynamicDataSource.putValue(EasyMock.capture(pointdataCapture));
         EasyMock.replay(asyncDynamicDataSource);
         ReflectionTestUtils.setField(statusListener, "asyncDynamicDataSource", asyncDynamicDataSource, AsyncDynamicDataSource.class);

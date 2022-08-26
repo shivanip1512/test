@@ -14,6 +14,7 @@ public interface PaoLocationService {
         METER_ELECTRIC,
         METER_PLC_ELECTRIC,
         METER_WIFI_ELECTRIC,
+        METER_CELL_ELECTRIC,
         METER_WATER,
         METER_GAS,
         TRANSMITTER,

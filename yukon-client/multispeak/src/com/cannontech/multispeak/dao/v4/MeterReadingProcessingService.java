@@ -1,9 +1,13 @@
 package com.cannontech.multispeak.dao.v4;
 
+import java.util.Set;
+
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v4.MeterReading;
+
 
 public interface MeterReadingProcessingService {
 
@@ -19,5 +23,21 @@ public interface MeterReadingProcessingService {
      * be shared across threads.
      */
     public void updateMeterReading(MeterReading reading, BuiltInAttribute attribute,
-            PointValueHolder pointValueHolder);
+            PointValueHolder pointValueHolder, PaoType type);
+    
+    /**
+     * to get supported field names
+     * @return list of attrinute fields
+     */
+    public Set<BuiltInAttribute> getAttributes();
+    
+    /**
+     * Return an immutable object that can be used at the callers discretion
+     * to update a MeterRead object with the given value for the given attribute.
+     * The primary purpose of this is to allow the caller to asynchronously process
+     * the point values into an object that can easily be stored (and can even be
+     * aggregated or chained) and then processed later in a synchronous manner.
+     */
+    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
+                                           PointValueHolder pointValueHolder, PaoType type);
 }

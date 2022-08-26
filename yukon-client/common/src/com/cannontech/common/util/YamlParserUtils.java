@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -14,8 +15,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class YamlParserUtils {
     private static final Logger log = YukonLogManager.getLogger(YamlParserUtils.class);
 
-    public static <T> T parseToObject(InputStream inputStream, Class<T> returnClass) throws IOException {
-        Yaml y = new Yaml();
+    public static <T> T parseToObject(InputStream inputStream, Class<T> returnClass, String fileName) throws IOException {
+        
+        Yaml y;
+        if (fileName.equals("yukonPointMappingIcd.yaml")) {
+            LoaderOptions loaderOptions = new LoaderOptions();
+            loaderOptions.setMaxAliasesForCollections(1500);
+            y = new Yaml(loaderOptions);
+        } else {
+            y = new Yaml();
+        }
         Object yamlObject = y.load(inputStream);
         ObjectMapper jsonFormatter = new ObjectMapper();
         byte[] jsonBytes = jsonFormatter.writeValueAsBytes(yamlObject);

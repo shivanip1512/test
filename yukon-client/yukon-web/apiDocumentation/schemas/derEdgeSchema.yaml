@@ -1,0 +1,204 @@
+SETO-Unicast-Request:
+  required:
+    - name
+    - payload
+    - type
+  type: object
+  properties:
+    name:
+      type: string
+      description: Device name
+    type:
+      type: string
+      description: Device type
+    payload:
+      type: string
+      description: Unicast payload, less than 1280 bytes long
+    queuePriority:
+      type: string
+      enum: [HIGH, LOW]
+      description: Priority of the message while queued for delivery. High priority messages are sent before low priority.
+        * 'HIGH' - High priority for faster delivery.
+        * 'LOW' - Lower priority that may be delayed when message queues are congested.
+        Defaults to HIGH if not included in request.
+      default: HIGH
+    networkPriority:
+      type: string
+      enum: [HIGH, LOW]
+      description: Priority of the message on the network. High priority messages take precedence over low priority.
+        * 'HIGH' - High priority for faster delivery.
+        * 'LOW' - Lower priority that may be delayed when the network is congested.
+        Defaults to HIGH if not included in request.
+      default: HIGH
+
+SETO-Unicast-Response:
+  required:
+    - token
+  type: object
+  properties:
+    token:
+      type: string
+      description: A universally unique identifier for this transaction. Asynchronous responses to the Central Controller will include this identifier so requests and responses may be correlated.
+      format: UUID
+      example: eaf0bdb5-ca08-4366-a584-d14b9962d87d
+
+SETO-Broadcast-Request:
+  required:
+    - payload
+  type: object
+  properties:
+    payload:
+      type: string
+      description: Broadcast payload, less than 54 bytes long.
+    priority:
+      type: string
+      enum: [HIGH, LOW]
+      description: Priority of the message. If omitted, this will default to LOW.
+        * 'HIGH' - High priority for immediate delivery.
+        * 'LOW' - Lower priority that may be delayed when the network is congested.
+
+SETO-Multipoint-Request:
+  required:
+    - groupId
+    - payload
+  type: object
+  properties:
+    groupId:
+      type: string
+      description: Target SETO group ID for translation to unicast device IDs
+    payload:
+      type: string
+      description: Unicast payload, less than 1280 bytes long
+    queuePriority:
+      type: string
+      enum: [HIGH, LOW]
+      description: Priority of the message while queued for delivery. High priority messages are sent before low priority.
+        * 'HIGH' - High priority for faster delivery.
+        * 'LOW' - Lower priority that may be delayed when message queues are congested.
+        Defaults to HIGH if not included in request.
+      default: HIGH
+    networkPriority:
+      type: string
+      enum: [HIGH, LOW]
+      description: Priority of the message on the network. High priority messages take precedence over low priority.
+        * 'HIGH' - High priority for faster delivery.
+        * 'LOW' - Lower priority that may be delayed when the network is congested.
+        Defaults to HIGH if not included in request.
+      default: HIGH
+
+SETO-Multipoint-Response:
+  required:
+    - token
+  type: object
+  properties:
+    token:
+      type: string
+      description: A universally unique identifier for this transaction. Asynchronous responses to the Central Controller will include this identifier so requests and responses may be correlated.
+      format: UUID
+
+Api-Error:
+  required:
+    - code
+    - detail
+    - logRef
+    - requestUri
+    - title
+    - type
+  type: object
+  properties:
+    title:
+      type: string
+      description: Summary of the error
+      example: Validation Failed
+    type:
+      type: string
+      description: Error type lookup
+      example: /api/errors/101000
+    code:
+      type: integer
+      description: Six-digit error code describing the error type, intended for programmatic parsing by API consumers.
+      format: int32
+      example: 101000
+    detail:
+      type: string
+      description: Detailed description of the error
+      example: 'Validation failed: see fields for details.'
+    requestUri:
+      type: string
+      description: The URI that produced the error
+      format: URL
+      example: http://yukonurl/api/endpoint
+    logRef:
+      type: string
+      description: Identifier for correlating the error to Yukon logs
+      example: YK1234567890
+    errors:
+      required:
+        - code
+        - detail
+        - field
+        - rejectedValue
+        - title
+        - type
+      type: object
+      description: An optional list of one or more sub-errors, typically field-specific validation errors.
+      properties:
+        title:
+          type: string
+          description: Summary of the error
+          example: Invalid Value
+        type:
+          type: string
+          description: Error type lookup
+          example: /api/errors/101101
+        code:
+          type: integer
+          description: Six-digit error code describing the error type, intended for programmatic parsing by API consumers.
+          format: int32
+          example: 101101
+        detail:
+          type: string
+          description: Detailed description of the error
+          example: Invalid value for the field.
+        field:
+          type: string
+          description: The name of the request field where the error occurred.
+          example: deviceId
+        rejectedValue:
+          type: string
+          description: The value of the request field where the error occurred.
+          example: "-100"
+        parameters:
+          type: object
+          description: Optional. Parameters related to the error. This is generally not useful to non-Yukon API consumers.
+          example: {}
+
+components:
+  examples:
+    Unicast Request Example:
+      value:
+        name: DER-1000001
+        type: RFN-530S4X-DER
+        payload: 7B0D0A2020226B6579223A202276616C7565220D0A7D
+        queuePriority: HIGH
+        networkPriority: HIGH
+
+    Unicast Response Example:
+      value:
+        token: eaf0bdb5-ca08-4366-a584-d14b9962d87d
+
+    Broadcast Request Example:
+      value:
+        payload: 7B0D0A2020226B6579223A202276616C7565220D0A7D
+        priority: HIGH
+
+    Multipoint Request Example:
+      value:
+        groupId: "1234"
+        payload: 7B0D0A2020226B6579223A202276616C7565220D0A7D
+        queuePriority: HIGH
+        networkPriority: HIGH
+
+    Multipoint Response Example:
+      value:
+        token: eaf0bdb5-ca08-4366-a584-d14b9962d87d

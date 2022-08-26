@@ -31,7 +31,16 @@
             </map>
     </property>
   </bean>
-    <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl" />
+  
+  <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl">
+  <property name="porterConnection" ref="porterConnection" />
+    <property name="formattedBlockMap">
+            <map>
+                <entry key="Load" value-ref="loadBlockProcessingServicev4" />
+                <entry key="Outage" value-ref="outageBlockProcessingServicev4" />
+            </map>
+    </property>
+  </bean>
 
   <bean class="com.cannontech.multispeak.client.MultispeakFuncs"/>
   <bean id="multispeakFuncsV5" class="com.cannontech.multispeak.client.v5.MultispeakFuncs"/>
@@ -63,6 +72,17 @@
         <property name="messageListener" ref="outageJmsMessageListener"/>
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
+    
+  <bean id="outageJmsMessageListenerV4" class="com.cannontech.multispeak.service.v4.OutageJmsMessageListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.amr.OutageJmsMessage" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="taskExecutor" ref="globalTaskExecutor"/>
+        <property name="messageListener" ref="outageJmsMessageListenerV4"/>
+        <property name="errorHandler" ref="yukonJmsErrorHandler"/>
+    </bean>
 
   <bean id="outageJmsMessageListenerV5" class="com.cannontech.multispeak.service.v5.OutageJmsMessageListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
@@ -92,6 +112,9 @@
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v3"/>
   </bean>
+  <bean id="multispeakDeviceGroupSyncService_v4" class="com.cannontech.multispeak.service.impl.v4.MultispeakDeviceGroupSyncServiceImpl">
+      <qualifier value="v4"/>
+  </bean>
   <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v5"/>
   </bean>
@@ -99,6 +122,15 @@
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncHelper"/>
 
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
+    <property name="strategiesToExcludeInReport">
+      <list>
+        <value>ALL DEVICES</value>
+        <value>SCRAM</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="multispeakLMServicev4" class="com.cannontech.multispeak.service.impl.v4.MultispeakLMServiceImpl">
     <property name="strategiesToExcludeInReport">
       <list>
         <value>ALL DEVICES</value>
@@ -136,6 +168,16 @@
          parent="blockProcessingService">
   </bean>
   
+  <bean id="blockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.FormattedBlockProcessingServiceImpl" abstract="true"/>
+
+  <bean id="loadBlockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.LoadBlockProcessingServiceImpl" 
+         parent="blockProcessingServicev4">
+  </bean>
+  
+  <bean id="outageBlockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.OutageBlockProcessingServiceImpl" 
+         parent="blockProcessingServicev4">
+  </bean>
+  
   <bean id="blockProcessingServicev5" class="com.cannontech.multispeak.dao.impl.v5.FormattedBlockProcessingServiceImpl" abstract="true"/>
 
   <bean id="loadBlockProcessingServicev5" class="com.cannontech.multispeak.dao.impl.v5.LoadBlockProcessingServiceImpl" 
@@ -147,6 +189,7 @@
   </bean>
   <bean class="com.cannontech.multispeak.dao.impl.ScadaAnalogProcessingServiceImpl"/>
   <bean class="com.cannontech.multispeak.dao.impl.v5.ScadaAnalogProcessingServiceImpl"/>
+  <bean class="com.cannontech.multispeak.dao.impl.v4.ScadaAnalogProcessingServiceImpl"/>
     
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
@@ -165,7 +208,10 @@
 
   <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl"/>
   <bean id="mspMeterDaoV5" class="com.cannontech.multispeak.dao.impl.v5.MspMeterDaoImpl"/>
+  <bean id="mspMeterDaoV4" class="com.cannontech.multispeak.dao.impl.v4.MspMeterDaoImpl"/>
+  
   <bean id="multispeakCustomerInfoService" class="com.cannontech.multispeak.service.impl.MultispeakCustomerInfoServiceImpl"/>
+  <bean id="multispeakCustomerInfoServiceV4" class="com.cannontech.multispeak.service.impl.v4.MultispeakCustomerInfoServiceImpl"/>
   <bean id="multispeakCustomerInfoServiceV5" class="com.cannontech.multispeak.service.impl.v5.MultispeakCustomerInfoServiceImpl"/>
 
   <bean id="messageSender" class="org.springframework.ws.transport.http.HttpComponentsMessageSender"/>
@@ -173,9 +219,11 @@
   <bean id="soap11MessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
   
   <bean id="mspWaterLeakReportV3" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV3"/>
+  <bean id="mspWaterLeakReportV4" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV4"/>
   <bean id="mspWaterLeakReportV5" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV5"/>
   
   <bean id="mspAccountInformationV3" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV3"/>
+  <bean id="mspAccountInformationV4" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV4"/>
   <bean id="mspAccountInformationV5" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV5"/>
   
 
@@ -241,6 +289,12 @@
                 </entry>
                 <entry>
                     <key>
+                        <value>http://www.multispeak.org/V5.0/ws/response</value>
+                    </key>
+                    <value>res</value>
+                </entry>
+                <entry>
+                    <key>
                         <value>http://www.multispeak.org/V5.0</value>
                     </key>
                     <value>v5</value>
@@ -264,6 +318,8 @@
     <bean id="clientInterceptor" class="com.cannontech.multispeak.client.ClientMessageContextHolderInterceptor" />
     
     <bean  class="com.cannontech.multispeak.client.MultispeakLoggingHelper" />
+    
+     <bean  class="com.cannontech.multispeak.client.MspRawPointHistoryHelper" />
 
     <bean id="payloadTransform" class="com.cannontech.multispeak.client.PayloadTransformingInterceptor" >
        <property name="requestXslt" value="classpath:com/cannontech/multispeak/client/oldRequest.xsl" />
@@ -309,7 +365,7 @@
     <bean class= "com.cannontech.msp.beans.v4.xlink.ObjectFactory"/>
     <bean class= "com.cannontech.msp.beans.v4.gml.ObjectFactory"/>
     <bean class= "com.cannontech.msp.beans.v4.cpsm.ObjectFactory"/>
-    <bean class= "com.cannontech.msp.beans.v4.ObjectFactory"/>
+    <bean id="objectFactory4" class= "com.cannontech.msp.beans.v4.ObjectFactory"/>
     <bean class="com.cannontech.msp.beans.v5.cd_server.ObjectFactory"/>
     <bean class="com.cannontech.msp.beans.v5.scada_server.ObjectFactory"/>
     <bean id="notObjectFactory" class="com.cannontech.msp.beans.v5.not_server.ObjectFactory"/>

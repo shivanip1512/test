@@ -11,14 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -64,14 +62,14 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private YukonJmsTemplate jmsTemplate;
-    private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
+    
     private  Map<Schema, RfnLcrParsingStrategy> strategies;
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
     private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
     private static AtomicInteger pointDataProduced = new AtomicInteger();
-
+    
     public class Worker extends ConverterBase {
         
         public Worker(int workerNumber, int queueSize) {

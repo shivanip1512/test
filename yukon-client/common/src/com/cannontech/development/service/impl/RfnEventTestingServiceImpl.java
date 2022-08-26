@@ -61,6 +61,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.node.RelayCellularComm;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
@@ -95,6 +97,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
     private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
     private YukonJmsTemplate locationJmsTemplate;
+    private YukonJmsTemplate rfnCellularCommArchiveJmsTemplate;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
@@ -174,6 +177,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_520FAXDE,
+            RfnManufacturerModel.RFN_520FAXDE,
             RfnManufacturerModel.RFN_520FAXTE,
             RfnManufacturerModel.RFN_520FAXRE,
             RfnManufacturerModel.RFN_520FRXDE,
@@ -184,7 +188,11 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FAXRE_SD,
             RfnManufacturerModel.RFN_520FRXDE_SD,
             RfnManufacturerModel.RFN_520FRXTE_SD,
-            RfnManufacturerModel.RFN_520FRXRE_SD));
+            RfnManufacturerModel.RFN_520FRXRE_SD,
+            RfnManufacturerModel.CRL_520FAXE,
+            RfnManufacturerModel.CRL_520FAXED,
+            RfnManufacturerModel.CRL_520FRXE,
+            RfnManufacturerModel.CRL_520FRXED));
 
         groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530FAXD,
@@ -221,7 +229,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_530S4AR,
             RfnManufacturerModel.RFN_530S4RD,
             RfnManufacturerModel.RFN_530S4RT,
-            RfnManufacturerModel.RFN_530S4RR));
+            RfnManufacturerModel.RFN_530S4RR,
+            RfnManufacturerModel.CRL_530S4X));
 
         groupedMeterTypesBuilder.put("Elster A3", ImmutableList.of(
             RfnManufacturerModel.RFN_430A3D,
@@ -262,6 +271,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_RELAY,
             RfnManufacturerModel.CRLY_856));
         
+        groupedMeterTypesBuilder.put("DR Edge Connector", ImmutableList.of(
+                RfnManufacturerModel.RFN_530S4X_DER));
+
         groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
           
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
@@ -274,6 +286,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
         rfnLcrReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
         locationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LOCATION);
+        rfnCellularCommArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_RELAY_CELL_COMM_ARCHIVE);
     }
 
     @Override
@@ -601,6 +614,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, testEvent.getOutageStartTime());
         rfnEventMap.put(RfnConditionDataType.THRESHOLD_VALUE, testEvent.getThresholdValue());
         rfnEventMap.put(RfnConditionDataType.UOM, testEvent.getUom());
+        rfnEventMap.put(RfnConditionDataType.SIM_CARD_STATUS, testEvent.getSimCardStatus());
         if (RfnConditionType.REMOTE_METER_CONFIGURATION_FAILURE.equals(testEvent.getRfnConditionType()) ||
             RfnConditionType.REMOTE_METER_CONFIGURATION_FINISHED.equals(testEvent.getRfnConditionType())) {
             rfnEventMap.put(RfnConditionDataType.METER_CONFIGURATION_ID, testEvent.getMeterConfigurationId());
@@ -727,5 +741,16 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
 
         return messagesSent;
+    }
+
+    @Override
+    public void sendCellularCommArchiveRequest(RelayCellularComm cellularComm) {
+        RfnRelayCellularCommArchiveRequest rfnCellularCommArchiveRequest = new RfnRelayCellularCommArchiveRequest();
+        Map<Long, RelayCellularComm> commMap = new HashMap<Long, RelayCellularComm>();
+        commMap.put(Long.valueOf(1l) ,cellularComm);
+        rfnCellularCommArchiveRequest.setRelayCellularComms(commMap);
+        log.debug("Sending archive request: {} on queue {}", cellularComm.getDeviceRfnIdentifier().getCombinedIdentifier(), rfnCellularCommArchiveJmsTemplate.getDefaultDestinationName());
+        rfnLogger.info("<<< Sent" + rfnCellularCommArchiveRequest);
+        rfnCellularCommArchiveJmsTemplate.convertAndSend(rfnCellularCommArchiveRequest);
     }
 }

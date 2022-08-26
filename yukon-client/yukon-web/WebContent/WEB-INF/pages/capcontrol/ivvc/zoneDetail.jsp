@@ -48,9 +48,10 @@
                         <cti:param name="zoneId" value="${zoneId}" />
                     </cti:url>       
                     <highChart:ivvcChart chartId="${chartId}"
+                        feederList="${feederList}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
-                    <cti:dataUpdaterCallback function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.da.ivvcChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                         initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
@@ -120,5 +121,6 @@
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.js" />
     <cti:includeScript link="/resources/js/pages/yukon.da.command.js" />
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.wizard.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.ivvcChart.js"/>
 
 </cti:standardPage>

@@ -8,14 +8,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
@@ -26,9 +24,7 @@ import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<GatewayArchiveRequest> {
-    
-    private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
-    
+        
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private NmSyncServiceImpl nmSyncService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
@@ -46,7 +42,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 missingGatewayFirstDataTimes.remove(identifier);
             }
-            RfnDevice device = rfnDeviceLookupService.getDevice(identifier);
+            RfnDevice device = rfnDeviceLookupService.findRfnDevices(identifier);
             if(device != null) {
                 return device;
             }

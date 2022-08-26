@@ -222,10 +222,15 @@ public final class DeviceFactory {
         case RFN530FAXE:
         case RFN530FRXE:
         case RFN530S4X:
+        case CRL530S4X:
         case RFN530S4EAX:
         case RFN530S4EAXR:
         case RFN530S4ERX:
         case RFN530S4ERXR:
+        case CRL520FAXE:
+        case CRL520FAXED:
+        case CRL520FRXE:
+        case CRL520FRXED:
             returnDevice = new RfnMeterBase(paoType);
             break;
             
@@ -552,6 +557,9 @@ public final class DeviceFactory {
             break;
         case VIRTUAL_METER:
             returnDevice = new VirtualMeter();
+            break;
+        case RFN530S4X_DER:
+            returnDevice = new Rfn530S4XDer();
             break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");

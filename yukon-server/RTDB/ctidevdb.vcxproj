@@ -390,6 +390,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="cmd_rfn_DemandInterval.cpp" />
+    <ClCompile Include="cmd_rfn_DerPayloadDelivery.cpp" />
     <ClCompile Include="cmd_rfn_Individual.cpp" />
     <ClCompile Include="cmd_rfn_MeterDisconnect.cpp" />
     <ClCompile Include="cmd_rfn_MeterProgramming.cpp" />
@@ -567,6 +568,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="dev_repeater850.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfnResidentialVoltage.cpp" />
+    <ClCompile Include="dev_rfn530s4x_der.cpp" />
     <ClCompile Include="dev_rfn_LgyrFocus_al.cpp" />
     <ClCompile Include="dev_rf_BatteryNode.cpp" />
     <ClCompile Include="dev_rf_cellular_relay.cpp" />
@@ -668,6 +670,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\cmd_rfn_ConfigNotification.h" />
     <ClInclude Include="include\cmd_rfn_DataStreamingConfiguration.h" />
     <ClInclude Include="include\cmd_rfn_DemandInterval.h" />
+    <ClInclude Include="include\cmd_rfn_DerPayloadDelivery.h" />
     <ClInclude Include="include\cmd_rfn_Individual.h" />
     <ClInclude Include="include\cmd_rfn_MeterDisconnect.h" />
     <ClInclude Include="include\cmd_rfn_MeterRead.h" />

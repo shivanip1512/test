@@ -212,10 +212,15 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "RFN520FRXE",                  TYPE_RFN520FRXE },
         { "RFN520FAXED",                 TYPE_RFN520FAXED },
         { "RFN520FRXED",                 TYPE_RFN520FRXED },
+        { "CRL520FAXE",                  TYPE_CRL520FAXE },
+        { "CRL520FAXED",                 TYPE_CRL520FAXED },
+        { "CRL520FRXE",                  TYPE_CRL520FRXE },
+        { "CRL520FRXED",                 TYPE_CRL520FRXED },
         { "RFN530FAXE",                  TYPE_RFN530FAXE },
         { "RFN530FRXE",                  TYPE_RFN530FRXE },
         //  RFN-500 S4
         { "RFN530S4X",                   TYPE_RFN530S4X },
+        { "CRL530S4X",                   TYPE_CRL530S4X },
         { "RFN530S4EAX",                 TYPE_RFN530S4EAX },
         { "RFN530S4EAXR",                TYPE_RFN530S4EAXR },
         { "RFN530S4ERX",                 TYPE_RFN530S4ERX },
@@ -241,6 +246,9 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
 
         //  --- RF Cellular IPLink Relays ---
         { "CRLY856",                     TYPE_CRLY856 },
+
+        //  --- DER Edge Coordinator Devices ---
+        { "RFN530S4X_DER",                     TYPE_RFN530S4X_DER },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },

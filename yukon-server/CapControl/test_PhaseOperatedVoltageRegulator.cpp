@@ -161,6 +161,7 @@ struct phase_operated_voltage_regulator_fixture_core
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::PhaseOperatedVoltageRegulator );
+        regulator->setRegulatorTimeout(std::chrono::seconds{ 100 });
     }
 };
 
@@ -1517,6 +1518,25 @@ BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
         BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
         BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
         BOOST_CHECK_EQUAL( 4,                                                *event.tapPosition );
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_needsAutoBlockEnable_fail_outdated_point_timestamp)
+{
+    regulator->loadAttributes(&attributes);
+
+    CtiPointDataMsg autoBlockEnable(8100, 0.0, AbnormalQuality, StatusPointType);
+    regulator->handlePointData(autoBlockEnable);
+
+    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents(events, test_limiter);
+
+        BOOST_CHECK_EQUAL(0, events.size());
     }
 }
 

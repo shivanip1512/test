@@ -20,7 +20,7 @@
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 
                 <%-- OPTIONS --%>
-                <tags:sectionContainer2 nameKey="options" styleClass="half-width">
+                <tags:sectionContainer2 nameKey="options">
                     <tags:nameValueContainer2>
                         <cti:msg2 var="sharedPointsOptionLabel" key=".sharedPointsOptionLabel"/>
                         <cti:msg2 var="sharedPointsTrueOptionText" key=".sharedPointsTrueOptionText"/>
@@ -29,7 +29,7 @@
                         <cti:msg2 var="sharedPointsFalseOptionTooltip" key=".sharedPointsFalseOptionTooltip"/>
                         <c:set var="sharedPointsTrueSelected" value="${sharedPoints ? 'selected' : ''}"/>
                         <c:set var="sharedPointsFalseSelected" value="${sharedPoints ? '' : 'selected'}"/>
-                        <tags:nameValue2 nameKey=".sharedPointsOptionLabel">
+                        <tags:nameValue2 nameKey=".sharedPointsOptionLabel" valueClass="df aic">
                             <select id="sharedPoints" name="sharedPoints" class="fl">
                                 <option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
                                 <option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
@@ -43,7 +43,7 @@
                         <cti:msg2 var="maskExistingPointsTrueOptionText" key=".maskExistingPointsTrueOptionText"/>
                         <cti:msg2 var="maskExistingPointsTrueOptionTooltip" key=".maskExistingPointsTrueOptionTooltip"/>
                         <input type="hidden" name="maskExistingPoints" value="${maskExistingPoints}">
-                        <tags:nameValue2 nameKey=".maskExistingPointsOptionLabel">
+                        <tags:nameValue2 nameKey=".maskExistingPointsOptionLabel" valueClass="df aic">
                             <c:choose>
                                 <c:when test="${not maskExistingPoints}">
                                     <cti:button type="submit" 

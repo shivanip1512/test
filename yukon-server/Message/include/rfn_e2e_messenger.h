@@ -98,6 +98,7 @@ private:
     boost::optional<Indication::Callback> _e2edtCallback;
     CallbacksPerRfnIdentifier _dnp3Callbacks;
     boost::optional<Indication::Callback> _dataStreamingCallback;
+    boost::optional<Indication::Callback> _derCallback;
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg);

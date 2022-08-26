@@ -126,6 +126,12 @@ public enum RfnManufacturerModel {
     RFN_520FRXDE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXDe-SD-500"),
     RFN_520FRXTE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXTe-SD-500"),
     RFN_520FRXRE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXRe-SD-500"),
+    
+    CRL_520FAXE(PaoType.CRL520FAXE, "LGYR", "FocusAXRe-C"),
+    CRL_520FAXED(PaoType.CRL520FAXED, "LGYR", "FocusAXRe-SD-C"),
+    CRL_520FRXE(PaoType.CRL520FRXE, "LGYR", "FocusRXRe-C"),
+    CRL_520FRXED(PaoType.CRL520FRXED, "LGYR", "FocusRXRe-SD-C"),
+    
     //  RFN-530 Focus AXe/RXe Polyphase
     RFN_530FAXDE(PaoType.RFN530FAXE, "LGYR", "FocusAXDe-530"),
     RFN_530FAXTE(PaoType.RFN530FAXE, "LGYR", "FocusAXTe-530"),
@@ -143,6 +149,7 @@ public enum RfnManufacturerModel {
     RFN_530FRXRE_SD(PaoType.RFN520FRXED, "LGYR", "FocusRXRe-SD-530"), 
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
+    CRL_530S4X(PaoType.CRL530S4X, "LGYR", "E650-C"),
     RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),
     RFN_530S4AT(PaoType.RFN530S4EAXR, "LGYR", "S4-AT"),
     RFN_530S4AR(PaoType.RFN530S4EAXR, "LGYR", "S4-AR"),
@@ -162,7 +169,9 @@ public enum RfnManufacturerModel {
     RFN_1200_NONCPS_CBCGEN(PaoType.RFN_1200, "NON-CPS", "CBC-GEN"),
     RFN_1200_NONCPS_VRGEN(PaoType.RFN_1200, "NON-CPS", "VR-GEN"),
     RFN_1200_NONCPS_RECLGEN(PaoType.RFN_1200, "NON-CPS", "RECL-GEN"),
-    RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA")
+    RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA"),
+    
+    RFN_530S4X_DER(PaoType.RFN530S4X_DER, "LGYR", "E650-DER")
    
     /* For documentation only */
     // RFN_GATEWAY(PaoType.RFN_GATEWAY, "EATON", "RFGateway"),

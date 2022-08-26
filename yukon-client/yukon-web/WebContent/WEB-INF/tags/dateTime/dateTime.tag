@@ -103,7 +103,7 @@
                 <br>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
-                <div style="padding-top:20px">
+                <div>
                     <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error"/>
                 </div>
             </c:if>

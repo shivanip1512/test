@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.CapBankAssignment;
@@ -32,7 +33,7 @@ public interface FeederService {
      * Returns whether the capbanks assigned to feeder are assigned within zone with the given feederId
      * @return true when successful, false otherwise
      */
-    boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException;
+    boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException, NotFoundException;
 
     /**
      * @return All cap banks, as {@link ViewableCapBank}s,  attached to the feeder with given feederId in display order<br>
@@ -64,5 +65,10 @@ public interface FeederService {
     /**
      * Returns whether the feeder is assigned to a voltage point for a zone.
      */
-    boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException;
+    boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException;
+    
+    /**
+     * Returns whether the feeder is assigned to a regulator point for a zone.
+     */
+    boolean isFeederAssignedToRegulatorPointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException;
 }

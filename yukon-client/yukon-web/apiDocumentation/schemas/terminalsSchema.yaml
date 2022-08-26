@@ -17,9 +17,6 @@ PAGING_TAP_TERMINAL:
       description: 'Type of terminal.'
       enum:
         - TAPTERMINAL
-        - SNPP_TERMINAL
-        - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -29,15 +26,13 @@ PAGING_TAP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20
@@ -51,6 +46,7 @@ SNPP_TERMINAL:
     - type
     - pagerNumber
     - commChannel
+    - login
     - password
   type: object
   properties:
@@ -62,10 +58,7 @@ SNPP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
         - SNPP_TERMINAL
-        - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -75,22 +68,20 @@ SNPP_TERMINAL:
       maxLength: 20
       description: 'Pager number of terminal.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     login:
       type: string
       maxLength: 64
-      description: 'Login of terminal.'
+      description: 'Login of terminal. This field can be empty but cannot be null. It should have some valid string.'
     password:
       type: string
-      maxLength: 20
+      maxLength: 64
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
 
 TNPP_TERMINAL:
@@ -120,10 +111,7 @@ TNPP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
-        - SNPP_TERMINAL
         - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -133,15 +121,13 @@ TNPP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     originAddress:
       type: integer
       minimum: 0
@@ -220,9 +206,6 @@ WCTP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
-        - SNPP_TERMINAL
-        - TNPP_TERMINAL
         - WCTP_TERMINAL
     enabled:
       type: boolean
@@ -233,15 +216,13 @@ WCTP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20
@@ -272,9 +253,6 @@ PAGING_TAP_TERMINAL Response Schema:
       description: 'Type of terminal.'
       enum:
         - TAPTERMINAL
-        - SNPP_TERMINAL
-        - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -288,17 +266,15 @@ PAGING_TAP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
 
 SNPP_TERMINAL Response Schema:
   title: SNPP Terminal
@@ -315,10 +291,7 @@ SNPP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
         - SNPP_TERMINAL
-        - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -328,17 +301,15 @@ SNPP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Pager number of terminal.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     login:
       type: string
       maxLength: 64
@@ -363,10 +334,7 @@ TNPP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
-        - SNPP_TERMINAL
         - TNPP_TERMINAL
-        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -376,17 +344,15 @@ TNPP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     originAddress:
       type: integer
       minimum: 0
@@ -461,9 +427,6 @@ WCTP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - TAPTERMINAL
-        - SNPP_TERMINAL
-        - TNPP_TERMINAL
         - WCTP_TERMINAL
     enabled:
       type: boolean
@@ -474,17 +437,15 @@ WCTP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20
@@ -516,7 +477,7 @@ TERMINAL_COPY:
 Terminals Response List:
   type: object
   properties:
-    pagerNumber:
+    pageNumber:
       type: integer
       default: 1
       description: 'Number of Pages for the terminals.'
@@ -533,13 +494,13 @@ Terminals Response List:
         type: object
         properties:
           Paging Tap Terminal:
-            $ref: '#/PAGING_TAP_TERMINAL Response Schema'
+            $ref: '#/PAGING_TAP_TERMINAL Retrieve All Response Schema'
           SNPP Terminal:
-            $ref: '#/SNPP_TERMINAL Response Schema'
+            $ref: '#/SNPP_TERMINAL Retrieve All Response Schema'
           TNPP Terminal:
-            $ref: '#/TNPP_TERMINAL Response Schema'
+            $ref: '#/TNPP_TERMINAL Retrieve All Response Schema'
           WCTP Terminal:
-            $ref: '#/WCTP_TERMINAL Response Schema'
+            $ref: '#/WCTP_TERMINAL Retrieve All Response Schema'
 
 id:
   required:
@@ -670,68 +631,32 @@ components:
 
     List of Terminals:
       value:
-        pagerNumber: 1
+        pageNumber: 1
         itemsPerPage: 250
         totalItems: 5
         items:
           - id: 151
-            type: TAPTERMINAL
             name: Test Paging Tap Terminal
-            enabled: true
-            password: PasswordPagingTap
-            pagerNumber: 779
-            commChannel:
-              id: 1234
-              name: Test Comm channel
-          - id: 152
-            type: SNPP_TERMINAL
-            name: Test SNPP Terminal
-            enabled: true
-            pagerNumber: 778
-            commChannel:
-              id: 1234
-              name: Test Comm channel
-            login: Login for SNPP
-            password: PasswordForSNPP
-          - id: 153
-            type: TNPP_TERMINAL
-            name: Test TNPP Terminal
-            enabled: true
-            password: PasswordForTNPP
-            commChannel:
-              id: 1234
-              name: Test Comm channel
-            originAddress: 2345
-            destinationAddress: 3455
-            inertia: 564
-            protocol: FLEX
-            dataFormat: BEEP_ONLY
-            identifierFormat: CAP_PAGE
-            pagerId: 1234
-            channel: 4
-            functionCode: 5
-            zone: 6
-          - id: 154
-            type: WCTP_TERMINAL
-            name: Test WCTP Terminal
-            enabled: true
-            password: PasswordForWCTP
-            commChannel:
-              id: 1234
-              name: Test Comm channel
-            pagerNumber: 77676
-            sender: yukonserver@cannontech.com
-            securityCode: security code for WCTP
-          - id: 155
             type: TAPTERMINAL
-            name: Test Paging Tap Terminal2
             enabled: true
-            password: PasswordForPaging2
-            pagerNumber: 776
-            commChannel:
-              id: 1234
-              name: Test Comm channel
-
+          - id: 152
+            name: Test SNPP Terminal
+            type: SNPP_TERMINAL
+            enabled: true
+          - id: 153
+            name: Test TNPP Terminal
+            type: TNPP_TERMINAL
+            enabled: true
+          - id: 154
+            name: Test WCTP Terminal
+            type: WCTP_TERMINAL
+            enabled: true
+          - id: 155
+            name: Test Paging Tap Terminal2
+            type: TAPTERMINAL
+            enabled: true
+           
+           
     TerminalCopy:
       value:
         name: Copy of Test Terminal
@@ -796,3 +721,89 @@ components:
         pagerNumber: 77676
         sender: yukonserver@cannontech.com
         securityCode: security code for WCTP
+        
+        
+PAGING_TAP_TERMINAL Retrieve All Response Schema:
+  title: Paging Tap Terminal
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - TAPTERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Status of terminal.'
+ 
+SNPP_TERMINAL Retrieve All Response Schema:
+  title: SNPP Terminal
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - SNPP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Status of terminal.'
+
+TNPP_TERMINAL Retrieve All Response Schema:
+  title: TNPP Terminal
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - TNPP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Status of terminal.'
+
+
+WCTP_TERMINAL Retrieve All Response Schema:
+  title: WCTP Terminal
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Status of terminal.'

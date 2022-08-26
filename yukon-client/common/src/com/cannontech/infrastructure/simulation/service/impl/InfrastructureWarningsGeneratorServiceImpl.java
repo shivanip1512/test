@@ -62,7 +62,7 @@ public class InfrastructureWarningsGeneratorServiceImpl implements Infrastructur
             return new InfrastructureWarning(warnableGateway.getPaoIdentifier(), type);
         case GATEWAY_READY_NODES:
             return new InfrastructureWarning(warnableGateway.getPaoIdentifier(), type, severity, randomNumber, threshold);
-        case RELAY_OUTAGE:
+        case INFRASTRUCTURE_OUTAGE:
             LiteYukonPAObject relay = cache.getAllDevices().stream().filter(d-> d.getPaoType().isRfRelay()).findFirst().get();
             if (relay != null) {
                 return new InfrastructureWarning(relay.getPaoIdentifier(), type);

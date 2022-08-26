@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -34,6 +35,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
@@ -307,17 +309,18 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
      */
     public MultiSpeakVersion getPrimaryCISVersion(MultispeakVendor mspVendor) {
         MultispeakInterface cb_server_v3 = mspVendor.getMspInterfaceMap()
-                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V3));
-        
+                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V3));
+        MultispeakInterface cb_server_v4 = mspVendor.getMspInterfaceMap()
+                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V4));
+        MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
+                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V5));
+
         if (cb_server_v3 != null) {
             return cb_server_v3.getVersion();
-        } else {
-            MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
-                    .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V5));
-            
-            if (cb_server_v5 != null) {
-                return cb_server_v5.getVersion();
-            }
+        } else if (cb_server_v4 != null) {
+            return cb_server_v4.getVersion();
+        } else if (cb_server_v5 != null) {
+            return cb_server_v5.getVersion();
         }
         return null;
     }
@@ -375,6 +378,15 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         } else {
             return new Credentials(mspVendor.getOutUserName(), mspVendor.getOutPassword());
         }
-
     }
+    
+    public EnumSet<BuiltInAttribute> getBuiltInAttributesForVendor(List<MspAttribute> vendorAttributes) {
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
+
+        for (MspAttribute attribute : vendorAttributes) {
+            attributesToLoad.addAll(attribute.getBuiltInAttributes());
+        }
+        return attributesToLoad;
+    }
+    
 }

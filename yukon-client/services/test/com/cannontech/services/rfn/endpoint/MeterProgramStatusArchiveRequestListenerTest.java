@@ -58,7 +58,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         private MeterProgramStatusArchiveRequestListener l = new MeterProgramStatusArchiveRequestListener();
         
         //  Variable to capture any status update 
-        private Capture<MeterProgramStatus> updatedStatus = new Capture<>(CaptureType.ALL);
+        private Capture<MeterProgramStatus> updatedStatus = Capture.newInstance(CaptureType.ALL);
     
         @Test
         public void test_idleIgnoredWithinTimeout() {
@@ -119,7 +119,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         private MeterProgramStatusArchiveRequestListener l = new MeterProgramStatusArchiveRequestListener();
 
         //  Variable to capture any status update 
-        private Capture<MeterProgramStatus> updatedStatus = new Capture<>(CaptureType.ALL);
+        private Capture<MeterProgramStatus> updatedStatus = Capture.newInstance(CaptureType.ALL);
     
         //  ExistingState is a helper class that encapsulates a meter's assigned and reported programming state
         public States state;
@@ -446,7 +446,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
     }
 
     private static void initializeMockRfnDeviceDao(MeterProgramStatusArchiveRequestListener l) {
-        var rfnDeviceDao = EasyMock.createNiceMock(RfnDeviceDao.class);
+        RfnDeviceDao rfnDeviceDao = EasyMock.createNiceMock(RfnDeviceDao.class);
 
         EasyMock.expect(rfnDeviceDao.getDeviceIdForRfnIdentifier(EasyMock.anyObject()))
             .andReturn(DEVICE_ID)
@@ -460,7 +460,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
     private static void initializeMockMeterProgrammingDao(MeterProgramStatusArchiveRequestListener l, 
             Capture<MeterProgramStatus> updatedStatus, IAnswer<MeterProgramStatus> meterProgramStatusAnswer, 
             IAnswer<MeterProgram> meterProgramAnswer) {
-        var meterProgrammingDao = EasyMock.createMock(MeterProgrammingDao.class);
+        MeterProgrammingDao meterProgrammingDao = EasyMock.createMock(MeterProgrammingDao.class);
 
         EasyMock.expect(meterProgrammingDao.getMeterProgramStatus(DEVICE_ID))
             .andAnswer(meterProgramStatusAnswer)

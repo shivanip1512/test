@@ -253,4 +253,27 @@ public class BusServiceImpl implements BusService {
         }
         return isFeederAssigned;
     }
+    
+    @Override
+    public boolean isFeedersAssignedToRegulatorForZone(List<Integer> availableFeederIds) {
+        boolean isFeederAssigned = false;
+        List<Assignment> unassignedFeeders = getUnassignedFeeders();
+        List<Integer> unassignedFeedersId = unassignedFeeders.stream().map(Assignment::getId)
+                                                                      .collect(Collectors.toList());
+        // Match the available feeder id with unassigned feeder ids to get the list of ids . Using 
+        // these ids we will check if the associated cap bank is assigned to some zone.
+        List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
+                                                               .collect(Collectors.toList());
+        for (Integer feederId : filteredIds) {
+            try {
+                isFeederAssigned = feederService.isFeederAssignedToRegulatorPointForZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
+            if (isFeederAssigned) {
+                break;
+            }
+        }
+        return isFeederAssigned;
+    }
 }

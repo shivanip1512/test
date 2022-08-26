@@ -1,9 +1,11 @@
 package com.cannontech.multispeak.dao;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
@@ -24,10 +26,11 @@ public interface MspRawPointHistoryDao {
      * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *                  that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
+     * @param vendorAttributes - list of multispeak attributes set by vendor
      * @return MspMeterRead
      */
-    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate,
-                                              Date endDate, String lastReceived, int maxRecords);
+    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, 
+                                                     String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes);
 
     /**
      * Returns a MspMeterRead object with kW and kWh MeterRead readings for ReadBy value.
@@ -39,10 +42,11 @@ public interface MspRawPointHistoryDao {
      * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *            that meterNumber will still be included. Meaning meterRead[].length > maxRecordsis possible).
+     * @param vendorAttributes 
      * @return MspMeterRead
      */
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue,
-                                                    String lastReceived, int maxRecords);
+                                                    String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes);
 
     /**
      * Returns a list of Blocks.

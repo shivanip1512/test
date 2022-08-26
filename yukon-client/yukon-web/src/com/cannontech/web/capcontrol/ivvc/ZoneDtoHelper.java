@@ -25,6 +25,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.common.model.Phase;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.web.capcontrol.models.ViewableFeeder;
+import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.google.common.collect.Lists;
 
 public class ZoneDtoHelper {
@@ -33,6 +36,8 @@ public class ZoneDtoHelper {
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
     @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private CapControlCache ccCache;
+    @Autowired private CapControlWebUtilsService ccWebUtilsService;
     
     public AbstractZone getAbstractZoneFromZoneId(int zoneId, LiteYukonUser user) {
         
@@ -208,6 +213,37 @@ public class ZoneDtoHelper {
         row.setIgnore(pointToZone.isIgnore());
         
         return row;
+    }
+    
+    public List<ViewableFeeder> getFeedersAssociatedWithZone(AbstractZone zone) {
+
+        List<ViewableFeeder> viewableFeeders = new ArrayList<ViewableFeeder>();
+        List<Feeder> feedersForZone = new ArrayList<Feeder>();
+        List<Integer> feederIds = new ArrayList<Integer>();
+        
+        zone.getRegulatorsList().forEach(regulator -> {
+            if (regulator.getFeederId() != null && !feederIds.contains(regulator.getFeederId())) {
+                feederIds.add(regulator.getFeederId());
+            }
+        });
+        zone.getBankAssignments().forEach(bankAssignment -> {
+            CapBankDevice capBank = ccCache.getCapBankDevice(bankAssignment.getId());
+            if (!feederIds.contains(capBank.getParentID())) {
+                feederIds.add(capBank.getParentID());
+            }
+        });
+        zone.getPointAssignments().forEach(pointAssignment -> {
+            if (pointAssignment.getFeederId() != null && !feederIds.contains(pointAssignment.getFeederId())) {
+                feederIds.add(pointAssignment.getFeederId());
+            }
+        });
+        
+        feederIds.forEach(feederId -> {
+            feedersForZone.add(ccCache.getFeeder(feederId));
+        });
+        viewableFeeders = ccWebUtilsService.createViewableFeeder(feedersForZone);
+
+        return viewableFeeders;
     }
     
 }

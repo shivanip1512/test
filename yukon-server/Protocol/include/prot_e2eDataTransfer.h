@@ -38,6 +38,9 @@ public:
     Bytes createPost   (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
+    Bytes createPut    (const Bytes &payload, const RfnIdentifier endpointId);
+
+    //  throws PayloadTooLarge
     Bytes createReply  (const unsigned short id, const Bytes &payload, const unsigned long token);
 
     //  throws PayloadTooLarge
@@ -47,6 +50,8 @@ public:
     Bytes createBadRequestAck(const unsigned short id);
 
     Bytes createBlockContinuation(const Coap::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
+
+    Bytes oscoreEncryptPacket(const Bytes &payload, const RfnIdentifier endpointId);
 
     //  throws E2eException
     E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);

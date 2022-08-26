@@ -24,6 +24,7 @@ public class MultispeakVendor {
     private String outUserName;
     private String outPassword;
     private Boolean validateCertificate = true;
+    private List<MspAttribute> attributes = MultispeakDefines.MSP_VENDOR_ATTRIBUTES;
 
     private int maxReturnRecords = MultispeakDefines.MSP_MAX_RETURN_RECORDS;
     private long requestMessageTimeout = MultispeakDefines.MSP_REQUEST_MESSAGE_TIMEOUT;
@@ -50,7 +51,7 @@ public class MultispeakVendor {
 
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, String password,
             String outUserName, String outPassword, int maxReturnRecords, long requestMessageTimeout,
-            long maxInitiateRequestObjects, String templateNameDefault, Boolean validateCertificate) {
+            long maxInitiateRequestObjects, String templateNameDefault, Boolean validateCertificate, List<MspAttribute> attributes) {
         super();
         this.vendorID = vendorID;
         this.companyName = companyName;
@@ -64,6 +65,7 @@ public class MultispeakVendor {
         this.requestMessageTimeout = requestMessageTimeout;
         this.maxInitiateRequestObjects = maxInitiateRequestObjects;
         this.templateNameDefault = templateNameDefault;
+        this.attributes = attributes;
     }
 
     public static MultispeakVendor noneVendor = new MultispeakVendor(0, "none");
@@ -240,6 +242,14 @@ public class MultispeakVendor {
 
     public void setValidateCertificate(Boolean validateCertificate) {
         this.validateCertificate = validateCertificate;
+    }
+    
+    public List<MspAttribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<MspAttribute> attributes) {
+        this.attributes = attributes;
     }
 
 }

@@ -183,10 +183,15 @@ string desolveDeviceType( int aType )
         case TYPE_RFN520FRXE:   Ret = "rfn-520frxe";    break;
         case TYPE_RFN520FAXED:  Ret = "rfn-520faxed";   break;
         case TYPE_RFN520FRXED:  Ret = "rfn-520frxed";   break;
+        case TYPE_CRL520FAXE:   Ret = "crl-520faxe";    break;
+        case TYPE_CRL520FAXED:  Ret = "crl-520faxed";   break;
+        case TYPE_CRL520FRXE:   Ret = "crl-520frxe";    break;
+        case TYPE_CRL520FRXED:  Ret = "crl-520frxed";   break;
         case TYPE_RFN530FAXE:   Ret = "rfn-530faxe";    break;
         case TYPE_RFN530FRXE:   Ret = "rfn-530frxe";    break;
         //  RFN-500 S4
         case TYPE_RFN530S4X:    Ret = "rfn-530s4x";     break;
+        case TYPE_CRL530S4X:    Ret = "crl-530s4x";     break;
         case TYPE_RFN530S4EAX:  Ret = "rfn-530s4eax";   break;
         case TYPE_RFN530S4EAXR: Ret = "rfn-530s4eaxr";  break;
         case TYPE_RFN530S4ERX:  Ret = "rfn-530s4erx";   break;
@@ -204,6 +209,8 @@ string desolveDeviceType( int aType )
         case TYPE_CRLY856:      Ret = "crly-856";       break;
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
+
+        case TYPE_RFN530S4X_DER:       Ret = "rfn-530s4x-der";       break;
 
         case TYPE_LOAD_TAP_CHANGER:             Ret = "ltc";   break;
         case TYPE_GANG_OPERATED_REGULATOR:      Ret = "go_regulator";   break;

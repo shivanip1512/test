@@ -28,9 +28,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.LMDto;
@@ -54,6 +56,7 @@ import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.token.TokenHelper;
+import com.cannontech.web.notificationGroup.NotificationGroup;
 
 public class ApiRequestHelper {
 
@@ -146,7 +149,11 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
+        paramTypeObjectRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<PaginatedResponse<NotificationGroup>>() {
+        });
         paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<SearchResults<DeviceBaseModel>>() {});
+        
+        paramTypeObjectRefMap.put(TerminalBase.class, new ParameterizedTypeReference<PaginatedResponse<TerminalBase>>() {});
     }
 
     /**
@@ -236,6 +243,10 @@ public class ApiRequestHelper {
         }
         newheaders.set("Authorization", "Bearer " + token);
         return newheaders;
+    }
+    
+    public DefaultUriBuilderFactory getUriTemplateHandler() {
+        return (DefaultUriBuilderFactory) apiRestTemplate.getUriTemplateHandler();
     }
 
 }

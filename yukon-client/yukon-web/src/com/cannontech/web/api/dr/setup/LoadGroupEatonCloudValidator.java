@@ -26,7 +26,7 @@ public class LoadGroupEatonCloudValidator extends LoadGroupSetupValidator<LoadGr
         // Validation for virtual RelayId field.
 
         yukonApiValidationUtils.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
-            "Virtual RelayId ");
+            "Virtual Relay Id");
 
         if (!errors.hasFieldErrors("virtualRelayId")) {
             yukonApiValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 4, true);

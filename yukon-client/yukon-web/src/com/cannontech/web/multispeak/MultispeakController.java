@@ -2,10 +2,12 @@ package com.cannontech.web.multispeak;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -152,7 +155,6 @@ public class MultispeakController {
         }
 
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
-
         try {
             addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
@@ -200,7 +202,7 @@ public class MultispeakController {
 
     @RequestMapping("create")
     public String create(ModelMap model) {
-
+        
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
@@ -372,6 +374,8 @@ public class MultispeakController {
 
         String outPassword = multispeakVendor.getOutPassword();
         String outUsername = multispeakVendor.getOutUserName();
+
+        List<MspAttribute> attributes = multispeakVendor.getAttributes();
         if (multispeak.getMspVendor().getVendorID() != null
             && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             mspInterfaces = multispeak.getMspInterfaceList();
@@ -390,7 +394,7 @@ public class MultispeakController {
 
         MultispeakVendor mspVendor =
             new MultispeakVendor(vendorId, companyName, appName, username, password, outUsername, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate);
+                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate, attributes);
 
         mspVendor.setMspInterfaces(mspInterfaces);
 
@@ -552,17 +556,19 @@ public class MultispeakController {
         // Try to get the values from the request first, then get from the system.
         // If these values were just updated, the db change may not have been received/processed yet and
         // the values returned from multispeakFuncs may be outdated.
-        multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
-        multispeak.setMspInterfaceList(mspInterfaceList);
-        multispeak.setMspVendor(mspVendor);
-
-        multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
         String paoNameAliasExtension = multispeakFuncs.getPaoNameAliasExtension();
-
-        multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
-        multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeakFuncs.getMeterLookupField();
-        multispeak.setMeterLookupField(mspMeterLookupField);
+        multispeak.setMspInterfaceList(mspInterfaceList);
+        
+        if (modelMultispeak == null) {
+            multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
+            multispeak.setMspVendor(mspVendor);
+            multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
+            multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
+            multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
+            multispeak.setMeterLookupField(mspMeterLookupField);
+        }
+
         map.addAttribute("mspVersionList", mspVersionList);
         map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("multispeak", multispeak);
@@ -576,7 +582,7 @@ public class MultispeakController {
         if (modelMultispeak instanceof MultispeakModel) {
             multispeak = (MultispeakModel) modelMultispeak;
         }
-
+        
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
@@ -590,6 +596,9 @@ public class MultispeakController {
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
+        map.addAttribute("allAttributeList", List.of(MspAttribute.values()).stream()
+                                                                           .sorted(Comparator.comparing(MspAttribute::toString, String.CASE_INSENSITIVE_ORDER))
+                                                                           .collect(Collectors.toList()));
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
