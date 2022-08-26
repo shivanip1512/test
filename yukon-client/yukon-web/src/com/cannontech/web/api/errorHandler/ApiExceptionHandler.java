@@ -70,6 +70,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.error.model.ApiErrorModel;
 import com.cannontech.web.api.error.model.ApiFieldErrorModel;
 import com.cannontech.web.api.error.model.YukonApiException;
+import com.cannontech.web.api.error.model.YukonApiValidationException;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
@@ -198,13 +199,34 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(YukonApiException.class)
     protected ResponseEntity<Object> handleYukonApiException(YukonApiException exception, WebRequest request) {
+        
         String uniqueLogRef = CtiUtilities.getYKUniqueKey();
         String requestUri = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
         logApiException(request, exception, uniqueLogRef);
         
-        ApiErrorModel errorModel = new ApiErrorModel(exception.getApiErrorDetails(), exception.getMessage(), requestUri, uniqueLogRef);
+        //default
+        HttpStatus responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ApiErrorModel errorModel;
         
-        return new ResponseEntity<>(errorModel, HttpStatus.INTERNAL_SERVER_ERROR);
+        // This currently only allows for a single validation (field) exception
+        // In the future, we might want to include multiple fields with validation issues in YukonApiValidationException
+        // (ApiErrorModel already allows for this)
+        if (exception instanceof YukonApiValidationException) {
+            YukonApiValidationException validationException = (YukonApiValidationException) exception;
+            errorModel = new ApiErrorModel(ApiErrorCategory.VALIDATION_FAILED, requestUri, uniqueLogRef);
+            ApiFieldErrorModel fieldErrorModel = new ApiFieldErrorModel(validationException.getValidationErrorDetails(), 
+                    validationException.getDetail(), validationException.getField(), 
+                    validationException.getRejectedValue(), validationException.getParameters());
+            errorModel.setErrors(List.of(fieldErrorModel));
+            //422 is our standard for validation errors
+            responseStatus = HttpStatus.UNPROCESSABLE_ENTITY; 
+        } else {
+            errorModel = new ApiErrorModel(exception.getApiErrorDetails(), exception.getMessage(), requestUri, uniqueLogRef);
+            //Use the default responseStatus: HttpStatus.INTERNAL_SERVER_ERROR
+            //In the future, we might want to include responseStatus in the exception for flexibility
+        }
+        
+        return new ResponseEntity<>(errorModel, responseStatus);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
