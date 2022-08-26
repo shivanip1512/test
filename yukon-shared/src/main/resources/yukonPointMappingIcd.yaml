@@ -44,19 +44,27 @@
         - &axde-500 LGYR FocusAXDe-500
         - &axte-500 LGYR FocusAXTe-500
         - &axre-500 LGYR FocusAXRe-500
-        - &axre-c   LGYR FocusAXRe-C
+        - &axde-500-c LGYR FocusAXDe-500-C
+        - &axte-500-c LGYR FocusAXTe-500-C
+        - &axre-500-c LGYR FocusAXRe-500-C
         - &axde-sd-500 LGYR FocusAXDe-SD-500
         - &axte-sd-500 LGYR FocusAXTe-SD-500
         - &axre-sd-500 LGYR FocusAXRe-SD-500
-        - &axre-sd-c   LGYR FocusAXRe-SD-C
+        - &axde-sd-500-c LGYR FocusAXDe-SD-500-C
+        - &axte-sd-500-c LGYR FocusAXTe-SD-500-C
+        - &axre-sd-500-c LGYR FocusAXRe-SD-500-C
         - &rxde-500 LGYR FocusRXDe-500
         - &rxte-500 LGYR FocusRXTe-500
         - &rxre-500 LGYR FocusRXRe-500
-        - &rxre-c   LGYR FocusRXRe-C
+        - &rxde-500-c LGYR FocusRXDe-500-C
+        - &rxte-500-c LGYR FocusRXTe-500-C
+        - &rxre-500-c LGYR FocusRXRe-500-C
         - &rxde-sd-500 LGYR FocusRXDe-SD-500
         - &rxte-sd-500 LGYR FocusRXTe-SD-500
         - &rxre-sd-500 LGYR FocusRXRe-SD-500
-        - &rxre-sd-c   LGYR FocusRXRe-SD-C
+        - &rxde-sd-500-c LGYR FocusRXDe-SD-500-C
+        - &rxte-sd-500-c LGYR FocusRXTe-SD-500-C
+        - &rxre-sd-500-c LGYR FocusRXRe-SD-500-C
         - &axde-530 LGYR FocusAXDe-530
         - &axte-530 LGYR FocusAXTe-530
         - &axre-530 LGYR FocusAXRe-530
@@ -118,8 +126,8 @@ Meter combinations:
     - &AX-RX-23 [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *rxd-530, *rxd-530, *rxd-530, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500, *axd-530, *axd-530, *axd-530 ]
     - &AX-RX-_3 [ *rxd-530, *rxd-530, *rxd-530, *axd-530, *axd-530, *axd-530 ]
     # Focus AXe (Gen 2)
-    - &___-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxre-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxre-sd-c, *rxde-530, *rxde-530, *rxde-530 ]
-    - &AXe-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxre-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxre-sd-c, *rxde-530, *rxde-530, *rxde-530, *axde-500, *axte-500, *axre-500, *axre-c, *axde-sd-500, *axte-sd-500, *axre-sd-500, *axre-sd-c, *axde-530, *axde-530, *axde-530 ]
+    - &___-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-500-c, *rxte-500-c, *rxre-500-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-sd-500-c, *rxte-sd-500-c, *rxre-sd-500-c, *rxde-530, *rxde-530, *rxde-530 ]
+    - &AXe-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-500-c, *rxte-500-c, *rxre-500-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-sd-500-c, *rxte-sd-500-c, *rxre-sd-500-c, *rxde-530, *rxde-530, *rxde-530, *axde-500, *axte-500, *axre-500, *axde-500-c, *axte-500-c, *axre-500-c, *axde-sd-500, *axte-sd-500, *axre-sd-500, *axde-sd-500-c, *axte-sd-500-c, *axre-sd-500-c, *axde-530, *axde-530, *axde-530 ]
     - &AXe-RXe-_3 [ *rxde-530, *rxde-530, *rxde-530, *axde-530, *axde-530, *axde-530 ]
 
     - &ELO-123 [ *elo2131TD, *elo2132TD, *elo2133TD ]

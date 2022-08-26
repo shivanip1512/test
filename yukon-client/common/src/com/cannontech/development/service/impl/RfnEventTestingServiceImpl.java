@@ -189,10 +189,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FRXDE_SD,
             RfnManufacturerModel.RFN_520FRXTE_SD,
             RfnManufacturerModel.RFN_520FRXRE_SD,
-            RfnManufacturerModel.CRL_520FAXE,
-            RfnManufacturerModel.CRL_520FAXED,
-            RfnManufacturerModel.CRL_520FRXE,
-            RfnManufacturerModel.CRL_520FRXED));
+            RfnManufacturerModel.CRL_520FAXDE,
+            RfnManufacturerModel.CRL_520FAXTE,
+            RfnManufacturerModel.CRL_520FAXRE,
+            RfnManufacturerModel.CRL_520FAXDE_SD,
+            RfnManufacturerModel.CRL_520FAXTD_SD,
+            RfnManufacturerModel.CRL_520FAXRD_SD,
+            RfnManufacturerModel.CRL_520FRXDE,
+            RfnManufacturerModel.CRL_520FRXTE,
+            RfnManufacturerModel.CRL_520FRXRE,
+            RfnManufacturerModel.CRL_520FRXDE_SD,
+            RfnManufacturerModel.CRL_520FRXTE_SD,
+            RfnManufacturerModel.CRL_520FRXRE_SD));
 
         groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530FAXD,
