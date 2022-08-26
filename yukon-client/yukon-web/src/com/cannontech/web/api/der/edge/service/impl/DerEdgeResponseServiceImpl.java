@@ -94,7 +94,10 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
             String token = e2eIdToGuidCache.getIfPresent(edgeDrDataNotification.getE2eId());
             String name = liteYukonPao.getPaoName();
             String type = liteYukonPao.getPaoType().getDbString();
-            String payload = Hex.encodeHexString(edgeDrDataNotification.getPayload());
+            String payload = null;
+            if (edgeDrDataNotification.getPayload() != null) {
+                payload = Hex.encodeHexString(edgeDrDataNotification.getPayload());
+            }
             String errorMsg = null;
             if (edgeDrDataNotification.getError() != null) {
                 int errorId = edgeDrDataNotification.getError().getErrorCode();
