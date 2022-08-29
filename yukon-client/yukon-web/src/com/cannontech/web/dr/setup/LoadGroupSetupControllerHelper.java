@@ -39,7 +39,6 @@ import com.cannontech.common.dr.setup.VersacomAddressUsage;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;

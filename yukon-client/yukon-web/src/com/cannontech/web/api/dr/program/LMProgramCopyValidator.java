@@ -44,6 +44,5 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
                 }
             }
         }
-
     }
 }

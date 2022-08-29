@@ -524,7 +524,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         // send regulator heartbeat messages as long as we are communicating and have good power flow
         if ( state->isIvvcOnline() )
         {
-            sendKeepAlive( state, subbus );
+            // 'outdated' time is when the point timestamp is older than twice the analysis window time.
+            const auto regulatorTimeout = std::chrono::seconds{ 2 * strategy->getControlInterval() };
+            sendKeepAlive( state, subbus, regulatorTimeout);
         }
     }
 
@@ -2190,10 +2192,9 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 }
 
 
-void IVVCAlgorithm::sendKeepAlive(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+void IVVCAlgorithm::sendKeepAlive(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, std::chrono::seconds regulatorTimeout)
 {
     using namespace Cti::CapControl;
-
     // Each call to this function only sends keepAlive messages to one of the regulator phases {A, B, C or Poly}
     // and then the Capbank keepAlive messages.  There is a 1 to 2 second delay between calls that send messages.
 
@@ -2228,7 +2229,7 @@ void IVVCAlgorithm::sendKeepAlive(IVVCStatePtr state, CtiCCSubstationBusPtr subb
                 {
                     VoltageRegulatorManager::SharedPtr regulator =
                             store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
-
+                    regulator->setRegulatorTimeout(regulatorTimeout);
                     regulator->executePeriodicKeepAlive( SystemUser );
                 }
             }

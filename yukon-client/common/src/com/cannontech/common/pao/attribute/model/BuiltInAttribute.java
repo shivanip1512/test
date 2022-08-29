@@ -420,7 +420,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CELLULAR_CONNECTION_FAILED("Cellular Connection Failed", AttributeGroup.RFN_OTHER_EVENT, false),
     CELLULAR_MODEM_DISABLED("Cellular Modem Disabled", AttributeGroup.RFN_OTHER_EVENT, false),
     CELLULAR_APN_CHANGED("Cellular Network APN String Changed", AttributeGroup.RFN_OTHER_EVENT, false),
-    CELLULAR_SIM_CARD_INSERTED_REMOVED("Cellular SIM Card Inserted/Removed", AttributeGroup.RFN_OTHER_EVENT, false),
+    CELLULAR_SIM_CARD_INSERTED_REMOVED("Cellular SIM Card Inserted/Removed", AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
     ZIGBEE_LINK_STATUS("ZigBee Link Status", AttributeGroup.STATUS, false),
     TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal", AttributeGroup.STATUS, false),   //440 types only
@@ -1037,6 +1037,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_DEMAND_RATE_B,
                 SUM_PEAK_DEMAND_RATE_C,
                 SUM_PEAK_DEMAND_RATE_D,
+                NET_PEAK_DEMAND,
+                NET_PEAK_DEMAND_RATE_A,
+                NET_PEAK_DEMAND_RATE_B,
+                NET_PEAK_DEMAND_RATE_C,
+                NET_PEAK_DEMAND_RATE_D,
                 SUM_PEAK_KVA,
                 SUM_PEAK_KVA_FROZEN,
                 SUM_PEAK_KVA_RATE_A,
@@ -1074,6 +1079,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
+        groupedRfnEventBuilder.put(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT, lookupByGroup.get(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT));
 
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
     }
@@ -1126,7 +1132,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.DEMAND_RESPONSE, lookupByGroup.get(AttributeGroup.DEMAND_RESPONSE));
         allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, lookupByGroup.get(AttributeGroup.ESTIMATED_LOAD));
         allGroupedBuilder.put(AttributeGroup.ITRON, lookupByGroup.get(AttributeGroup.ITRON));
-
+        allGroupedBuilder.put(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT, lookupByGroup.get(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT));
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
         allGroupedAttributes = allGroupedBuilder.build();

@@ -1,0 +1,167 @@
+Holiday Schedule:
+  title: Holiday Schedule
+  required:
+    - name
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 40
+      description: 'Name of holiday schedule .'
+    holidays:
+      description: 'Holidays assigned to holiday schedule. Zero or more holidays can be assigned to a schedule.'
+      $ref: '#/HolidayRequest'
+
+Holiday Schedule Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the holiday schedule.'
+    name:
+      type: string
+      maxLength: 40
+      description: 'Name of holiday schedule .'
+    holidays:
+      description: 'Holiday assigned to holiday schedule. Zero or more holidays can be assigned to a schedule.'
+      $ref: '#/HolidayResponse'
+
+HolidayRequest:
+  type: array
+  items:
+    required:
+      - name
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 20
+        description: 'Name of holiday.'
+      month:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 12
+        description: 'Month of holiday.'
+      day:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 31
+        description: 'Day of holiday. The maximum value of day will be changed as per month selected.'
+      year:
+        type: integer
+        default: -1
+        minimum: value of current year
+        maximum: value of current year + 150
+        description: 'Year of holiday. Its minimum value will be current year and maximum value will be current year + 150.'
+
+HolidayResponse:
+  type: array
+  items:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 20
+        description: 'Name of holiday.'
+      month:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 12
+        description: 'Month of holiday.'
+      day:
+        type: integer
+        default: 1
+        minimum: 1
+        maximum: 31
+        description: 'Day of holiday. The maximum value of day will be changed as per month selected.'
+      year:
+        type: integer
+        default: -1
+        minimum: value of current year
+        maximum: value of current year + 150
+        description: 'Year of holiday. Its minimum value will be current year and maximum value will be current year + 150.'
+
+id:
+  title: id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Holiday Schedule.'
+      
+Holiday Schedules List Response Schema:
+  type: object
+  properties:
+    pagerNumber:
+      type: integer
+      default: 1
+      description: 'Number of pages for the holiday schedules.'
+    itemsPerPage: 
+      type: integer
+      default: 250
+      description: 'Total number of items per page for the holiday schedules.'
+    totalItems:
+      type: integer
+      description: 'Total items or (number ) of the holiday schedules present in the system.'
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+          Holiday Schedules:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 'Unique identifier of the holiday schedule.'
+              name:
+                type: string
+                maxLength: 40
+                description: 'Name of holiday schedule.'
+
+components:
+  examples:
+    Holiday Schedule Request: 
+      value:
+        name: Test Holiday_Schedule_1
+        holidays:
+          - name: holiday1
+            month: 2
+            day: 12
+            year: 2023
+
+
+    Holiday Schedule Response: 
+      value:
+        id: 1233
+        name: Test Holiday_Schedule_1
+        holidays:
+          - name: holiday1
+            month: 2
+            day: 12
+            year: 2023
+
+    HolidayScheduleId:
+      value:
+        id: 1233
+
+    List of Holiday Schedules:
+      value:
+        pagerNumber: 1
+        itemsPerPage: 250
+        totalItems: 5
+        items:
+          - id: 1233
+            name: Test Holiday_Schedule_1
+          - id: 1234
+            name: Test Holiday_Schedule_2
+          - id: 1235
+            name: Holiday Schedule 4
+          - id: 11355
+            name: Holiday Schedule 5
+          - id: 11358
+            name: Test Holiday_Schedule_7
+

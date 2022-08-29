@@ -265,6 +265,7 @@ public class MeterController {
         boolean mct4xxDevice = DeviceTypesFuncs.isMCT4XX(type);
         boolean rfDevice = type.isRfn();
         boolean showMapNetwork = rfDevice || type.isPlc();
+        boolean showInfrastructureWarnings = type.isCellularDevice() || type.isWifiDevice();
         
         /** Device Tags */
         boolean commanderDevice = paoDefDao.isTagSupported(type, PaoTag.COMMANDER_REQUESTS);
@@ -279,6 +280,7 @@ public class MeterController {
         boolean voltageThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_VOLTAGE); 
         boolean currentThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_CURRENT);
         boolean touDevice = paoDefDao.isTagSupported(type, PaoTag.TOU);
+        boolean derEdgeCooordinatorDisplayable = paoDefDao.isTagSupported(type, PaoTag.DER_EDGE_COORDINATOR_DISPLAYABLE);
         
         /** Device Attributes */
         boolean outageLogAttribute = deviceAttributes.contains(BuiltInAttribute.OUTAGE_LOG);
@@ -336,7 +338,10 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
-        
+        model.addAttribute("showCellularConnection", type.isCellularDevice());
+        model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
+        model.addAttribute("showInfrastructureWarnings", showInfrastructureWarnings);
+
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);
         model.addAttribute("showHighBill", highBillDevice && highBillUser);

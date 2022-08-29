@@ -98,6 +98,7 @@
               <bean class="com.cannontech.web.dr.setup.LoadProgramGearConverter"/>
               <bean class="com.cannontech.web.stars.commChannel.CommChannelBaseConverter"/>
               <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceBaseConverter"/>
+              <bean class="com.cannontech.web.stars.signalTransmitter.TerminalBaseConverter"/>
            </set>
        </property>
     </bean>
@@ -115,7 +116,7 @@
             <ref bean="energyCompanyInfoArgumentResolver"/>
         </mvc:argument-resolvers>
         <mvc:message-converters>
-             <ref bean="jacksonHttpMsgConverter"/>
+             <ref bean="jacksonHttpMessageConverter"/>
              <ref bean="protobufMsgConverter"/>
         </mvc:message-converters>
         <mvc:path-matching suffix-pattern="false" trailing-slash="false" />
@@ -130,7 +131,7 @@
     <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
     <bean id="accountInfoArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
     <bean id="energyCompanyInfoArgumentResolver" class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
-    <bean id="jacksonHttpMsgConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
+    <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
     <bean id="protobufMsgConverter" class="org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter"/>
             
     <tx:annotation-driven transaction-manager="transactionManager"/>

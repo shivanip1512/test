@@ -78,29 +78,31 @@ public class MeterReadEvent extends MultispeakEvent {
     @Override
     public void eventNotification() {
 
-        CTILogger.info("Sending ReadingChangedNotification (" + getResponseUrl() + "): Meter Number "
-            + getDevice().getMeterRead().getObjectID());
+        CTILogger.info("Sending ReadingChangedNotification (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead().getObjectID());
 
       try {
           ReadingChangedNotification readChangeNotification = objectFactory.createReadingChangedNotification();
           ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
           List<MeterRead> meterReadList = arrayOfMeterRead.getMeterRead();
+          
           meterReadList.add(getDevice().getMeterRead());
           readChangeNotification.setTransactionID(getTransactionID());
           readChangeNotification.setChangedMeterReads(arrayOfMeterRead);
+          
           ReadingChangedNotificationResponse response = cbClient.readingChangedNotification(getMspVendor(), getResponseUrl(), readChangeNotification);
+          
           if (response != null && response.getReadingChangedNotificationResult() != null) {
               List<ErrorObject> responseErrorObjects = response.getReadingChangedNotificationResult().getErrorObject();
               if (CollectionUtils.isNotEmpty(responseErrorObjects)) {
-                  YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), "ReadingChangedNotification",
+                  YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), 
+                                                                                 "ReadingChangedNotification",
                                                                                  responseErrorObjects);
               }
           } else {
               CTILogger.info("Response not received (or is null) for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead().getObjectID());
           }
         } catch (MultispeakWebServiceClientException e) {
-            CTILogger.error("TargetService: " + getResponseUrl() + " - ReadingChangedNotification ("
-                + getMspVendor().getCompanyName() + ")");
+            CTILogger.error("TargetService: " + getResponseUrl() + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
         }
     }
@@ -112,9 +114,8 @@ public class MeterReadEvent extends MultispeakEvent {
 
         if (returnMsg.getStatus() != 0) {
 
-            String result =
-                "MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - Reading Failed (ERROR:" + returnMsg.getStatus()
-                    + ") " + returnMsg.getResultString();
+            String result = "MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - " +
+                            "Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
             CTILogger.info(result);
             // TODO Should we send old data if a new reading fails?
             getDevice().populateWithPointData(returnMsg.getDeviceID());

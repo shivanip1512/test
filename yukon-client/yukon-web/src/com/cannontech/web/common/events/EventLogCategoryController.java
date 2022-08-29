@@ -6,19 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -37,7 +39,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.events.model.EventLogCategoryFilter;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -63,17 +64,26 @@ public class EventLogCategoryController {
     @Autowired private EventLogUIService eventLogUIService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    @RequestMapping(value="viewByCategory", params="!export", method = RequestMethod.GET)
-    public void viewByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
-                               BindingResult bindingResult,
-                               FlashScope flashScope,
-                               YukonUserContext userContext,
-                               HttpServletRequest request,
-                               ModelMap model,
+    @GetMapping("viewByCategory")
+    public String viewByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
+                               BindingResult bindingResult, FlashScope flashScope,
+                               YukonUserContext userContext, ModelMap model, HttpServletResponse response,
                                @DefaultItemsPerPage(50) PagingParameters paging) {
         
-        model.addAttribute("paging", paging);
+        return filterEventLog(filter,
+                              bindingResult,
+                              flashScope,
+                              userContext,
+                              response,
+                              model,
+                              paging,
+                              "eventLog/viewByCategory.jsp");
         
+    }
+    
+    private String filterEventLog(EventLogCategoryFilter filter, BindingResult bindingResult,
+                                FlashScope flashScope, YukonUserContext userContext, HttpServletResponse response,
+                                ModelMap model, PagingParameters paging, String successView) {        
         // Validating the search data
         eventLogCategoryValidator.doValidation(filter, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -81,7 +91,8 @@ public class EventLogCategoryController {
             List<MessageSourceResolvable> messages = 
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return;
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "eventLog/viewByCategory.jsp";
         } 
         
         List<EventCategory> eventCategories = Lists.newArrayList();
@@ -98,13 +109,27 @@ public class EventLogCategoryController {
         
         model.addAttribute("searchResult", searchResult);
         
-        String csvLink = ServletUtil.tweakHTMLRequestURI(request, "export", "CSV");
-        model.addAttribute("csvLink", csvLink);
-        
+        return successView;
+    }
+    
+    @RequestMapping(value = "filterByCategory", method = { RequestMethod.GET, RequestMethod.POST })
+    public String filterEventsByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
+                               BindingResult bindingResult, FlashScope flashScope,
+                               YukonUserContext userContext, ModelMap model, HttpServletResponse response,
+                               @DefaultItemsPerPage(50) PagingParameters paging) {
+        return filterEventLog(filter,
+                              bindingResult,
+                              flashScope,
+                              userContext,
+                              response,
+                              model,
+                              paging,
+                              "eventLog/filteredResults.jsp");
+                
     }
 
-    @RequestMapping(value="viewByCategory", params="export", method=RequestMethod.GET)
-    public void exportByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter,
+    @PostMapping("downloadByCategory")
+    public void downloadByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter,
                            HttpServletResponse response,
                            YukonUserContext userContext) throws IOException {
 

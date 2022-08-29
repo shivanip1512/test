@@ -23,9 +23,10 @@ import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
@@ -45,6 +46,7 @@ import com.cannontech.msp.beans.v4.Duration;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ObjectRef;
+import com.cannontech.msp.beans.v4.QualityDescription;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -68,7 +70,6 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
 
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private FdrTranslationDao fdrTranslationDao;
-    @Autowired private SimplePointAccessDao simplePointAccessDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspLMGroupDao mspLMGroupDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -76,6 +77,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     private List<? extends String> strategiesToExcludeInReport;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private MspLmInterfaceMappingDao mspLMInterfaceMappingDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 
@@ -85,12 +87,33 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         pointData.setId(pointId);
         pointData.setValue(scadaAnalog.getValue().getValue());
         pointData.setType(PointType.Analog.getPointTypeId());
+        pointData.setPointQuality(getPointQuality(scadaAnalog.getQuality()));
         pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
         pointData.setUserName(userName);
         if (scadaAnalog.getTimeStamp() != null) {
             pointData.setTime(scadaAnalog.getTimeStamp().toGregorianCalendar().getTime());
         }
         return pointData;
+    }
+
+    @Override
+    public PointQuality getPointQuality(QualityDescription qualityDescription) {
+
+        if (qualityDescription == QualityDescription.MEASURED) {
+            return PointQuality.Normal;
+        } else if (qualityDescription == QualityDescription.ESTIMATED) {
+            return PointQuality.Manual;
+        } else if (qualityDescription == QualityDescription.FAILED) {
+            return PointQuality.NonUpdated; // Failed from SCADA means could not object the current reading
+        } else if (qualityDescription == QualityDescription.INITIAL) {
+            return PointQuality.InitDefault;
+        } else if (qualityDescription == QualityDescription.CALCULATED) {
+            return PointQuality.Estimated;
+        } else if (qualityDescription == QualityDescription.LAST) {
+            return PointQuality.InitLastKnown;
+        } else {// if (qualityDescription == QualityDescription.Default)
+            return PointQuality.Normal;
+        }
     }
 
     @Override
@@ -103,7 +126,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             for (FdrTranslation fdrTranslation : fdrTranslations) {
                 if (fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
                     PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
-                    simplePointAccessDao.writePointData(pointData);
+                    asyncDynamicDataSource.putValue(pointData);
                     if (pointData != null) {
                         CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
                     }
@@ -111,8 +134,10 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             }
         } else {
             return mspObjectDao.getErrorObject(objectId,
-                    "No point mapping found in Yukon for objectId:" + objectId,
-                    "ScadaAnalog", "writeAnalogPointData", liteYukonUser.getUsername());
+                                               "No point mapping found in Yukon for objectId:" + objectId,
+                                               "ScadaAnalog", 
+                                               "writeAnalogPointData", 
+                                               liteYukonUser.getUsername());
         }
         return null;
     }
@@ -208,8 +233,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
 
         // add the last object
         if (!controlledItemsList.isEmpty() && prevSubstationName != null) {
-            SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName,
-                    controlledItemsList);
+            SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
             // Get unique/master status
             substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
             // Get unique/master mode
@@ -244,8 +268,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     }
 
     @Override
-    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
-            MultispeakVendor vendor) {
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
 
         // Set the start date
         Calendar scheduleDateTime = null;
@@ -286,8 +309,11 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                 lmInterfaces.add(lmInterface);
             } catch (NotFoundException e) {
                 mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), vendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(),
-                        "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), 
+                                                              e.getMessage(),
+                                                              "loadManagementEvent", 
+                                                              "buildMspLoadControl", 
+                                                              vendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
@@ -311,7 +337,9 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                     } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
                         programStatus = stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    CTILogger.info("Control Status: " + programStatus.toString());
+                    if (programStatus != null) {
+                        CTILogger.info("Control Status: " + programStatus.toString());
+                    }
                 } else if (liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
                     String scenarioName = liteYukonPAObject.getPaoName();
                     ScenarioStatus scenarioStatus = null;
@@ -321,25 +349,29 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                     } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
                         scenarioStatus = stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    CTILogger.info("Control Status: " + scenarioStatus.toString());
+                    if (scenarioStatus != null) {
+                        CTILogger.info("Control Status: " + scenarioStatus.toString());
+                    }
                 }
             } catch (TimeoutException e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage() +
-                                ". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime()
-                                + ") is not in the past.",
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
+                                                          + e.getMessage() +". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime() + ") is not in the past.",
+                                                         "LoadManagementEvent", 
+                                                         "control", 
+                                                         liteYukonUser.getUsername());
             } catch (NotAuthorizedException | NotFoundException | BadServerResponseException | ConnectionException e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage(),
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                                                          "LoadManagementEvent", 
+                                                          "control", 
+                                                          liteYukonUser.getUsername());
             } catch (Exception e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage(),
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                                                          "LoadManagementEvent", 
+                                                          "control", 
+                                                          liteYukonUser.getUsername());
                 log.error(e.getMessage(), e);
             }
         }

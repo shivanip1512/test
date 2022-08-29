@@ -646,6 +646,23 @@ auto convertHexStringToBytes( std::string stringInput ) -> std::vector<unsigned 
     return result;
 }
 
+auto convertBytesToHexString( const std::vector<unsigned char> & bytes ) -> std::string
+{
+    std::string result;
+
+    result.reserve( 2 * bytes.size() );
+
+    constexpr unsigned char convert[ 17 ] = "0123456789abcdef";
+
+    for ( const auto & byte : bytes )
+    {
+        result.push_back(  convert[ ( byte >> 4 ) & 0x0f ] );
+        result.push_back(  convert[ ( byte      ) & 0x0f ] );
+    }
+
+    return result;
+}
+
 //  Converts a number to base94 representation for logging.
 //    Matching Java implementation at /common/src/com/cannontech/common/util/Base94.java
 std::string toBase94(uint64_t input)

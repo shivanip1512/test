@@ -92,6 +92,20 @@ yukon.admin.multispeak = (function() {
                 $('#delete-vendor').submit();
             });
             
+            
+            $(document).on('change', '#attributes', function(event) {
+                var value = $("#attributes").val();
+                if (value.length == 0 || value.length == 1 && (value.includes("PEAKDEMAND_USAGE"))) {
+                    $('#vendor-js-warning').hide();
+                } else {
+                    $('#vendor-js-warning').show();
+                    $('#vendor-js-warning').addMessage({
+                        message : $('.js-vendor-warning-message').val(),
+                        messageClass : 'warning'
+                    });
+                }
+            });
+            
             $(document).on("click", ".js-endpoint-auth-btn", function(ev) {
                 var indexValue = $(this).closest('tr').attr('data-id'),
                     mode = $('#js-page-mode').val(),
@@ -145,7 +159,15 @@ yukon.admin.multispeak = (function() {
                 dialog.dialog('close');
                 dialog.empty();
             });
-
+            if ($("#attributes").is(":visible")) {
+               $("#attributes").chosen({
+                  width: "170px"
+               });
+            }
+            if (document.querySelector('[id^="mspVendor.attributes.errors"]') !== null) {
+               $('#attributes').val([]).trigger('chosen:updated');
+            }
+             
             if (_initialized)
                 return;
             _initialized = true;

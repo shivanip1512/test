@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 public class EatonCloudCommunicationExceptionV1 extends RuntimeException {
     private String DEFAULT_ERROR = "A communication error has occurred. Please see logs for more details";
     private EatonCloudErrorV1 errors;
+    private long requestIdentifier;
 
     public EatonCloudCommunicationExceptionV1() {
     }
@@ -19,6 +20,11 @@ public class EatonCloudCommunicationExceptionV1 extends RuntimeException {
 
     public EatonCloudCommunicationExceptionV1(Throwable t) {
         super(t);
+    }
+    
+    public EatonCloudCommunicationExceptionV1(Throwable t, long requestIdentifier) {
+        super(t);
+        this.setRequestIdentifier(requestIdentifier);
     }
 
     public EatonCloudErrorV1 getErrorMessage() {
@@ -33,13 +39,21 @@ public class EatonCloudCommunicationExceptionV1 extends RuntimeException {
         return DEFAULT_ERROR;
     }
 
+    public void setRequestIdentifier(long requestIdentifier) {
+        this.requestIdentifier = requestIdentifier;
+    }
+
     @Override
     public String getMessage() {
-        String errorWithJson = getDisplayMessage();
+        String errorWithJson = getRequestIdentifier() + getDisplayMessage();
         if (errors != null && errors.getMessage() != null) {
             return errorWithJson + System.lineSeparator()
                     + new GsonBuilder().setPrettyPrinting().create().toJson(getErrorMessage());
         }
         return errorWithJson;
+    }
+    
+    private String getRequestIdentifier() {
+        return requestIdentifier == 0L ? "" : "[" + requestIdentifier + "] ";
     }
 }

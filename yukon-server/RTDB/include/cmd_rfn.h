@@ -58,6 +58,7 @@ class SetConfigurationCommand;
 class RfnTemperatureAlarmCommand;
 class RfnMetrologyGetConfigurationCommand;
 class RfnMetrologySetConfigurationCommand;
+class RfnDerPayloadDeliveryCommand;
 
 struct RfnCommandResult
 {
@@ -126,6 +127,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnTemperatureAlarmCommand &)                          {}
         virtual void handleCommandResult(const RfnMetrologyGetConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnMetrologySetConfigurationCommand &)                 {}
+        virtual void handleCommandResult(const RfnDerPayloadDeliveryCommand &)                        {}
     };
 
     //  to be overridden by children that require a result handler
@@ -172,6 +174,7 @@ public:
 
     virtual bool isPost() const;
     virtual bool isOneWay() const;
+    virtual bool isOscoreEncrypted() const;
 
 protected:
 

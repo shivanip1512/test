@@ -18,7 +18,7 @@ public class ThirdPartyLibrariesController {
     public String libraries(ModelMap model) throws IOException {
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class);
+                ThirdPartyLibraries.class, libraryYaml.getFilename());
         model.addAttribute("libraries", documentedLibraries.getAllProjects());
         return "thirdPartyLibraries.jsp";
     }

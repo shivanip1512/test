@@ -16,12 +16,19 @@
 <%@ attribute name="dataJson" type="java.lang.String" description="A dictionary starting with attributes of the root node."%>
 <%@ attribute name="dataUrl" type="java.lang.String" description="A URL indicating how to get the data for the tree. Either dataJson or dataUrl is required."%>
 <%@ attribute name="scrollToHighlighted" type="java.lang.Boolean" description="If true, scroll the tree to the highlighted node."%>
+<%@ attribute name="includeCheckbox" type="java.lang.Boolean" description="If true, a checkbox will be displayed before the node text."%>
+<%@ attribute name="toggleNodeSelectionOnClick" type="java.lang.Boolean" description="If true and if includeCheckbox is true, the node will be selected if we click anywhere on the node. Eg. Expander icon, checkbox, node text. Defaults to true."%>
 
 <c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : 500}" />
 
 <c:if test="${not empty pageScope.highlightNodePath}">
     <c:set var="highlight" value="${fn:split(highlightNodePath, '/')}"/>
     <c:set var="initiallySelect" value="${highlight[fn:length(highlight)-1]}"/>
+</c:if>
+
+<c:set var="toggleNodeSelectionOnClickFlag" value="${pageScope.toggleNodeSelectionOnClick}" />
+<c:if test="${empty pageScope.toggleNodeSelectionOnClick}">
+    <c:set var="toggleNodeSelectionOnClickFlag" value="${true}" />
 </c:if>
 
 <div id="internalTreeContainer_${id}" class="inline-tree ${pageScope.styleClass}">
@@ -39,7 +46,8 @@
         
     <div class="tree_container clearfix">
         <div id="${id}" data-url="${dataUrl}" data-initially-select="${initiallySelect}" data-scroll-to-highlighted="${pageScope.scrollToHighlighted}"
-            data-multi-select="${pageScope.multiSelect}" class="tree-canvas js-fancy-tree" style="width:100%;overflow:auto;max-height:${maxHeight}px;">
+            data-multi-select="${pageScope.multiSelect}" class="tree-canvas js-fancy-tree" style="width:100%;overflow:auto;max-height:${maxHeight}px;"
+            data-include-checkbox="${pageScope.includeCheckbox}" data-toggle-node-selection-on-click="${toggleNodeSelectionOnClickFlag}">
             <c:if test="${not empty dataJson}">
                 <cti:toJson id="js-json-data" object="${dataJson}"/>
             </c:if>

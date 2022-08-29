@@ -45,12 +45,28 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
                 "randomization": "controlled",
                 "flags": "standard"
             }
+        },
+        JOB: {
+            "devices": ["12343adc-4e23-4a12-3456-e4ca6841111", "12343adc-4e23-4a12-3456-e4ca684e2222","12343adc-4e23-4a12-3456-e4ca6843333", "12343adc-4e23-4a12-3456-e4ca6844444"],
+            "method": "LCR_Control",
+            "params": {
+                "vrelay": "1",
+                "cycle percent": "50",
+                "cycle period": "30",
+                "cycle count": "4",
+                "start time": "1599137389",
+                "event ID": "1234",
+                "criticality": "3",
+                "randomization": "controlled",
+                "flags": "standard"
+            }
         }
     },
     
     _updateSecretInformation = function() {
+        var enableTokenSecretRotationTesting = $('#tokenSecretTesting').prop('checked');
         $.ajax({
-            url: yukon.url('/dev/eatonCloud/updateSecretInformation'),
+            url: yukon.url('/dev/eatonCloud/updateSecretInformation?enableTokenSecretRotationTesting=' + enableTokenSecretRotationTesting),
             type: 'get'
         }).done(function (data) {
         	var secretInformation = $('.js-secret-information').removeClass('dn');
@@ -85,13 +101,24 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
             });
             
             $(document).on('change', '.js-selected-status', function () {
-            	//hide success percentage if status is not OK
+            	//hide success and unknown percentage if status is not OK
             	var okSelected = $(this).val() === 'OK';
             	$(this).siblings('.js-success-percentage-fields').toggleClass('dn', !okSelected);
+                $(this).siblings('.js-unknown-percentage-fields').toggleClass('dn', !okSelected);
                 $('#eatonCloudForm').submit();
             });
             
             $(document).on('change', '.js-success-percentage', function () {
+                //submit all settings
+                $('#eatonCloudForm').submit();
+            });
+            
+            $(document).on('change', '.js-unknown-percentage', function () {
+                //submit all settings
+                $('#eatonCloudForm').submit();
+            });
+            
+            $(document).on('change', '#tokenSecretTesting', function () {
                 //submit all settings
                 $('#eatonCloudForm').submit();
             });

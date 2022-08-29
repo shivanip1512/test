@@ -43,6 +43,9 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -109,15 +112,16 @@ public class EatonCloudSimulatorController {
     }
     
     @GetMapping("/updateSecretInformation")
-    public @ResponseBody Map<String, Object> updateSecretInformation() {
+    public @ResponseBody Map<String, Object> updateSecretInformation(boolean enableTokenSecretRotationTesting) {
         Map<String, Object> json = new HashMap<>();
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
+        boolean isSimulator = url.contains("localhost") || url.contains("127.0.0.1");
 
         json.put("secret1Token", "None");
         json.put("secret2Token", "None");
         json.put("cachedToken", "None");
         
-        if (url.contains("localhost") || url.contains("127.0.0.1")) {
+        if (isSimulator && enableTokenSecretRotationTesting) {
             if (restTemplate == null) {
                 restTemplate = new RestTemplate();
                 restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
@@ -145,7 +149,7 @@ public class EatonCloudSimulatorController {
                 log.error("Error", e);
             }
         } else {
-            json.put("cachedBy", "Cloud");
+            json.put("cachedBy", isSimulator ? "Simulator" : "Cloud");
             json.put("secret1Expiration", null);
             json.put("secret2Expiration", null);
         }       
@@ -164,7 +168,7 @@ public class EatonCloudSimulatorController {
     }
     
     private EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
-        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
+        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
         EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
         EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
         return newToken;
@@ -181,12 +185,15 @@ public class EatonCloudSimulatorController {
             EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setStatuses(getStatuses(newSettings));
             request.setSuccessPercentages(newSettings.getSuccessPercentages());
+            request.setUnknownPercentages(newSettings.getUnknownPercentages());
             
             SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
             
             if (response.isSuccessful()) {
                 settings.setSelectedStatuses(newSettings.getSelectedStatuses());
                 settings.setSuccessPercentages(newSettings.getSuccessPercentages());
+                settings.setUnknownPercentages(newSettings.getUnknownPercentages());
+                settings.setEnableTokenSecretRotationTesting(newSettings.isEnableTokenSecretRotationTesting());
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Updated simulator settings"));
                 return "redirect:home";
             }
@@ -251,6 +258,13 @@ public class EatonCloudSimulatorController {
                 processSuccess(params, json, getFormattedJson(detail));
             } else if (endpoint == EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET) {
                 EatonCloudSecretValueV1 value = eatonCloudCommunicationServiceV1.rotateAccountSecret(1);
+                processSuccess(params, json, getFormattedJson(value));
+            } else if (endpoint == EatonCloudRetrievalUrl.JOB) {
+                EatonCloudJobRequestV1 request = new ObjectMapper().readValue(jsonParam, EatonCloudJobRequestV1.class);
+                EatonCloudJobResponseV1 value = eatonCloudCommunicationServiceV1.createJob(request);
+                processSuccess(params, json, getFormattedJson(value));
+            } else if (endpoint == EatonCloudRetrievalUrl.JOB_STATUS) {
+                EatonCloudJobStatusResponseV1 value = eatonCloudCommunicationServiceV1.getJobStatus(paramList.get(0));
                 processSuccess(params, json, getFormattedJson(value));
             }
         } catch (EatonCloudCommunicationExceptionV1 e) {
@@ -359,12 +373,22 @@ public class EatonCloudSimulatorController {
         try {
             EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setResetSecretsExpireTime(true);
-            //notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
-            SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
-            if (response.isSuccessful()) {
-                //send request to SM to start secret rotation
+            String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
+            if (url.contains("localhost") || url.contains("127.0.0.1")) {
+                // notify simulator to changes secret expiration dates in preparation for the SM request to rotate secrets
+                SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+                if (response.isSuccessful()) {
+                    // send request to SM to start secret rotation
+                    jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
+                    flashScope.setConfirm(
+                            YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+                    log.info("Sent message to SM to rotate secrets.");
+                } else {
+                    log.info("Unable to send message to SM to rotate secrets. Simulator is not working");
+                }
+            } else {
                 jmsTemplateSecretRotation.convertAndSend(new EatonCloudSecretRotationSimulationRequest());
-                flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Sent message to SM to rotate secrets."));
+                log.info("Sent message to SM to rotate secrets.");
             }
         } catch (Exception e) {
             log.error("Error", e);

@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="filterValue" tagdir="/WEB-INF/tags/filterValue" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -10,7 +9,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="eventViewer.byType">
-<cti:includeScript link="/resources/js/pages/yukon.support.eventlog.type.js"/>
 
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
@@ -75,7 +73,7 @@
                     <tags:nameValueContainer2 >
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
-                            <dt:dateRange startPath="startDate" endPath="stopDate" />
+                            <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
                         </tags:nameValue2>
         
                         <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
@@ -96,7 +94,7 @@
         </c:choose>
     <div class="action-area stacked">
         <c:if test="${not empty filter}">
-            <cti:button id="filter-btn" nameKey="filter" classes="action primary fl"/>
+            <cti:button id="filterByType-btn" nameKey="filter" classes="action primary fl"/>
         </c:if>
         <c:choose>
             <c:when test="${maxCsvRows > searchResult.hitCount}">
@@ -114,7 +112,7 @@
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
    
     <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
-        <div id="events-container" data-static>
+        <div id="eventsByType-container" data-static>
             <table class="compact-results-table">
                 <thead>
                     <tr>
@@ -147,5 +145,7 @@
             <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
         </div>
     </tags:sectionContainer>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.support.eventlog.js"/>
 
 </cti:standardPage>

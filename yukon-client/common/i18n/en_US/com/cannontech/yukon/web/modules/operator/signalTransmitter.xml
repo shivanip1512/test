@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.modules.operator.signalTransmitters.list.pageName">Signal Transmitters</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.title">General</entry>
+    
+    <entry key="yukon.web.modules.operator.signalTransmitter.CREATE.pageName">Create Signal Transmitter</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.CREATE.pageDescription">Create Signal Transmitter</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.VIEW.pageHeading">Signal Transmitter: {0}</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.VIEW.pageTitle">Signal Transmitter: {0}</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.pageHeading">Edit Signal Transmitter: {0}</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.EDIT.pageTitle">Signal Transmitter: {0}</entry>
+    
+    <entry key="yukon.web.modules.operator.signalTransmitter.name">Name</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.type">Type</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.pagerNumber">Pager Number</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.status">Status</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.commChannel">Communication Channel</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.passwordRequired">Password Required</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.password">Password</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.login">Login</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.sender">Sender</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.securityCode">Security Code</entry>
+    
+    <entry key="yukon.web.modules.operator.signalTransmitter.originAddress">Origin Address</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.destinationAddress">Destination Address</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.inertia">Inertia</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.protocol">Protocol</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.dataFormat">Data Format</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.indentifierFormat">Identifier Format</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.pagerId">Pager Id</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.channel">Channel</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.functionCode">Function Code</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.zone">Zone</entry>
+    
+    <entry key="yukon.web.modules.operator.signalTransmitter.copy">Copy Signal Transmitter</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.copy.copyPoints">Copy Points</entry>
+    
+    <entry key="yukon.web.modules.operator.signalTransmitter.retrieve.error">An error occurred in retrieving signal transmitter.</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.communication.title">Communication</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.tnppSettings.title">TNPP Settings</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.filter.error">Error filtering signal transmitter records: {0}.</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.pagerId.invalidValue">Must be between -9999999 and 99999999.</entry>
+    
+</properties>

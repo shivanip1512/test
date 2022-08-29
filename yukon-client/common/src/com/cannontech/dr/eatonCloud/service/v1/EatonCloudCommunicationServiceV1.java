@@ -9,6 +9,9 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -16,6 +19,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
+import com.cannontech.system.GlobalSettingType;
 
 /**
  * This is the starting point for the service layer for the Eaton Cloud Px Middleware IT Project
@@ -40,11 +44,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * 404 Not Found
      */
     EatonCloudSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail) throws EatonCloudCommunicationExceptionV1;
-
-    /**
-     * Sends message to SM to get a token, SM will send a message to PX get the token or return a cached token.
-     */
-    EatonCloudTokenV1 getToken() throws EatonCloudCommunicationExceptionV1;
 
     /**
      * Used by Simulator to clear token cache in SM
@@ -112,4 +111,29 @@ public interface EatonCloudCommunicationServiceV1 {
      * @throws EatonCloudCommunicationExceptionV1
      */
     EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber) throws EatonCloudCommunicationExceptionV1;
+
+    /**
+     * Returns job status
+     */
+    EatonCloudJobStatusResponseV1 getJobStatus(String jobGuid);
+
+    /**
+     * Creates job status
+     */
+    EatonCloudJobResponseV1 createJob(EatonCloudJobRequestV1 request) throws EatonCloudCommunicationExceptionV1;
+
+    
+    /**
+     * Sends message to SM to get a token, SM will send a message to PX get the token or return a cached token.
+     */
+    EatonCloudTokenV1 getToken() throws EatonCloudCommunicationExceptionV1;
+
+    
+    /**
+     * Don't use!
+     * 
+     * This method is only used to validate the token and retrieve and cache the token.
+     * When adding a new method to connect to cloud use - getToken() which will return cached token
+     */
+    EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type);
 }

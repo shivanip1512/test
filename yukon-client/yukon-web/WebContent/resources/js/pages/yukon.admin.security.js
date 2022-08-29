@@ -233,6 +233,8 @@ yukon.admin.security = (function () {
             });
             
             $(document).on('click', '.js-refresh-secret', function() {
+				var secretButtons = $('.js-refresh-secret');
+				secretButtons.prop('disabled', true);
             	var secretNumber = $(this).data('secretNumber'),
             		form = $('#refreshSecretForm');
             	form.find('#secretNumber').val(secretNumber);

@@ -85,7 +85,12 @@
                 </div>
 
                 <c:if test="${showEvents}"><tags:widget bean="meterEventsWidget"/></c:if>
-                <c:if test="${deviceConfigSupported}"><tags:widget bean="configWidget"/></c:if>
+                
+                <c:if test="${deviceConfigSupported}">
+                    <cti:msg var="batteryDeviceNotice" key="yukon.web.widgets.configWidget.batteryDeviceNotice.helpText"/>
+                    <cti:msg var="widgetHelpText" key="yukon.web.widgets.configWidget.helpText" argument="${batteryDeviceNotice}"/>
+                    <tags:widget bean="configWidget" helpText="${widgetHelpText}"/>
+                </c:if>
             </div>
         </div>
     </tags:widgetContainer>

@@ -72,7 +72,8 @@ public enum PaoTag {
     VIRTUAL_METER_DISPLAYABLE("Virtual Meter Displayable"),
     SUPPORTS_ATTRIBUTE_ASSIGNMENT("Supports Attribute Assignment"),
     EATON_CLOUD_PROGRAM_ENROLLMENT("Eaton Cloud Program Enrollment"),
-    RFN1200_DETAIL_DISPLAYABLE("RFN-1200 Detail Displayable")
+    RFN1200_DETAIL_DISPLAYABLE("RFN-1200 Detail Displayable"),
+    DER_EDGE_COORDINATOR_DISPLAYABLE("DER Edge Coordinator Displayable")
     ;
 
     private final String description;

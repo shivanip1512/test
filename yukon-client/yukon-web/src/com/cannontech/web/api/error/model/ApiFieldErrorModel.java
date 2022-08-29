@@ -1,5 +1,7 @@
 package com.cannontech.web.api.error.model;
 
+import java.util.Arrays;
+
 import org.springframework.validation.FieldError;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -20,13 +22,23 @@ public class ApiFieldErrorModel {
     }
 
     public ApiFieldErrorModel(ApiErrorDetails errorDetails, FieldError fieldError, String detail) {
-        this.title = errorDetails.getTitle();
-        this.type = errorDetails.getType();
-        this.code = errorDetails.getCode();
+        title = errorDetails.getTitle();
+        type = errorDetails.getType();
+        code = errorDetails.getCode();
         this.detail = detail;
-        this.field = fieldError.getField();
-        this.rejectedValue = String.valueOf(fieldError.getRejectedValue());
-        this.parameters = fieldError.getArguments();
+        field = fieldError.getField();
+        rejectedValue = String.valueOf(fieldError.getRejectedValue());
+        parameters = fieldError.getArguments();
+    }
+    
+    public ApiFieldErrorModel(ApiErrorDetails errorDetails, String detail, String field, String rejectedValue, Object[] parameters) {
+        title = errorDetails.getTitle();
+        type = errorDetails.getType();
+        code = errorDetails.getCode();
+        this.detail = detail;
+        this.field = field;
+        this.rejectedValue = rejectedValue;
+        this.parameters = parameters;
     }
 
     public String getTitle() {
@@ -83,6 +95,12 @@ public class ApiFieldErrorModel {
 
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiFieldErrorModel [title=" + title + ", type=" + type + ", code=" + code + ", detail=" + detail + ", field="
+                + field + ", rejectedValue=" + rejectedValue + ", parameters=" + Arrays.toString(parameters) + "]";
     }
 
 }

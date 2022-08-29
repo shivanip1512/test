@@ -5,6 +5,7 @@ ProgramConstraint:
     - seasonSchedule
     - holidaySchedule
     - maxActivateSeconds
+    - minActivateSeconds
     - maxDailyOps
     - minRestartSeconds
     - maxHoursDaily
@@ -35,6 +36,11 @@ ProgramConstraint:
       minimum: 0
       maximum: 99999
       description: 'Maximum number of seconds that a load group can be active during a control session.'
+    minActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Minimum number of seconds that a load group can be active during a control session.'
     maxDailyOps:
       type: integer
       minimum: 0
@@ -58,8 +64,9 @@ ProgramConstraint:
         - FRIDAY
         - SATURDAY
     holidaySchedule:
+      description: 'Schedule that defines the load control holidays.'
       required:
-        -id
+        - id
       type: object
       properties:
         name:
@@ -158,8 +165,6 @@ ProgramConstraint Response Schema:
       description: 'Name of the program constraint.'
     seasonSchedule:
       description: 'Schedule that defines the load control seasons.'
-      required:
-        - id
       type: object
       properties: 
         name:
@@ -173,6 +178,11 @@ ProgramConstraint Response Schema:
       minimum: 0
       maximum: 99999
       description: 'Maximum number of seconds that a load group can be active during a control session.'
+    minActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Minimum number of seconds that a load group can be active during a control session.'
     maxDailyOps:
       type: integer
       minimum: 0
@@ -196,8 +206,6 @@ ProgramConstraint Response Schema:
         - FRIDAY
         - SATURDAY
     holidaySchedule:
-      required:
-        -id
       type: object
       properties:
         name:

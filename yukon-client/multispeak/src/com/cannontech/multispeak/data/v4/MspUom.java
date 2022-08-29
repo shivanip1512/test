@@ -5,6 +5,7 @@ import com.cannontech.msp.beans.v4.Uom;;
 public class MspUom {
     public static final Uom kWh = Uom.fromValue("kWh");
     public static final Uom kW = Uom.fromValue("kW");
+    public static final Uom PowerFactor = Uom.fromValue("Power factor");
     public static final Uom VARh = Uom.fromValue("VARh");
     public static final Uom VAR = Uom.fromValue("VAR");
     public static final Uom kVARh = Uom.fromValue("kVARh");
@@ -20,4 +21,7 @@ public class MspUom {
     public static final Uom DateTime = Uom.fromValue("Date time");
     public static final Uom Count = Uom.fromValue("Counter");
     public static final Uom NumberPowerOutage = Uom.fromValue("Nbr of power outage");
+    public static final Uom ccf = Uom.fromValue("ccf");
+    public static final Uom gallon = Uom.fromValue("US gl");
+    
 }

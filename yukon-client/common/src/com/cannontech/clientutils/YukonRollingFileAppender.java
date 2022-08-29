@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -421,6 +420,10 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         }
     }
 
+    public String getApplicationName() {
+        return BootstrapUtils.getApplicationName();
+    }
+
     /**
      * Method to set current log file name (serviceName_YYYYMMDD.log) to the existing appenders.
      */
@@ -429,18 +432,7 @@ public class YukonRollingFileAppender extends AbstractOutputStreamAppender<Rolli
         config.getAppenders().entrySet().stream().filter(e -> !"console".equals(e.getKey())).forEach(e -> {
             YukonRollingFileAppender appender = (YukonRollingFileAppender) e.getValue();
             String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
-            String applicationName = StringUtils.EMPTY;
-            if (appender instanceof YukonRfnRollingFileAppender) {
-                applicationName = BootstrapUtils.getApplicationName() + "_" + "RfnComms";
-            } else if (appender instanceof YukonApiRollingFileAppender) {
-                applicationName = "ApiLog";
-            } else if (appender instanceof CommsRollingFileAppender) {
-                applicationName = BootstrapUtils.getApplicationName() + "_" + "Comms";
-            } else if (appender instanceof SmartNotifRollingFileAppender) {
-                applicationName = BootstrapUtils.getApplicationName() + "_" + "SmartNotifications";
-            } else {
-                applicationName = BootstrapUtils.getApplicationName();
-            }
+            String applicationName = appender.getApplicationName();
             appender.setFileName(directory + applicationName + "_" + creationDate + ".log");
             appender.start();
             config.addAppender(appender);

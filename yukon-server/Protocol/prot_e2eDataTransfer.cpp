@@ -89,6 +89,21 @@ auto E2eDataTransferProtocol::createPost(const Bytes& payload, const RfnIdentifi
 }
 
 
+auto E2eDataTransferProtocol::createPut(const Bytes& payload, const RfnIdentifier endpointId) -> Bytes
+{
+    if( payload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    auto pdu = Coap::scoped_pdu_ptr::make_nonconfirmable_request(Coap::RequestMethod::Put, getOutboundIdForEndpoint(endpointId));
+
+    coap_add_data(pdu, payload.size(), &payload.front());
+
+    return pdu.as_bytes();
+}
+
+
 auto E2eDataTransferProtocol::createReply(const unsigned short id, const Bytes& payload, const unsigned long token) -> Bytes
 {
     if( payload.size() > MaxOutboundPayload )
@@ -219,6 +234,14 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
 
     coap_opt_iterator_t opt_iter;
 
+    // look for the OSCORE(9) option in the indication_pdu...
+    // decrypt here -- overwrite the code, payload, options, etc
+    if ( auto option = coap_check_option( indication_pdu, as_underlying( Coap::Options::OSCORE ), &opt_iter ); option )
+    {
+        message.oscoreEncrypted = true;
+
+    }
+
     for( auto option = coap_check_option(indication_pdu, COAP_OPTION_URI_PATH, &opt_iter); option; option = coap_option_next(&opt_iter) )
     {
         message.path += "/" + std::string(reinterpret_cast<const char *>(coap_opt_value(option)), coap_opt_length(option));
@@ -267,5 +290,18 @@ auto E2eDataTransferProtocol::createBadRequestAck(const unsigned short id) -> By
     return Coap::scoped_pdu_ptr::make_ack(id, Coap::ResponseCode::BadRequest).as_bytes();
 }
 
+auto E2eDataTransferProtocol::oscoreEncryptPacket(const Bytes &payload, const RfnIdentifier endpointId) -> Bytes
+{
+    Bytes encryptedPayload = payload;   // do OSCORE encryption here -- for now just pass it through unchanged
+
+
+
+    if( encryptedPayload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    return encryptedPayload;
+}
 
 }

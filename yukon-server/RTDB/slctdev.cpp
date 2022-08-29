@@ -92,6 +92,7 @@
 #include "rte_expresscom.h"
 #include "dev_rf_BatteryNode.h"
 #include "dev_rf_cellular_relay.h"
+#include "dev_rfn530s4x_der.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -267,10 +268,15 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN520FRXE,   MakeDeviceFunc(makeDevice<Rfn520frxeDevice>) },
     { TYPE_RFN520FAXED,  MakeDeviceFunc(makeDevice<Rfn520faxedDevice>) },
     { TYPE_RFN520FRXED,  MakeDeviceFunc(makeDevice<Rfn520frxedDevice>) },
+    { TYPE_CRL520FAXE,   MakeDeviceFunc(makeDevice<Crl520faxeDevice>) },
+    { TYPE_CRL520FAXED,  MakeDeviceFunc(makeDevice<Crl520faxedDevice>) },
+    { TYPE_CRL520FRXE,   MakeDeviceFunc(makeDevice<Crl520frxeDevice>) },
+    { TYPE_CRL520FRXED,  MakeDeviceFunc(makeDevice<Crl520frxedDevice>) },
     { TYPE_RFN530FAXE,   MakeDeviceFunc(makeDevice<Rfn530faxeDevice>) },
     { TYPE_RFN530FRXE,   MakeDeviceFunc(makeDevice<Rfn530frxeDevice>) },
     //  RFN-500 S4
     { TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>) },
+    { TYPE_CRL530S4X,    MakeDeviceFunc(makeDevice<Crl530s4xDevice>) },
     { TYPE_RFN530S4EAX,  MakeDeviceFunc(makeDevice<Rfn530s4eaxDevice>) },
     { TYPE_RFN530S4EAXR, MakeDeviceFunc(makeDevice<Rfn530s4eaxrDevice>) },
     { TYPE_RFN530S4ERX,  MakeDeviceFunc(makeDevice<Rfn530s4erxDevice>) },
@@ -286,6 +292,8 @@ const DeviceLookup deviceFactory {
     { TYPE_RFG301R,      MakeDeviceFunc(makeDevice<Rfg301rDevice>) },
     //  RF Cellular IPLink Relays
     { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
+    //  SETO Device
+    { TYPE_RFN530S4X_DER,   MakeDeviceFunc(makeDevice<Rfn530s4xDerDevice>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

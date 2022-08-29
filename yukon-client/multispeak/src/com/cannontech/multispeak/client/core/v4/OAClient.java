@@ -8,6 +8,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.ODEventNotification;
+import com.cannontech.msp.beans.v4.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -59,4 +61,23 @@ public class OAClient implements IOAClient {
 
     }
 
+    /**
+     * Gets the Event Notification from OA Server
+     * 
+     * @param String the URI of the OA Server
+     * @param ODEventNotification the ODEventNotification used as input.
+     * @return ODEventNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public ODEventNotificationResponse odEventNotification(MultispeakVendor mspVendor, String uri,
+            ODEventNotification odEventNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (ODEventNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, odEventNotification,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
 }

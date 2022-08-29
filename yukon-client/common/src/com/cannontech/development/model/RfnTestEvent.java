@@ -29,6 +29,7 @@ public class RfnTestEvent {
     private MeterConfigurationStatus meterConfigurationStatus;
     private String oldDnp3Address;
     private String newDnp3Address;
+    private Short simCardStatus;
     
     public int getSerialFrom() {
         return serialFrom;
@@ -160,5 +161,11 @@ public class RfnTestEvent {
     }
     public void setNewDnp3Address(String newDnp3Address) {
         this.newDnp3Address = newDnp3Address;
+    }
+    public Short getSimCardStatus() {
+        return this.simCardStatus;
+    }
+    public void setSimCardStatus(Short simCardStatus) {
+        this.simCardStatus = simCardStatus;
     }
 }

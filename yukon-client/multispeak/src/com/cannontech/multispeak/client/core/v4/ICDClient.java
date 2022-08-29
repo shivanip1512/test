@@ -1,5 +1,9 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.GetCDSupportedMeters;
+import com.cannontech.msp.beans.v4.GetCDSupportedMetersResponse;
+import com.cannontech.msp.beans.v4.GetCDMeterState;
+import com.cannontech.msp.beans.v4.GetCDMeterStateResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -28,5 +32,28 @@ public interface ICDClient {
      */
     public GetMethodsResponse getMethods(MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException;
-    
+
+    /**
+     * Get CD Meter State
+     * 
+     * @param mspVendor
+     * @param uri
+     * @param getCDMeterState
+     * @return
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetCDMeterStateResponse getCDMeterState(final MultispeakVendor mspVendor, String uri,
+            GetCDMeterState getCDMeterState) throws MultispeakWebServiceClientException;
+
+    /**
+     * Get CD Supported Meters
+     * 
+     * @param mspVendor
+     * @param uri
+     * @param getCDSupportedMeters
+     * @return
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetCDSupportedMetersResponse getCDSupportedMeters(final MultispeakVendor mspVendor, String uri,
+            GetCDSupportedMeters getCDSupportedMeters) throws MultispeakWebServiceClientException;
 }

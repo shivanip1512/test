@@ -2,12 +2,14 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.List;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.LoadManagementEvent;
+import com.cannontech.msp.beans.v4.QualityDescription;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -56,4 +58,9 @@ public interface MultispeakLMService {
      */
     public ErrorObject control(MspLoadControl mspLoadControl, LiteYukonUser liteYukonUser);
 
+    /**
+     * Return the Yukon Point Quality value that maps to the MultiSpeak QualityDescription value.
+     * PointQuality.NORMAL is the default value returned when no other value is found.
+     */
+    public PointQuality getPointQuality(QualityDescription qualityDescription);
 }

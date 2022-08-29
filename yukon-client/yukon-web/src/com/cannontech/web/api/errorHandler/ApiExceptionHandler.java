@@ -1,6 +1,6 @@
 package com.cannontech.web.api.errorHandler;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,6 +69,8 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.error.model.ApiErrorModel;
 import com.cannontech.web.api.error.model.ApiFieldErrorModel;
+import com.cannontech.web.api.error.model.YukonApiException;
+import com.cannontech.web.api.error.model.YukonApiValidationException;
 import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
@@ -85,7 +87,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = YukonLogManager.getLogger(ApiExceptionHandler.class);
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private static List<String> notSupportingUris = new ArrayList<String>();
+    private static List<String> notSupportingUris = new ArrayList<>();
 
     /**
      * Here, we are adding those URLs which old API Error model returned.
@@ -126,10 +128,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String errorMessage = ex.getMessage();
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.AUTHENTICATION_INVALID, request, uniqueKey);
             apiErrorModel.setDetail(errorMessage);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -142,10 +144,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.NOT_AUTHORIZED, request, uniqueKey);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.FORBIDDEN);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), "User Not Authorized", uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.FORBIDDEN);
         }
     }
 
@@ -158,10 +160,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String reason = messageSourceAccessor.getMessage(ex.getStatus());
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), reason, uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -176,10 +178,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
             if (isNewApiErrorSupported(request)) {
                 ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.OBJECT_ALREADY_EXISTS, request, uniqueKey);
-                return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(),
+                return new ResponseEntity<>(apiErrorModel, new HttpHeaders(),
                         HttpStatus.CONFLICT);
             } else {
-                return new ResponseEntity<Object>(
+                return new ResponseEntity<>(
                         new ApiError(HttpStatus.CONFLICT.value(), "Database error", uniqueKey), new HttpHeaders(),
                         HttpStatus.CONFLICT);
             }
@@ -187,13 +189,44 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.DATABASE_ERROR, request, uniqueKey);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
 
         } else {
-            return new ResponseEntity<Object>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", uniqueKey),
+            return new ResponseEntity<>(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", uniqueKey),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+    }
+    
+    @ExceptionHandler(YukonApiException.class)
+    protected ResponseEntity<Object> handleYukonApiException(YukonApiException exception, WebRequest request) {
+        
+        String uniqueLogRef = CtiUtilities.getYKUniqueKey();
+        String requestUri = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
+        logApiException(request, exception, uniqueLogRef);
+        
+        //default
+        HttpStatus responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ApiErrorModel errorModel;
+        
+        // This currently only allows for a single validation (field) exception
+        // In the future, we might want to include multiple fields with validation issues in YukonApiValidationException
+        // (ApiErrorModel already allows for this)
+        if (exception instanceof YukonApiValidationException) {
+            YukonApiValidationException validationException = (YukonApiValidationException) exception;
+            errorModel = new ApiErrorModel(ApiErrorCategory.VALIDATION_FAILED, requestUri, uniqueLogRef);
+            ApiFieldErrorModel fieldErrorModel = new ApiFieldErrorModel(validationException.getValidationErrorDetails(), 
+                    validationException.getDetail(), validationException.getField(), 
+                    validationException.getRejectedValue(), validationException.getParameters());
+            errorModel.setErrors(List.of(fieldErrorModel));
+            //422 is our standard for validation errors
+            responseStatus = HttpStatus.UNPROCESSABLE_ENTITY; 
+        } else {
+            errorModel = new ApiErrorModel(exception.getApiErrorDetails(), exception.getMessage(), requestUri, uniqueLogRef);
+            //Use the default responseStatus: HttpStatus.INTERNAL_SERVER_ERROR
+            //In the future, we might want to include responseStatus in the exception for flexibility
+        }
+        
+        return new ResponseEntity<>(errorModel, responseStatus);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -208,13 +241,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     ex.getValue(), ex.getRequiredType().getSimpleName());
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.METHOD_ARGUMENT_MISMATCH, request, uniqueKey);
             apiErrorModel.setDetail(detailMessage);
-            return new ResponseEntity<Object>(apiErrorModel, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, HttpStatus.BAD_REQUEST);
         } else {
             ApiError apiError = new ApiError(BAD_REQUEST.value(),
                     String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(),
                             ex.getValue(), ex.getRequiredType().getSimpleName()),
                     uniqueKey);
-            return new ResponseEntity<Object>(apiError, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -239,10 +272,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(ex.getMessage());
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
     
@@ -264,10 +297,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(errorMsg);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), errorMsg, uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -282,10 +315,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(message);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), message, uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -302,9 +335,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(error);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<Object>(new ApiError(BAD_REQUEST.ordinal(), error, uniqueKey), new HttpHeaders(),
+            return new ResponseEntity<>(new ApiError(BAD_REQUEST.ordinal(), error, uniqueKey), new HttpHeaders(),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -324,9 +357,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(builder.substring(0, builder.length() - 2));
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         } else {
-            return new ResponseEntity<Object>(new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
+            return new ResponseEntity<>(new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
                     builder.substring(0, builder.length() - 2), uniqueKey), new HttpHeaders(),
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
@@ -355,6 +388,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .getBindingResult();
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildValidationErrorResponse(bindingResult, request, uniqueKey);
+            log.debug("New ApiError: {}", apiErrorModel.toString());
             return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
             List<ApiFieldError> apiFieldErrors = bindingResult
@@ -377,6 +411,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
             ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error", apiFieldErrors,
                     apiGlobalErrors, uniqueKey);
+            log.debug("ApiError: {}", apiError.toString());
             return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
@@ -423,9 +458,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(errorMessage);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<Object>(new ApiError(HttpStatus.BAD_REQUEST.value(), errorMessage, uniqueKey),
+            return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST.value(), errorMessage, uniqueKey),
                     new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -442,10 +477,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(error);
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(),
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<Object>(
+            return new ResponseEntity<>(
                     new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), error, uniqueKey), new HttpHeaders(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -460,11 +495,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail("Unexpected exception - cause unknown");
-            return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(apiErrorModel, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "Unexpected exception - cause unknown", uniqueKey);
-            return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -527,19 +562,40 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     /**
-     * Handle Method when authentication token in not passed.
+     * Handle Method when authentication token is not passed.
      */
-    public static void authorizationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
+    public static void authenticationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
             throws IOException {
-        String message = String.format("Authorization token not found");
+        
+        String message = "Authorization token not found";
+        ApiErrorDetails errorType = ApiErrorDetails.AUTHENTICATION_REQUIRED;
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        writeErrorToOutput(request, response, uniqueKey, message, errorType, status);
+    }
+    
+    /**
+     * Handle Method when user is not authorized for the endpoint.
+     */
+    public static void notAuthorized(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
+            throws IOException {
+        
+        String message = "User is not authorized to access this endpoint.";
+        ApiErrorDetails errorType = ApiErrorDetails.NOT_AUTHORIZED;
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        writeErrorToOutput(request, response, uniqueKey, message, errorType, status);
+    }
+    
+    private static void writeErrorToOutput(HttpServletRequest request, HttpServletResponse response, String uniqueKey, 
+            String message, ApiErrorDetails errorType, HttpStatus status) throws IOException {
+        
         if (isNewApiErrorSupported(new ServletWebRequest(request))) {
-            final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.AUTHENTICATION_REQUIRED,
+            final ApiErrorModel apiError = new ApiErrorModel(errorType,
                     ServletUtil.getFullURL(request),
                     uniqueKey);
-            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+            parseToJson(response, apiError, status);
         } else {
-            final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), message, uniqueKey);
-            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+            final ApiError apiError = new ApiError(status.value(), message, uniqueKey);
+            parseToJson(response, apiError, status);
         }
     }
 
@@ -566,7 +622,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      * Build and return ApiErrors for Global Error Response with field errors.
      */
     private ApiErrorModel buildValidationErrorResponse(BindingResult bindingResult, WebRequest request, String uniqueKey) {
-        List<ApiFieldErrorModel> errors = new ArrayList<ApiFieldErrorModel>();
+        List<ApiFieldErrorModel> errors = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(bindingResult.getGlobalErrors())) {
             ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
             return buildGlobalErrors(errorDetails, uniqueKey, request, bindingResult);

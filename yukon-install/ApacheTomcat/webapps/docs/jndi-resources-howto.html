@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="./images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 (9.0.56) - JNDI Resources How-To</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="./images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="./images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9</h1><div class="versionInfo">
-            Version 9.0.56,
-            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="index.html">Docs Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>User Guide</h2><ul><li><a href="introduction.html">1) Introduction</a></li><li><a href="setup.html">2) Setup</a></li><li><a href="appdev/index.html">3) First webapp</a></li><li><a href="deployer-howto.html">4) Deployer</a></li><li><a href="manager-howto.html">5) Manager</a></li><li><a href="host-manager-howto.html">6) Host Manager</a></li><li><a href="realm-howto.html">7) Realms and AAA</a></li><li><a href="security-manager-howto.html">8) Security Manager</a></li><li><a href="jndi-resources-howto.html">9) JNDI Resources</a></li><li><a href="jndi-datasource-examples-howto.html">10) JDBC DataSources</a></li><li><a href="class-loader-howto.html">11) Classloading</a></li><li><a href="jasper-howto.html">12) JSPs</a></li><li><a href="ssl-howto.html">13) SSL/TLS</a></li><li><a href="ssi-howto.html">14) SSI</a></li><li><a href="cgi-howto.html">15) CGI</a></li><li><a href="proxy-howto.html">16) Proxy Support</a></li><li><a href="mbeans-descriptors-howto.html">17) MBeans Descriptors</a></li><li><a href="default-servlet.html">18) Default Servlet</a></li><li><a href="cluster-howto.html">19) Clustering</a></li><li><a href="balancer-howto.html">20) Load Balancer</a></li><li><a href="connectors.html">21) Connectors</a></li><li><a href="monitoring.html">22) Monitoring and Management</a></li><li><a href="logging.html">23) Logging</a></li><li><a href="apr.html">24) APR/Native</a></li><li><a href="virtual-hosting-howto.html">25) Virtual Hosting</a></li><li><a href="aio.html">26) Advanced IO</a></li><li><a href="maven-jars.html">27) Mavenized</a></li><li><a href="security-howto.html">28) Security Considerations</a></li><li><a href="windows-service-howto.html">29) Windows Service</a></li><li><a href="windows-auth-howto.html">30) Windows Authentication</a></li><li><a href="jdbc-pool.html">31) Tomcat's JDBC Pool</a></li><li><a href="web-socket-howto.html">32) WebSocket</a></li><li><a href="rewrite.html">33) Rewrite</a></li><li><a href="cdi.html">34) CDI 2 and JAX-RS</a></li><li><a href="graal.html">35) AOT/GraalVM Support</a></li></ul></div><div><h2>Reference</h2><ul><li><a href="RELEASE-NOTES.txt">Release Notes</a></li><li><a href="config/index.html">Configuration</a></li><li><a href="api/index.html">Tomcat Javadocs</a></li><li><a href="servletapi/index.html">Servlet 4.0 Javadocs</a></li><li><a href="jspapi/index.html">JSP 2.3 Javadocs</a></li><li><a href="elapi/index.html">EL 3.0 Javadocs</a></li><li><a href="websocketapi/index.html">WebSocket 1.1 Javadocs</a></li><li><a href="jaspicapi/index.html">JASPIC 1.1 Javadocs</a></li><li><a href="annotationapi/index.html">Common Annotations 1.3 Javadocs</a></li><li><a href="https://tomcat.apache.org/connectors-doc/">JK 1.2 Documentation</a></li></ul></div><div><h2>Apache Tomcat Development</h2><ul><li><a href="building.html">Building</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="https://wiki.apache.org/tomcat/TomcatVersions">Status</a></li><li><a href="developers.html">Developers</a></li><li><a href="architecture/index.html">Architecture</a></li><li><a href="tribes/introduction.html">Tribes</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>JNDI Resources How-To</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="./images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 (9.0.65) - JNDI Resources How-To</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="./images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="./images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9</h1><div class="versionInfo">
+            Version 9.0.65,
+            <time datetime="2022-07-14">Jul 14 2022</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="index.html">Docs Home</a></li><li><a href="https://cwiki.apache.org/confluence/display/TOMCAT/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>User Guide</h2><ul><li><a href="introduction.html">1) Introduction</a></li><li><a href="setup.html">2) Setup</a></li><li><a href="appdev/index.html">3) First webapp</a></li><li><a href="deployer-howto.html">4) Deployer</a></li><li><a href="manager-howto.html">5) Manager</a></li><li><a href="host-manager-howto.html">6) Host Manager</a></li><li><a href="realm-howto.html">7) Realms and AAA</a></li><li><a href="security-manager-howto.html">8) Security Manager</a></li><li><a href="jndi-resources-howto.html">9) JNDI Resources</a></li><li><a href="jndi-datasource-examples-howto.html">10) JDBC DataSources</a></li><li><a href="class-loader-howto.html">11) Classloading</a></li><li><a href="jasper-howto.html">12) JSPs</a></li><li><a href="ssl-howto.html">13) SSL/TLS</a></li><li><a href="ssi-howto.html">14) SSI</a></li><li><a href="cgi-howto.html">15) CGI</a></li><li><a href="proxy-howto.html">16) Proxy Support</a></li><li><a href="mbeans-descriptors-howto.html">17) MBeans Descriptors</a></li><li><a href="default-servlet.html">18) Default Servlet</a></li><li><a href="cluster-howto.html">19) Clustering</a></li><li><a href="balancer-howto.html">20) Load Balancer</a></li><li><a href="connectors.html">21) Connectors</a></li><li><a href="monitoring.html">22) Monitoring and Management</a></li><li><a href="logging.html">23) Logging</a></li><li><a href="apr.html">24) APR/Native</a></li><li><a href="virtual-hosting-howto.html">25) Virtual Hosting</a></li><li><a href="aio.html">26) Advanced IO</a></li><li><a href="maven-jars.html">27) Mavenized</a></li><li><a href="security-howto.html">28) Security Considerations</a></li><li><a href="windows-service-howto.html">29) Windows Service</a></li><li><a href="windows-auth-howto.html">30) Windows Authentication</a></li><li><a href="jdbc-pool.html">31) Tomcat's JDBC Pool</a></li><li><a href="web-socket-howto.html">32) WebSocket</a></li><li><a href="rewrite.html">33) Rewrite</a></li><li><a href="cdi.html">34) CDI 2 and JAX-RS</a></li><li><a href="graal.html">35) AOT/GraalVM Support</a></li></ul></div><div><h2>Reference</h2><ul><li><a href="RELEASE-NOTES.txt">Release Notes</a></li><li><a href="config/index.html">Configuration</a></li><li><a href="api/index.html">Tomcat Javadocs</a></li><li><a href="servletapi/index.html">Servlet 4.0 Javadocs</a></li><li><a href="jspapi/index.html">JSP 2.3 Javadocs</a></li><li><a href="elapi/index.html">EL 3.0 Javadocs</a></li><li><a href="websocketapi/index.html">WebSocket 1.1 Javadocs</a></li><li><a href="jaspicapi/index.html">JASPIC 1.1 Javadocs</a></li><li><a href="annotationapi/index.html">Common Annotations 1.3 Javadocs</a></li><li><a href="https://tomcat.apache.org/connectors-doc/">JK 1.2 Documentation</a></li></ul></div><div><h2>Apache Tomcat Development</h2><ul><li><a href="building.html">Building</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="https://cwiki.apache.org/confluence/display/TOMCAT/Tomcat+Versions">Status</a></li><li><a href="developers.html">Developers</a></li><li><a href="architecture/index.html">Architecture</a></li><li><a href="tribes/introduction.html">Tribes</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>JNDI Resources How-To</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#web.xml_configuration">web.xml configuration</a></li><li><a href="#context.xml_configuration">context.xml configuration</a></li><li><a href="#Global_configuration">Global configuration</a></li><li><a href="#Using_resources">Using resources</a></li><li><a href="#Tomcat_Standard_Resource_Factories">Tomcat Standard Resource Factories</a><ol><li><a href="#Generic_JavaBean_Resources">Generic JavaBean Resources</a></li><li><a href="#Memory_UserDatabase_Resources">Memory UserDatabase Resources</a></li><li><a href="#DataSource_UserDatabase_Resources">DataSource UserDatabase Resources</a></li><li><a href="#JavaMail_Sessions">JavaMail Sessions</a></li><li><a href="#JDBC_Data_Sources">JDBC Data Sources</a></li></ol></li><li><a href="#Adding_Custom_Resource_Factories">Adding Custom Resource Factories</a></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -249,7 +249,7 @@ public class MyBean {
     <p><strong>WARNING</strong> - Be sure you respect the element ordering
     that is required by the DTD for web application deployment descriptors!
     See the
-    <a href="https://wiki.apache.org/tomcat/Specifications">Servlet
+    <a href="https://cwiki.apache.org/confluence/display/TOMCAT/Specifications">Servlet
     Specification</a> for details.</p>
 
   <h5>3.  Code Your Application's Use Of This Resource</h5>
@@ -287,102 +287,20 @@ writer.println("foo = " + bean.getFoo() + ", bar = " +
     <code>foo</code> property (although we could have), the bean will
     contain whatever default value is set up by its constructor.</p>
 
-    <p>Some beans have properties with types that cannot automatically be
-    converted from a string value. Setting such properties using the Tomcat
-    BeanFactory will fail with a NamingException. In cases were those beans
-    provide methods to set the properties from a string value, the Tomcat
-    BeanFactory can be configured to use these methods. The configuration is
-    done with the <code>forceString</code> attribute.</p>
+    <p>If the bean property is of type <code>String</code>, the BeanFactory
+    will call the property setter using the provided property value. If the
+    bean property type is a primitive or a primitive wrapper, the the
+    BeanFactory will convert the value to the appropriate primitive or
+    primitive wrapper and then use that value when calling the setter. Some
+    beans have properties with types that cannot automatically be converted
+    from <code>String</code>. If the bean provides an alternative setter with
+    the same name that does take a <code>String</code>, the BeanFactory will
+    attempt to use that setter. If the BeanFactory cannot use the value or
+    perform an appropriate conversion, setting the property will fail with a
+    NamingException.</p>
 
-    <p>Assume our bean looks like this:</p>
-
-<div class="codeBox"><pre><code>package com.mycompany;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-public class MyBean2 {
-
-  private InetAddress local = null;
-
-  public InetAddress getLocal() {
-    return local;
-  }
-
-  public void setLocal(InetAddress ip) {
-    local = ip;
-  }
-
-  public void setLocal(String localHost) {
-    try {
-      local = InetAddress.getByName(localHost);
-    } catch (UnknownHostException ex) {
-    }
-  }
-
-  private InetAddress remote = null;
-
-  public InetAddress getRemote() {
-    return remote;
-  }
-
-  public void setRemote(InetAddress ip) {
-    remote = ip;
-  }
-
-  public void host(String remoteHost) {
-    try {
-      remote = InetAddress.getByName(remoteHost);
-    } catch (UnknownHostException ex) {
-    }
-  }
-
-}</code></pre></div>
-
-    <p>The bean has two properties, both are of type <code>InetAddress</code>.
-    The first property <code>local</code> has an additional setter taking a
-    string argument. By default the Tomcat BeanFactory would try to use the
-    automatically detected setter with the same argument type as the property
-    type and then throw a NamingException, because it is not prepared to convert
-    the given string attribute value to <code>InetAddress</code>.
-    We can tell the Tomcat BeanFactory to use the other setter like that:</p>
-
-<div class="codeBox"><pre><code>&lt;Context ...&gt;
-  ...
-  &lt;Resource name="bean/MyBeanFactory" auth="Container"
-            type="com.mycompany.MyBean2"
-            factory="org.apache.naming.factory.BeanFactory"
-            forceString="local"
-            local="localhost"/&gt;
-  ...
-&lt;/Context&gt;</code></pre></div>
-
-    <p>The bean property <code>remote</code> can also be set from a string,
-    but one has to use the non-standard method name <code>host</code>.
-    To set <code>local</code> and <code>remote</code> use the following
-    configuration:</p>
-
-<div class="codeBox"><pre><code>&lt;Context ...&gt;
-  ...
-  &lt;Resource name="bean/MyBeanFactory" auth="Container"
-            type="com.mycompany.MyBean2"
-            factory="org.apache.naming.factory.BeanFactory"
-            forceString="local,remote=host"
-            local="localhost"
-            remote="tomcat.apache.org"/&gt;
-  ...
-&lt;/Context&gt;</code></pre></div>
-
-    <p>Multiple property descriptions can be combined in
-    <code>forceString</code> by concatenation with comma as a separator.
-    Each property description consists of either only the property name
-    in which case the BeanFactory calls the setter method. Or it consist
-    of <code>name=method</code> in which case the property named
-    <code>name</code> is set by calling method <code>method</code>.
-    For properties of types <code>String</code> or of primitive type
-    or of their associated primitive wrapper classes using
-    <code>forceString</code> is not needed. The correct setter will be
-    automatically detected and argument conversion will be applied.</p>
+    <p>The <code>forceString</code> property available in earlier Tomcat
+    releases has been removed as a security hardening measure.</p>
 
   </div></div>
 
@@ -435,7 +353,7 @@ public class MyBean2 {
     </p>
 
     <p>The <code>readonly</code> attribute is optional and defaults to
-    <code>true</code> if not supplied. If the XML is writeable then it will be
+    <code>true</code> if not supplied. If the XML is writable then it will be
     written to when Tomcat starts. <strong>WARNING:</strong> When the file is
     written it will inherit the default file permissions for the user Tomcat
     is running as. Ensure that these are appropriate to maintain the security
@@ -555,7 +473,7 @@ create table user_roles (
     documentation for further instructions.</p>
 
     <p>The <code>readonly</code> attribute is optional and defaults to
-    <code>true</code> if not supplied. If the database is writeable then changes
+    <code>true</code> if not supplied. If the database is writable then changes
     made through the Tomcat management to the <code>UserDatabase</code> can
     be persisted to the database using the <code>save</code> operation.</p>
 
@@ -685,7 +603,7 @@ create table user_roles (
     <p><strong>WARNING</strong> - Be sure you respect the element ordering
     that is required by the DTD for web application deployment descriptors!
     See the
-    <a href="https://wiki.apache.org/tomcat/Specifications">Servlet
+    <a href="https://cwiki.apache.org/confluence/display/TOMCAT/Specifications">Servlet
     Specification</a> for details.</p>
 
     <h5>2.  Code Your Application's Use Of This Resource</h5>
@@ -854,7 +772,7 @@ Transport.send(message);</code></pre></div>
     <p><strong>WARNING</strong> - Be sure you respect the element ordering
     that is required by the DTD for web application deployment descriptors!
     See the
-    <a href="https://wiki.apache.org/tomcat/Specifications">Servlet
+    <a href="https://cwiki.apache.org/confluence/display/TOMCAT/Specifications">Servlet
     Specification</a> for details.</p>
 
     <h5>3.  Code Your Application's Use Of This Resource</h5>
@@ -1151,7 +1069,7 @@ public class MyBeanFactory implements ObjectFactory {
     <p><strong>WARNING</strong> - Be sure you respect the element ordering
     that is required by the DTD for web application deployment descriptors!
     See the
-    <a href="https://wiki.apache.org/tomcat/Specifications">Servlet
+    <a href="https://cwiki.apache.org/confluence/display/TOMCAT/Specifications">Servlet
     Specification</a> for details.</p>
 
   <h4>3.  Code Your Application's Use Of This Resource</h4>
@@ -1200,5 +1118,5 @@ writer.println("foo = " + bean.getFoo() + ", bar = " +
     compatible APIs.</p>
 
 </div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2021, The Apache Software Foundation
+    Copyright &copy; 1999-2022, The Apache Software Foundation
     </div></footer></div></body></html>

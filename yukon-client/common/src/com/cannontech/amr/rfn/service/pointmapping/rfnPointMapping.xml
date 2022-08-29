@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE point [
-    <!ENTITY focusAxGen2 "RFN520FAXE,RFN520FRXE,RFN520FAXED,RFN520FRXED,RFN530FAXE,RFN530FRXE">
-    <!ENTITY focusAxGen2Base "RFN520FAXE,RFN520FAXED,RFN530FAXE">
+    <!ENTITY focusAxGen2 "RFN520FAXE,RFN520FRXE,RFN520FAXED,RFN520FRXED,RFN530FAXE,RFN530FRXE,CRL520FAXE,CRL520FRXE,CRL520FAXED,CRL520FRXED">
+    <!ENTITY focusAxGen2Base "RFN520FAXE,RFN520FAXED,RFN530FAXE,CRL520FAXE,CRL520FAXED">
     <!ENTITY focusAxGen2Poly "RFN530FAXE,RFN530FRXE">
 ]>
 <pointMappings
@@ -301,10 +301,15 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
         
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -349,7 +354,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR"> 
+        <point name="Peak kW"> 
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -359,7 +364,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak Demand Daily" icdExcludedTypes="RFN410CL,RFN410FD,RFN410FL,RFN410FX,RFN420CD,WRL420CD,RFN420CL,WRL420CL,RFN420FD,RFN420FL,RFN420FRD,RFN420FRX,RFN420FX,RFN430A3D,RFN430A3T,RFN430A3K,RFN430A3R,RFN430KV,RFN510FL,RFN530S4X,RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Peak Demand Daily" icdExcludedTypes="RFN410CL,RFN410FD,RFN410FL,RFN410FX,RFN420CD,WRL420CD,RFN420CL,WRL420CL,RFN420FD,RFN420FL,RFN420FRD,RFN420FRX,RFN420FX,RFN430A3D,RFN430A3T,RFN430A3K,RFN430A3R,RFN430KV,RFN510FL,CRL530S4X,RFN530S4X,RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -369,7 +374,7 @@
                 <modifier>Daily Max</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh" icdExcludedTypes="RFN530S4X">
+        <point name="Net kWh" icdExcludedTypes="RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -437,10 +442,15 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
+        <paoType value="CRL520FAXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
 
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -486,7 +496,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW (Rate A kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -497,7 +507,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW (Rate B kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -508,7 +518,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW (Rate C kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -519,7 +529,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW (Rate D kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -530,7 +540,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate A kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
+        <point name="Net kWh (Rate A kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -543,7 +553,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate B kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
+        <point name="Net kWh (Rate B kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -556,7 +566,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate C kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
+        <point name="Net kWh (Rate C kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -569,7 +579,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate D kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
+        <point name="Net kWh (Rate D kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -611,10 +621,15 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
 
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -2455,6 +2470,10 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
 
@@ -2512,6 +2531,10 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
 
@@ -4072,6 +4095,10 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
         <!-- FOCUS KWH -->
@@ -4080,6 +4107,7 @@
         <paoType value="RFN510FL"/>
         <!--  L&G S4e and S4x -->
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -4206,6 +4234,10 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <paoType value="RFN530FAXE"/>
         <paoType value="RFN530FRXE"/>
 
@@ -5159,6 +5191,10 @@
         <paoType value="RFN520FRXE"/>
         <paoType value="RFN520FAXED"/>
         <paoType value="RFN520FRXED"/>
+        <paoType value="CRL520FAXE"/>
+        <paoType value="CRL520FAXED"/>
+        <paoType value="CRL520FRXE"/>
+        <paoType value="CRL520FRXED"/>
         <point name="Voltage (Single Phase)">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -5209,6 +5245,7 @@
         <paoType value="RFN530FRXE"/>
 
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -5357,6 +5394,7 @@
     <pointGroup>    
         <!-- Mappings for RFN-530 nodes -->
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -5391,7 +5429,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5403,7 +5441,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="kVArh Leading (Q1 + Q3)" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X">
+        <point name="kVArh Leading (Q1 + Q3)" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5441,7 +5479,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Leading (Q1 + Q3)" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X">
+        <point name="kVAh Leading (Q1 + Q3)" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5492,7 +5530,7 @@
                 <modifier>Max</modifier>
             </baseModifiers>
         </point>
-        <point name="Net Peak kW" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Net Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5601,7 +5639,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate A kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh (Rate A kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5670,7 +5708,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net Peak kW (Rate A kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Net Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5786,7 +5824,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate B kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh (Rate B kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5855,7 +5893,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net Peak kW (Rate B kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Net Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5971,7 +6009,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate C kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh (Rate C kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6040,7 +6078,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net Peak kW (Rate C kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Net Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6156,7 +6194,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Net kVArh (Rate D kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X">
+        <point name="Net kVArh (Rate D kVArh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX,RFN530S4ERX,RFN530S4EAXR,RFN530S4X,CRL530S4X">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6225,7 +6263,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Net Peak kW (Rate D kW)" icdExcludedTypes="RFN530S4ERXR,RFN530S4EAX,RFN530S4ERX,RFN530S4EAXR">
+        <point name="Net Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6419,7 +6457,7 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-        <point name="Average Power Factor" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR">
+        <point name="Average Power Factor" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,CRL530S4X">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6431,7 +6469,7 @@
                 <modifier>Avg</modifier>
             </modifiers>
         </point>
-        <point name="Average Power Factor Frozen" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR">
+        <point name="Average Power Factor Frozen" icdExcludedTypes="RFN530S4X,RFN530S4EAX,RFN530S4EAXR,CRL530S4X">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6448,7 +6486,7 @@
 
     <pointGroup>
         <paoType value="RFN530S4X" />
-        
+        <paoType value="CRL530S4X" />
         <point name="Net kW">
             <uom>W</uom>
             <multiplier value=".001"/>

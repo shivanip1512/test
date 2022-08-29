@@ -39,6 +39,7 @@
 <entry key="yukon.common.attributeGroups.GATEWAY_STATISTICS">Gateway Statistics</entry>
 <entry key="yukon.common.attributeGroups.DEMAND_RESPONSE">Demand Response</entry>
 <entry key="yukon.common.attributeGroups.ESTIMATED_LOAD">Estimated Load</entry>
+<entry key="yukon.common.attributeGroups.CELLULAR_ENUMERATED_VALUE_EVENT">Cellular SIM Card Inserted/Removed</entry>
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 <entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
 <entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>
@@ -57,6 +58,8 @@
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.cancelChanges">Cancel changes</entry>
 <entry key="yukon.common.celsius">°C</entry>
+<entry key="yukon.common.childSelected">child selected</entry>
+<entry key="yukon.common.childrenSelected">children selected</entry>
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.chooseAccountNumbers">Choose Account Numbers</entry>
 <entry key="yukon.common.chooseControlAreas">Choose Control Areas</entry>
@@ -280,6 +283,7 @@
 <entry key="yukon.common.search">Search</entry>
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
+<entry key="yukon.common.selected">Selected</entry>
 <entry key="yukon.common.selectall">Select All</entry>
 <entry key="yukon.common.selectDateRange">Select Date Range</entry>
 <entry key="yukon.common.selectGroup">Select Device Group</entry>
@@ -297,6 +301,7 @@
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.stop">Stop</entry>
+<entry key="yukon.common.selectTypes">Select Type(s)</entry>
 <entry key="yukon.common.successful">Successful</entry>
 <entry key="yukon.common.successful.partial">Partially Successful</entry>
 <entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
@@ -387,6 +392,8 @@
 <entry key="yukon.common.units.ms">ms</entry>
 <entry key="yukon.common.units.sec">sec</entry>
 
+<entry key="yukon.common.copy.success">{0} copied successfully.</entry>
+<entry key="yukon.common.copy.error">{0} could not be copied. Error: {1}.</entry>
 <entry key="yukon.common.save.success">{0} saved successfully.</entry>
 <entry key="yukon.common.delete.success">{0} deleted successfully.</entry>
 
@@ -417,6 +424,7 @@
 <entry key="yukon.common.rfnMeters">RFN Meters</entry>
 <entry key="yukon.common.plcMeters">PLC Meters</entry>
 <entry key="yukon.common.wifiMeters">Wifi Meters</entry>
+<entry key="yukon.common.cellMeters">Cellular Meters</entry>
 <entry key="yukon.common.waterMeters">Water Meters</entry>
 <entry key="yukon.common.gasMeters">Gas Meters</entry>
 <entry key="yukon.common.gateways">Gateways</entry>

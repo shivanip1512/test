@@ -343,10 +343,11 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         hardware.setAccountId(accountId);
         if (type.isEatonCloud()) {
             String guid = UUID.randomUUID().toString();
-            int value = nextValueHelper.getNextValue("EatonCloudSimulatorNameIncrementor");
+            int value = nextValueHelper.getNextValue("EatonCloudSimIncrementor");
             String name = type.getForHardwareType() + "_SIM_" + value;
+            String serial = type.getForHardwareType() +""+ value + "SIM";
             hardware.setDisplayName(name);
-            hardware.setSerialNumber(name);
+            hardware.setSerialNumber(serial);
             hardware.setGuid(guid);
             hardware.setCreatingNewTwoWayDevice(false);
             hardware.setDisplayLabel(name);

@@ -21,6 +21,9 @@ yukon.highChart = (function () {
         }).done(function (response, textStatus, jqXHR) {
             yukon.highChart.buildChart($(parameters.containerIdentifier), response, parameters.title,
                 parameters.height, parameters.width);
+            if (parameters.callback) {
+                parameters.callback();
+            }
         });
     },
     
@@ -144,14 +147,14 @@ yukon.highChart = (function () {
                 newChartWidth = dialog.find('.highcharts-container').width() - widthDifference;
             
             if (ui.originalSize.width > ui.size.width) {
-                newChartWidth = newChartWidth - 10;
+                newChartWidth = newChartWidth - 2;
             } else  {
-                newChartWidth = newChartWidth + 10;
+                newChartWidth = newChartWidth + 2;
             }
             if (ui.originalSize.height > ui.size.height) {
-                newChartHeight = newChartHeight - 10;
+                newChartHeight = newChartHeight - 2;
             } else  {
-                newChartHeight = newChartHeight + 10;
+                newChartHeight = newChartHeight + 2;
             }
             
             dialog.find(".js-highchart-graph-container").each(function (index, chartContainer) {
@@ -170,7 +173,7 @@ yukon.highChart = (function () {
             });
             
             dialog.height(dialog.parent().height()-dialog.prev('.ui-dialog-titlebar').height()-34);
-            dialog.width(dialog.prev('.ui-dialog-titlebar').width());
+            dialog.width(dialog.prev('.ui-dialog-titlebar').width() - dialog.prev('.ui-dialog-titlebar').find('.ui-dialog-titlebar-close').width());
         },
         
         /**
@@ -181,11 +184,13 @@ yukon.highChart = (function () {
         reloadChartIfExpired: function(params) {
             var chartId,
                 dataUrl,
+                callback,
                 newLargestTime;
             /* validation */
             _validateReloadParams(params);
             chartId = params.chartId;
             dataUrl = params.dataUrl;
+            callback = params.callback;
             //assumes data is of type Hash
             return function(data) {
                 newLargestTime = data.largestTime;
@@ -202,12 +207,13 @@ yukon.highChart = (function () {
                         title: chart.title.textStr,
                         height: chart.chartHeight,
                         width: chart.chartWidth,
-                        chartUrl: dataUrl
+                        chartUrl: dataUrl,
+                        callback: callback
                     };
                     _buildChart(parameters);
                 }
             };
-        }
+        },
         
     };
  

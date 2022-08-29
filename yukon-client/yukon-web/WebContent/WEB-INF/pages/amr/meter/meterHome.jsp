@@ -131,12 +131,16 @@
                     <c:when test="${showPolyphaseReadings}">
                        <tags:widget bean="polyphaseMeterReadingsWidget"/>
                     </c:when>
+                    <c:when test ="${isDerEdgeCooordinator}">
+                        <!-- Don't show any meter reading widget -->
+                    </c:when>
                     <c:otherwise>
                        <tags:widget bean="meterReadingsWidget"/>
                     </c:otherwise>
                 </c:choose>
                 
                 <c:if test="${showWifiConnection}"><tags:widget bean="wifiConnectionWidget"/></c:if>
+                <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
                 
                 <c:if test="${showRfMetadata}">
                     <cti:msg var="widgetHelpText" key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText"/>
@@ -154,10 +158,15 @@
             </div>
             
             <div class="column two nogutter">
-                <div id="trendWidget">
-                   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
-                </div>
-                
+                <c:if test="${!isDerEdgeCooordinator}">
+                    <div id="trendWidget">
+                        <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
+                    </div>
+                </c:if>
+                <c:if test="${showInfrastructureWarnings}">
+                    <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
+                    <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}"/>
+                </c:if>
                 <c:if test="${showDisconnect}">
                     <cti:url var="url" value="/widget/disconnectMeterWidget/helpInfo">
                         <cti:param name="deviceId" value="${deviceId}"/>
@@ -170,8 +179,10 @@
                 <c:if test="${showOutage}"><tags:widget bean="meterOutagesWidget"/></c:if>
                 <c:if test="${showRfOutage}"><tags:widget bean="rfnOutagesWidget"/></c:if>
                 <c:if test="${showTou}"><tags:widget bean="touWidget"/></c:if>
-                <cti:msg var="widgetHelpText" key="yukon.web.widgets.configWidget.helpText"/>
-                <c:if test="${showConfig}"><tags:widget bean="configWidget" helpText="${widgetHelpText}"/></c:if>
+                <c:if test="${showConfig}">
+                    <cti:msg var="widgetHelpText" key="yukon.web.widgets.configWidget.helpText" argument=""/>
+                    <tags:widget bean="configWidget" helpText="${widgetHelpText}"/>
+                </c:if>
             </div>
         </div>
     </tags:widgetContainer>

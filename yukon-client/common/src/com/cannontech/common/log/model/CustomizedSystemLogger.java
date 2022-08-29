@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 public enum CustomizedSystemLogger {
     CUSTOM_API_LOGGER("com.cannontech.web.filter.TokenAuthenticationAndLoggingFilter"),
     CUSTOM_COMMS_LOGGER("com.cannontech.services.smartNotification", "com.cannontech.common.smartNotification"),
+    CUSTOM_EATON_CLOUD_COMMS_LOGGER("com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudCommunicationServiceImplV1"),
     CUSTOM_RFN_COMMS_LOGGER("com.cannontech.dr.rfn", "com.cannontech.services.rfn"),
     CUSTOM_SMART_NOTIFICATION_LOGGER("com.cannontech.services.smartNotification.service.impl");
 

@@ -260,6 +260,9 @@
     <ClCompile Include="test_dev_rf_cellular_relay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_cmd_rfn_DerPayloadDelivery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\rtdb_test_helpers.h">

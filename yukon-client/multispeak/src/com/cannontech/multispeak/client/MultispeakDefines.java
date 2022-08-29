@@ -33,6 +33,7 @@ public class MultispeakDefines {
     public static long MSP_REQUEST_MESSAGE_TIMEOUT = 120000;
     public static long MSP_MAX_INITIATE_REQUEST_OBJECTS = 15;
     public static String MSP_TEMPLATE_NAME_DEFAULT = "*Default Template";
+    public static List<MspAttribute> MSP_VENDOR_ATTRIBUTES = List.of(MspAttribute.PEAKDEMAND_USAGE);
 
     // SERVER BUS Interfaces
     public static final String MR_Server_STR = "MR_Server";

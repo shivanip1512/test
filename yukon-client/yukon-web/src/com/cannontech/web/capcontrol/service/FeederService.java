@@ -66,4 +66,9 @@ public interface FeederService {
      * Returns whether the feeder is assigned to a voltage point for a zone.
      */
     boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException;
+    
+    /**
+     * Returns whether the feeder is assigned to a regulator point for a zone.
+     */
+    boolean isFeederAssignedToRegulatorPointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException;
 }

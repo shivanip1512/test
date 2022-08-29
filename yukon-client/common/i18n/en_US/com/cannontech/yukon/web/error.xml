@@ -88,7 +88,7 @@
     <entry key="yukon.web.error.101105">{0} Must be between {1} and {2}.</entry>
     <entry key="yukon.web.error.101106">{0} already exists.</entry>
     <entry key="yukon.web.error.101107">{0} does not exist.</entry>
-    <entry key="yukon.web.error.101108">Provided type not supported.</entry>
+    <entry key="yukon.web.error.101108">Provided value not supported.</entry>
     <entry key="yukon.web.error.101109">The start date must be before {0} the end date.</entry>
     <entry key="yukon.web.error.101110">Must be greater than {0}.</entry>
     <entry key="yukon.web.error.101111">Must be a positive {0} number.</entry>
@@ -98,6 +98,10 @@
     <entry key="yukon.web.error.101114">{0} must have valid length of {1}. Current value: {2}.</entry>
     <entry key="yukon.web.error.101115">{0} must only contain the following characters : A-Z a-z 0-9 . $ _ and must not start or end with '.' character.</entry>
     <entry key="yukon.web.error.101116">{0} must have future date.</entry>
+    <entry key="yukon.web.error.101117">{0} length must be even.</entry>
+    <entry key="yukon.web.error.101118">{0} must contain only hexidecimal characters: 0-9 A-F a-f.</entry>
+    <entry key="yukon.web.error.101119">{0} field is not supported.</entry>
+    <entry key="yukon.web.error.101120">{0} is reserved for System.</entry>
     
     <!-- Theme and Image Validation -->
     <entry key="yukon.web.theme.error.THEME_NOT_FOUND">Theme Not Found</entry>

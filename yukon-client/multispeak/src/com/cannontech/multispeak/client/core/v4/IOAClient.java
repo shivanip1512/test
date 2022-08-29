@@ -2,6 +2,8 @@ package com.cannontech.multispeak.client.core.v4;
 
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.ODEventNotification;
+import com.cannontech.msp.beans.v4.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -32,4 +34,15 @@ public interface IOAClient {
      */
     public GetMethodsResponse getMethods(MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets the Event Notification.
+     * 
+     * @param String              the URI of the OA Server
+     * @param ODEventNotification the ODEventNotification used as input.
+     * @return ODEventNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public ODEventNotificationResponse odEventNotification(MultispeakVendor mspVendor, String uri,
+            ODEventNotification odEventNotification) throws MultispeakWebServiceClientException;
 }

@@ -27,11 +27,38 @@ public class SimulatorSettings implements Serializable {
     // used for testing simulator
     private int deviceId;
 
+    private RecordingInterval recordingInterval = RecordingInterval.RECORDING_INTERVAL_60_MINUTES;
     private ReportingInterval reportingInterval = ReportingInterval.REPORTING_INTERVAL_24_HOURS;
 
-    public static enum ReportingInterval implements DisplayableEnum {
+    public enum RecordingInterval implements DisplayableEnum {
+        RECORDING_INTERVAL_15_MINUTES(Duration.standardMinutes(15)),
+        RECORDING_INTERVAL_30_MINUTES(Duration.standardMinutes(30)),
+        RECORDING_INTERVAL_60_MINUTES(Duration.standardMinutes(60));
+        private static final String prefix = "yukon.web.modules.dev.rfnMeterSimulator.recordingInterval.types.";
+        private Duration duration;
+
+        RecordingInterval(Duration duration) {
+            this.duration = duration;
+        }
+
+        public int getSeconds() {
+            return duration.toStandardSeconds().getSeconds();
+        }
+
+        public Duration getDuration() {
+            return duration;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return prefix + name();
+        }
+    }
+
+    public enum ReportingInterval implements DisplayableEnum {
         REPORTING_INTERVAL_1_HOURS(Duration.standardHours(1)),
         REPORTING_INTERVAL_4_HOURS(Duration.standardHours(4)),
+        REPORTING_INTERVAL_6_HOURS(Duration.standardHours(6)),
         REPORTING_INTERVAL_24_HOURS(Duration.standardDays(1)),;
         private static final String prefix = "yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.";
         private Duration duration;
@@ -58,14 +85,23 @@ public class SimulatorSettings implements Serializable {
         }
     }
 
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int lcr6700serialFrom, int lcr6700serialTo, int percentOfDuplicates, ReportingInterval reportingInterval, int tlvVersion) {
+    public SimulatorSettings(
+                int lcr6200serialFrom, int lcr6200serialTo, 
+                int lcr6600serialFrom, int lcr6600serialTo, 
+                int lcr6700serialFrom, int lcr6700serialTo, 
+                int percentOfDuplicates, 
+                RecordingInterval recordingInterval, 
+                ReportingInterval reportingInterval, 
+                int tlvVersion) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
         this.lcr6700serialFrom = lcr6700serialFrom;
         this.lcr6700serialTo = lcr6700serialTo;
+
         this.percentOfDuplicates = percentOfDuplicates;
+        this.recordingInterval = recordingInterval;
         this.reportingInterval = reportingInterval;
         this.tlvVersion = tlvVersion;
     }
@@ -161,6 +197,14 @@ public class SimulatorSettings implements Serializable {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public RecordingInterval getRecordingInterval() {
+        return recordingInterval;
+    }
+
+    public void setRecordingInterval(RecordingInterval recordingInterval) {
+        this.recordingInterval = recordingInterval;
     }
 
     public ReportingInterval getReportingInterval() {

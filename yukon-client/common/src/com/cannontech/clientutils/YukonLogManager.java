@@ -117,7 +117,7 @@ public class YukonLogManager {
                            .addComponent(triggeringPolicy)
                            .addComponent(strategyBuilder));
         
-        // Create commsRollingFile and add it to the builder.
+        // Create smartNotifRollingFile and add it to the builder.
         builder.add(builder.newAppender("smartNotifRollingFile", "SmartNotifRollingFile")
                            .add(customPatternLayout)
                            .addComponent(triggeringPolicy)
@@ -134,9 +134,14 @@ public class YukonLogManager {
                            .add(customPatternLayout)
                            .addComponent(triggeringPolicy)
                            .addComponent(strategyBuilder));
+        
+        // Create yukonRfnRollingFile and add it to the builder.
+        builder.add(builder.newAppender("eatonCloudCommsRollingFile", "EatonCloudCommsRollingFile")
+                           .add(customPatternLayout)
+                           .addComponent(triggeringPolicy)
+                           .addComponent(strategyBuilder));
 
         // Load the other loggers which are there in DB table.User can add any class and corresponding logging level to the DB.
-        // As of now I have created a dummy database and tested this.I am not committing the DB changes as it will fail in VM.
         getLoggers().forEach((loggerName, level) -> {
             if (CustomizedSystemLogger.isCustomizedAppenderLogger(loggerName)) {
                 builder.add(builder.newLogger(loggerName, level)
@@ -492,6 +497,7 @@ public class YukonLogManager {
      * Returns rfnCommsLogger for the specified class name, used for logging communications to and from Network Manager.
      */
     public static Logger getRfnLogger(Class<?> c) {
+
         Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
         if (loggers.containsKey(c.getCanonicalName())) {
             return (Logger) LogManager.getLogger(c);
@@ -504,6 +510,32 @@ public class YukonLogManager {
             }
             // If class is not following package structure then return default logger.
             return getRfnLogger();
+        }
+    }
+
+    /**
+     * Returns eatonCloudCommsLogger, used for logging communications to and from Eaton Cloud.
+     */
+    public static Logger getEatonCloudCommsLogger() {
+        return getLogger("eatonCloudCommsLogger");
+    }
+
+    /**
+     * Returns eatonCloudCommsLogger, used for logging communications to and from Eaton Cloud.
+     */
+    public static Logger getEatonCloudCommsLogger(Class<?> c) {
+        Map<String, LoggerConfig> loggers = getMyLogger().getContext().getConfiguration().getLoggers();
+        if (loggers.containsKey(c.getCanonicalName())) {
+            return (Logger) LogManager.getLogger(c);
+        } else {
+            // For specifying a package structure for a custom logger
+            for (String s : CustomizedSystemLogger.CUSTOM_EATON_CLOUD_COMMS_LOGGER.getPackageNames()) {
+                if (loggers.containsKey(s)) {
+                    return (Logger) LogManager.getLogger(s);
+                }
+            }
+            // If class is not following package structure then return default logger.
+            return getEatonCloudCommsLogger();
         }
     }
 
@@ -549,7 +581,7 @@ public class YukonLogManager {
             return (Logger) LogManager.getLogger(c);
         } else {
             // For specifying a package structure for a custom logger
-            for (String s : CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER.getPackageNames()) {
+            for (String s : CustomizedSystemLogger.CUSTOM_API_LOGGER.getPackageNames()) {
                 if (loggers.containsKey(s)) {
                     return (Logger) LogManager.getLogger(s);
                 }

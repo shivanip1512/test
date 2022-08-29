@@ -29,7 +29,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v3.MeterRead;
 import com.cannontech.msp.beans.v3.ScadaAnalog;
 import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
@@ -52,10 +54,11 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @Override
-    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
-                                          Date endDate, String lastReceived, int maxRecords) {
+    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate,
+            String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
@@ -64,7 +67,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
+   
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
@@ -86,7 +90,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
                     MeterRead meterRead = meterReadProcessingService.createMeterRead(meter); 
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder); 
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
                     meterReads.add(meterRead); 
                 } 
             } 
@@ -102,7 +106,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     }
 
     @Override
-    public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+    public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, 
+                                                           int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
@@ -111,8 +116,9 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
         int estimatedSize = 0;
+        
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);

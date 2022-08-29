@@ -88,8 +88,12 @@ yukon.ami.meterDetails = (function () {
                             "ui-dialog": 'ov'
                         },
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
-                        modal: true});
+                        modal: true,
+                        open: function () {
+							mod.updateMeterTypeFields();
+						}});
                 });
+                
             });
             
             $('.js-copy-meter').click(function () {

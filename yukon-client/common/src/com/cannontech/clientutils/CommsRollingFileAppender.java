@@ -35,6 +35,8 @@ import com.cannontech.common.util.BootstrapUtils;
 @Plugin(name = "CommsRollingFile", category = "Core", elementType = "appender", printObject = true)
 public class CommsRollingFileAppender extends YukonRollingFileAppender {
 
+    private static final String logFileSuffix = "_Comms";
+
     private static volatile CommsRollingFileAppender instance;
 
     public CommsRollingFileAppender(String name, Filter filter, Layout<? extends Serializable> layout, String fileName,
@@ -55,7 +57,7 @@ public class CommsRollingFileAppender extends YukonRollingFileAppender {
         String directory = BootstrapUtils.getServerLogDir();
         String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
         // Create Comms log for each application separately. Example : ServiceManager_Comms.log and Webserver_Comms.log
-        String applicationName = BootstrapUtils.getApplicationName() + "_" + "Comms";
+        String applicationName = BootstrapUtils.getApplicationName() + logFileSuffix;
         String fileName = directory + applicationName + "_" + creationDate +".log";
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
@@ -94,5 +96,10 @@ public class CommsRollingFileAppender extends YukonRollingFileAppender {
         // Call YukonRollingFileAppender for actual append.
         super.append(event);
     }
-    
+
+    @Override
+    public String getApplicationName() {
+        return super.getApplicationName() + logFileSuffix;
+    }
+
 }

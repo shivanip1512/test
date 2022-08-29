@@ -496,7 +496,7 @@ function makeFirstSelectedFilterValueVisible () {
                         <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
                             
                         <div id="Div<%=filter.name()%>" style="display:<%=displayStyle%>">
-                            <input type="hidden" id="selectedPickerValues" name="filterValues">
+                            <input type="hidden" id="selectedPickerValuesForProgramNames" name="filterValues">
                             
                             <span style="font-size:16px;">
                                 <%
@@ -505,9 +505,9 @@ function makeFirstSelectedFilterValueVisible () {
                                     
                                    <tags:pickerDialog  type="lmProgramPicker"
                                                        extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
-                                                     id="programPicker" 
+                                                     id="programPickerMultiSelect" 
                                                      multiSelectMode="true"
-                                                     destinationFieldId="selectedPickerValues"
+                                                     destinationFieldId="selectedPickerValuesForProgramNames"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
                                  
                                 <cti:icon icon="icon-add"/>
@@ -522,7 +522,7 @@ function makeFirstSelectedFilterValueVisible () {
                                                        extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
                                                      id="programPicker" 
                                                      multiSelectMode="false"
-                                                     destinationFieldId="selectedPickerValues"
+                                                     destinationFieldId="selectedPickerValuesForProgramNames"
                                                      endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
                                                      immediateSelectMode="true">
                                                      
