@@ -55,7 +55,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.meter.model.MeterTypeHelper;
-import com.cannontech.common.pao.meter.model.MeterTypeHelper.MeterGroup;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
@@ -266,6 +265,7 @@ public class MeterController {
         boolean mct4xxDevice = DeviceTypesFuncs.isMCT4XX(type);
         boolean rfDevice = type.isRfn();
         boolean showMapNetwork = rfDevice || type.isPlc();
+        boolean showInfrastructureWarnings = type.isCellularDevice() || type.isWifiDevice();
         
         /** Device Tags */
         boolean commanderDevice = paoDefDao.isTagSupported(type, PaoTag.COMMANDER_REQUESTS);
@@ -338,8 +338,10 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
+        model.addAttribute("showCellularConnection", type.isCellularDevice());
         model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
-        
+        model.addAttribute("showInfrastructureWarnings", showInfrastructureWarnings);
+
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);
         model.addAttribute("showHighBill", highBillDevice && highBillUser);

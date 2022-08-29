@@ -1,25 +1,36 @@
 package com.cannontech.web.api.terminal.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao;
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao.SortBy;
 import com.cannontech.common.device.terminal.model.TerminalBase;
+import com.cannontech.common.device.terminal.model.TerminalCopy;
 import com.cannontech.common.exception.DeletionFailureException;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.api.terminal.service.PagingTerminalService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -28,6 +39,9 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private IDatabaseCache cache;
+    @Autowired private PointDao pointDao;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private PagingTerminalDao pagingTerminalDao;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -77,7 +91,8 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @Transactional
     public int delete(int id) {
         LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
-        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+        if (terminal == null || !(terminal.getPaoType() == PaoType.SNPP_TERMINAL || terminal.getPaoType() == PaoType.TAPTERMINAL
+                || terminal.getPaoType() == PaoType.TNPP_TERMINAL || terminal.getPaoType() == PaoType.WCTP_TERMINAL)) {
             throw new NotFoundException("Terminal Id not found");
         }
 
@@ -96,12 +111,66 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @Override
     public TerminalBase<?> retrieve(int id) {
         LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
-        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+        if (terminal == null || !(terminal.getPaoType() == PaoType.SNPP_TERMINAL || terminal.getPaoType() == PaoType.TAPTERMINAL
+                || terminal.getPaoType() == PaoType.TNPP_TERMINAL || terminal.getPaoType() == PaoType.WCTP_TERMINAL)) {
             throw new NotFoundException("Terminal Id not found");
         }
 
         IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
         TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public PaginatedResponse<TerminalBase> retrieveAll(SortBy sortBy, Direction direction, int page, int itemsPerPage, String terminalName) {
+        List<TerminalBase> terminals = pagingTerminalDao.getAllTerminals(sortBy, direction, terminalName);
+        return new PaginatedResponse<TerminalBase>(terminals, page, itemsPerPage);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase<?> copy(int id, TerminalCopy terminalCopy) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !(terminal.getPaoType() == PaoType.SNPP_TERMINAL || terminal.getPaoType() == PaoType.TAPTERMINAL
+                || terminal.getPaoType() == PaoType.TNPP_TERMINAL || terminal.getPaoType() == PaoType.WCTP_TERMINAL)) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        terminalCopy.buildDBPersistent(iedBase);
+        iedBase.setDeviceID(null);
+        dbPersistentDao.performDBChange(iedBase, TransactionType.INSERT);
+        if (terminalCopy.getCopyPoints() != null) {
+            // Copy points if true
+            if (terminalCopy.getCopyPoints()) {
+                List<PointBase> points = pointDao.getPointsForPao(id);
+                SimpleDevice device = SimpleDevice.of(iedBase.getPAObjectID(), iedBase.getPaoType());
+                paoCreationHelper.applyPoints(device, points);
+                dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
+            }
+        }
+        // Create Route
+        createRoute(iedBase);
+        TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
+        // Build model object
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase update(int id, TerminalBase terminalBase) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !(terminal.getPaoType() == PaoType.SNPP_TERMINAL || terminal.getPaoType() == PaoType.TAPTERMINAL
+                || terminal.getPaoType() == PaoType.TNPP_TERMINAL || terminal.getPaoType() == PaoType.WCTP_TERMINAL)) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        terminalBase.buildDBPersistent(iedBase);
+        dbPersistentDao.performDBChange(iedBase, TransactionType.UPDATE);
         terminalBase.buildModel(iedBase);
         terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
         return terminalBase;

@@ -84,6 +84,10 @@ enum DeviceTypes {
     TYPE_RFN520FRXED,
     TYPE_RFN530FAXE,
     TYPE_RFN530FRXE,
+    TYPE_CRL520FAXE,
+    TYPE_CRL520FAXED,
+    TYPE_CRL520FRXE,
+    TYPE_CRL520FRXED,
     //  RFN Centron
     TYPE_RFN410CL,
     TYPE_RFN420CL,
@@ -105,6 +109,7 @@ enum DeviceTypes {
     TYPE_RFN430SL4,
     //   RFN Focus S4
     TYPE_RFN530S4X,
+    TYPE_CRL530S4X,
     TYPE_RFN530S4EAX,
     TYPE_RFN530S4EAXR,
     TYPE_RFN530S4ERX,
@@ -126,7 +131,7 @@ enum DeviceTypes {
     TYPE_CRLY856,
 
     // DER_EDGE_COORDINATOR Devices
-    TYPE_DER_EDGE_COORDINATOR,
+	TYPE_RFN530S4X_DER,
 
     // Substation device identifiers
     TYPE_CCU700,

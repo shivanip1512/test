@@ -305,7 +305,7 @@ public class ComprehensiveMapController {
         headerRow[4] = accessor.getMessage(baseKey + "location.latitude");
         headerRow[5] = accessor.getMessage(baseKey + "location.longitude");
         headerRow[6] = accessor.getMessage(baseKey + "primaryGateway");
-        headerRow[7] = accessor.getMessage(baseKey + "status");
+        headerRow[7] = accessor.getMessage(baseKey + "commStatus");
         headerRow[8] = accessor.getMessage(baseKey + "macAddress");
         headerRow[9] = accessor.getMessage(baseKey + "nodeSN");
         headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY");
@@ -417,6 +417,35 @@ public class ComprehensiveMapController {
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
         return getNetworkTree(Arrays.asList(gatewayIds));
+    }
+    
+    @GetMapping("primaryNeighborDataForDevices")
+    public @ResponseBody Map<String, Object> primaryNeighborDataForDevices(Integer[] deviceIds) {
+        Map<String, Object> json = new HashMap<>();
+        Set<RfnIdentifier> rfnIds = new HashSet<RfnIdentifier>();
+        Set<RfnDevice> devices = new HashSet<RfnDevice>();
+        Map<Integer, NeighborData> deviceNeighborData = new HashMap<Integer, NeighborData>();
+        for (Integer deviceId : deviceIds) {
+            RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+            devices.add(device);
+            rfnIds.add(device.getRfnIdentifier());
+        }
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborDataResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifiers(rfnIds, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA));
+            for (RfnDevice device : devices) {
+                RfnMetadataMultiQueryResult neighborResult = neighborDataResult.get(device.getRfnIdentifier());
+                if (neighborResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                    NeighborData neighborData = (NeighborData) neighborResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                    deviceNeighborData.put(device.getPaoIdentifier().getPaoId(), neighborData);
+                }
+            }
+            json.put("neighborData", deviceNeighborData);
+        } catch (NmCommunicationException e) {
+            log.warn("Error connecting to NM getting the primary neighbor data for devices.", e);
+            json.put("errorMsg", e.getMessage());
+        }
+        return json;
     }
 
     private Map<String, Object> getNetworkTree(List<Integer> gatewayIds) {

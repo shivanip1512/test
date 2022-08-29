@@ -55,12 +55,13 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-    (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  100
+    (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
+    (_)(X)(_)(_)(_) (_)(_)(_)(_)(_)  //  110
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 106 ] = true;
+    expected[ 111 ] = true;
 
     std::vector<bool> results;
 
@@ -160,15 +161,15 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
     //  70
     *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
+    *i++ = "class Cti::Devices::RfnResidentialVoltageDevice";
     *i++ = "class Cti::Devices::Rfn410CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
     *i++ = "class Cti::Devices::Rfn420CentronDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
-    *i++ = "class Cti::Devices::RfnCommercialDevice";
     //  80
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfnCommercialDevice";
@@ -182,90 +183,95 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfnCommercialDevice";
     //  90
     *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
+    *i++ = "class Cti::Devices::RfnCommercialDevice";
     *i++ = "class Cti::Devices::RfDaDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
+    //  100
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
-    *i++ = "class Cti::Devices::RfnDerEdgeCoordinator";
+    *i++ = "class Cti::Devices::Rfn530s4xDerDevice";
     *i++ = "class CtiDeviceCCU710";
-    //  100
     *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU";
     *i++ = "class Cti::Devices::Ccu721Device";
     *i++ = "class CtiDeviceILEX";
     *i++ = "class CtiDeviceWelco";
+    //  110
     *i++ = "class CtiDeviceRemote";
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
-    //  110
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
+    //  120
     *i++ = "class CtiDeviceTCU";
     *i++ = "class CtiDeviceTCU";
     *i++ = "class CtiDeviceMarkV";
     *i++ = "class CtiDeviceDavis";
     *i++ = "class CtiDeviceAlphaPPlus";
-    //  120
     *i++ = "class CtiDeviceFulcrum";
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class CtiDeviceVectron";
     *i++ = "class CtiDeviceAlphaA1";
     *i++ = "class CtiDeviceDR87";
+    //  130
     *i++ = "class CtiDeviceQuantum";
     *i++ = "class CtiDeviceKV2";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::CtiDeviceFocus";
     *i++ = "class CtiDeviceKV2";
-    //  130
     *i++ = "class CtiDeviceSixnet";
     *i++ = "class Cti::Devices::Ipc410ALDevice";
     *i++ = "class Cti::Devices::Ipc420ADDevice";
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
+    //  140
     *i++ = "class Cti::Devices::TapPagingTerminal";
     *i++ = "class CtiDeviceWctpTerminal";
     *i++ = "class Cti::Devices::RDSTransmitter";
     *i++ = "class CtiDeviceSnppPagingTerminal";
     *i++ = "class CtiDevicePagingReceiver";
-    //  140
     *i++ = "class CtiDeviceTnppPagingTerminal";
     *i++ = "class CtiDeviceRTC";
     *i++ = "class CtiDeviceRTM";
     *i++ = "class CtiDeviceSeriesV";
     *i++ = "class CtiDeviceLMI";
+    //  150
     *i++ = "class Cti::Devices::ModbusDevice";
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGroupEmetcon";
     *i++ = "class CtiDeviceGroupVersacom";
-    //  150
     *i++ = "class CtiDeviceGroupRipple";
     *i++ = "class CtiDeviceGroupPoint";
     *i++ = "class CtiDeviceGroupExpresscom";
     *i++ = "class CtiDeviceGroupRfnExpresscom";
-    i += 6;
+    i++;
     //  160
+    i += 5;
     *i++ = "class CtiDeviceGroupMCT";
     i++;
     *i++ = "class CtiDeviceGroupGolay";
     *i++ = "class CtiDeviceGroupSADigital";
     *i++ = "class CtiDeviceGroupSA105";
+    //  170
     *i++ = "class CtiDeviceGroupSA205";
     *i++ = "class CtiDeviceGroupSA305";
     *i++ = "class Cti::Devices::MctBroadcastDevice";
-    i += 2;
-    //  170
-    i += 10;
+    i += 7;
     //  180
-    i++;
+    i += 6;
     *i++ = "class CtiDeviceMacro";
     *i++ = "class CtiDeviceSystem";
 
@@ -485,7 +491,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "meter disconnect program",       "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "meter disconnect group",         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "crly-856",                       "class Cti::Devices::RfCellularRelayDevice" },
-        { "der edge coordinator",           "class Cti::Devices::RfnDerEdgeCoordinator" },
+        { "rfn-530s4x-der",                 "class Cti::Devices::Rfn530s4xDerDevice" },
     };
 
     std::vector<DeviceTypeRow> rowVec;

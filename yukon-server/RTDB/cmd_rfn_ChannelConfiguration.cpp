@@ -148,7 +148,8 @@ const MetricInfo metricInfos[] = {
         { 184,  TouRates,  "Sum Peak kVAr"                         },
         { 185,  None,      "Sum Peak kVAr Frozen"                  },
 
-        { 194,  None,      "Sum Watts" },
+        { 194,  None,      "Sum Watts"                             },
+        { 195,  TouRates,  "Net Peak kW"                           },
 
         { 199,  None,      "Sum kVAr"                              },
 

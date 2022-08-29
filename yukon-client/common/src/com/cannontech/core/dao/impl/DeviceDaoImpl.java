@@ -73,7 +73,7 @@ public final class DeviceDaoImpl implements DeviceDao {
             return new SimpleDevice(deviceId, paoType);
         }
     };
-
+    
     public static final YukonRowMapper<DisplayableDevice> DISPLAYABLE_DEVICE_MAPPER = rs ->
         new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
 
@@ -87,6 +87,12 @@ public final class DeviceDaoImpl implements DeviceDao {
         Integer deviceId = rs.getInt("DeviceId");
         String guid = rs.getString("Guid");
         return Maps.immutableEntry(deviceId, guid);
+    };
+    
+    public static final YukonRowMapper<Entry<String, Integer>> GUID_DEVICEID_ROW_MAPPER = (YukonResultSet rs) -> {
+        String guid = rs.getString("Guid");
+        Integer deviceId = rs.getInt("DeviceId");
+        return Maps.immutableEntry(guid, deviceId);
     };
     
     @PostConstruct
@@ -134,6 +140,15 @@ public final class DeviceDaoImpl implements DeviceDao {
         jdbcTemplate.update(updateCreateSql);
     }
     
+    @Override
+    public int getDeviceIdByName(String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAO.PAObjectId");
+        sql.append("FROM YukonPAObject PAO");
+        sql.append("WHERE UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+        return jdbcTemplate.queryForInt(sql);
+    }
+
     @Override
     public String getDeviceMacAddress(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -679,6 +694,23 @@ public final class DeviceDaoImpl implements DeviceDao {
         return template.mappedQuery(sqlGenerator,
                                     deviceIds, 
                                     DEVICEID_GUID_ROW_MAPPER,
+                                    Functions.identity());
+    }
+    
+    @Override
+    public Map<String, Integer> getDeviceIds(Iterable<String> guids) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<String> sqlGenerator = (List<String> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId, Guid");
+            sql.append("FROM DeviceGuid");
+            sql.append("WHERE Guid").in(subList);
+            return sql;
+        };
+
+        return template.mappedQuery(sqlGenerator,
+                                    guids, 
+                                    GUID_DEVICEID_ROW_MAPPER,
                                     Functions.identity());
     }
 

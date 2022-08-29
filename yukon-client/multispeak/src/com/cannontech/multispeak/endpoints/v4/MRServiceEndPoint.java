@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,12 @@ import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
+import com.cannontech.msp.beans.v4.DeleteMeterGroup;
+import com.cannontech.msp.beans.v4.DeleteMeterGroupResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.EstablishMeterGroup;
+import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMeters;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMetersResponse;
@@ -46,19 +52,34 @@ import com.cannontech.msp.beans.v4.GetReadingsByMeterIDAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
+import com.cannontech.msp.beans.v4.InitiateDemandReset;
+import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByFieldName;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByFieldNameResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterID;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
+import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
+import com.cannontech.msp.beans.v4.InsertMeterInMeterGroupResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
 import com.cannontech.msp.beans.v4.MeterAddNotification;
 import com.cannontech.msp.beans.v4.MeterAddNotificationResponse;
+import com.cannontech.msp.beans.v4.MeterChangedNotification;
+import com.cannontech.msp.beans.v4.MeterChangedNotificationResponse;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.MeterRemoveNotification;
+import com.cannontech.msp.beans.v4.MeterRemoveNotificationResponse;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroup;
+import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.ServiceLocationChangedNotification;
 import com.cannontech.msp.beans.v4.ServiceLocationChangedNotificationResponse;
@@ -114,8 +135,8 @@ public class MRServiceEndPoint {
         }
 
         List<MeterReading> meterReading = mr_server.getReadingsByDate(startDate.toGregorianCalendar(),
-                endDate.toGregorianCalendar(),
-                lastReceived);
+                                                                      endDate.toGregorianCalendar(),
+                                                                      lastReceived);
 
         ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
         arrayOfMeterReading.getMeterReading().addAll(meterReading);
@@ -142,8 +163,8 @@ public class MRServiceEndPoint {
         }
 
         List<MeterReading> meterReading = mr_server.getReadingsByMeterID(meterNo,
-                startDate.toGregorianCalendar(),
-                endDate.toGregorianCalendar());
+                                                                         startDate.toGregorianCalendar(),
+                                                                         endDate.toGregorianCalendar());
 
         ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
         arrayOfMeterReading.getMeterReading().addAll(meterReading);
@@ -197,9 +218,9 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
         InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = initiateUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = (null != ArrOfMeterIDs.getMeterID()) ? ArrOfMeterIDs.getMeterID() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        ArrayOfMeterID1 arrOfMeterIds = initiateUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = (null != arrOfMeterIds.getMeterID()) ? arrOfMeterIds.getMeterID() : null;
+        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
@@ -212,10 +233,10 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         CancelUsageMonitoringResponse cancelUsageMonitoringResponse = objectFactory.createCancelUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = cancelUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = cancelUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
 
-        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
@@ -261,8 +282,9 @@ public class MRServiceEndPoint {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
         List<FormattedBlock> formattedBlocks = mr_server.getReadingsByDateAndFieldName(startDate.toGregorianCalendar(),
-                endDate.toGregorianCalendar(),
-                lastReceived, formattedBlockTemplateName);
+                                                                                       endDate.toGregorianCalendar(),
+                                                                                       lastReceived, 
+                                                                                       formattedBlockTemplateName);
 
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
@@ -338,7 +360,29 @@ public class MRServiceEndPoint {
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
-        return getLatestReadingByFieldNameResponse;
+        return getLatestReadingByFieldNameResponse; 
+    }
+    
+    @PayloadRoot(localPart = "InitiateDemandReset", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateDemandResetResponse initiateDemandReset(
+            @RequestPayload InitiateDemandReset initiateDemandReset) throws MultispeakWebServiceException {
+        InitiateDemandResetResponse response = objectFactory.createInitiateDemandResetResponse();
+
+        ExpirationTime expirationTime = initiateDemandReset.getExpTime();
+        String responseURL = initiateDemandReset.getResponseURL();
+        String transactionId = initiateDemandReset.getTransactionID();
+
+        ArrayOfMeterID1 arrOfMeterIds = initiateDemandReset.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds ? arrOfMeterIds.getMeterID() : null;
+
+        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIds), 
+                                                                       responseURL,
+                                                                       transactionId,
+                                                                       expirationTime);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setInitiateDemandResetResult(arrayOfErrorObject);
+
+        return response;
     }
     
     @PayloadRoot(localPart = "ServiceLocationChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
@@ -347,10 +391,9 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
         
-        ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
-        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations.getServiceLocation() : null;
-        List<ErrorObject> errorObjects = mr_server
-                .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
+        ArrayOfServiceLocation1 arrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
+        List<ServiceLocation> serviceLocationList = null != arrOfServiceLocations ? arrOfServiceLocations.getServiceLocation() : null;
+        List<ErrorObject> errorObjects = mr_server.serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
         
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
@@ -377,4 +420,156 @@ public class MRServiceEndPoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "MeterRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload MeterRemoveNotificationResponse meterRemoveNotification(
+            @RequestPayload MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceException {
+        MeterRemoveNotificationResponse meterRemoveNotificationResponse = objectFactory.createMeterRemoveNotificationResponse();
+
+        List<MspMeter> mspMeters = new ArrayList<>();
+        if (meterRemoveNotification.getRemovedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterRemoveNotification.getRemovedMeters());
+        }
+        List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(ListUtils.emptyIfNull(mspMeters));
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        meterRemoveNotificationResponse.setMeterRemoveNotificationResult(arrayOfErrorObject);
+        return meterRemoveNotificationResponse;
+    }
+
+    @PayloadRoot(localPart = "EstablishMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload EstablishMeterGroupResponse establishMeterGroup(
+            @RequestPayload EstablishMeterGroup establishMeterGroup)
+            throws MultispeakWebServiceException {
+        EstablishMeterGroupResponse response = objectFactory.createEstablishMeterGroupResponse();
+
+        MeterGroup meterGroup = establishMeterGroup.getMeterGroup();
+        List<ErrorObject> errorObjects = mr_server.establishMeterGroup(meterGroup);
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
+        response.setEstablishMeterGroupResult(arrayOfErrorObject);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "InsertMeterInMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InsertMeterInMeterGroupResponse insertMeterInMeterGroup(
+            @RequestPayload InsertMeterInMeterGroup insertMeterInMeterGroup) throws MultispeakWebServiceException {
+
+        InsertMeterInMeterGroupResponse insertMeterInMeterGroupResponse = objectFactory
+                .createInsertMeterInMeterGroupResponse();
+        ArrayOfMeterID1 arrayOfMeterId1 = (null != insertMeterInMeterGroup.getMeterIDs()) ? insertMeterInMeterGroup
+                .getMeterIDs() : null;
+
+        if (arrayOfMeterId1 != null) {
+            List<MeterID> meterIds = arrayOfMeterId1.getMeterID();
+            String meterGroupId = insertMeterInMeterGroup.getMeterGroupID();
+            List<ErrorObject> errorObjects = mr_server.insertMeterInMeterGroup(meterIds, meterGroupId);
+            ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
+            insertMeterInMeterGroupResponse.setInsertMeterInMeterGroupResult(arrayOfErrorObject);
+        }
+        return insertMeterInMeterGroupResponse;
+    }
+
+    @PayloadRoot(localPart = "DeleteMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload DeleteMeterGroupResponse deleteMeterGroup(@RequestPayload DeleteMeterGroup deleteMeterGroup)
+            throws MultispeakWebServiceException {
+        DeleteMeterGroupResponse response = objectFactory.createDeleteMeterGroupResponse();
+
+        String meterGroupIds = deleteMeterGroup.getMeterGroupID();
+        ErrorObject errorObject = mr_server.deleteMeterGroup(meterGroupIds);
+        ArrayOfErrorObject createArrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObject != null) {
+            createArrayOfErrorObject.getErrorObject().add(errorObject);
+        }
+        response.setDeleteMeterGroupResult(createArrayOfErrorObject);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "RemoveMetersFromMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload RemoveMetersFromMeterGroupResponse removeMetersFromMeterGroup(
+            @RequestPayload RemoveMetersFromMeterGroup removeMetersFromMeterGroup) throws MultispeakWebServiceException {
+        RemoveMetersFromMeterGroupResponse response = objectFactory.createRemoveMetersFromMeterGroupResponse();
+
+        String meterGroupIds = removeMetersFromMeterGroup.getMeterGroupID();
+        ArrayOfMeterID1 arrayOfMeterId1 = (null != removeMetersFromMeterGroup.getMeterIDs()) ? removeMetersFromMeterGroup
+                .getMeterIDs() : null;
+        if (arrayOfMeterId1 != null) {
+            List<ErrorObject> errorObjects = mr_server.removeMetersFromMeterGroup(arrayOfMeterId1.getMeterID(), meterGroupIds);
+            ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
+            response.setRemoveMetersFromMeterGroupResult(arrayOfErrorObject);
+        }
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "MeterChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    MeterChangedNotificationResponse meterChangedNotification(
+            @RequestPayload MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceException {
+        MeterChangedNotificationResponse response = objectFactory.createMeterChangedNotificationResponse();
+        
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        if (meterChangedNotification.getChangedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterChangedNotification.getChangedMeters());
+        }
+        
+        List<ErrorObject> errorObjects = mr_server.meterChangedNotification(ListUtils.emptyIfNull((mspMeters)));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setMeterChangedNotificationResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByMeterID", namespace =  MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
+            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIds)
+            throws MultispeakWebServiceException {
+        InitiateMeterReadingsByMeterIDResponse response = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
+
+        ExpirationTime expirationTime = initiateMeterReadingsByMeterIds.getExpTime();
+        String responseURL = initiateMeterReadingsByMeterIds.getResponseURL();
+        String transactionId = initiateMeterReadingsByMeterIds.getTransactionID();
+        
+        List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
+                ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(ListUtils.emptyIfNull(meterIds),
+                                                                                       responseURL, 
+                                                                                       transactionId, 
+                                                                                       expirationTime));
+        response.setInitiateMeterReadingsByMeterIDResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByFieldNameResponse InitiateMeterReadingsByFieldName(
+            @RequestPayload InitiateMeterReadingsByFieldName initiateMeterReadingsByFieldName)
+            throws MultispeakWebServiceException {
+        
+        InitiateMeterReadingsByFieldNameResponse response =
+            objectFactory.createInitiateMeterReadingsByFieldNameResponse();
+        
+        ExpirationTime expirationTime = initiateMeterReadingsByFieldName.getExpTime();
+        String responseURL = initiateMeterReadingsByFieldName.getResponseURL();
+        String transactionId = initiateMeterReadingsByFieldName.getTransactionID();
+        String formattedBlockTemplateName = initiateMeterReadingsByFieldName.getFormattedBlockTemplateName();
+        
+        ArrayOfMeterID1 arrOfMeterIds = initiateMeterReadingsByFieldName.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds ? arrOfMeterIds.getMeterID() : null;
+
+
+        if (CollectionUtils.isNotEmpty(meterIds)) {
+            List<String> fieldNames = initiateMeterReadingsByFieldName.getFieldNames() != null ? initiateMeterReadingsByFieldName.getFieldNames().getVal() : null;
+
+                    ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.InitiateMeterReadingsByFieldName( meterIds,
+                                                                                                                                             responseURL, 
+                                                                                                                                             fieldNames, 
+                                                                                                                                             transactionId,
+                                                                                                                                             expirationTime, 
+                                                                                                                                             formattedBlockTemplateName));
+                    response.setInitiateMeterReadingsByFieldNameResult(arrayOfErrorObject);
+        }
+        
+        return response;
+    }
 }

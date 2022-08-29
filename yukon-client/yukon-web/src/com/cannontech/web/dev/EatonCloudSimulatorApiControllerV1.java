@@ -21,6 +21,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDataRequestV1;
 import com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudCommunicationServiceImplV1;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorRequest;
@@ -164,6 +165,38 @@ public class EatonCloudSimulatorApiControllerV1 {
                     .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET, "rotateV1",
                             new Class[] { String.class, String.class },
                             new Object[] { serviceAccountId, secretName }, header), EatonCloudSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PostMapping("/v1/job/immediate")
+    public ResponseEntity<Object> createJob(
+            @RequestBody EatonCloudJobRequestV1 eatonCloudJobRequestV1,
+            @RequestHeader(name = "Authorization") String header) {
+        try {
+            EatonCloudSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.JOB, "createJobV1",
+                            new Class[] { EatonCloudJobRequestV1.class },
+                            new Object[] { eatonCloudJobRequestV1 }, header),
+                            EatonCloudSimulatorResponse.class);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
+        } catch (ExecutionException e) {
+            log.error("Error", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping("/v1/job/immediate/{id}")
+    public ResponseEntity<Object> getJobStatus(@PathVariable String id,
+            @RequestHeader(name = "Authorization") String header) {
+        try {
+            EatonCloudSimulatorResponse response = simulatorsCommunicationService
+                    .sendRequest(new EatonCloudSimulatorRequest(EatonCloudRetrievalUrl.JOB_STATUS, "jobStatusV1",
+                            new Class[] { String.class },
+                            new Object[] {id}, header), EatonCloudSimulatorResponse.class);
             return new ResponseEntity<>(response.getResponse(), HttpStatus.valueOf(response.getStatus()));
         } catch (ExecutionException e) {
             log.error("Error", e);

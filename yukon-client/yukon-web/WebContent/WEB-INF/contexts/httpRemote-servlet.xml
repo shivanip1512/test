@@ -18,24 +18,4 @@
             </list>
         </property>
     </bean>
-
-	<bean id="remoteLogger" class="com.cannontech.clientutils.RemoteLoggerImpl"/>
-	
-	<bean name="/RemoteLogger" class="com.cannontech.web.spring.IgnoreCsrfCheckHttpInvokerServiceExporter">
-  		<property name="service" ref="remoteLogger"/>
-  		<property name="serviceInterface" value="com.cannontech.clientutils.RemoteLogger"/>
-	</bean>
-	
-	<bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
-          factory-method="getLocalConfiguration">
-    </bean>
-
-	<bean id="standardLocalOrRemoteLocalMasterConfig" class="com.cannontech.common.config.MasterConfigServerFactory">
-	    <property name="localConfigurationSource" ref="localMasterConfig"/>
-	</bean>
-
-	<bean name="/MasterConfig" class="com.cannontech.web.spring.IgnoreCsrfCheckHttpInvokerServiceExporter">
-  		<property name="service" ref="standardLocalOrRemoteLocalMasterConfig"/>
-  		<property name="serviceInterface" value="com.cannontech.common.config.ConfigurationSource"/>
-	</bean>
 </beans>

@@ -300,5 +300,11 @@ public interface DeviceTypes extends TypeBase
     public final static int RFG301A = DEVICE_OFFSET + 229;
     public final static int RFG301R = DEVICE_OFFSET + 230;
     
-    public final static int DER_EDGE_COORDINATOR = DEVICE_OFFSET + 231;
+    public final static int RFN530S4X_DER = DEVICE_OFFSET + 231;
+    
+    public final static int CRL520FAXE = DEVICE_OFFSET + 232;
+    public final static int CRL520FRXE = DEVICE_OFFSET + 233;
+    public final static int CRL520FAXED = DEVICE_OFFSET + 234;
+    public final static int CRL520FRXED = DEVICE_OFFSET + 235;
+    public final static int CRL530S4X = DEVICE_OFFSET + 236; 
 }

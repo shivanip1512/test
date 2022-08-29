@@ -43,6 +43,7 @@ public class RouteBaseModel<T extends RouteBase> extends DeviceBaseModel impleme
         setDeviceName(routeBase.getRouteName());
         setDefaultRoute(routeBase.getDefaultRoute().equals("N") ? false : true );
         setSignalTransmitterId(routeBase.getDeviceID());
+        setDeviceType(routeBase.getPaoType());
     }
 
     @Override

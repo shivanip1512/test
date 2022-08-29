@@ -1661,7 +1661,7 @@ hr.dashed,
     color: #999;
     font-size: 13px;
     padding-right: 5px;
-	padding-top: 12px;
+    padding-top: 8px;
 }
 input.datePicker, 
 input.timePicker,
@@ -1699,7 +1699,10 @@ input.dateTimePicker:focus
 input.datePicker { width: 114px ;}
 input.timePicker { width: 74px; }
 input.timeOffsetPicker { width: 60px; }
-input.dateTimePicker { width: 150px; }
+input.dateTimePicker { 
+    width: 150px;
+    padding-top: 8px;
+}
 
 .ui-datepicker-trigger:hover { cursor: pointer; }
 
@@ -2278,6 +2281,53 @@ table th, .title-header, .column-header {
 /* Highcharts styling */
 .highcharts-tooltip-container {
     z-index: 9999 !important;
+}
+
+.info-list-item {
+    width:100%;
+    border-bottom:1px solid #424e541f;
+    display:inline-flex;
+    align-items:center;
+}
+
+.info-list-tag-item {
+    border-radius:2px;
+    padding:0px 4px;
+    line-height: 1rem;
+    span {
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:1px;
+        text-transform:uppercase;
+    }
+}
+
+.status-stripe {
+    width:6px;
+    margin-right:5px;
+    margin-top:-1px;
+    margin-bottom:-1px;
+    align-self:stretch
+}
+
+.table-row-status-stripe {
+    padding-top:0px !important;
+    padding-bottom:0px !important;
+    padding-left:0px !important;
+    display:inline-flex;
+    align-items:center;
+}
+
+.widget-separator {
+    border-top:1px solid #424e541f;
+    border-bottom:1px solid #424e541f;
+    padding: 8px;
+}
+
+.separated-columns {
+    padding:10px 20px;
+    margin:0;
+    border-right:1px solid #ccc
 }
 
 /* JUNK TO FIX */

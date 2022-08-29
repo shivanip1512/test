@@ -46,7 +46,7 @@ private static String cssPath = "../yukon-web/WebContent/resources/css/lib";
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
         ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class);
+                ThirdPartyLibraries.class, libraryYaml.getFilename());
         
         Map<String, ThirdPartyLibrary> documentedLibrariesByProject = Maps.uniqueIndex(documentedLibraries.cssLibraries, l -> l.project); 
         

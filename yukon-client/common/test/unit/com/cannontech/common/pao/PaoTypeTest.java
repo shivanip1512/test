@@ -143,11 +143,16 @@ public class PaoTypeTest {
                         PaoType.RFN520FRXE,
                         PaoType.RFN520FAXED,
                         PaoType.RFN520FRXED,
+                        PaoType.CRL520FAXE,
+                        PaoType.CRL520FAXED,
+                        PaoType.CRL520FRXE,
+                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
                         PaoType.RFN530FAXE,
                         PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
+                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -262,7 +267,7 @@ public class PaoTypeTest {
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
                         PaoType.CRLY856,
-                        PaoType.DER_EDGE_COORDINATOR);
+                        PaoType.RFN530S4X_DER);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -490,11 +495,16 @@ public class PaoTypeTest {
                         PaoType.RFN520FRXE,
                         PaoType.RFN520FAXED,
                         PaoType.RFN520FRXED,
+                        PaoType.CRL520FAXE,
+                        PaoType.CRL520FAXED,
+                        PaoType.CRL520FRXE,
+                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
                         PaoType.RFN530FAXE,
                         PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
+                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -623,7 +633,7 @@ public class PaoTypeTest {
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
                         PaoType.CRLY856,
-                        PaoType.DER_EDGE_COORDINATOR);
+                        PaoType.RFN530S4X_DER);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -720,11 +730,16 @@ public class PaoTypeTest {
                         PaoType.RFN520FRXE,
                         PaoType.RFN520FAXED,
                         PaoType.RFN520FRXED,
+                        PaoType.CRL520FAXE,
+                        PaoType.CRL520FAXED,
+                        PaoType.CRL520FRXE,
+                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
                         PaoType.RFN530FAXE,
                         PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
+                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -850,7 +865,7 @@ public class PaoTypeTest {
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
                         PaoType.CRLY856,
-                        PaoType.DER_EDGE_COORDINATOR);
+                        PaoType.RFN530S4X_DER);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -966,11 +981,16 @@ public class PaoTypeTest {
                         PaoType.RFN520FRXE,
                         PaoType.RFN520FAXED,
                         PaoType.RFN520FRXED,
+                        PaoType.CRL520FAXE,
+                        PaoType.CRL520FAXED,
+                        PaoType.CRL520FRXE,
+                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
                         PaoType.RFN530FAXE,
                         PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
+                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -1093,7 +1113,7 @@ public class PaoTypeTest {
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
                         PaoType.CRLY856,
-                        PaoType.DER_EDGE_COORDINATOR);
+                        PaoType.RFN530S4X_DER);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1209,11 +1229,16 @@ public class PaoTypeTest {
                         PaoType.RFN520FRXE,
                         PaoType.RFN520FAXED,
                         PaoType.RFN520FRXED,
+                        PaoType.CRL520FAXE,
+                        PaoType.CRL520FAXED,
+                        PaoType.CRL520FRXE,
+                        PaoType.CRL520FRXED,
                         PaoType.RFN530FAX,
                         PaoType.RFN530FRX,
                         PaoType.RFN530FAXE,
                         PaoType.RFN530FRXE,
                         PaoType.RFN530S4X,
+                        PaoType.CRL530S4X,
                         PaoType.RFN530S4EAX,
                         PaoType.RFN530S4EAXR,
                         PaoType.RFN530S4ERX,
@@ -1329,7 +1354,7 @@ public class PaoTypeTest {
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
                         PaoType.CRLY856,
-                        PaoType.DER_EDGE_COORDINATOR);
+                        PaoType.RFN530S4X_DER);
     
     private static final ImmutableSet<PaoType> nonItronTypes = 
             ImmutableSet.of(
@@ -1446,11 +1471,16 @@ public class PaoTypeTest {
                 PaoType.RFN520FRXE,
                 PaoType.RFN520FAXED,
                 PaoType.RFN520FRXED,
+                PaoType.CRL520FAXE,
+                PaoType.CRL520FAXED,
+                PaoType.CRL520FRXE,
+                PaoType.CRL520FRXED,
                 PaoType.RFN530FAX,
                 PaoType.RFN530FRX,
                 PaoType.RFN530FAXE,
                 PaoType.RFN530FRXE,
                 PaoType.RFN530S4X,
+                PaoType.CRL530S4X,
                 PaoType.RFN530S4EAX,
                 PaoType.RFN530S4EAXR,
                 PaoType.RFN530S4ERX,
@@ -1576,7 +1606,7 @@ public class PaoTypeTest {
                 PaoType.RFG301A,
                 PaoType.RFG301R,
                 PaoType.NEST,
-                PaoType.DER_EDGE_COORDINATOR);
+                PaoType.RFN530S4X_DER);
     
     private void validatePredicate(Predicate<PaoType> classification, ImmutableSet<PaoType> others, String set) {
         var violations = Arrays.stream(PaoType.values())

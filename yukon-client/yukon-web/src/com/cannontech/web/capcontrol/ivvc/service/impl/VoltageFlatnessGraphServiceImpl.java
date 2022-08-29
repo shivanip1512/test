@@ -39,7 +39,6 @@ import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.GraphIntervalRounding;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -62,6 +61,7 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
@@ -91,6 +91,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    @Autowired private IvvcHelper ivvcHelper;
 
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
     
@@ -462,6 +463,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<VfPoint> ignoredPoints = Lists.newArrayList();
         List<VfPoint> noFeederPoints = Lists.newArrayList();
         
+        if (feeders.isEmpty()) {
+            //add an empty feeder so points still get added to the graph
+            feeders.add(new Feeder());
+        }
+        
         for (Feeder feeder : feeders) {
             List<VfPoint> points = Lists.newArrayList();
             for (Zone zone : zones) {
@@ -477,7 +483,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     regulatorGraphPoint.setFeederId(feeder.getCcId());
                     //Add the regulator (three for a threePhaseZone)
                     //if the zone is the parent zone add the regulator points to all feeders or if the regulator point is assigned to the current feeder add the point
-                    if (zone.getParentId() == null || regulatorToZone.getFeederId() == feeder.getCcId()) {
+                    if (zone.getParentId() == null) {
+                        points.add(regulatorGraphPoint);
+                    } else if (regulatorToZone.getFeederId() != null && regulatorToZone.getFeederId().equals(feeder.getCcId())) {
                         points.add(regulatorGraphPoint);
                     } else {
                         if (regulatorToZone.getFeederId() == null) {
@@ -515,7 +523,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                             noFeederPoints.add(graphPoint);
                         }
                     } else {
-                        if (pointToZone.getFeederId() == feeder.getCcId()) {
+                        if (pointToZone.getFeederId().equals(feeder.getCcId())) {
                             graphPoint.setFeederId(feeder.getCcId());
                             points.add(graphPoint);
                         }
@@ -557,6 +565,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     String phaseString = settings.getPhaseString(phase);
                     VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, feeder.getCcName(), 
                                                    phase, lineSettings, phasePointList);
+                    phaseLine.setFeederId(feeder.getCcId());
                     lines.add(phaseLine);
                 }
             }
@@ -570,6 +579,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                 String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
                 VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, feeder.getCcName(), Phase.ALL, 
                                                 noPhaseLineSettings, phaseAPoints);
+                noPhaseLine.setFeederId(feeder.getCcId());
                 lines.add(noPhaseLine);
             }
         }
@@ -683,9 +693,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
-        //Display Bad Data Quality points as Ignored
-        PointQuality quality = pointValue.getPointQuality();
-        if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
+        
+        boolean badQualityOrOutdated = ivvcHelper.isBadQualityOrOutdated(pointValue);
+        if (badQualityOrOutdated) {
             ignore = true;
         }
                 

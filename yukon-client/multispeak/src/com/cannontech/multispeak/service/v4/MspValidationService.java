@@ -39,5 +39,12 @@ public interface MspValidationService {
     FormattedBlockProcessingService<Block> getProcessingServiceByFormattedBlockTemplate(
             Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap, String formattedBlockTemplateName)
             throws MultispeakWebServiceException;
+    
+    
+    /**
+     * Returns an ErrorObject when the given responseURL is empty.  Does not guarantee the URL
+     * is valid or that it is live.
+     */
+    public ErrorObject validateResponseURL(String responseURL, String nounType, String method);
 
 }

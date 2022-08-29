@@ -380,6 +380,19 @@
       <page name="aggregateIntervalReport" type="BASIC">
         <link>/tools/aggregateIntervalReport/view</link>
       </page>
+      <page name="notificationGroup.list" type="BASIC" hideSearch="true">
+          <link>/tools/notificationGroup/list</link>
+          <pages>
+              <page name="notificationGroup.VIEW" type="DETAIL">
+                  <link>/tools/notificationGroup/{id}</link>
+                  <labelArgument>${notificationGroup.name}</labelArgument>
+              </page>
+              <page name="notificationGroup.CREATE" type="BASIC"/>
+              <page name="notificationGroup.EDIT" type="DETAIL" hideFavorite="true">
+                  <labelArgument>${notificationGroup.name}</labelArgument>
+              </page>
+          </pages>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 
@@ -1354,6 +1367,43 @@
                     <page name="rtuDetail.CREATE" type="BASIC"/>
                 </pages>
             </page>
+            <page name="signalTransmitters.list" type="BASIC" hideSearch="true">
+                <link>/stars/device/signalTransmitter/list</link>
+                <pages>
+                    <page name="signalTransmitter.CREATE" type="BASIC"/>
+                    <page name="signalTransmitter.VIEW" type="DETAIL">
+                        <link>/stars/device/signalTransmitter/${id}</link>
+                        <labelArgument>${signalTransmitter.name}</labelArgument>
+                        <pages>
+                            <page name="signalTransmitter.EDIT" type="DETAIL" hideFavorite="true">
+                                <labelArgument>${signalTransmitter.name}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="routes.list" type="BASIC" hideSearch="true">
+                <link>/stars/device/routes/list</link>
+                <pages>
+                    <page name="routes.CREATE" type="BASIC"/>
+                    <page name="routes.VIEW" type="DETAIL">
+                        <link>/stars/device/routes/{id}</link>
+                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    </page>
+                    <page name="routes.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    </page>
+                    <page name="macroRoutes.CREATE" type="BASIC"/>
+                    <page name="macroRoutes.VIEW" type="DETAIL">
+                        <link>/stars/device/routes/macroRoutes/{id}</link>
+                        <labelArgument>${macroRouteModel.deviceName}</labelArgument>
+                    </page>
+                    <page name="macroRoutes.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${macroRouteModel.deviceName}</labelArgument>
+                    </page>
+                </pages>
+            </page>
+           
             <page name="virtualDevices.list" type="BASIC">
                 <link>/stars/virtualDevices</link>
                 <pages>
@@ -1790,6 +1840,7 @@
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
           <page name="itronKeyPair" type="BASIC"/>
+          <page name="setoSimulator" type="BASIC"/>
           <page name="eatonCloudToken" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
@@ -1800,6 +1851,7 @@
               <page name="rfnTest.viewMeterReadArchive" type="BASIC"/>
               <page name="rfnTest.viewEventArchive" type="BASIC"/>
               <page name="rfnTest.viewAlarmArchive" type="BASIC"/>
+              <page name="rfnTest.viewCellularCommArchiveRequest" type="BASIC"/>
               <page name="rfnTest.viewLcrDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>

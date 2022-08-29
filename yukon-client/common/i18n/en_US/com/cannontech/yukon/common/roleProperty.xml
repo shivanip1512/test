@@ -288,8 +288,7 @@
 <entry key="yukon.common.roleProperty.DR_SETUP_PERMISSION">DR Setup Permission</entry>
 <entry key="yukon.common.roleProperty.DR_SETUP_PERMISSION.description">Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.</entry>
 <entry key="yukon.common.roleProperty.DER_EDGE_COORDINATOR_PERMISSION">DER Edge Coordinator Permission</entry>
-<entry key="yukon.common.roleProperty.DER_EDGE_COORDINATOR_PERMISSION.description">Allow access to DER Edge Coordinator features and APIs.</entry>
-
+<entry key="yukon.common.roleProperty.DER_EDGE_COORDINATOR_PERMISSION.description">Allow access to DER Edge Coordinator features and APIs. Warning: This setting should only be enabled for dedicated DER Edge API users. It will remove access to other Yukon features.</entry>
 
 <entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL">Load Group Control</entry>
 <entry key="yukon.common.roleProperty.ALLOW_LOAD_GROUP_CONTROL.description">Controls access to shed and restore at Load Group level. Requires Allow DR Control.</entry>

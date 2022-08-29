@@ -115,6 +115,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         MspMeter meter = null;
         if (paoIdentifier.getPaoType().isWaterMeter()) {
             meter = new WaterMeter();
+        } else if (paoIdentifier.getPaoType().isGasMeter()) {
+            meter = new GasMeter();
         } else {
             meter = new ElectricMeter();
         }
@@ -170,7 +172,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
     @Override
     public MspReturnList getAllCDDevices(String lastReceived, int maxRecords) {
-        // This method should not be called for v3, only v5 implementation.
+        // This method should not be called for v3/v4, only v5 implementation.
         return null;
     }
 }

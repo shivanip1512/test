@@ -213,11 +213,21 @@ public class HighChartServiceImpl implements HighChartService {
             dataObj.put(HighChartOptionKey.COLOR.getKey(), line.getSettings().getColor());
             dataObj.put(HighChartOptionKey.NAME.getKey(), line.getLineName());
             dataObj.put(HighChartOptionKey.ID.getKey(), line.getLineName());
+            dataObj.put("feederId", line.getFeederId());
+            if (!lineNames.contains(line.getLineName())) {
+                //create empty line as main line so filtering does not disable phase selection
+                Map<String, Object> blankObj = new HashMap<>();    
+                blankObj.put(HighChartOptionKey.SERIES_DATA.getKey(), new ArrayList<>());
+                blankObj.put(HighChartOptionKey.COLOR.getKey(), line.getSettings().getColor());
+                blankObj.put(HighChartOptionKey.NAME.getKey(), line.getLineName());
+                blankObj.put(HighChartOptionKey.ID.getKey(), line.getLineName());
+                lineNames.add(line.getLineName());
+                jsonDataContainer.add(blankObj);
+            }
             if (lineNames.contains(line.getLineName())) {
                 dataObj.put(HighChartOptionKey.LINKED_TO.getKey(), line.getLineName());
             }
             jsonDataContainer.add(dataObj);
-            lineNames.add(line.getLineName());
         }
         /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
         if (noData) {

@@ -2005,8 +2005,8 @@
         <description>Node received an error response from Yukon.</description>
         <troubleshooting>The RF node attempted to download the meter program from Yukon, but received an error response. Retry sending the Meter Program to the node.</troubleshooting>
     </error>
-
-  <error code="1024" type="NONE">
+     
+   <error code="1024" type="NONE">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
         <description>
@@ -2070,6 +2070,91 @@
         <troubleshooting></troubleshooting>
     </error>
     
+    <error code="1100" type="NONE">
+        <category>Eaton Cloud</category>
+        <porter>Yukon did not receive a Success or Failure participation response for device, even after retries.</porter>
+        <description>No participation response was received from device.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1101" type="NONE">
+        <category>Eaton Cloud</category>
+        <porter>Yukon had a service restart which prevented a participation response from being recorded for the device. Device polling stopped once there was a service restart.</porter>
+        <description>No participation response recorded due to Yukon service restart.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1102" type="NONE">
+        <category>Eaton Cloud</category>
+        <porter>Upon event initiation, job creation failed.</porter>
+        <description>Event failed to initiate.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1103" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>The user is not authorized to execute the given method for the current device.</porter>
+        <description>User not authorized to execute method for this device.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1104" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>Device not configured on IoT hub. (ingress is disabled or it's not an IoT Hub)</porter>
+        <description>Device not configured on IoT hub.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1105" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>Profile not found for a device.</porter>
+        <description>Device profile not found in Brightlayer Cloud.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1106" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>In the case of get or set channel method, channels are invalid</porter>
+        <description>Channel method error.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1107" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>The device is not capable of direct method invocation.</porter>
+        <description>Device not capable of direct method.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+    <error code="1108" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>If no channels are defined for the device in case of get or set Channel method.</porter>
+        <description>Channel method error.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1109" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>In the case of get or set channel method, params are invalid.</porter>
+        <description>Channel method error.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1110" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>In the case of set channel method, channels are not writable.</porter>
+        <description>Channel method error.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1111" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>Device not found.</porter>
+        <description>Device not found in Brightlayer Cloud.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1112" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>Message timed out or failed to receive at command processor azure function (In case of a dead-letter message).</porter>
+        <description>Command timed out in Brightlayer Cloud.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   <error code="1113" type="SYSTEM">
+        <category>Eaton Cloud</category>
+        <porter>It's a generic error to represent a failure on command execution.</porter>
+        <description>Command failed to execute.</description>
+        <troubleshooting>N/A</troubleshooting>
+   </error>
+   
     <error code="2000" type="NONE">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>

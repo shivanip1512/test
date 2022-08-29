@@ -52,7 +52,7 @@ public class ThirdPartyIconLibraryTest {
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
         ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class);
+                ThirdPartyLibraries.class, libraryYaml.getFilename());
         
         if (documentedLibraries.iconLibraries != null) {
             Map<Path, ThirdPartyIconLibrary> documentedLibrariesByProject = 

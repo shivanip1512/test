@@ -636,10 +636,7 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.LONGITUDE"></entry>
     
     <!-- importUpload.jsp: errors -->
-    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields"><![CDATA[File must contain all of the required fields.
-    <br>
-    ]]>Check that the file is CSV formatted.</entry>
-    
+    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields">File must contain all of the required fields. Check that the file is CSV formatted.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.firstColumnTemplate">The first </entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.duplicateColumn">Duplicate column found: {0}</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.badIdentifier">Column can not be used as identifier: {0}</entry>

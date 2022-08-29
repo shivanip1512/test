@@ -11,6 +11,7 @@ public enum SystemLogger {
     // Custom appender loggers
     API_LOGGER("apiLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_API_LOGGER, "yukonApiRollingFile"),
     COMMS_LOGGER("commsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_COMMS_LOGGER, "commsRollingFile"),
+    EATON_CLOUD_COMMS_LOGGER("eatonCloudCommsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_EATON_CLOUD_COMMS_LOGGER, "eatonCloudCommsRollingFile"),
     RFN_COMMS_LOGGER("rfnCommsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_RFN_COMMS_LOGGER, "yukonRfnRollingFile"),
     SMART_NOTIFICATION_LOGGER("smartNotifLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER,
             "smartNotifRollingFile"),
@@ -43,7 +44,7 @@ public enum SystemLogger {
             }
         }
         lookupByLoggerName = nameBuilder.build();
-        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER, SMART_NOTIFICATION_LOGGER);
+        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER, SMART_NOTIFICATION_LOGGER, EATON_CLOUD_COMMS_LOGGER);
         appenderRefByLoggerName = appenderRefByLoggerNameBuilder.build();
         lookupByCustomizedSystemLogger = customizedSystemLoggerBuilder.build();
     }

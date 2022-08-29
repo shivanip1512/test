@@ -131,8 +131,7 @@ public class DR_ServerImpl implements DR_Server {
                 if (errorObject == null) {
                     MspLoadControl mspLoadControl = new MspLoadControl();
                     // If errorObjects are returned, we still continue on and control what we can.
-                    List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl,
-                            vendor);
+                    List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl, vendor);
                     if (CollectionUtils.isNotEmpty(errorObject2)) {
                         for (ErrorObject err : errorObject2) {
                             errorObjects.add(err);

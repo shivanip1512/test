@@ -19,16 +19,18 @@ public class YukonValidationHelperCommon {
             // Check if pao name already exists for paoClass and paoCategory
             PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap()
                     .get(Integer.valueOf(paoId)).getPaoType() : type;
-            Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
-                    .stream()
-                    .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoNameWithoutSpace)
-                            && pao.getPaoType().getPaoClass() == paoType.getPaoClass()
-                            && pao.getPaoType().getPaoCategory() == paoType.getPaoCategory())
-                    .findFirst();
+            if (paoType != null) {
+                Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
+                        .stream()
+                        .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoNameWithoutSpace)
+                                && pao.getPaoType().getPaoClass() == paoType.getPaoClass()
+                                && pao.getPaoType().getPaoCategory() == paoType.getPaoCategory())
+                        .findFirst();
 
-            if (!litePao.isEmpty()) {
-                if (paoId == null || (litePao.get().getLiteID() != Integer.valueOf(paoId))) {
-                    return true;
+                if (!litePao.isEmpty()) {
+                    if (paoId == null || (litePao.get().getLiteID() != Integer.valueOf(paoId))) {
+                        return true;
+                    }
                 }
             }
         }

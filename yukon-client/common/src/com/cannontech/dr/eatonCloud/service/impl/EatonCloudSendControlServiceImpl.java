@@ -32,6 +32,7 @@ import org.springframework.util.StopWatch;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -43,6 +44,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
@@ -89,22 +91,25 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
 
     @PostConstruct
     public void init() {
-        String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        if (Strings.isNullOrEmpty(siteGuid)) {
-            return;
-        }
+        if (!configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("Initializing");
+            String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            if (Strings.isNullOrEmpty(siteGuid)) {
+                return;
+            }
 
-        failureNotificationPercent = configurationSource.getInteger(
-                MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
-        try {
-            int affectedRows = recentEventParticipationDao.failWillRetryDevices(null);
-            log.info(
-                    "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
-                    affectedRows);
-        } catch (Exception e) {
-            log.error(e);
+            failureNotificationPercent = configurationSource.getInteger(
+                    MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
+            try {
+                int affectedRows = recentEventParticipationDao.failWillRetryDevices(null);
+                log.info(
+                        "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
+                        affectedRows);
+            } catch (Exception e) {
+                log.error(e);
+            }
+            schedule();
         }
-        schedule();
     }
 
     private void schedule() {
@@ -288,7 +293,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 totalFailed,
                 totalSucceeded,
                 readTimeFromNowInMinutes,
-                nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+                nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
 
         return totalFailed.intValue();
     }
@@ -303,7 +308,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                     .getPaoName();
             String group = dbCache.getAllLMGroups().stream().filter(p -> p.getLiteID() == groupId).findFirst().get()
                     .getPaoName();
-            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
+            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, EatonCloudJobControlType.SHED);
 
             log.info("[external event id:{}] Sending smart notification event: {}", eventId, event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));

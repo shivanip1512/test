@@ -136,13 +136,14 @@
                 <cti:tab title="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
                     <highChart:ivvcChart chartId="${chartId}"
+                        feederList="${feederList}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
                     <cti:url var="url" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
                     </cti:url>
                     <cti:dataUpdaterCallback 
-                        function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
+                        function="yukon.da.ivvcChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
                         initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
@@ -275,5 +276,6 @@
     <cti:includeScript link="/resources/js/pages/yukon.da.command.js" />
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.wizard.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.ivvcChart.js"/>
 
 </cti:standardPage>

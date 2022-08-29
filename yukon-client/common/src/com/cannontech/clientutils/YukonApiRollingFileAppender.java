@@ -35,6 +35,8 @@ import com.cannontech.common.util.BootstrapUtils;
 @Plugin(name = "YukonApiRollingFile", category = "Core", elementType = "appender", printObject = true)
 public class YukonApiRollingFileAppender extends YukonRollingFileAppender {
 
+    private static final String logFileSuffix = "ApiLog";
+
     private static volatile YukonApiRollingFileAppender instance;
 
     public YukonApiRollingFileAppender(String name, Filter filter, Layout<? extends Serializable> layout,
@@ -55,7 +57,7 @@ public class YukonApiRollingFileAppender extends YukonRollingFileAppender {
         String directory = BootstrapUtils.getServerLogDir();
         String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
         // Create log files for rest calls (ApiLog_yyyyMMDD.log).
-        String applicationName = "ApiLog";
+        String applicationName = logFileSuffix;
         String fileName = directory + applicationName + "_" + creationDate + ".log";
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
@@ -97,6 +99,11 @@ public class YukonApiRollingFileAppender extends YukonRollingFileAppender {
     public void append(final LogEvent event) {
         // Call YukonRollingFileAppender for actual append.
         super.append(event);
+    }
+
+    @Override
+    public String getApplicationName() {
+        return logFileSuffix;
     }
 
 }

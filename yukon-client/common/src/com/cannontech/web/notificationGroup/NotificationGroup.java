@@ -10,11 +10,14 @@ import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class NotificationGroup implements DBPersistentConverter<com.cannontech.database.data.notification.NotificationGroup> {
-    private int id;
+    private Integer id;
     private String name;
-    private boolean enabled;
+    private Boolean enabled;
     private List<CICustomer> cICustomers;
     private List<Contact> unassignedContacts;
 
@@ -22,11 +25,17 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
         super();
     }
 
-    public int getId() {
+    public NotificationGroup(Integer notificationGroupID, String groupName, String disableFlag) {
+        id = notificationGroupID;
+        name = groupName;
+        enabled = disableFlag.equals("N") ? true : false;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -38,11 +47,11 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
         this.name = name;
     }
 
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -66,13 +75,13 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
     public void buildModel(com.cannontech.database.data.notification.NotificationGroup notificationGroup) {
         setId(notificationGroup.getNotificationGroup().getNotificationGroupID());
         setName(notificationGroup.getNotificationGroup().getGroupName());
-        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag() == "N" ? true : false);
+        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag().equals("N") ? true : false);
     }
 
     @Override
     public void buildDBPersistent(com.cannontech.database.data.notification.NotificationGroup notificationGroup) {
         notificationGroup.getNotificationGroup().setGroupName(getName());
-        notificationGroup.getNotificationGroup().setDisableFlag(isEnabled() == true ? "N" : "Y");
+        notificationGroup.getNotificationGroup().setDisableFlag(getEnabled() == true ? "N" : "Y");
 
         List<NotifDestinationMap> notifList = new ArrayList<NotifDestinationMap>();
         List<CustomerNotifGroupMap> custList = new ArrayList<CustomerNotifGroupMap>();

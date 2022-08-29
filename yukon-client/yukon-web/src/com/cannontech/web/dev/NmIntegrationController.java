@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -74,6 +75,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseT
 import com.cannontech.common.rfn.message.neighbor.LinkPower;
 import com.cannontech.common.rfn.message.neighbor.LinkRate;
 import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
+import com.cannontech.common.rfn.message.node.RelayCellularComm;
 import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -89,12 +91,12 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedRfnDeviceDeletionSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
-import com.cannontech.common.rfn.simulation.service.RfnDeviceDeletionSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.development.model.CellularTestCommArchive;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
@@ -107,6 +109,7 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.model.SimulatorSettings.RecordingInterval;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -163,7 +166,6 @@ import com.google.common.collect.Lists;
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private RfnDeviceDeletionSimulatorService rfnDeviceDeletionSimulatorService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
@@ -680,6 +682,7 @@ public class NmIntegrationController {
     public String viewRfnMeterSimulator(ModelMap model, FlashScope flash) {
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
+        model.addAttribute("rfnMeterRecordingIntervals",RecordingInterval.values());
         model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
         model.addAttribute("rfnMeterReadReplies", RfnMeterReadingReplyType.values());
         model.addAttribute("rfnMeterReadDataReplies", RfnMeterReadingDataReplyType.values());
@@ -706,6 +709,7 @@ public class NmIntegrationController {
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
+        model.addAttribute("selectedRecordingInterval", rfnMeterResponse.getSettings().getRecordingInterval());
         model.addAttribute("selectedReportingInterval", rfnMeterResponse.getSettings().getReportingInterval());
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(rfnMeterResponse.getStatus()));
         
@@ -1368,6 +1372,42 @@ public class NmIntegrationController {
         request.setSerialTo(deviceArchiveParameters.getSerialTo());
         sendMessageToSimulator(request, success, failure, flashScope);
         return "redirect:viewDeviceArchiveRequest";
+    }
+    
+    @RequestMapping("viewCellularArchiveRequest")
+    public String viewCellularCommArchiveRequest(ModelMap model) {
+        model.addAttribute("cellularTypes", getCellularManufacturersAndModels());
+        model.addAttribute("cellularArchive", new CellularTestCommArchive());
+        return "rfn/viewCellularArchiveRequest.jsp";
+    }
+    
+    @RequestMapping("sendCellularArchiveRequest")
+    public String sendCellularCommArchiveRequest(@ModelAttribute CellularTestCommArchive testCommArchive, FlashScope flashScope) {
+        RelayCellularComm cellularComm = buildRelayCellularComm(testCommArchive);
+        log.info("Testing a cell comm archive: {}", testCommArchive);
+        rfnEventTestingService.sendCellularCommArchiveRequest(cellularComm);
+        return "redirect:viewCellularArchiveRequest";
+    }
+    
+    private RelayCellularComm buildRelayCellularComm(CellularTestCommArchive testCommArchive) {
+        RelayCellularComm cellularComm = new RelayCellularComm();
+        cellularComm.setCellularCommStatusTimestamp(DateTime.now().getMillis());
+        RfnIdentifier deviceIdentifier = new RfnIdentifier(testCommArchive.getSerialNumber(), 
+                                                           testCommArchive.getManufacturerModel().getManufacturer(), 
+                                                           testCommArchive.getManufacturerModel().getModel());
+        cellularComm.setDeviceRfnIdentifier(deviceIdentifier);
+        cellularComm.setRelayCellularCommStatus(testCommArchive.getNodeConnectionState());
+        cellularComm.setRsrp(testCommArchive.getRsrp());
+        cellularComm.setRsrq(testCommArchive.getRsrq());
+        cellularComm.setRssi(testCommArchive.getRssi());
+        cellularComm.setSinr(testCommArchive.getSinr());
+        return cellularComm;
+    }
+    
+    private List<RfnManufacturerModel> getCellularManufacturersAndModels() {
+        return Stream.of(RfnManufacturerModel.values())
+        .filter(manufacturerModel -> PaoType.getCellularTypes().contains(manufacturerModel.getType()))
+        .collect(Collectors.toList());
     }
     
     private void sendMessageToSimulator(SimulatorRequest request, String successText, String failureText,
