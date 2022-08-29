@@ -18,7 +18,7 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".constraint">
                 <tags:selectWithItems items="${constraints}" id="constraint" path="constraint.constraintId" itemLabel="name"
-                    itemValue="id" defaultItemLabel="${constraint.name}" defaultItemValue="${constraint.id}" inputClass="w300"/>
+                    itemValue="id" defaultItemLabel="${constraint.name}" defaultItemValue="${constraint.id}" inputClass="w300 PR10"/>
             </tags:nameValue2>
             <cti:checkRolesAndProperties value="ALLOW_MEMBER_PROGRAMS">
                 <tags:nameValue2 nameKey=".copyMemberControl">
