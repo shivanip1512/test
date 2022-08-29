@@ -23,7 +23,7 @@ RfDerProcessor::RfDerProcessor( CtiDeviceManager & deviceManager )
 
 void RfDerProcessor::start()
 {
-    E2eMessenger::registerDataStreamingHandler(
+    E2eMessenger::registerDerHandler(
         [ this ]( const E2eMessenger::Indication & msg )
         {
             CTILOG_INFO( dout, "DER packet received for " << msg.rfnIdentifier << "\n" << msg.payload );
