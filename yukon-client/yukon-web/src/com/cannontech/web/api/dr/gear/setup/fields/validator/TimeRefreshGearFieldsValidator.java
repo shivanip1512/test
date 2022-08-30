@@ -13,6 +13,7 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<TimeRefreshGearFields> {
     @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public TimeRefreshGearFieldsValidator() {
         super(TimeRefreshGearFields.class);
@@ -30,7 +31,7 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
     @Override
     protected void doValidation(TimeRefreshGearFields timeRefreshCycleGear, Errors errors) {
         // Check Refresh Shed Type
-        YukonApiValidationUtils.checkIfFieldRequired("refreshShedType", errors, timeRefreshCycleGear.getRefreshShedType(),
+        yukonApiValidationUtils.checkIfFieldRequired("refreshShedType", errors, timeRefreshCycleGear.getRefreshShedType(),
             "Refresh Shed Type");
         if (!errors.hasFieldErrors("refreshShedType")) {
             if (timeRefreshCycleGear.getRefreshShedType() != CycleCountSendType.FixedShedTime
@@ -42,7 +43,7 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
 
         // Check Shed Time
         if (!errors.hasFieldErrors("refreshShedType")) {
-            YukonApiValidationUtils.checkIfFieldRequired("shedTime", errors, timeRefreshCycleGear.getShedTime(), "Shed Time");
+            yukonApiValidationUtils.checkIfFieldRequired("shedTime", errors, timeRefreshCycleGear.getShedTime(), "Shed Time");
             if (!errors.hasFieldErrors("shedTime")) {
                 TimeIntervals shedTime = TimeIntervals.fromSeconds(timeRefreshCycleGear.getShedTime());
                 if (!TimeIntervals.getShedtime().contains(shedTime)) {

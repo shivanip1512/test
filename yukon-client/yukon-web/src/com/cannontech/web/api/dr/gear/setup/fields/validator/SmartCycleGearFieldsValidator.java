@@ -12,6 +12,7 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
 public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<SmartCycleGearFields> {
 
     @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     public SmartCycleGearFieldsValidator() {
         super(SmartCycleGearFields.class);
     }
@@ -28,7 +29,7 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
     @Override
     protected void doValidation(SmartCycleGearFields smartCycleGear, Errors errors) {
         // Check for No Ramp Value
-        YukonApiValidationUtils.checkIfFieldRequired("noRamp", errors, smartCycleGear.getNoRamp(), "No Ramp");
+        yukonApiValidationUtils.checkIfFieldRequired("noRamp", errors, smartCycleGear.getNoRamp(), "No Ramp");
 
         // Check for Control Percent
         gearApiValidatorHelper.checkControlPercent(smartCycleGear.getControlPercent(), errors);
@@ -37,7 +38,7 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         gearApiValidatorHelper.checkCyclePeriod(smartCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
         // Check for Cycle Count Send Type
-        YukonApiValidationUtils.checkIfFieldRequired("cycleCountSendType", errors, smartCycleGear.getCycleCountSendType(),
+        yukonApiValidationUtils.checkIfFieldRequired("cycleCountSendType", errors, smartCycleGear.getCycleCountSendType(),
             "Cycle Count Send Type");
         if (!errors.hasFieldErrors("cycleCountSendType")
             && (smartCycleGear.getCycleCountSendType() == CycleCountSendType.FixedShedTime
@@ -48,17 +49,17 @@ public class SmartCycleGearFieldsValidator extends ProgramGearFieldsValidator<Sm
         }
 
         // Check for Max Cycle Count
-        YukonApiValidationUtils.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(),
+        yukonApiValidationUtils.checkIfFieldRequired("maxCycleCount", errors, smartCycleGear.getMaxCycleCount(),
             "Max Cycle Count");
         if (!errors.hasFieldErrors("maxCycleCount")) {
-            YukonApiValidationUtils.checkRange(errors, "maxCycleCount", smartCycleGear.getMaxCycleCount(), 0, 63, false);
+            yukonApiValidationUtils.checkRange(errors, "maxCycleCount", smartCycleGear.getMaxCycleCount(), 0, 63, false);
         }
 
         // Check for Starting Period Count
-        YukonApiValidationUtils.checkIfFieldRequired("startingPeriodCount", errors, smartCycleGear.getStartingPeriodCount(),
+        yukonApiValidationUtils.checkIfFieldRequired("startingPeriodCount", errors, smartCycleGear.getStartingPeriodCount(),
             "Starting Period Count");
         if (!errors.hasFieldErrors("startingPeriodCount")) {
-            YukonApiValidationUtils.checkRange(errors, "startingPeriodCount", smartCycleGear.getStartingPeriodCount(), 1,
+            yukonApiValidationUtils.checkRange(errors, "startingPeriodCount", smartCycleGear.getStartingPeriodCount(), 1,
                 63, false);
         }
 

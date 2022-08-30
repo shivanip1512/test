@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.SmartCycleGearFields;
@@ -8,6 +9,7 @@ import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class TargetCycleGearFieldsValidator extends TrueCycleGearFieldsValidator {
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public TargetCycleGearFieldsValidator() {
         super();
@@ -24,10 +26,10 @@ public class TargetCycleGearFieldsValidator extends TrueCycleGearFieldsValidator
         super.doValidation(smartCycleGear, errors);
         TargetCycleGearFields targetCycleGearFields = (TargetCycleGearFields) smartCycleGear;
         // Check for kWReduction
-        YukonApiValidationUtils.checkIfFieldRequired("kWReduction", errors, targetCycleGearFields.getkWReduction(),
+        yukonApiValidationUtils.checkIfFieldRequired("kWReduction", errors, targetCycleGearFields.getkWReduction(),
                 "KW Reduction");
         if (!errors.hasFieldErrors("kWReduction")) {
-            YukonApiValidationUtils.checkRange(errors, "kWReduction", targetCycleGearFields.getkWReduction(), 0.0, 99999.999,
+            yukonApiValidationUtils.checkRange(errors, "kWReduction", targetCycleGearFields.getkWReduction(), 0.0, 99999.999,
                     true);
         }
     }
