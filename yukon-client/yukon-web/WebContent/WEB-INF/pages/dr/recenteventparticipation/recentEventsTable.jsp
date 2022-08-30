@@ -1,12 +1,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.dr.recentEventParticipation.details">
 
+    <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
+    <span class="badge">${totalEvents}</span>&nbsp;<i:inline key=".numEvents"/>
 
     <table class="compact-results-table has-alerts has-actions row-highlighting">
         <thead>
@@ -33,28 +34,29 @@
                     <td>
                         <div class="progress" style="width: 80px; float: left;">
                             <div class="progress-bar progress-bar-success" role="progressbar"
-                                aria-valuenow="${recentEventParticipationStats.eventStats.percentConfirmed}%" aria-valuemin="0" 
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentConfirmed}%" aria-valuemin="0"
                                 title="<i:inline key=".confirmed" arguments="${recentEventParticipationStats.numConfirmed}"/>"
                                 aria-valuemax="100" style="width: ${successWidth}%"></div>
                             <div class="progress-bar progress-bar-info" role="progressbar"
-                                aria-valuenow="${recentEventParticipationStats.eventStats.percentSuccessAfterRetry}%" aria-valuemin="0" 
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentSuccessAfterRetry}%" aria-valuemin="0"
                                 title="<i:inline key=".confirmedAfterRetry" arguments="${recentEventParticipationStats.numConfirmedAfterRetry}"/>"
                                 aria-valuemax="100" style="width: ${successAfterRetryWidth}%"></div>
                             <div class="progress-bar progress-bar-warning" role="progressbar"
-                                aria-valuenow="${recentEventParticipationStats.eventStats.percentFailed}%" aria-valuemin="0" 
-                                title="<i:inline key=".failed" arguments="${recentEventParticipationStats.numFailed}"/>"
-                                aria-valuemax="100" style="width: ${failedWidth}%"></div>
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentFailed}%" aria-valuemin="0"
+                                title="<i:inline key=".failed" arguments="${recentEventParticipationStats.numFailed}"/>" aria-valuemax="100"
+                                style="width: ${failedWidth}%"></div>
                             <div class="progress-bar progress-bar-unknown" role="progressbar"
-                                aria-valuenow="${recentEventParticipationStats.eventStats.percentUnknown}%" aria-valuemin="0" 
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentUnknown}%" aria-valuemin="0"
                                 title="<i:inline key=".unreported" arguments="${recentEventParticipationStats.numUnknowns}" />"
                                 aria-valuemax="100" style="width: ${unknownWidth}%"></div>
-                        </div> 
+                        </div>
                     </td>
                     <td>
-                    <cm:dropdown icon="icon-cog">
-                            <cti:url var="mapNetworkUrl" value="/dr/recenteventparticipation/download?eventId=${recentEventParticipationStats.controlEventId}"/>
-                            <cm:dropdownOption icon="icon-download" key=".download" href="${mapNetworkUrl}"/>
-                    </cm:dropdown>
+                        <cm:dropdown icon="icon-cog">
+                            <cti:url var="downloadUrl"
+                                value="/dr/recenteventparticipation/download?eventId=${recentEventParticipationStats.controlEventId}" />
+                            <cm:dropdownOption icon="icon-download" key=".download" href="${downloadUrl}" />
+                        </cm:dropdown>
                     </td>
                 </tr>
             </c:forEach>
