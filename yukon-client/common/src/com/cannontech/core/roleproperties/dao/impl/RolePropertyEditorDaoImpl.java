@@ -178,8 +178,11 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
             if(actualValueLookup.containsKey(yukonRoleProperty)){
                 Object actualValue = actualValueLookup.get(yukonRoleProperty);
                 rolePropertyValue.setValue(actualValue);
-            }else{
-                rolePropertyValue.setValue(descriptiveRoleProperties.get(yukonRoleProperty).getDefaultValue());
+            }else if
+                 (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                        && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                    // Hide DER Edge RP when DER Edge CParm is missing
+                    continue;
             }
             rolePropertyValues.add(rolePropertyValue);
         }
@@ -211,6 +214,11 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         // Adding the role to the role group.
         Iterable<YukonRoleProperty> roleProperties = getFilteredRoleProperties(new RolePredicate(role));
         for (YukonRoleProperty yukonRoleProperty : roleProperties) {
+            if (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                    && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                // Hide DER Edge RP when DER Edge CParm is missing
+                continue;
+            }
             String dbTextValue = getStringToStoreForValue(yukonRoleProperty, null);
             insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }
