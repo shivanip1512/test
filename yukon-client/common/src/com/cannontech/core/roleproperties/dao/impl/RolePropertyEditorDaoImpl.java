@@ -185,8 +185,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                     continue;
                 }
                 rolePropertyValue.setValue(descriptiveRoleProperties.get(yukonRoleProperty).getDefaultValue());
-                rolePropertyValues.add(rolePropertyValue);
             }
+            rolePropertyValues.add(rolePropertyValue);
         }
         
         GroupRolePropertyValueCollection result = new GroupRolePropertyValueCollection(group, rolePropertyValues);
