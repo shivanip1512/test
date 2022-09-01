@@ -173,18 +173,20 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         
         for (YukonRoleProperty yukonRoleProperty : properties) {
             RolePropertyValue rolePropertyValue = new RolePropertyValue(yukonRoleProperty);
-            
-            //only set the value if it was found in the lookup, otherwise use the default from YukonRoleProperty table
-            if(actualValueLookup.containsKey(yukonRoleProperty)){
+
+            // only set the value if it was found in the lookup, otherwise use the default from YukonRoleProperty table
+            if (actualValueLookup.containsKey(yukonRoleProperty)) {
                 Object actualValue = actualValueLookup.get(yukonRoleProperty);
                 rolePropertyValue.setValue(actualValue);
-            }else if
-                 (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+            } else {
+                if (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
                         && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
                     // Hide DER Edge RP when DER Edge CParm is missing
                     continue;
+                }
+                rolePropertyValue.setValue(descriptiveRoleProperties.get(yukonRoleProperty).getDefaultValue());
+                rolePropertyValues.add(rolePropertyValue);
             }
-            rolePropertyValues.add(rolePropertyValue);
         }
         
         GroupRolePropertyValueCollection result = new GroupRolePropertyValueCollection(group, rolePropertyValues);
