@@ -5539,7 +5539,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
                 <modifier>Max Net Flow</modifier>
             </modifiers>
         </point>
@@ -5717,7 +5716,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
                 <modifier>Max Net Flow</modifier>
                 <modifier>TOU Rate A</modifier>
             </modifiers>
@@ -5902,7 +5900,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
                 <modifier>Max Net Flow</modifier>
                 <modifier>TOU Rate B</modifier>
             </modifiers>
@@ -6087,7 +6084,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
                 <modifier>Max Net Flow</modifier>
                 <modifier>TOU Rate C</modifier>
             </modifiers>
@@ -6272,7 +6268,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
                 <modifier>Max Net Flow</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
