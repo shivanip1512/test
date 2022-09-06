@@ -129,6 +129,7 @@
                             <td>
                                 <div class="button-group">
                                     <tags:check label="Net Flow" path="modifiers" value="netFlow"/>
+                                    <tags:check label="Net Flow Max" path="modifiers" value="netFlowMax"/>
                                     <tags:check label="Coincident" path="modifiers" value="coincident"/>
                                     <tags:check label="Harmonic" path="modifiers" value="harmonic"/>
                                     <tags:check label="tenths" path="modifiers" value="tenths"/>

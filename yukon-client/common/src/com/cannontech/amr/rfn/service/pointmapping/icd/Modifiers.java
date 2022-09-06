@@ -27,6 +27,7 @@ public enum Modifiers {
     LAGGING              ("Lagging"),
 
     NET_FLOW             ("Net Flow"),
+    MAX_NET_FLOW         ("Max Net Flow"),
     MINIMUM              ("Min"),
     AVERAGE              ("Avg"),
     MAXIMUM              ("Max"),

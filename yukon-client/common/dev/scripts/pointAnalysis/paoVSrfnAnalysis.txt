@@ -37,6 +37,7 @@ paoDefinition.xml vs rfnPointMapping.xml
         mx = Max
         mn = Min
         Nf = Net Flow
+        Mnf = Max Net Flow
         Cu = Cumulative
         Hc = Harmonic 
    

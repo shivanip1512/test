@@ -44,7 +44,7 @@ boolean _skipEvents                 = true        // skips everything (eg. event
 def __MODIFIERS_TO_ABBRV = ['Quadrant 1':'Q1', 'Quadrant 2':'Q2', 'Quadrant 3':'Q3', 'Quadrant 4':'Q4',
                             'TOU Rate A':'Ra', 'TOU Rate B':'Rb', 'TOU Rate C':'Rc', 'TOU Rate D':'Rd', 'TOU Rate E':'Re',
                             'Phase A':'Pa',    'Phase B':'Pb',    'Phase C':'Pc',    'Primary':'1^',    'Secondary':'2^',
-                            'Avg':'Av',        'Max':'mx',        'Min':'mn',        'Net Flow':'Nf',   'Cumulative':'Cu', 'Harmonic':'Hc']
+                            'Avg':'Av',        'Max':'mx',        'Min':'mn',        'Net Flow':'Nf',   'Max Net Flow':'Mnf',   Cumulative':'Cu', 'Harmonic':'Hc']
 def __UOM_TO_ABBRV = ['Counts':'#', 'Seconds':'s', 'Volts':'V', 'V degree':'Vdgr', 'A degree':'Adgr', 'PF degree':'PFdg',
                         'Outage Count':'Out#', 'Restore Count':'Rst#', 'Outage Blink Count':'OBk#', 'Restore Blink Count':'RBk#', 'Outage Log':'Olog']
 

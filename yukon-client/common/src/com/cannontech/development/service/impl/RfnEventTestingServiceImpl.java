@@ -131,6 +131,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("touRateE", "TOU Rate E")
                 //---
                 .put("netFlow", "Net Flow")
+                .put("maxNetFlow", "Max Net Flow")
                 .put("coincident", "Coincident")
                 .put("harmonic", "Harmonic")
                 .put("previous", "Previous")
