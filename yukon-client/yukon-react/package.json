@@ -11,6 +11,7 @@
         "@brightlayer-ui/react-themes": "6.1.1",
         "@material-ui/icons": "^4.11.3",
         "@material-ui/lab": "4.0.0-alpha.60",
+        "@mui/styles": "^5.10.3",
         "axios": "0.27.2",
         "i18next": "20.0.0",
         "i18next-browser-languagedetector": "6.1.3",
