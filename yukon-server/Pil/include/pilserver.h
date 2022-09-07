@@ -16,6 +16,7 @@
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
 #include "rf_data_streaming_processor.h"
+#include "rf_der_processor.h"
 
 #include <boost/thread/synchronized_value.hpp>
 
@@ -47,7 +48,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    long                 _currentUserMessageId;
 
    RfnRequestManager    _rfnRequestManager;
-   unsigned long        _rfnRequestId;
+   std::atomic_ulong    _rfnRequestId;
 
    using amq_cm = Messaging::ActiveMQConnectionManager;
 
@@ -55,6 +56,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    boost::synchronized_value<ReplyCallbacks> _replyCallbacks;
 
    RfDataStreamingProcessor _rfDataStreamingProcessor;
+   RfDerProcessor           _rfDerProcessor;
 
    typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 
@@ -89,6 +91,9 @@ protected:
 
    void handleRfnDisconnectRequest(const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
    void handleRfnMeterReadRequest (const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
+
+   void handleRfnEdgeDrUnicastRequest(const amq_cm::MessageDescriptor&);
+   void handleRfnEdgeDrBroadcastRequest(const amq_cm::MessageDescriptor&);
 
    void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
    int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);

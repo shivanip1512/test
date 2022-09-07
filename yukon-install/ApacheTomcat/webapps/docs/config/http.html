@@ -1,8 +1,8 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - The HTTP Connector</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-            Version 9.0.56,
-            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The HTTP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
-<ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementation">Standard Implementation</a></li><li><a href="#Java_TCP_socket_attributes">Java TCP socket attributes</a></li><li><a href="#NIO_specific_configuration">NIO specific configuration</a></li><li><a href="#NIO2_specific_configuration">NIO2 specific configuration</a></li><li><a href="#APR/native_specific_configuration">APR/native specific configuration</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#HTTP/1.1_and_HTTP/1.0_Support">HTTP/1.1 and HTTP/1.0 Support</a></li><li><a href="#HTTP/2_Support">HTTP/2 Support</a></li><li><a href="#Proxy_Support">Proxy Support</a></li><li><a href="#Unix_Domain_Socket_Support">Unix Domain Socket Support</a></li><li><a href="#SSL_Support">SSL Support</a></li><li><a href="#SSL_Support_-_SSLHostConfig">SSL Support - SSLHostConfig</a></li><li><a href="#SSL_Support_-_Certificate">SSL Support - Certificate</a></li><li><a href="#SSL_Support_-_Connector_-_NIO_and_NIO2">SSL Support - Connector - NIO and NIO2</a></li><li><a href="#Key_store_types">Key store types</a></li><li><a href="#SSL_Support_-_Connector_-_NIO_and_NIO2_(deprecated)">SSL Support - Connector - NIO and NIO2 (deprecated)</a></li><li><a href="#SSL_Support_-_Connector_-_APR/Native_(deprecated)">SSL Support - Connector - APR/Native (deprecated)</a></li><li><a href="#Connector_Comparison">Connector Comparison</a></li></ol></li></ul>
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.65) - The HTTP Connector</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.65,
+            <time datetime="2022-07-14">Jul 14 2022</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://cwiki.apache.org/confluence/display/TOMCAT/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The HTTP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementation">Standard Implementation</a></li><li><a href="#Java_TCP_socket_attributes">Java TCP socket attributes</a></li><li><a href="#NIO_specific_configuration">NIO specific configuration</a></li><li><a href="#NIO2_specific_configuration">NIO2 specific configuration</a></li><li><a href="#APR/native_specific_configuration">APR/native specific configuration</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#HTTP/1.1_and_HTTP/1.0_Support">HTTP/1.1 and HTTP/1.0 Support</a></li><li><a href="#HTTP/2_Support">HTTP/2 Support</a></li><li><a href="#Proxy_Support">Proxy Support</a></li><li><a href="#Unix_Domain_Socket_Support">Unix Domain Socket Support</a></li><li><a href="#SSL_Support">SSL Support</a></li><li><a href="#SSL_Support_-_SSLHostConfig">SSL Support - SSLHostConfig</a></li><li><a href="#SSL_Support_-_Certificate">SSL Support - Certificate</a></li><li><a href="#SSL_Support_-_Connector_-_NIO_and_NIO2">SSL Support - Connector - NIO and NIO2</a></li><li><a href="#SSL_Support_-_OpenSSL's_SSL_CONF_API">SSL Support - OpenSSL's SSL_CONF API</a></li><li><a href="#Key_store_types">Key store types</a></li><li><a href="#SSL_Support_-_Connector_-_NIO_and_NIO2_(deprecated)">SSL Support - Connector - NIO and NIO2 (deprecated)</a></li><li><a href="#SSL_Support_-_Connector_-_APR/Native_(deprecated)">SSL Support - Connector - APR/Native (deprecated)</a></li><li><a href="#Connector_Comparison">Connector Comparison</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
   <p>The <strong>HTTP Connector</strong> element represents a
@@ -52,27 +52,6 @@
       <p>The default timeout for asynchronous requests in milliseconds. If not
       specified, this attribute is set to the Servlet specification default of
       30000 (30 seconds).</p>
-    </td></tr><tr><td><code class="attributeName">continueResponseTiming</code></td><td>
-      <p>When to respond with a <code>100</code> intermediate response code to a
-      request containing an <code>Expect: 100-continue</code> header.
-      The following values may used:
-      <ul>
-      <li><code>immediately</code> - an intermediate 100 status response
-      will be returned as soon as practical</li>
-      <li><code>onRead</code> - an intermediate 100 status
-      response will be returned only when the Servlet reads the request body,
-      allowing the servlet to inspect the headers and possibly respond
-      before the user agent sends a possibly large request body.</li>
-      </ul>
-      </p>
-    </td></tr><tr><td><code class="attributeName">defaultSSLHostConfigName</code></td><td>
-      <p>The name of the default <strong>SSLHostConfig</strong> that will be
-      used for secure connections (if this connector is configured for secure
-      connections) if the client connection does not provide SNI or if the SNI
-      is provided but does not match any configured
-      <strong>SSLHostConfig</strong>. If not specified the default value of
-      <code>_default_</code> will be used. Provided values are always converted
-      to lower case.</p>
     </td></tr><tr><td><code class="attributeName">discardFacades</code></td><td>
       <p>A boolean value which can be used to enable or disable the recycling
       of the facade objects that isolate the container internal request
@@ -102,11 +81,10 @@
       property</a>
       <code>org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH</code> is
       set.</p>
-    </td></tr><tr><td><code class="attributeName">maxHeaderCount</code></td><td>
-      <p>The maximum number of headers in a request that are allowed by the
-      container. A request that contains more headers than the specified limit
-      will be rejected. A value of less than 0 means no limit.
-      If not specified, a default of 100 is used.</p>
+    </td></tr><tr><td><code class="attributeName">maxCookieCount</code></td><td>
+      <p>The maximum number of cookies that are permitted for a request. A value
+      of less than zero means no limit. If not specified, a default value of 200
+      will be used.</p>
     </td></tr><tr><td><code class="attributeName">maxParameterCount</code></td><td>
       <p>The maximum number of parameter and value pairs (GET plus POST) which
       will be automatically parsed by the container. Parameter and value pairs
@@ -122,18 +100,20 @@
       <a href="filter.html#Failed_Request_Filter"><code>FailedRequestFilter</code></a>
       can be used to reject requests that exceed this limit.</p>
     </td></tr><tr><td><code class="attributeName">maxSavePostSize</code></td><td>
-      <p>The maximum size in bytes of the POST which will be saved/buffered by
-      the container during FORM or CLIENT-CERT authentication. For both types
-      of authentication, the POST will be saved/buffered before the user is
-      authenticated. For CLIENT-CERT authentication, the POST is buffered for
-      the duration of the SSL handshake and the buffer emptied when the request
-      is processed. For FORM authentication the POST is saved whilst the user
-      is re-directed to the login form and is retained until the user
-      successfully authenticates or the session associated with the
-      authentication request expires. The limit can be disabled by setting this
+      <p>The maximum size in bytes of the request body which will be
+      saved/buffered by the container during FORM or CLIENT-CERT authentication
+      or during HTTP/1.1 upgrade. For both types of authentication, the request
+      body will be saved/buffered before the user is authenticated. For
+      CLIENT-CERT authentication, the request body is buffered for the duration
+      of the SSL handshake and the buffer emptied when the request is processed.
+      For FORM authentication the POST is saved whilst the user is re-directed
+      to the login form and is retained until the user successfully
+      authenticates or the session associated with the authentication request
+      expires. For HTTP/1.1 upgrade, the request body is buffered for the
+      duration of the upgrade process. The limit can be disabled by setting this
       attribute to -1. Setting the attribute to zero will disable the saving of
-      POST data during authentication. If not specified, this attribute is set
-      to 4096 (4 kilobytes).</p>
+      the requets body data during authentication and HTTP/1.1 upgrade. If not
+      specified, this attribute is set to 4096 (4 kilobytes).</p>
     </td></tr><tr><td><code class="attributeName">parseBodyMethods</code></td><td>
       <p>A comma-separated list of HTTP methods for which request
       bodies using <code>application/x-www-form-urlencoded</code> will be parsed
@@ -261,7 +241,7 @@
       additional connections or those connections may time out. The default
       value is 100.</p>
     </td></tr><tr><td><code class="attributeName">acceptorThreadPriority</code></td><td>
-      <p>The priority of the acceptor threads. The threads used to accept
+      <p>The priority of the acceptor thread. The thread used to accept
       new connections. The default value is <code>5</code> (the value of the
       <code>java.lang.Thread.NORM_PRIORITY</code> constant). See the JavaDoc
       for the <code>java.lang.Thread</code> class for more details on what
@@ -352,6 +332,27 @@
       in progress. This only takes effect if
       <strong>disableUploadTimeout</strong> is set to <code>false</code>.
       </p>
+    </td></tr><tr><td><code class="attributeName">continueResponseTiming</code></td><td>
+      <p>When to respond with a <code>100</code> intermediate response code to a
+      request containing an <code>Expect: 100-continue</code> header.
+      The following values may used:
+      <ul>
+      <li><code>immediately</code> - an intermediate 100 status response
+      will be returned as soon as practical</li>
+      <li><code>onRead</code> - an intermediate 100 status
+      response will be returned only when the Servlet reads the request body,
+      allowing the servlet to inspect the headers and possibly respond
+      before the user agent sends a possibly large request body.</li>
+      </ul>
+      </p>
+    </td></tr><tr><td><code class="attributeName">defaultSSLHostConfigName</code></td><td>
+      <p>The name of the default <strong>SSLHostConfig</strong> that will be
+      used for secure connections (if this connector is configured for secure
+      connections) if the client connection does not provide SNI or if the SNI
+      is provided but does not match any configured
+      <strong>SSLHostConfig</strong>. If not specified the default value of
+      <code>_default_</code> will be used. Provided values are always converted
+      to lower case.</p>
     </td></tr><tr><td><code class="attributeName">disableUploadTimeout</code></td><td>
       <p>This flag allows the servlet container to use a different, usually
       longer connection timeout during data upload. If not specified, this
@@ -387,17 +388,34 @@
       is <code>8192</code>.</p>
       <p>For NIO/NIO2 only, setting the value to -1, will disable the
       maxConnections feature and connections will not be counted.</p>
-    </td></tr><tr><td><code class="attributeName">maxCookieCount</code></td><td>
-      <p>The maximum number of cookies that are permitted for a request. A value
-      of less than zero means no limit. If not specified, a default value of 200
-      will be used.</p>
     </td></tr><tr><td><code class="attributeName">maxExtensionSize</code></td><td>
       <p>Limits the total length of chunk extensions in chunked HTTP requests.
       If the value is <code>-1</code>, no limit will be imposed. If not
       specified, the default value of <code>8192</code> will be used.</p>
+    </td></tr><tr><td><code class="attributeName">maxHeaderCount</code></td><td>
+      <p>The maximum number of headers in a request that are allowed by the
+      container. A request that contains more headers than the specified limit
+      will be rejected. A value of less than 0 means no limit.
+      If not specified, a default of 100 is used.</p>
     </td></tr><tr><td><code class="attributeName">maxHttpHeaderSize</code></td><td>
-      <p>The maximum size of the request and response HTTP header, specified
-      in bytes. If not specified, this attribute is set to 8192 (8 KB).</p>
+      <p>Provides the default value for
+      <strong>maxHttpRequestHeaderSize</strong> and
+      <strong>maxHttpResponseHeaderSize</strong>. If not specified, this
+      attribute is set to 8192 (8 KB).</p>
+    </td></tr><tr><td><code class="attributeName">maxHttpRequestHeaderSize</code></td><td>
+      <p>The maximum permitted size of the request line and headers associated
+      with an HTTP request, specified in bytes. This is compared to the number
+      of bytes received so includes line terminators and whitespace as well as
+      the request line, header names and header values. If not specified, this
+      attribute is set to the value of the <code>maxHttpHeaderSize</code>
+      attribute.</p>
+    </td></tr><tr><td><code class="attributeName">maxHttpResponseHeaderSize</code></td><td>
+      <p>The maximum permitted size of the response line and headers associated
+      with an HTTP response, specified in bytes. This is compared to the number
+      of bytes written so includes line terminators and whitespace as well as
+      the status line, header names and header values. If not specified, this
+      attribute is set to the value of the <code>maxHttpHeaderSize</code>
+      attribute.</p>
     </td></tr><tr><td><code class="attributeName">maxKeepAliveRequests</code></td><td>
       <p>The maximum number of HTTP requests which can be pipelined until
       the connection is closed by the server. Setting this attribute to 1 will
@@ -869,6 +887,13 @@
   <strong>SSLHostConfig</strong>. For further information, see the SSL Support
   section below.</p>
 
+  <p>When OpenSSL is providing the TLS implementation, one or more
+  <strong>OpenSSLConfCmd</strong> elements may be nested inside a
+  <strong>OpenSSLConf</strong> element to configure OpenSSL via OpenSSL's
+  <code>SSL_CONF</code> API. A single <strong>OpenSSLConf</strong> element may
+  be nested in a <strong>SSLHostConfig</strong> element. For further
+  information, see the SSL Support section below</p>
+
 </div><h3 id="Special_Features">Special Features</h3><div class="text">
 
 
@@ -1226,7 +1251,7 @@
           Attribute
         </th><th style="width: 85%;">
           Description
-        </th></tr><tr><td><strong><code class="attributeName">certificateFile</code></strong></td><td>
+        </th></tr><tr><td><code class="attributeName">certificateFile</code></td><td>
       <p>Name of the file that contains the server certificate. The format is
       PEM-encoded. Relative paths will be resolved against
       <code>$CATALINA_BASE</code>.</p>
@@ -1235,6 +1260,8 @@
       generated by <code>openssl dhparam</code> and <code>openssl ecparam</code>,
       respectively. The output of the respective OpenSSL command can simply
       be concatenated to the certificate file.</p>
+      <p>This attribute is required unless
+      <strong>certificateKeystoreFile</strong> is specified.</p>
     </td></tr><tr><td><code class="attributeName">certificateChainFile</code></td><td>
       <p>Name of the file that contains the certificate chain associated with
       the server certificate used. The format is
@@ -1277,6 +1304,8 @@
       When using a domain keystore (<code>keystoreType</code> of
       <code>DKS</code>), this parameter should be the URI to the domain
       keystore.</p>
+      <p>This attribute is required unless
+      <strong>certificateFile</strong> is specified.</p>
     </td></tr><tr><td><code class="attributeName">certificateKeystorePassword</code></td><td>
       <p>JSSE only.</p>
       <p>The password to use to access the keystore containing the server's
@@ -1314,8 +1343,9 @@
 
   <div class="subsection"><h4 id="SSL_Support_-_Connector_-_NIO_and_NIO2">SSL Support - Connector - NIO and NIO2</h4><div class="text">
 
-  <p>When APR/native is enabled, the connectors will default to using OpenSSL through JSSE,
-  which may be more optimized than the JSSE Java implementation depending on the processor being used,
+  <p>When APR/native is enabled, the connectors will default to using
+  OpenSSL through JSSE, which may be more optimized than the JSSE Java
+  implementation depending on the processor being used,
   and can be complemented with many commercial accelerator components.</p>
 
   <p>The following NIO and NIO2 SSL configuration attributes are not specific to
@@ -1351,6 +1381,40 @@
       configuration styles can be used, as long as the two types are not mixed
       (for example, it is not allowed to define use of a Java keystore and
       specify a separate pem private key using the OpenSSL attribute).</p>
+    </td></tr></table>
+
+  </div></div>
+
+  <div class="subsection"><h4 id="SSL_Support_-_OpenSSL's_SSL_CONF_API">SSL Support - OpenSSL's SSL_CONF API</h4><div class="text">
+
+  <p>When OpenSSL is providing the TLS implementation, one or more
+  <strong>OpenSSLConfCmd</strong> elements may be nested inside a
+  <strong>OpenSSLConf</strong> element to configure OpenSSL via OpenSSL's
+  <code>SSL_CONF</code> API. A single <strong>OpenSSLConf</strong> element may
+  be nested in a <strong>SSLHostConfig</strong> element.</p>
+
+  <p>The set of configuration file commands available depends on the OpenSSL
+  version being used. For a list of supported command names and values, see the
+  section Supported configuration file commands in the <a href="https://www.openssl.org/docs/manmaster/man3/SSL_CONF_cmd.html#SUPPORTED-CONFIGURATION-FILE-COMMANDS">SSL_CONF_cmd(3)</a> manual page for OpenSSL. Some of the configuration file
+  commands can be used as alternatives to <strong>SSLHostConfig</strong>
+  attributes. It is recommended that configuration file commands are only used
+  where the feature cannot be configured using <strong>SSLHostConfig</strong>
+  attributes.</p>
+
+  <p>The <strong>OpenSSLConf</strong> element does not support any
+  attributes.</p>
+
+  <p>The <strong>OpenSSLConfCmd</strong> element supports the following
+  attributes.</p>
+
+  <table class="defaultTable"><tr><th style="width: 15%;">
+          Attribute
+        </th><th style="width: 85%;">
+          Description
+        </th></tr><tr><td><strong><code class="attributeName">name</code></strong></td><td>
+      <p>The name of the configuration file command.</p>
+    </td></tr><tr><td><code class="attributeName">value</code></td><td>
+      <p>The value to use for the configuration file command.</p>
     </td></tr></table>
 
   </div></div>
@@ -1750,5 +1814,5 @@
 
   </div></div>
 </div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2021, The Apache Software Foundation
+    Copyright &copy; 1999-2022, The Apache Software Foundation
     </div></footer></div></body></html>

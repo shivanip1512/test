@@ -6,13 +6,13 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.5.2")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.2")
     }
 }
 
 plugins {
     id 'java-library'
-	id 'org.springframework.boot'  version '2.5.2'
+	id 'org.springframework.boot'  version '2.7.2'
 }
 apply plugin: 'org.springframework.boot'
 
@@ -22,9 +22,9 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.6.2'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.6.2'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.6.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.7.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.7.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.7.2'
     implementation group: 'joda-time', name: 'joda-time', version: '2.3'
     api 'com.microsoft.azure.sdk.iot:iot-device-client:1.18.0'
 }

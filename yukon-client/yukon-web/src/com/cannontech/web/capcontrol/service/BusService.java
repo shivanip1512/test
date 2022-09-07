@@ -57,4 +57,13 @@ public interface BusService {
      */
     boolean isCapBanksAssignedToZone(List<Integer> availableFeederIds);
 
+    /**
+     * Returns whether a voltage point is assigned to the feeder in a zone.
+     */
+    boolean isFeedersAssignedToVoltagePointForZone(List<Integer> availableFeederIds);
+    /**
+     * Returns whether a regulator is assigned to the feeder in a zone.
+     */
+    boolean isFeedersAssignedToRegulatorForZone(List<Integer> availableFeederIds);
+
 }

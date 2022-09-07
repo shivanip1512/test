@@ -67,6 +67,7 @@ public class LoginFilter implements Filter {
                          "/login/controller",
                          "/soap/*",
                          "/multispeak/v3/*",
+                         "/multispeak/v4/*", 
                          "/multispeak/v5/*", 
                          "/api/**",
                          "/servlet/PWordRequest",
@@ -77,6 +78,8 @@ public class LoginFilter implements Filter {
                          "/**/*.gif",
                          "/**/*.jpg",
                          "/**/*.html",
+                         "/**/*.woff2",
+                         "/**/*.woff",
                          "/common/images/*",
                          "/common/runningStatus",
                          "/resources/favicon.ico",
@@ -89,10 +92,7 @@ public class LoginFilter implements Filter {
     private final static ImmutableList<String> excludedRedirectedPaths =
         ImmutableList.of("/servlet/SOAPClient/**",
                          "/common/config/deviceDefinition",
-                         "/common/config/rfn",
-                         "/remote/MasterConfig",
-                         // URL to actually do remote logging.
-                         "/remote/remoteLogin");
+                         "/common/config/rfn");
     
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)

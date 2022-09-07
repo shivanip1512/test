@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/1/2022 3:31:32 AM                          */
+/* Created on:     8/22/2022 11:14:49 PM                        */
 /*==============================================================*/
 
 
@@ -5546,7 +5546,7 @@ create table EventInventory  (
 /*==============================================================*/
 create table EventLog  (
    EventLogId           NUMBER                          not null,
-   EventType            VARCHAR2(250)                   not null,
+   EventTypeId          NUMBER                          not null,
    EventTime            DATE,
    String1              VARCHAR2(2000),
    String2              VARCHAR2(2000),
@@ -5564,13 +5564,33 @@ create table EventLog  (
 );
 
 /*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
+/* Index: INDX_EventLog_EventTypeId_EventTime                   */
 /*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
-   EventTime DESC,
-   EventLogId DESC,
-   EventType ASC
+create index INDX_EventLog_EventTypeId_EventTime on EventLog (
+   EventTypeId DESC,
+   EventTime DESC
 );
+
+/*==============================================================*/
+/* Index: INDX_EventLog_EventTypeId_EventTime_EventLogId        */
+/*==============================================================*/
+create index INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
+   EventTypeId ASC,
+   EventTime ASC,
+   EventLogId ASC
+);
+
+/*==============================================================*/
+/* Table: EventLogType                                          */
+/*==============================================================*/
+create table EventLogType  (
+   EventTypeId          NUMBER                          not null,
+   EventType            VARCHAR2(255)                   not null,
+   constraint PK_EVENTLOGTYPE primary key (EventTypeId)
+);
+
+alter table EventLogType
+   add constraint AK_EventLogType_EventType unique (EventType);
 
 /*==============================================================*/
 /* Table: EventWorkOrder                                        */
@@ -6759,7 +6779,7 @@ create table LMGroupVersacom  (
 /*==============================================================*/
 create table LMGroupZeusMapping  (
    YukonGroupId         NUMBER                          not null,
-   EcobeeGroupId        VARCHAR2(32)                    not null,
+   EcobeeGroupId        VARCHAR2(40)                    not null,
    EcobeeEventId        VARCHAR2(50),
    EcobeeGroupName      VARCHAR2(255),
    ProgramId            NUMBER                          not null,
@@ -7299,6 +7319,13 @@ INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispe
 INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v4/MR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v4/OD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v4/CD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'DR_Server', 'http://127.0.0.1:8080/multispeak/v4/DR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'SCADA_Server', 'http://127.0.0.1:8080/multispeak/v4/SCADA_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v4/NOT_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+
 /*==============================================================*/
 /* Table: MSPVendor                                             */
 /*==============================================================*/
@@ -7315,10 +7342,11 @@ create table MSPVendor  (
    MaxInitiateRequestObjects INTEGER                         not null,
    TemplateNameDefault  VARCHAR2(50)                    not null,
    ValidateCertificate  CHAR(1)                         not null,
+   Attributes           VARCHAR2(500)                   not null,
    constraint PK_MSPVENDOR primary key (VendorID)
 );
 
-INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1);
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1, 'Peak Demand , Usage');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */
@@ -8129,6 +8157,7 @@ create table PointToZoneMapping  (
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
    Ignore               VARCHAR2(1)                     not null,
+   FeederId             NUMBER,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -8340,6 +8369,7 @@ create table RegulatorEvents  (
 create table RegulatorToZoneMapping  (
    RegulatorId          NUMBER                          not null,
    ZoneId               NUMBER                          not null,
+   FeederId             NUMBER,
    constraint PK_RegToZoneMap primary key (RegulatorId)
 );
 
@@ -8813,6 +8843,9 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-34, 0, 'Removed', 1, 6, 0);
+INSERT INTO State VALUES(-34, 1, 'Inserted', 0, 6, 0);
+INSERT INTO State VALUES(-34, 2, 'Unknown', 9, 6, 0);
 INSERT INTO State VALUES(-33, 0, 'Off', 1, 6, 0);
 INSERT INTO State VALUES(-33, 1, 'On', 0, 6, 0);
 INSERT INTO State VALUES(-32, 0, 'Reverse Block', 0, 6, 0);
@@ -9018,6 +9051,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-34, 'InsertedRemoved', 'Status');
 INSERT INTO StateGroup VALUES(-33, 'OnOff', 'Status');
 INSERT INTO StateGroup VALUES(-32, 'Beckwith Regulator Control Mode', 'Status');
 INSERT INTO StateGroup VALUES(-31, 'Eaton Regulator Control Mode', 'Status');
@@ -9119,9 +9153,9 @@ create table StatusPointMonitorProcessor  (
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 );
 
-INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
-INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
-INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
+INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage', 0);
 
 /*==============================================================*/
 /* Table: StoredProcedureLog                                    */
@@ -10809,6 +10843,7 @@ INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Contr
 INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','VIEW','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
+INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs. Warning: This setting should only be enabled for dedicated DER Edge API users. It will remove access to other Yukon features.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
@@ -11050,7 +11085,7 @@ create table ZBGatewayToDeviceMapping  (
 /*==============================================================*/
 create table ZeusGroupInventoryMapping  (
    InventoryID          NUMBER                          not null,
-   EcobeeGroupId        VARCHAR2(32)                    not null,
+   EcobeeGroupId        VARCHAR2(40)                    not null,
    constraint PK_ZEUSGROUPINVENTORYMAPPING primary key (InventoryID, EcobeeGroupId)
 );
 
@@ -12961,6 +12996,10 @@ alter table EventInventory
 alter table EventInventory
    add constraint FK_EVENTINV_INVENBSE foreign key (InventoryID)
       references InventoryBase (InventoryID);
+
+alter table EventLog
+   add constraint FK_EventLog_EventLogType foreign key (EventTypeId)
+      references EventLogType (EventTypeId);
 
 alter table EventWorkOrder
    add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)

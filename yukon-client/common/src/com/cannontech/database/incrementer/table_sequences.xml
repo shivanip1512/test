@@ -188,6 +188,9 @@
       <sequence name="EventLog">
         <table name="EventLog" identitycolumn="EventLogId" initsequence="false"/>
       </sequence>
+      <sequence name="EventLogType">
+        <table name="EventLogType" identitycolumn="EventTypeId" initsequence="true"/>
+      </sequence>
       <sequence name="OutageMonitor">
         <table name="OutageMonitor" identitycolumn="OutageMonitorId" initsequence="true"/>
       </sequence>
@@ -457,8 +460,8 @@
       <sequence name="ControlEvent">
         <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
       </sequence>
-      <sequence name="EatonCloudSimulatorNameIncrementor">
-        <table name="EatonCloudSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      <sequence name="EatonCloudSimIncrementor">
+        <table name="EatonCloudSimIncrementor" identitycolumn="requestSeqNumber"/>
       </sequence>
       <sequence name="EatonCloudEventIdIncrementor">
         <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>

@@ -139,7 +139,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
     EATON_CLOUD_SECRET2(GlobalSettingSubCategory.DR, stringType(), null),
-    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
+    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com/api", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -213,6 +213,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
     CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 400),
+    CELLULAR_METER_DESCENDANT_COUNT_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 100),
     PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
     PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5),
     PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),

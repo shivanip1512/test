@@ -9,13 +9,13 @@
     <entry key="yukon.web.modules.operator.mapNetwork.primary">Primary Route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.parent">Parent Node</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.nearby">Nearby</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineColor">Neighbors Line Color</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineColor">Line Color</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand1">ETX Band 1</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand2">ETX Band 2</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand3">ETX Band 3</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand4">ETX Band 4</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand5">ETX Band 5 or more</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineThickness">Neighbors Line Thickness</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineThickness">Line Thickness</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesZeroToFifty"># Samples 0 - 50</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesFiftyOneToFiveHundred"># Samples 51 - 500</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesOverFiveHundred"># Samples Over 500</entry>
@@ -36,7 +36,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.linkCost">Link Cost</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamples">Samples</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand">ETX Band</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.status">Status</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus">Comm Status</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.distance">Distance</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.distanceToNextHop">Distance to Next Hop</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.distance.miles">miles</entry>
@@ -53,10 +53,10 @@
     <entry key="yukon.web.modules.operator.mapNetwork.status.READY">Ready</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.NOT_READY">Not Ready</entry>
     
-    <entry key="yukon.web.modules.operator.mapNetwork.commStatus">Comm Status</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.RF">Connected via RF</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.WiFi">Connected via Wi-Fi</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.Cellular">Connected via Cellular</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.connectionMethod">Connection Method</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.connectionMethod.RF">RF</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.connectionMethod.WiFi">Wi-Fi</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.connectionMethod.Cellular">Cellular</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_FORWARD">Primary forward route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_REVERSE">Primary reverse route</entry>

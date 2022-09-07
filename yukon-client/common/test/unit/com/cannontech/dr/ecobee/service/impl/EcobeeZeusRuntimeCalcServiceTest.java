@@ -5,9 +5,9 @@ import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -170,7 +170,7 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         hourlyRuntimeSeconds.put(date2, 1200);
         hourlyRuntimeSeconds.put(date1, 660);
         
-        Capture<Iterable<PointData>> dispatchDataCapture = new Capture<>();
+        Capture<Iterable<PointData>> dispatchDataCapture = Capture.newInstance();
         AsyncDynamicDataSource mockDispatch = createStrictMock(AsyncDynamicDataSource.class);
         mockDispatch.putValues(EasyMock.capture(dispatchDataCapture));
         expectLastCall();
@@ -210,7 +210,7 @@ public class EcobeeZeusRuntimeCalcServiceTest {
         hourlyRuntimeSeconds.put(date2, 1200);
         hourlyRuntimeSeconds.put(date1, 660);
         
-        Capture<Iterable<PointData>> dispatchDataCapture = new Capture<>();
+        Capture<Iterable<PointData>> dispatchDataCapture = Capture.newInstance();
         AsyncDynamicDataSource mockDispatch = createStrictMock(AsyncDynamicDataSource.class);
         mockDispatch.putValues(EasyMock.capture(dispatchDataCapture));
         expectLastCall();

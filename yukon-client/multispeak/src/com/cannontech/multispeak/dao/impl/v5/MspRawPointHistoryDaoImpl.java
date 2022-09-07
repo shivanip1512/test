@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +15,11 @@ import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -37,6 +30,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.multispeak.block.v5.Block;
+import com.cannontech.multispeak.client.MspAttribute;
+import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v5.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v5.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
@@ -53,22 +49,21 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 	
     @Autowired private AttributeService attributeService;
-    @Autowired private PaoDao paoDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private MspRawPointHistoryHelper mspRawPointHistoryHelper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private MeterDao meterDao;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @Override
     public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) {
 
         final Date timerStart = new Date();
 
-        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
+        List<LiteYukonPAObject> programs = mspRawPointHistoryHelper.getAuthorizedProgramsList(user);
         EnumSet<BuiltInAttribute> attributesToLoad =
             EnumSet.of(BuiltInAttribute.CONNECTED_LOAD, BuiltInAttribute.DIVERSIFIED_LOAD,
                 BuiltInAttribute.MAX_LOAD_REDUCTION, BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
@@ -102,24 +97,10 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         return mspScadaAnalogs;
     }
-
-    /**
-     * Returns a list of paObjects for PaoTag.LM_PROGRAM that user has permission to access.
-     * @return
-     */
-    private List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
-        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
-        List<LiteYukonPAObject> programs = Lists.newArrayList();
-        for (PaoType paoType : paoTypes) {
-            List<LiteYukonPAObject> toFilter = paoDao.getLiteYukonPAObjectByType(paoType);
-            programs.addAll(paoAuthorizationService.filterAuthorized(user, toFilter, Permission.LM_VISIBLE));
-        }
-        return programs;
-    }
     
     @Override
     public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, List<String> readByValues, Date startDate,
-            Date endDate, String lastReceived, int maxRecords) {
+            Date endDate, String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValues, lastReceived, maxRecords);
 
@@ -129,7 +110,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
+
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
@@ -174,7 +156,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
     @Override
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, List<String> readByValues, String lastReceived,
-            int maxRecords) {
+            int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValues, lastReceived, maxRecords);
 
@@ -185,7 +167,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
+
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute =

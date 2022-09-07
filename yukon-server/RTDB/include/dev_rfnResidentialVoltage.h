@@ -63,6 +63,10 @@ typedef RfnResidentialVoltageDevice Rfn520faxeDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxeDevice;
 typedef RfnResidentialVoltageDevice Rfn520faxedDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxedDevice;
+typedef RfnResidentialVoltageDevice Crl520faxeDevice;
+typedef RfnResidentialVoltageDevice Crl520faxedDevice;
+typedef RfnResidentialVoltageDevice Crl520frxeDevice;
+typedef RfnResidentialVoltageDevice Crl520frxedDevice;
 typedef RfnResidentialVoltageDevice Rfn530faxeDevice;
 typedef RfnResidentialVoltageDevice Rfn530frxeDevice;
 

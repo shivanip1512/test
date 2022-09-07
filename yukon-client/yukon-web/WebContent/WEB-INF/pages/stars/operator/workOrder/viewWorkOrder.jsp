@@ -100,7 +100,7 @@
                             <tags:yukonListEntrySelectNameValue nameKey=".currentState" path="workOrderBase.currentStateId" energyCompanyId="${energyCompanyId}" listName="SERVICE_STATUS" />
                         
                             <tags:nameValue2 nameKey=".eventDate">
-                                <dt:dateTime id="eventDate" path="eventDate" value="${workOrderDto.eventDate}"/>
+                                <dt:dateTime id="eventDate" path="eventDate" value="${workOrderDto.eventDate}" wrapperClass="w200" />
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         

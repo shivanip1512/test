@@ -19,13 +19,13 @@
                 <c:if test="${status.error}">
                     <c:set var="clazz" value="${clazz} error"/>
                 </c:if>
-                <form:input path="username" cssClass="${clazz}" maxlength="64"/>
+                <form:input path="username" cssClass="${clazz} fl" maxlength="64"/>
                 <cti:msg2 var="available" key=".available"/>
                 <cti:msg2 var="unavailable" key=".unavailable"/>
-                <span class="js-username-available" 
+                <span class="js-username-available ML5 MT5" 
                     data-available="${available}" data-unavailable="${unavailable}"></span>
                 <c:if test="${status.error}">
-                    <div><form:errors path="username" cssClass="error"/></div>
+                    <div><form:errors path="username" cssClass="error cl"/></div>
                  </c:if>
             </s:bind>
         </tags:nameValue2>
@@ -49,7 +49,7 @@
         <cti:msg2 var="none" key="yukon.common.none.choice"/>
         <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
             itemLabel="userGroupName" path="userGroupId"
-            defaultItemLabel="${none}" defaultItemValue=""/>
+            defaultItemLabel="${none}" defaultItemValue="" inputClass="w300"/>
         <tags:nameValue2 nameKey="yukon.common.energyCompany">
             <tags:selectWithItems path="energyCompanyId" items="${companies}"
                 itemLabel="name" itemValue="id" defaultItemLabel="${none}" defaultItemValue=""/>

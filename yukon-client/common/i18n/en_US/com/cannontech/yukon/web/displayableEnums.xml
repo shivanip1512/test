@@ -504,6 +504,8 @@
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD.description">The maximum number of ready nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD">Infrastructure Warnings: Cellular Relay excessive descendant count threshold</entry>
     <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD.description">The number of descendants a cellular relay must exceed to generate an infrastructure warning.</entry>
+    <entry key="yukon.common.setting.CELLULAR_METER_DESCENDANT_COUNT_WARNING_THRESHOLD">Infrastructure Warnings: Cellular Meter excessive descendant count threshold</entry>
+    <entry key="yukon.common.setting.CELLULAR_METER_DESCENDANT_COUNT_WARNING_THRESHOLD.description">The number of descendants a cellular meter must exceed to generate an infrastructure warning.</entry>
     
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS">Comm Channel Queue Counts: Historical data display</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS.description">The number of months to display historical data for the Comm Channel Queue Counts Widget.</entry>
@@ -767,4 +769,12 @@
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
     <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
     <entry key="yukon.common.unitOfMeasure.CCF">CCF</entry>
+    
+     <!-- Multispeak Attributes -->
+    <entry key="yukon.common.multispeakAttributesFieldEnum.PEAKDEMAND_USAGE">Peak Demand + Usage</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.POWERFACTOR">Power Factor</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.KVAR_KVARH">kVar + kVarH</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.RECEIVEDKWH">Received kWh</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.TOU">TOU</entry>   
+        
 </properties>

@@ -12,7 +12,9 @@ public class SimulatedEatonCloudSettings {
    
     Map<EatonCloudRetrievalUrl, HttpStatus> selectedStatuses = new EnumMap<EatonCloudRetrievalUrl, HttpStatus>(EatonCloudRetrievalUrl.class);
     private Map<EatonCloudRetrievalUrl, Integer> successPercentages = new HashMap<>();
-    
+    private Map<EatonCloudRetrievalUrl, Integer> unknownPercentages = new HashMap<>();
+    private boolean enableTokenSecretRotationTesting;
+
     public SimulatedEatonCloudSettings() {
         for (EatonCloudRetrievalUrl url : EatonCloudRetrievalUrl.values()) {
             selectedStatuses.put(url, HttpStatus.OK);
@@ -20,6 +22,7 @@ public class SimulatedEatonCloudSettings {
         for (EatonCloudRetrievalUrl url : EatonCloudRetrievalUrl.values()) {
         	if (url.displaySuccessPercentage()) {
         		successPercentages.put(url, 100);
+                unknownPercentages.put(url, 0);
         	}
         }
     }
@@ -40,5 +43,20 @@ public class SimulatedEatonCloudSettings {
         this.successPercentages = successPercentages;
     }
     
+    public Map<EatonCloudRetrievalUrl, Integer> getUnknownPercentages() {
+        return unknownPercentages;
+    }
+
+    public void setUnknownPercentages(Map<EatonCloudRetrievalUrl, Integer> unknownPercentages) {
+        this.unknownPercentages = unknownPercentages;
+    }
+    
+    public boolean isEnableTokenSecretRotationTesting() {
+        return enableTokenSecretRotationTesting;
+    }
+
+    public void setEnableTokenSecretRotationTesting(boolean enableTokenSecretRotationTesting) {
+        this.enableTokenSecretRotationTesting = enableTokenSecretRotationTesting;
+    }
    
 }

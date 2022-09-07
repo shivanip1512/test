@@ -11,8 +11,12 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestoreService;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
@@ -40,7 +44,9 @@ public class EatonCloudMessageListener {
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private EatonCloudSendControlService eatonCloudSendControlService;
-    
+    @Autowired private EatonCloudJobService eatonCloudJobService;
+    @Autowired private EatonCloudJobRestoreService eatonCloudJobRestoreService;
+    @Autowired private ConfigurationSource configurationSource;
     
     public void handleCyclingControlMessage(LMEatonCloudScheduledCycleCommand command) {
         Duration controlDuration = new Duration(command.getControlStartDateTime(), command.getControlEndDateTime());
@@ -52,7 +58,7 @@ public class EatonCloudMessageListener {
             return;  
         }   
 
-        Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
+        int eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
 
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
         int programId = programsByLMGroupId.get(0).getPaobjectId();
@@ -63,14 +69,22 @@ public class EatonCloudMessageListener {
                 command.getControlStartDateTime(), 
                 command.getControlEndDateTime());
         
-        eatonCloudSendControlService.sendInitialShedCommand(programId, devices, command, eventId);
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("[id:{}] Received CONTROL message program:{} group:{} devices:{} command:{}", eventId,
+                    getPaoName(dbCache.getAllLMPrograms(), programId), getPaoName(dbCache.getAllLMGroups(), command.getGroupId()),
+                    devices.size(), command);
+            eatonCloudJobService.createJobs(programId, devices, command, eventId);
+        } else {
+            //legacy
+            eatonCloudSendControlService.sendInitialShedCommand(programId, devices, command, eventId);
+        }
         
         controlHistoryService.sendControlHistoryShedMessage(command.getGroupId(),
                 command.getControlStartDateTime(),
                 ControlType.EATON_CLOUD,
                 null,
                 controlDurationSeconds,
-                command.getDutyCyclePeriod());
+                command.getDutyCyclePercentage());
     }
     
     public void handleRestoreMessage(LMEatonCloudStopCommand command) {
@@ -87,10 +101,22 @@ public class EatonCloudMessageListener {
             return;
         }
         
+        List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
+        int programId = programsByLMGroupId.get(0).getPaobjectId();
+        
         Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
         if (eventId != null) {
-            eatonCloudSendControlService.sendRestoreCommands(devices, command, eventId);
+            if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+                log.info("[id:{}] Received RESTORE message program:{} group:{} devices:{} command:{}", eventId,
+                        getPaoName(dbCache.getAllLMPrograms(), programId), getPaoName(dbCache.getAllLMGroups(), command.getGroupId()),
+                        devices.size(), command);
+                eatonCloudJobRestoreService.createJobs(programId, devices, command, eventId);
+            } else {
+                // legacy
+                eatonCloudSendControlService.sendRestoreCommands(devices, command, eventId);
+            }
         }
+
         controlHistoryService.sendControlHistoryRestoreMessage(command.getGroupId(), Instant.now());
     }
     
@@ -103,5 +129,11 @@ public class EatonCloudMessageListener {
         inventoryIds.removeAll(optOutInventory);
         Set<Integer> deviceIds = inventoryDao.getDeviceIds(inventoryIds).values().stream().collect(Collectors.toSet());
         return deviceIds;
+    }
+    
+    private String getPaoName( List<LiteYukonPAObject> paos, int id) {
+        return paos.stream()
+                .filter(g -> g.getLiteID() == id).findFirst()
+                .map(LiteYukonPAObject::getPaoName).orElse("None");
     }
 }

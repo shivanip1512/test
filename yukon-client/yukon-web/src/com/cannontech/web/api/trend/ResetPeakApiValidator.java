@@ -17,6 +17,8 @@ import com.cannontech.user.YukonUserContext;
 
 public class ResetPeakApiValidator extends SimpleValidator<ResetPeakModel> {
 
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
+
     public ResetPeakApiValidator() {
         super(ResetPeakModel.class);
     }
@@ -33,7 +35,7 @@ public class ResetPeakApiValidator extends SimpleValidator<ResetPeakModel> {
     protected void doValidation(ResetPeakModel resetPeakModel, Errors errors) {
         String dateI18nText = accessor.getMessage("yukon.common.date");
         if (!errors.hasFieldErrors("startDate")) {
-            YukonApiValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(resetPeakModel.getStartDate(), null),
+            yukonApiValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(resetPeakModel.getStartDate(), null),
                     dateI18nText, false);
             if (!errors.hasFieldErrors("startDate") && resetPeakModel.getStartDate().isAfterNow()) {
                 errors.rejectValue("startDate", ApiErrorDetails.PAST_DATE.getCodeString());

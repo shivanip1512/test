@@ -240,6 +240,16 @@ public class FeederController {
                 flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.error", feeder.getName()));
                 return "redirect:/capcontrol/feeders/" + id;
             } else {
+                boolean isFeederAssignedToVoltagePoint = feederService.isFeederAssignedToVoltagePointForZone(id);
+                if (isFeederAssignedToVoltagePoint) {
+                    flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.voltagePoint.error", feeder.getName()));
+                    return "redirect:/capcontrol/feeders/" + id;
+                }
+                boolean isFeederAssignedToRegulatorPoint = feederService.isFeederAssignedToRegulatorPointForZone(id);
+                if (isFeederAssignedToRegulatorPoint) {
+                    flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.regulatorPoint.error", feeder.getName()));
+                    return "redirect:/capcontrol/feeders/" + id;
+                }
                 Integer parentId = feederDao.getParentSubBusID(id);
                 feederService.delete(id);
                 flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
@@ -247,7 +257,7 @@ public class FeederController {
                     return "redirect:/capcontrol/buses/" + parentId;
                 }
             }
-        } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException|NotFoundException e) {
             feederService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
             // do nothing and return to orphan page

@@ -13,15 +13,18 @@ public enum ApiErrorDetails {
     OBJECT_ALREADY_EXISTS(101, "Object already exists", "An identical object already exists."), // code : 100101
     AUTHENTICATION_INVALID(102, "Authentication Invalid", "Username or password not valid."), // code : 100102
     NOT_AUTHORIZED(103, "Not authorized", "User not authorized to perform this transaction."), // code : 100103
-    DATABASE_ERROR(104, "Database error", "Database error occured while performing this transaction."), // code : 100104
+    DATABASE_ERROR(104, "Database error", "Database error occurred while performing this transaction."), // code : 100104
     METHOD_ARGUMENT_MISMATCH(105, "Method argument mismatch", "Method arguments are not matching."), // code : 100105
     BAD_REQUEST(106, "Bad request", "Bad request."), // code : 100106
     AUTHENTICATION_REQUIRED(107, "Authentication required", "Expired or invalid token"), // code : 100107
     NO_HANDLER_FOUND(108, "No handler found", "No handler found."), // code : 100108
     HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported."), // code : 100109
     DUPLICATE_VALUE(110, "Duplicate not Allowed", "Duplicate value not Allowed"), // code : 100110
-    ONE_GEAR(111, "Only one gear Allowed", "Only one gear Allowed"), // code : 100111
+    ONLY_ONE_ALLOWED(111, "Only one Allowed", "Only one Allowed"), // code : 100111
     CONSTRAINT_VIOLATED(112, "Constraint Violated", "Constraint Violated"), // code : 100112
+    FIELD_REQUIRED_GLOBAL_ERROR(113, "Required field", "Field is required."),// code : 100113
+    TYPE_MISMATCH_GLOBAL_ERROR(114, "Type mismatch", "Type mismatch."),// code : 100114
+    COMMUNICATION_ERROR(115, "Communication error", "A communication error occurred."), // code : 100115
 
     // Validation Errors
     INVALID_VALUE(ApiErrorCategory.VALIDATION_FAILED, 101, "Invalid value", "Invalid value for the field."), // code : 101101
@@ -41,7 +44,12 @@ public enum ApiErrorDetails {
     TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 113, "Type mismatch", "Type mismatch."), // code : 101113
     INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 114, "Field length must be valid", "Field length must be valid."), // code : 101114
     WHITELIST_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 115, "Not a whitelisted characters", "Invalid whitelisted characters."), // code : 101115
-    FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."); // code : 101116
+    FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."), // code : 101116
+    INVALID_LENGTH_EVEN(ApiErrorCategory.VALIDATION_FAILED, 117, "Length must be even", "Field length must be even."), // code: 101117
+    HEXIDECIMAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 118, "Non-hexidecimal characters", "Invalid hexidecimal characters."), // code : 101118
+    FIELD_NOT_SUPPORTED(ApiErrorCategory.VALIDATION_FAILED, 119, "Field not supported", "Field not supported."), // code : 101119
+    SYSTEM_RESERVED(ApiErrorCategory.VALIDATION_FAILED, 120, "System Reserved", "System Reserved.");
+    ;
 
     private ApiErrorCategory category;
     private int code;
@@ -62,7 +70,7 @@ public enum ApiErrorDetails {
      * Defines an error in the specified category. The error code will be category code + error ID.
      */
     ApiErrorDetails(ApiErrorCategory category, int errorId, String title, String defaultMessage) {
-        this.code = category.getCode() + errorId;
+        code = category.getCode() + errorId;
         this.category = category;
         this.title = title;
         this.defaultMessage = defaultMessage;

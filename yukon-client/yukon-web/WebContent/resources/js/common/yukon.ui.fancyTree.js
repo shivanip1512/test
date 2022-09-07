@@ -50,21 +50,26 @@ yukon.ui.fancyTree= (function () {
     _initializeTree = function () {
         $('.js-fancy-tree').each(function() {
             var dataUrl = $(this).data('url'),
+                includeCheckbox = $(this).data('includeCheckbox'),
                 initiallySelect = $(this).data('initiallySelect'),
                 scrollToHighlighted = $(this).data('scrollToHighlighted'),
+                toggleNodeSelectionOnClick = $(this).data('toggleNodeSelectionOnClick'),
                 multiSelect = $(this).data('multiSelect'),
                 treeParameters = yukon.fromJson($(this).find('#js-tree-parameters')),
                 jsonData = $(this).find('#js-json-data'),
                 source = dataUrl ? { url: dataUrl } : JSON.parse(yukon.fromJson(jsonData)),
                 options = $.extend({
                     source: source,
+                    checkbox: includeCheckbox,
                     minExpandLevel: 2,
                     escapeTitles: true,
                     click: function(event, data) {
-                        var node = data.node;
-                        if (data.targetType != 'checkbox' && data.targetType != 'expander') {
-                            if (!node.isFolder()) {
-                                node.toggleSelected();
+                        if (toggleNodeSelectionOnClick === undefined || toggleNodeSelectionOnClick === true) {
+                            var node = data.node;
+                            if (data.targetType != 'checkbox' && data.targetType != 'expander') {
+                                if (!node.isFolder()) {
+                                    node.toggleSelected();
+                                }
                             }
                         }
                     },

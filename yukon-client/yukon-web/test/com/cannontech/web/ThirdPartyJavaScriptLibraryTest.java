@@ -49,7 +49,7 @@ public class ThirdPartyJavaScriptLibraryTest {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
-        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(), ThirdPartyLibraries.class);
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(), ThirdPartyLibraries.class, libraryYaml.getFilename());
         
         Map<String, ThirdPartyJavaScriptLibrary> documentedLibrariesByProject = Maps.uniqueIndex(documentedLibraries.jsLibraries, l -> l.project); 
         

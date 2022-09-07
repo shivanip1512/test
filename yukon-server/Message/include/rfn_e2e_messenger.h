@@ -71,6 +71,7 @@ public:
     static void registerE2eDtHandler(Indication::Callback callback);
     static void registerDataStreamingHandler(Indication::Callback callback);
     static void registerDnpHandler  (Indication::Callback callback, const RfnIdentifier rfnid);
+    static void registerDerHandler(Indication::Callback callback);
 
     static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout);
     static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid);
@@ -98,6 +99,7 @@ private:
     boost::optional<Indication::Callback> _e2edtCallback;
     CallbacksPerRfnIdentifier _dnp3Callbacks;
     boost::optional<Indication::Callback> _dataStreamingCallback;
+    boost::optional<Indication::Callback> _derCallback;
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg);

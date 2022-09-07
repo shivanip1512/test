@@ -10,6 +10,7 @@ public class EatonCloudSimulatorSettingsUpdateRequest implements SimulatorReques
     private static final long serialVersionUID = 1L;
     private Map<EatonCloudRetrievalUrl, Integer> statuses;
     private Map<EatonCloudRetrievalUrl, Integer> successPercentages;
+    private Map<EatonCloudRetrievalUrl, Integer> unknownPercentages;
     private EatonCloudVersion version;
     private boolean resetSecretsExpireTime;
         
@@ -36,6 +37,14 @@ public class EatonCloudSimulatorSettingsUpdateRequest implements SimulatorReques
 
     public void setSuccessPercentages(Map<EatonCloudRetrievalUrl, Integer> successPercentages) {
         this.successPercentages = successPercentages;
+    }
+    
+    public Map<EatonCloudRetrievalUrl, Integer> getUnknownPercentages() {
+        return unknownPercentages;
+    }
+
+    public void setUnknownPercentages(Map<EatonCloudRetrievalUrl, Integer> unknownPercentages) {
+        this.unknownPercentages = unknownPercentages;
     }
 
     public EatonCloudVersion getVersion() {

@@ -166,6 +166,16 @@ void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnId
     //    was already started by PIL's call to registerE2eDtHandler()
 }
 
+void E2eMessenger::registerDerHandler(Indication::Callback callback)
+{
+    CTILOG_INFO(dout, "Registering DER callback ");
+
+    {
+        readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+
+        gE2eMessenger->_derCallback = callback;
+    }
+}
 
 void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 {
@@ -238,7 +248,24 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 return (*_dataStreamingCallback)(ind);
             }
-            
+
+            if ( isAsid_Der(asid) )
+            {
+                if( ! _derCallback )
+                {
+                    CTILOG_WARN(dout, "WARNING - DER ASID " << asid << " unhandled, no callback registered");
+                    return;
+                }
+
+                Indication ind;
+
+                ind.rfnIdentifier = indicationMsg->rfnIdentifier;
+                ind.payload       = indicationMsg->payload;
+                ind.asid          = indicationMsg->applicationServiceId;
+
+                return (*_derCallback)(ind);
+            }
+
             CTILOG_WARN(dout, "WARNING - unknown ASID " << asid << " unhandled");
         }
     }

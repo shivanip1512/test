@@ -55,7 +55,7 @@
 
     <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
-        <h3 class="title">
+        <h3 class="title js-box-container-title">
             <c:choose>
                 <c:when test="${pageScope.escapeTitle}">${fn:escapeXml(pageScope.title)}</c:when>
                 <c:otherwise>${pageScope.title}</c:otherwise>

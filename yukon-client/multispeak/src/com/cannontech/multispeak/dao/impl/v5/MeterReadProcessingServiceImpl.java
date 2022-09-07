@@ -40,6 +40,47 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     public interface ReadingProcessor {
         public void apply(PointValueHolder value, MeterReading reading, PaoType type);
     }
+    
+    class DefaultReadingProcessor implements ReadingProcessor{
+        
+        private FieldNameKind fieldNameKind;
+        private RoundingMode roundingMode;
+        
+        public DefaultReadingProcessor(FieldNameKind fieldNameKind, RoundingMode roundingMode) {
+            super();
+            this.roundingMode = roundingMode;
+            this.fieldNameKind = fieldNameKind;
+        }
+
+        @Override
+        public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+            // Reading Timestamp
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(value.getPointDataTimeStamp());
+            ReadingValues readingValues = getReadingValues(reading);
+            ReadingValue readingValue = new ReadingValue();
+            readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+            BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, this.roundingMode).stripTrailingZeros();
+            readingValue.setValue(valueWithPrecision.toString());
+            readingValues.getReadingValue().add(readingValue);
+            reading.setReadingValues(readingValues);
+
+            // Reading Type Code
+            ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
+            ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
+            ReadingTypeCode readingTypeCode = new ReadingTypeCode();
+            readingTypeCode.setFieldName(this.fieldNameKind);
+            readingTypeCodeItem.setReadingTypeCode(readingTypeCode);
+            readingTypeCodeItems.getReadingTypeCodeItem().add(readingTypeCodeItem);
+            reading.setReadingTypeCodeItems(readingTypeCodeItems);
+
+            ReadingTypeCodeOption option = new ReadingTypeCodeOption();
+            option.setReadingTypeCode(readingTypeCode);
+            readingValue.setReadingTypeCodeOption(option);
+        }
+        
+    }
 
     @PostConstruct
     public void setup() {
@@ -53,24 +94,24 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
-                // Reading Value - create a nice BigDecimal with unlimited precision
-                BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
-                readingValue.setValue(noFractionValue.toBigIntegerExact().toString());
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
                 readingValues.getReadingValue().add(readingValue);
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 
                 if(type.isWaterMeter()) {
                     readingTypeCode.setFieldName(FieldNameKind.WATER_VOLUME);
+                } else if (type.isGasMeter()) {
+                    readingTypeCode.setFieldName(FieldNameKind.CORRECTED_GAS_VOLUME);
                 } else {
                     readingTypeCode.setFieldName(FieldNameKind.POS_K_WH);
                 }
@@ -91,19 +132,17 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
-                // Reading Value - create a nice BigDecimal with unlimited precision
-                BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
-                readingValue.setValue(noFractionValue.toBigIntegerExact().toString());
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
                 readingValues.getReadingValue().add(readingValue);
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 readingTypeCode.setFieldName(FieldNameKind.MAX_DEMAND);
@@ -123,7 +162,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
@@ -135,7 +174,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 readingTypeCode.setFieldName(FieldNameKind.SUSTAINED_OUTAGE);
@@ -148,10 +187,47 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 readingValue.setReadingTypeCodeOption(option);
             }
         };
+        
+        ReadingProcessor kvaConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_COINCIDENT_KVA, roundingMode);
+        ReadingProcessor kvarConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_COINCIDENT_KVAR, roundingMode);
+        ReadingProcessor kvarhConverter = new DefaultReadingProcessor(FieldNameKind.POS_KVA_RH, roundingMode);
+        ReadingProcessor powerFactorConverter = new DefaultReadingProcessor(FieldNameKind.PF_AVG, roundingMode);
+        ReadingProcessor deliveredKwhRateAConverter = new DefaultReadingProcessor(FieldNameKind.TOU_1_K_WH, roundingMode);
+        ReadingProcessor deliveredKwhRateBConverter = new DefaultReadingProcessor(FieldNameKind.TOU_2_K_WH, roundingMode);
+        ReadingProcessor deliveredKwhRateCConverter = new DefaultReadingProcessor(FieldNameKind.TOU_3_K_WH, roundingMode);
+        ReadingProcessor deliveredKwhRateDConverter = new DefaultReadingProcessor(FieldNameKind.TOU_4_K_WH, roundingMode);
+        ReadingProcessor receivedKwhConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_POS_K_WH, roundingMode);
+        ReadingProcessor receivedKwhRateAConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_TOU_1_K_WH, roundingMode);
+        ReadingProcessor receivedKwhRateBConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_TOU_2_K_WH, roundingMode);
+        ReadingProcessor receivedKwhRateCConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_TOU_3_K_WH, roundingMode);
+        ReadingProcessor receivedKwhRateDConverter = new DefaultReadingProcessor(FieldNameKind.PREVIOUS_TOU_4_K_WH, roundingMode);
+        ReadingProcessor peakDemandRateAConverter = new DefaultReadingProcessor(FieldNameKind.TOU_1_MAX_DEMAND, roundingMode);
+        ReadingProcessor peakDemandRateBConverter = new DefaultReadingProcessor(FieldNameKind.TOU_2_MAX_DEMAND, roundingMode);
+        ReadingProcessor peakDemandRateCConverter = new DefaultReadingProcessor(FieldNameKind.TOU_3_MAX_DEMAND, roundingMode);
+        ReadingProcessor peakDemandRateDConverter = new DefaultReadingProcessor(FieldNameKind.TOU_4_MAX_DEMAND, roundingMode);
 
-        attributesToLoad =
-            ImmutableMap.of(BuiltInAttribute.USAGE, usageConverter, BuiltInAttribute.PEAK_DEMAND, peakDemandConverter,
-                BuiltInAttribute.BLINK_COUNT, blinkConverter);
+        attributesToLoad = ImmutableMap.<BuiltInAttribute, ReadingProcessor>builder()
+                                                                            .put(BuiltInAttribute.USAGE, usageConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND, peakDemandConverter)
+                                                                            .put(BuiltInAttribute.BLINK_COUNT, blinkConverter)
+                                                                            .put(BuiltInAttribute.POWER_FACTOR, powerFactorConverter)
+                                                                            .put(BuiltInAttribute.KVA, kvaConverter)
+                                                                            .put(BuiltInAttribute.KVAR, kvarConverter)
+                                                                            .put(BuiltInAttribute.KVARH, kvarhConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_A, deliveredKwhRateAConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_B, deliveredKwhRateBConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_C, deliveredKwhRateCConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_D, deliveredKwhRateDConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_A, receivedKwhRateAConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_B, receivedKwhRateBConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_C, receivedKwhRateCConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_D, receivedKwhRateDConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH, receivedKwhConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_A, peakDemandRateAConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_B, peakDemandRateBConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_C, peakDemandRateCConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_D, peakDemandRateDConverter)
+                                                                            .build();
     }
 
     @Override
@@ -203,6 +279,22 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         reading.setReferableID(meter.getMeterNumber());
         reading.setDeviceID(meter.getMeterNumber());
         return reading;
+    }
+    
+    private ReadingValues getReadingValues(MeterReading reading) {
+        ReadingValues readingValues = reading.getReadingValues();
+        if (readingValues == null) {
+            readingValues = new ReadingValues();
+        }
+        return readingValues;
+    }
+
+    private ReadingTypeCodeItems getReadingTypeCodeItems(MeterReading reading) {
+        ReadingTypeCodeItems readingTypeCodeItems = reading.getReadingTypeCodeItems();
+        if (readingTypeCodeItems == null) {
+            readingTypeCodeItems = new ReadingTypeCodeItems();
+        }
+        return readingTypeCodeItems;
     }
 
 }

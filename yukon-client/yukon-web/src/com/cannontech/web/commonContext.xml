@@ -32,6 +32,10 @@
         <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
     
+    <bean name="paoTypeFilteredPaoPicker" class="com.cannontech.web.search.lucene.criteria.PaoTypeFilteredPaoPicker">
+        <property name="searcher" ref="paoTypeSearcherLucene"/>
+    </bean>
+    
     <bean name="paoPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker"/>
     <bean name="programPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
@@ -81,6 +85,11 @@
     <bean name="devicePicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.DeviceCriteria"/>
+        </property>
+    </bean>
+    <bean name="dataExportPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.DataExportCriteria"/>
         </property>
     </bean>
     <bean name="commanderDevicePicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
@@ -431,6 +440,18 @@
         </property>
     </bean>
     
+    <bean name="signalTransmitterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.SignalTransmitterCriteria"/>
+        </property>
+    </bean>
+    
+    <bean name="routesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.RouteCriteria"/>
+        </property>
+    </bean>
+    
     <bean name="dnpRtuPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>
@@ -450,6 +471,8 @@
     </bean>
     
     
+    <bean name="yukonApiValidationUtils" class="com.cannontech.common.validator.YukonApiValidationUtils"/>
+    <bean name="portApiValidatorHelper" class="com.cannontech.common.validator.PortApiValidatorHelper"/>
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
     <bean name="pointApiValidationUtil" class="com.cannontech.web.tools.points.validators.PointApiValidationUtil"/>
     <bean name="pointValidationUtilCommon" class="com.cannontech.web.tools.points.validators.PointValidationUtilCommon"/>

@@ -49,7 +49,7 @@ yukon.admin.multispeak = (function() {
                 data: formData
             }).done(function(data) {
                 $('#results').css('color', data.resultColor);
-                $('#results').val(data.MSP_RESULT_MSG);
+                $('#results').text(data.MSP_RESULT_MSG);
             }).fail(function(data) {
                 $('#start-simulator').removeAttr("disabled");
                 if (data.hasError) {
@@ -90,6 +90,20 @@ yukon.admin.multispeak = (function() {
 
             $(document).on('yukon:multispeak:vendor:delete', function() {
                 $('#delete-vendor').submit();
+            });
+            
+            
+            $(document).on('change', '#attributes', function(event) {
+                var value = $("#attributes").val();
+                if (value.length == 0 || value.length == 1 && (value.includes("PEAKDEMAND_USAGE"))) {
+                    $('#vendor-js-warning').hide();
+                } else {
+                    $('#vendor-js-warning').show();
+                    $('#vendor-js-warning').addMessage({
+                        message : $('.js-vendor-warning-message').val(),
+                        messageClass : 'warning'
+                    });
+                }
             });
             
             $(document).on("click", ".js-endpoint-auth-btn", function(ev) {
@@ -145,7 +159,15 @@ yukon.admin.multispeak = (function() {
                 dialog.dialog('close');
                 dialog.empty();
             });
-
+            if ($("#attributes").is(":visible")) {
+               $("#attributes").chosen({
+                  width: "170px"
+               });
+            }
+            if (document.querySelector('[id^="mspVendor.attributes.errors"]') !== null) {
+               $('#attributes').val([]).trigger('chosen:updated');
+            }
+             
             if (_initialized)
                 return;
             _initialized = true;

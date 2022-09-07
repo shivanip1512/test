@@ -1,0 +1,89 @@
+package com.cannontech.multispeak.client.core.v4;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.oxm.XmlMappingException;
+import org.springframework.ws.WebServiceException;
+import org.springframework.ws.client.core.WebServiceTemplate;
+
+import com.cannontech.msp.beans.v4.GetCDSupportedMeters;
+import com.cannontech.msp.beans.v4.GetCDSupportedMetersResponse;
+import com.cannontech.msp.beans.v4.GetCDMeterState;
+import com.cannontech.msp.beans.v4.GetCDMeterStateResponse;
+import com.cannontech.msp.beans.v4.GetMethods;
+import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.PingURL;
+import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+
+public class CDClient implements ICDClient {
+
+    private WebServiceTemplate webServiceTemplate;
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+
+    /**
+     * CD Client Constructor
+     * 
+     * @param webServiceTemplate
+     */
+    @Autowired
+    public CDClient(@Qualifier("webServiceTemplateV4") WebServiceTemplate webServiceTemplate) {
+        this.webServiceTemplate = webServiceTemplate;
+    }
+
+    @Override
+    public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetCDMeterStateResponse getCDMeterState(final MultispeakVendor mspVendor, String uri,
+            GetCDMeterState getCDMeterState) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetCDMeterStateResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDMeterState,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetCDSupportedMetersResponse getCDSupportedMeters(final MultispeakVendor mspVendor, String uri,
+            GetCDSupportedMeters getCDSupportedMeters) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetCDSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDSupportedMeters,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+}

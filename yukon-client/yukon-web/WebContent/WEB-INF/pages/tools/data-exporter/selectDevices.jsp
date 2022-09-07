@@ -10,7 +10,7 @@
 <cti:standardPage page="bulk.archivedValueExporter.selectDevices" module="tools">
     <tags:sectionContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="devicePicker"/>
+        <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="dataExportPicker"/>
     </tags:sectionContainer2>
 
     <div id="copyForm" style="display:none">

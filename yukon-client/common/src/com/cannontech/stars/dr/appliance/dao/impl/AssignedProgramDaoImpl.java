@@ -36,7 +36,6 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
         sql.append("AND p.programId").eq(assignedProgramId);
-
         AssignedProgram assignedProgram = jdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration = webConfigurationDao.getForAssignedProgram(assignedProgramId);
         assignedProgram.setWebConfiguration(webConfiguration);
@@ -44,6 +43,18 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         return assignedProgram;
     }
 
+    @Override
+    public AssignedProgram getByDeviceId(int deviceId) {
+        AssignedProgramRowMapper rowMapper = new AssignedProgramRowMapper();
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(rowMapper.getBaseQuery());
+        sql.append("AND p.deviceId").eq(deviceId);
+        AssignedProgram assignedProgram = jdbcTemplate.queryForObject(sql, rowMapper);
+        WebConfiguration webConfiguration = webConfigurationDao.getForAssignedProgram(assignedProgram.getAssignedProgramId());
+        assignedProgram.setWebConfiguration(webConfiguration);
+
+        return assignedProgram;
+    }
     @Override
     public List<AssignedProgram> getByIds(Collection<Integer> assignedProgramIds) {
         Map<Integer, WebConfiguration> webConfigurations =

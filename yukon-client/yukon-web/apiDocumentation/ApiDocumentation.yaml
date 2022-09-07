@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Yukon API Documentation
-  version: 9.2.0
+  version: 9.3.0
   description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
 servers:
   - url: /api/
@@ -26,6 +26,14 @@ paths:
      $ref: 'api/tokenApi.yaml#/forgottenPassword'
   /captchaDetails:
      $ref: 'api/tokenApi.yaml#/captchaDetails'
+  /change-password/{uuid}:
+     $ref: 'api/tokenApi.yaml#/changePassword'  
+  
+
+  /admin/config/currentTheme:
+     $ref: 'api/themeApi.yaml#/currentTheme'
+  /common/images/{id}:
+     $ref: 'api/themeApi.yaml#/image'
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
@@ -61,7 +69,7 @@ paths:
     $ref: 'api/loadProgramsApi.yaml#/copy-operation'
 
   /dr/constraints:
-    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+    $ref: 'api/programConstraintsApi.yaml#/post-get-all-operation'
   /dr/constraints/{id}:
     $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
   /dr/constraints/seasonSchedules:
@@ -125,8 +133,35 @@ paths:
   /macroRoutes/{id}:
     $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'
 
+  /terminals:
+    $ref: 'api/terminalsApi.yaml#/post-get-all-operation'
+  /terminals/{id}:
+    $ref: 'api/terminalsApi.yaml#/get-update-delete-operation'
+  /terminals/{id}/copy:
+    $ref: 'api/terminalsApi.yaml#/copy-operation'
 
-
+  /notificationGroups:
+    $ref: 'api/notificationGroupsApi.yaml#/post-get-all-operation'
+  /notificationGroups/{id}:
+    $ref: 'api/notificationGroupsApi.yaml#/get-update-delete-operation'
+    
+#  /holidaySchedules:
+#    $ref: 'api/holidaySchedulesApi.yaml#/post-get-all-operation'
+#  /holidaySchedules/{id}:
+#    $ref: 'api/holidaySchedulesApi.yaml#/get-update-delete-operation'
+#    
+#  /seasonSchedules:
+#    $ref: 'api/seasonSchedulesApi.yaml#/post-get-all-operation'
+#  /seasonSchedules/{id}:
+#    $ref: 'api/seasonSchedulesApi.yaml#/get-update-delete-operation'
+    
+  /unicastMessage:
+    $ref: 'api/derEdgeApi.yaml#/unicast-post-operation'
+  /broadcastMessage:
+    $ref: 'api/derEdgeApi.yaml#/broadcast-post-operation'
+  /multipointMessage:
+    $ref: 'api/derEdgeApi.yaml#/multipoint-post-operation'
+    
 components:
   securitySchemes:
     bearerAuth:
@@ -135,6 +170,8 @@ components:
       bearerFormat: JWT
 tags:
   - name: Authentication
+  - name: Admin
+  - name: Common
   - name: Comm Channel
   - name: Trend
   - name: Load Group
@@ -151,4 +188,8 @@ tags:
   - name: Route
   - name: Logger
   - name: Macro Route
-
+  - name: Terminals
+  - name: Notification Groups
+#  - name: Holiday Schedules
+#  - name: Season Schedules
+  - name: DER Edge Messaging

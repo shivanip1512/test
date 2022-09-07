@@ -9,6 +9,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 
 public interface EventLogDao {
@@ -32,19 +33,8 @@ public interface EventLogDao {
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
-                                                         Integer start,
-                                                         Integer pageCount,
+                                                         PagingParameters paging,
                                                          String filterString);
     
     public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper();
-
-    /**
-     * 
-     * @param searchString
-     * @param firstRowIndex     Zero-based row index.  Typically zero or multiples of pageRowCount.
-     * @param pageRowCount      Maximum number of rows to return.
-     * @return
-     */
-    public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount);
-
 }

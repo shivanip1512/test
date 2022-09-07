@@ -129,6 +129,10 @@ public enum SiteMapPage implements DisplayableEnum {
     COMMCHANNELS(SiteMapCategory.ASSETS, "yukon.web.modules.operator.commChannel.pageName", "/stars/device/commChannel/list", MatchStyle.all, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
     COMPREHENSIVE_MAP(SiteMapCategory.ASSETS, "yukon.web.modules.operator.comprehensiveMap.pageName", "/stars/comprehensiveMap/home", 
                       MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
+    SIGNAL_TRANSMITER(SiteMapCategory.ASSETS, "yukon.web.modules.operator.signalTransmitters.list.pageName", "/stars/device/signalTransmitter/list", 
+            MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
+    ROUTES(SiteMapCategory.ASSETS, "yukon.web.modules.operator.routes.list.pageName", "/stars/device/routes/list",
+      MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/admin/config/view",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
@@ -202,6 +206,8 @@ public enum SiteMapPage implements DisplayableEnum {
         MatchStyle.all),
     AGGREGATE_INTERVAL_REPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.aggregateIntervalReport.pageName", 
                               "/tools/aggregateIntervalReport/view", MatchStyle.all),
+    NOTIFICATION_GROUPS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.notificationGroup.list.pageName", "/tools/notificationGroup/list", 
+            MatchStyle.any),
 
     SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
@@ -255,8 +261,6 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     RFN_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.rfnTest.pageName", "/dev/rfn/viewBase",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
-    ECOBEE_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.ecobee.mockTest.pageName", "/dev/ecobee/viewBase",
-                    MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     ZEUS_ECOBEE_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.ecobee.mockTest.pageName", "/dev/ecobee/zeus/viewBase",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBoolean.DEVELOPMENT_MODE),
     EIM_TEST(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.webServices.eimTest.pageName", "/dev/eimTest/main",

@@ -14,8 +14,8 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.LOW">Data streaming capacity at {0}%.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.HIGH">Data streaming capacity at {0}%.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.CLEAR">Data streaming capacity is now below warning threshold.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.CLEAR">An outage restoration has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.INFRASTRUCTURE_OUTAGE.LOW">An outage notification has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.INFRASTRUCTURE_OUTAGE.CLEAR">An outage restoration has been received.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.CLEAR">Communication status is connected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected.</entry>
@@ -44,29 +44,38 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC battery failure.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC power failure.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.LOW">Cellular Relay communications interrupted since {0}.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.CLEAR">Cellular Relay communications restored.</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.LOW">Cellular Relay''s descendant count {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_DEVICE_CONNECTION_STATUS.LOW">Cellular device communications interrupted since {0}.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_DEVICE_CONNECTION_STATUS.CLEAR">Cellular device communications restored.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.LOW">Cellular Relay''s descendant count of {0} is higher than recommended.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.CLEAR">Cellular Relay''s descendant count is now below the recommended limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_METER_DESCENDANT_COUNT.LOW">Cellular Meter''s descendant count of {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_METER_DESCENDANT_COUNT.CLEAR">Cellular Meter''s descendant count is now below the recommended limit.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.CCUs">CCUs</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.repeaters">Repeaters</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.meters">IPLink Meters</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.seeAll">See All</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.recentIssues.title">Most Recent Active Issues:</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.viewAll">View All Infrastructure Warnings</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.lastRefresh">Last Refresh</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.name">Name</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.type">Type</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.status">Status</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.timestamp">Timestamp</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.deviceDetails">View Device Details</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.highSeverityTooltip">High Severity</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.highSeverityOnly">High Severity Only</entry>
     
     <!-- Category Types -->
     <entry key="yukon.web.widgets.infrastructureWarnings.category.GATEWAY">Gateway</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.category.RELAY">Relay</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.category.CCU">CCU</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.category.REPEATER">Repeater</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.category.IPLINK_METER">IPLink Meter</entry>
     
-    <entry key="yukon.web.widgets.infrastructureWarnings.noWarning.hoverText">Number of {0} without infrastructure warnings.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.noWarning.hoverText">No infrastructure warnings currently exist for any {0}.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warning.hoverText">Number of {0} with infrastructure warnings.</entry>    
       
     <entry key="yukon.web.widgets.infrastructureWarnings.noRecentWarnings">No recent warnings found.</entry>
@@ -78,24 +87,22 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.filters.title">Filters</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.deviceTypes">Device Types</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warnings">Warnings</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.allTypes">All Types</entry>
-    <entry key="yukon.web.widgets.infrastructureWarnings.downloadAll.hoverText">Download All</entry>
    
     <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpTitle">Infrastructure Warnings Detail Help</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpText"><![CDATA[
-        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
-        A summary of the devices with and without warnings will be displayed in the top left corner of the page, along with an option to download all infrastructure warnings.
+        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, IPLink meters, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        A summary will display for each of the corresponding device types:
         <ul>
             <li>
-                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
-                Number of devices without any of the below mentioned warning types.
+                <i class="icon icon-accept fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#5d9c53" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></i> - 
+                No current warnings exist for the device type.
             </li>
             <li>
-                <span class="fwb bg-color-orange txt-color-white">Devices with warnings (Orange)</span> - 
-                Number of devices with warnings.
+                <i class="icon icon-error fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#eb8f2b" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></i> - 
+                Number of devices with warnings. Clicking on the warning icon will display all warnings for the corresponding device type.
             </li>
         </ul>
-        In the top right corner, select any device types to filter the list and click on the Filter button. A table will display with the device, type, warning message and warning time. 
+        In the filter section, select any device types to filter by and whether to only include the high severity warnings. Click on the Filter button to filter the list. A table will display with the device, type, warning message and warning date/time. A red status stripe will display to the left of any warnings that are high severity. 
         Click on the filtered cog dropdown to perform collection actions, download or map the filtered results.<br/><br/>
         The following is a list of the types of warnings that are being evaluated:
             <ul>
@@ -108,6 +115,16 @@
                 <li>Relay outage event – Warning condition produced when a ‘Last Gasp’ outage notification is received from a relay. This condition will automatically clear when the relay’s restoration notification is received.</li>
                 <li>PLC CCU communication status – Warning condition produced when ten consecutive messages targeting the specified CCU fail to be delivered. This may indicate a bulk communication problem between the Yukon software and the device.</li>
                 <li>PLC Repeater communication status - Warning condition produced when ten consecutive messages targeting the specified Repeater fail to be delivered. This indicates a communication problem between the Yukon software and the device.</li>
+                <li>AC power failure – Warning provided when the gateway loses AC power.</li>
+                <li>Certificate expired – Warning condition that a gateway’s certificate will expire in the next 60 days.</li>
+                <li>Door open – Warning provided when a gateway’s door is opened.</li>
+                <li>High disk usage – Warning provided when the gateway’s available disk storage drops below 20%.</li>
+                <li>Power failure – Warning provided when the gateway loses power.</li>
+                <li>Radio failure – Warning provided when a gateway’s radio goes down for more than 60 seconds.</li>
+                <li>RTC battery failure – Warning provided when it is time to replace the coin cell battery in the gateway.</li>
+                <li>Security alarm – Warning provided when the SSH service is enabled on the gateway.</li>
+                <li>UPS battery voltage low – Warning condition that a gateway’s UPS battery is failing.</li>
+                <li>Time sync failed – Warning provided when a gateway has gone 24 hours without a successful synchronization with the NTP server.</li>
             </ul>
     ]]></entry>
 </properties>

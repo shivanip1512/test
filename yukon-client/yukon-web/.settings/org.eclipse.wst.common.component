@@ -432,7 +432,58 @@
         
         
         
-        <dependent-module archiveName="easymock-3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/easymock-3.0.jar">
+        <dependent-module archiveName="easymock-4.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/easymock-4.3.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+        <dependent-module archiveName="mockito-core-4.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mockito-core-4.5.1.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+                                                
+        
+        
+        <dependent-module archiveName="byte-buddy-agent-1.12.10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/byte-buddy-agent-1.12.10.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+                                                
+        
+        
+                                                
+        
+        
+        <dependent-module archiveName="byte-buddy-1.12.10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/byte-buddy-1.12.10.jar">
                                                             
             
             
@@ -582,7 +633,7 @@
         
         
         
-        <dependent-module archiveName="xercesImpl-2.12.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl-2.12.0.jar">
+        <dependent-module archiveName="xercesImpl-2.12.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl-2.12.2.jar">
                                                             
             
             
@@ -687,7 +738,7 @@
         
         
         
-        <dependent-module archiveName="jackson-annotations-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.13.0.jar">
+        <dependent-module archiveName="jackson-annotations-2.13.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.13.3.jar">
                                                             
             
             
@@ -702,7 +753,7 @@
         
         
         
-        <dependent-module archiveName="jackson-databind-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.13.0.jar">
+        <dependent-module archiveName="jackson-databind-2.13.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.13.3.jar">
                                                             
             
             
@@ -732,7 +783,7 @@
         
         
         
-        <dependent-module archiveName="jackson-core-2.13.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.13.0.jar">
+        <dependent-module archiveName="jackson-core-2.13.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.13.3.jar">
                                                             
             
             
@@ -762,7 +813,7 @@
         
         
         
-        <dependent-module archiveName="httpclient-4.5.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/httpclient-4.5.6.jar">
+        <dependent-module archiveName="httpclient-4.5.13.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/httpclient-4.5.13.jar">
                                                             
             
             
@@ -792,7 +843,7 @@
         
         
         
-        <dependent-module archiveName="guava-18.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/guava-18.0.jar">
+        <dependent-module archiveName="guava-31.1-jre.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/guava-31.1-jre.jar">
                                                             
             
             
@@ -822,7 +873,7 @@
         
         
         
-        <dependent-module archiveName="snakeyaml-1.18.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/snakeyaml-1.18.2.jar">
+        <dependent-module archiveName="snakeyaml-1.30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/snakeyaml-1.30.jar">
                                                             
             
             

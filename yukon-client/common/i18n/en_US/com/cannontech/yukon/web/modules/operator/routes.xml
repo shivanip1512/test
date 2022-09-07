@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.modules.operator.routes.list.pageName">Routes</entry>
+    <entry key="yukon.web.modules.operator.routes.createCommRoute.create">Communication Route</entry>
+    <entry key="yukon.web.modules.operator.routes.createObject.title">Create Route</entry>
+    <entry key="yukon.web.modules.operator.routes.CREATE.pageName">Create Communication Route</entry>
+    <entry key="yukon.web.modules.operator.routes.title">General</entry>
+    <entry key="yukon.web.modules.operator.routes.defaultRoute">Default Route</entry>
+    <entry key="yukon.web.modules.operator.routes.selectSignalTransmitter">Signal Transmitter</entry>
+    <entry key="yukon.web.modules.operator.routes.retrieve.error">An error occurred in retrieving route.</entry>
+    <entry key="yukon.web.modules.operator.routes.VIEW.pageHeading">Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.routes.VIEW.pageTitle">Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.pageHeading">Edit Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.pageTitle">Route: {0}</entry>
+    
+    <!-- Macro routes entry -->
+    <entry key="yukon.web.modules.operator.macroRoutes.title">General</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.createMacroRoute.create">Macro Route</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.retrieve.error">An error occurred in retrieving macro route.</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.VIEW.pageHeading">Macro Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.VIEW.pageTitle">Macro Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.CREATE.pageName">Create Macro Route</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.CREATE.pageHeading">Create Macro Route</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.CREATE.crumbTitle">Create Macro Route</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.EDIT.pageTitle">Macro Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.EDIT.pageHeading">Edit Macro Route: {0}</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.assignedRoutes.title">Assigned Routes</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.routesAssignment.title">Routes Assignment</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.routesAssignment.empty.error">Cannot create macro route without assigning a route. Please assign at least 1 route.</entry>
+</properties>

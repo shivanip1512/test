@@ -13,6 +13,8 @@
 #include "std_helper.h"
 #include "mgr_device.h"
 #include "MeterProgramStatusArchiveRequestMsg.h"
+#include "RfnEdgeDrMessaging.h"
+#include "message_factory.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -69,8 +71,19 @@ void RfnRequestManager::start()
 
                 _indications.push_back(msg);
             });
+
+    initializeActiveMQHandlers();
 }
 
+void RfnRequestManager::initializeActiveMQHandlers()
+{
+    Messaging::ActiveMQConnectionManager::registerHandler(
+        Messaging::ActiveMQ::Queues::InboundQueue::NetworkManagerRfnBroadcastResponse,
+        [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md)
+        {
+            handleRfnBroadcastReplyMsg(md.msg);
+        });
+}
 
 void RfnRequestManager::tick()
 {
@@ -87,6 +100,9 @@ void RfnRequestManager::tick()
 
     //  provide a hint as to which devices are ready for a new request
     handleNewRequests(devicesToInspect);
+
+    // from rfn broadcast requests
+    handleReplies();
 
     //  make the results available to Porter
     postResults();
@@ -416,7 +432,7 @@ auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rf
 
         auto results = messageStatus
             ? handleCommandError   (Now, rfnIdentifier, *optRequest, messageStatus)
-            : handleCommandResponse(Now, rfnIdentifier, *optRequest, *message.token, message.data);
+            : handleCommandResponse(Now, rfnIdentifier, *optRequest, *message.token, message.data, message.oscoreEncrypted);
 
         CTILOG_INFO(dout, "Erasing active request for device " << rfnIdentifier);
 
@@ -454,7 +470,7 @@ void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIden
         std::endl << "rfnId: " << rfnIdentifier << ": " << activeRequest.currentPacket.payloadSent);
 }
 
-RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload)
+RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const bool oscoreEncrypted)
 {
     CTILOG_INFO(dout, "Response received for token " << token << " for device " << rfnIdentifier <<
         std::endl << "rfnId: " << rfnIdentifier << ": " << payload);
@@ -467,6 +483,14 @@ RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, cons
 
     try
     {
+        if ( activeRequest.request.command->isOscoreEncrypted() != oscoreEncrypted )
+        {
+            // Reject this command result because the incoming and outgoing encryption setting doesn't match
+            //  -aka- an OSCORE encrypted request got a plaintext response or vice-versa
+            // 
+            // throw CommandException( ClientErrors::InvalidData, "Encryption setting mismatch" );
+        }
+
         commandResults = activeRequest.request.command->handleResponse(Now, activeRequest.response);
     }
     catch( const DeviceCommand::CommandException &ce )
@@ -721,9 +745,57 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
             _activeRequests.erase(rfnId);
             _activeTokens.erase(rfnId);
         }
+
+        {   // Broadcast request timeouts
+            if ( const auto end = _broadcastTimeouts.upper_bound( Now ); _broadcastTimeouts.begin() != end )
+            {
+                for ( auto itr = _broadcastTimeouts.begin(); itr != end; ++itr )
+                {
+                    auto messageId = itr->second;
+
+                    if ( auto callback_itr = _broadcastCallbacks.find( messageId ); callback_itr != _broadcastCallbacks.end() )
+                    {
+                        callback_itr->second.timeout();
+                        _broadcastCallbacks.erase( callback_itr );
+                    }
+                }
+
+                _broadcastTimeouts.erase( _broadcastTimeouts.begin(), end );
+            }
+        }
     }
 
     return expirations;
+}
+
+
+void RfnRequestManager::handleReplies()
+{
+    BroadcastReplyQueue     waitingReplies;
+
+    {
+        LockGuard guard( _broadcastReplyMux );
+
+        std::swap( waitingReplies, _broadcastReplies );
+    }
+
+    for ( auto & reply : waitingReplies )
+    {
+        if ( reply.header )
+        {
+            const auto messageId = reply.header->messageId;
+
+            if ( auto callback_itr = _broadcastCallbacks.find( messageId ); callback_itr != _broadcastCallbacks.end() )
+            {
+                callback_itr->second.response( reply );
+                _broadcastCallbacks.erase( callback_itr );
+            }
+        }
+        else
+        {
+            CTILOG_WARN( dout, "A RFN Broadcast reply was deserialized with an empty NM header.  No reply response callback available." );
+        }
+    }
 }
 
 
@@ -767,6 +839,11 @@ auto RfnRequestManager::createE2eDtPost(const Bytes& payload, const RfnIdentifie
     return _e2edt.createPost(payload, endpointId, token);
 }
 
+auto RfnRequestManager::createE2eDtPut(const Bytes& payload, const RfnIdentifier endpointId) -> Bytes
+{
+    return _e2edt.createPut(payload, endpointId);
+}
+
 auto RfnRequestManager::createE2eDtReply(const unsigned short id, const Bytes& payload, const Token token) -> Bytes
 {
     return _e2edt.createReply(id, payload, token);
@@ -782,6 +859,10 @@ auto RfnRequestManager::createE2eDtBlockReply(const unsigned short id, const Byt
     return _e2edt.createBlockReply(id, payload, token, block);
 }
 
+auto RfnRequestManager::oscoreEncrypt(const Bytes& payload, const RfnIdentifier endpointId) -> Bytes
+{
+    return _e2edt.oscoreEncryptPacket(payload, endpointId);
+}
 
 std::chrono::minutes calcExpiration(const RfnDeviceRequest &request)
 {
@@ -823,6 +904,11 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                     request.command->isPost()
                         ? createE2eDtPost(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId)
                         : createE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
+
+                if ( request.command->isOscoreEncrypted() )
+                {
+                    e2ePacket = oscoreEncrypt( e2ePacket, request.parameters.rfnIdentifier );
+                }
             }
             catch( Protocols::E2e::PayloadTooLarge )
             {
@@ -1012,6 +1098,157 @@ void RfnRequestManager::submitRequests(RfnDeviceRequestList requests)
 }
 
 
+void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroadcastRequest & request, const short messageId )
+{
+    using namespace Messaging::Rfn;
+
+    // translate the specific EdgeDR broadcast request into a generic RFN broadcast request
+
+    static const std::map<EdgeBroadcastMessagePriority, RfnBroadcastDeliveryType> priorityXlator
+    {
+        { EdgeBroadcastMessagePriority::IMMEDIATE,      RfnBroadcastDeliveryType::IMMEDIATE     },
+        { EdgeBroadcastMessagePriority::NON_REAL_TIME,  RfnBroadcastDeliveryType::NON_REAL_TIME }
+    };
+
+    RfnBroadcastDeliveryType delivery = 
+        mapFindOrDefault( priorityXlator,
+                          request.priority.value_or( EdgeBroadcastMessagePriority::IMMEDIATE ),
+                          RfnBroadcastDeliveryType::IMMEDIATE );
+
+    RfnBroadcastRequest     broadcast
+    {
+        2,              // 2 == Central Controller
+        messageId,
+        7,              // 7 == DER
+        delivery,
+        { },            // fill in below
+        SessionInfoManager::getNmHeader( 8 )    // 8 -- default priority
+    };
+
+    // OSCORE encrypt the incoming payload
+
+        // we will need
+            // key
+                // normally this is derived, but in our case supplied via cparm(?)
+            // nonce
+                // derived from the key and a common iv
+            // tag length
+                // usually 8 bytes but need to verify with the firmware team
+            // external aad
+                // depends on the sender id and the sender sequence number -- what are these, fixed values for now??
+
+
+    // build the CoAP message as the outgoing payload for NM
+
+    broadcast.payload = createE2eDtPut( request.payload, RfnIdentifier { "broadcast", "broadcast", "broadcast" } );
+
+    // web client response message helper
+    
+    auto sendClientResponse =
+        []( const EdgeDrBroadcastResponse & response )
+        {
+            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
+            {
+                CTILOG_DEBUG( dout, "Sending EdgeDR broadcast response message to client" << FormattedList::of(
+                                     "Message GUID", response.messageGuid ) );
+
+                Messaging::ActiveMQConnectionManager::enqueueMessage(
+                    Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrBroadcastResponse,
+                    serialized );
+            }
+            else
+            {
+                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
+                                    "Message GUID", response.messageGuid ) );
+            }
+        };
+
+    // initialize our callbacks and timeout framework
+
+    const auto Key     = broadcast.header->messageId;
+    const auto Timeout = std::chrono::system_clock::now() + std::chrono::minutes{ 35 };
+
+    _broadcastTimeouts.emplace( Timeout, Key );
+    _broadcastCallbacks.emplace( 
+        Key,
+        BroadcastCallbacks {
+        [=]( const RfnBroadcastReply & reply )
+        {
+            Cti::FormattedList itemList;
+
+            itemList.add("Reply Type")          << reply.replyType;
+            if ( reply.failureReason )
+            {
+                itemList.add("Failure Reason")  << *reply.failureReason;
+            }
+            for ( auto & [rfnId, error] : reply.gatewayErrors )
+            {
+                itemList.add(rfnId.toString())  << error;
+            }
+
+            CTILOG_INFO( dout, "Received an RFN broadcast reply from NM." << itemList );
+        },
+        [=]()
+        {
+            CTILOG_INFO( dout, "EdgeDR broadcast request timed out waiting for a reply from NM." << FormattedList::of(
+                                "Message GUID", request.messageGuid ) );
+        }
+    } );
+
+    // submit the broadcast request to network manager
+
+    if ( auto serialized_broadcast = Messaging::Serialization::serialize( broadcast ); ! serialized_broadcast.empty() )
+    {
+        CTILOG_DEBUG( dout, "Sending RFN broadcast request message to NM" << FormattedList::of(
+                             "Broadcast messageId", Key ) );
+
+        Messaging::ActiveMQConnectionManager::enqueueMessage(
+            Messaging::ActiveMQ::Queues::OutboundQueue::NetworkManagerRfnBroadcastRequest,
+            serialized_broadcast );
+
+        // report back to web client that we have forwarded the request to NM.  Any responses from NM will be logged in the callbacks.
+
+        sendClientResponse( { request.messageGuid, std::nullopt } );  // not an error
+    }
+    else
+    {
+        CTILOG_WARN( dout, "Could not serialize RFN broadcast request message" << FormattedList::of(
+                            "Broadcast messageId", Key ) );
+
+        // we had a serialization error - notify the web client and remove the callbacks
+
+        _broadcastCallbacks.erase( Key );
+
+        sendClientResponse( {
+           request.messageGuid,
+           EdgeDrError { ClientErrors::E2eRequestNotAcceptable, "Error sending RFN broadcast request to NM" } } );  // need different error code?
+    }
+}
+
+void RfnRequestManager::handleRfnBroadcastReplyMsg( const SerializedMessage & msg )
+{
+    using Messaging::Rfn::RfnBroadcastReply;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto reply = MessageSerializer<RfnBroadcastReply>::deserialize( msg );
+
+    if ( reply->header )
+    {
+        CTILOG_DEBUG(dout, "Received a RFN broadcast reply from NM:" << FormattedList::of(
+                            "Broadcast messageId", reply->header->messageId ) );
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Deserialized a RFN broadcast reply from NM with no header." );
+    }
+
+    {
+        LockGuard guard( _broadcastReplyMux );
+
+        _broadcastReplies.push_back( *reply );
+    }
+}
+
 boost::random::mt19937 random_source;
 
 RfnRequestManager::PacketInfo
@@ -1042,7 +1279,7 @@ RfnRequestManager::PacketInfo
             },
             [=](const YukonError_t error)
             {
-                LockGuard guard(_confirmMux);
+                LockGuard guard(_confirmMux);   // is this the right mux?? _expirationMux
 
                 _expirations.emplace(rfnIdentifier, error);
             });

@@ -1,0 +1,120 @@
+post-get-all-operation:
+  post:
+    tags:
+     - Season Schedules
+    summary: 'Create Season Schedule'
+    description: 'API to create season schedule.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedule'
+          examples:
+            SeasonSchedule:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/Season Schedule Request'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedule Response Schema'
+            examples:
+              SeasonSchedule:
+                $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/Season Schedule Response'
+    
+  get:
+    tags:
+      - Season Schedules
+    summary: Retrieve all the Season Schedules
+    description: API to retrieve list of season schedules. 
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedules List Response Schema'
+             
+            examples:
+              Season Schedules List:
+                $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/List of Season Schedules'
+                
+get-update-delete-operation:
+  get:
+    tags:
+     - Season Schedules
+    summary: 'Retrieve Season Schedule'
+    description: 'API to retrieve season schedule based on passed season schedule id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for season schedule.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedule Response Schema'
+            examples:
+              SeasonSchedule:
+                $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/Season Schedule Response'
+  put:
+    tags:
+     - Season Schedules
+    summary: 'Update Season Schedule'
+    description: 'API to update season schedule based on passed season schedule id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for season schedule.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedule'
+          examples:
+            SeasonSchedule:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/Season Schedule Request'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/Season Schedule Response Schema'
+            examples:
+              SeasonSchedule:
+                $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/Season Schedule Response'
+  delete:
+    tags:
+     - Season Schedules
+    summary: 'Delete Season Schedule'
+    description: 'API to delete season schedule based on passed season schedule id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for season schedule.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/seasonSchedulesSchema.yaml#/id'
+            examples:
+              SeasonScheduleId:
+                $ref: '../schemas/seasonSchedulesSchema.yaml#/components/examples/SeasonScheduleId'

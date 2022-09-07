@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,6 +20,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
@@ -31,8 +34,9 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
     @Autowired private AttributeService attributeService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
-    public List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds) {
+    public List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds, List<Integer> commStatuses) {
         // Select all the WiFi meters in DynamicRfnDeviceData
         List<RfnDevice> wiFiMeters = rfnDeviceDao.getDevicesForGateways(gatewayIds, PaoType.getWifiTypes());
         // Turn the list of RfnDevices into WiFiMeterCommData objects
@@ -40,6 +44,22 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
                                                               .map(this::buildWiFiMeterCommDataObject)
                                                               .filter(Objects::nonNull)
                                                               .collect(Collectors.toList());
+        
+        //filter by comm status
+        if (commStatuses != null && !commStatuses.isEmpty()) {
+            final List<WiFiMeterCommData> filteredCommStatus = new ArrayList<WiFiMeterCommData>();
+            wiFiMeterCommData.forEach(wifiData -> {
+                if (wifiData.getCommStatusPoint() != null) {
+                    PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(wifiData.getCommStatusPoint().getPointID());
+                    if (commStatus != null) {
+                        if (commStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
+                            filteredCommStatus.add(wifiData);
+                        }
+                    }
+                }
+            });
+            wiFiMeterCommData = filteredCommStatus;
+        }
 
         return wiFiMeterCommData;
     }

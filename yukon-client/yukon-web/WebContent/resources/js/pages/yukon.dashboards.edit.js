@@ -13,7 +13,7 @@ yukon.dashboards.edit = (function () {
     var
     _initialized = false,
     
-    mod = {         
+    mod = {
             
         updateArrows : function (event, ui) {
             ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
@@ -71,7 +71,7 @@ yukon.dashboards.edit = (function () {
             });
             
             $('#column2-widgets').sortable({
-                connectWith: "#column1-widgets",        
+                connectWith: "#column1-widgets",
                 stop: function(event, ui) {
                     mod.updateArrows(event, ui);  
                     mod.updateLeftRightArrows();
@@ -123,23 +123,26 @@ yukon.dashboards.edit = (function () {
 
             });
             
-            $(document).on('click', '.js-show-category', function () {
-                var category = $(this).data('category');
+            $(document).on('click', '.js-show-category, .js-category-row', function () {
+                var category = $(this).data('category'),
+                    row = $(this).closest(".js-category-row");
                 $('.js-search').val("");
                 $('.js-no-widgets-found').toggleClass('dn', true);
                 $('.js-category-widgets').toggleClass('dn', true);
                 $('.js-' + category).toggleClass('dn', false);
                 $('.js-show-category').css("font-weight", "normal");
                 $('.js-show-all').css("font-weight", "normal");
-                $(this).css("font-weight", "bold");
+                row.find(".js-show-category").css("font-weight", "bold");
+                row.find("input[name='js-widget-category']").prop('checked', true);
             });
             
-            $(document).on('click', '.js-show-all', function () {
+            $(document).on('click', '.js-show-all-row', function () {
                 $('.js-search').val("");
                 $('.js-no-widgets-found').toggleClass('dn', true);
                 $('.js-category-widgets').toggleClass('dn', false);
                 $('.js-show-category').css("font-weight", "normal");
-                $(this).css("font-weight", "bold");
+                $(this).closest(".js-show-all-row").find(".js-show-all").css("font-weight", "bold");
+                $(this).find("input[name='js-widget-category']").prop('checked', true);
             });
             
             $(document).on('keyup', '.js-search', function () {

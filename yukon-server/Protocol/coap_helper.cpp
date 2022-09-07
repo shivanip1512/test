@@ -103,6 +103,13 @@ scoped_pdu_ptr scoped_pdu_ptr::make_nonconfirmable_request(RequestMethod method,
     return pdu;
 }
 
+scoped_pdu_ptr scoped_pdu_ptr::make_nonconfirmable_request(RequestMethod method, unsigned short id)
+{
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, as_underlying(method), id, COAP_MAX_PDU_SIZE) };
+
+    return pdu;
+}
+
 scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned short id, ResponseCode status)
 {
     scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_ACK, as_underlying(status), id, COAP_MAX_PDU_SIZE) };

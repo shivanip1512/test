@@ -4,18 +4,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 public class ScenarioDaoImpl implements ScenarioDao {
 	
@@ -115,5 +121,25 @@ public class ScenarioDaoImpl implements ScenarioDao {
         }
 
         return retVal;
+    }
+    
+    @Override
+    public  Multimap<Integer, Integer> getGroupIdsByScenarioId(Set<Integer> scenarioIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        Multimap<Integer, Integer> result = HashMultimap.create();
+        template.query(e -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT lcsp.ScenarioId, ldg.LMGroupDeviceId");
+            sql.append("FROM LmControlScenarioProgram lcsp");
+            sql.append("JOIN LMProgramDirectGroup ldg ON ldg.DeviceId=lcsp.ProgramId");
+            sql.append("WHERE lcsp.ScenarioId").in(scenarioIds);
+            return sql;
+        }, scenarioIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                result.put(rs.getInt("ScenarioId"), rs.getInt("LMGroupDeviceId"));
+            }
+        });
+        return result;
     }
 }

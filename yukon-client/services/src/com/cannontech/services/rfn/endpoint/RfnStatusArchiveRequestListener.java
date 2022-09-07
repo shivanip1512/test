@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,6 @@ import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
 @ManagedResource
 public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
-    private static final Logger log = YukonLogManager.getLogger(RfnStatusArchiveRequestListener.class);
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
@@ -56,7 +54,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     private YukonJmsTemplate jmsTemplate;
     //  The Thrift messenger to send any resulting MeterProgramStatus updates
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
-    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private Logger log = YukonLogManager.getRfnLogger();
     /**
      * Meter Mode                       Relay Status    RfnMeterDisconnectState                                 Comments
         TERMINATE                       TERMINATED      DISCONNECTED(2)                                         This meter is configured for On-demand disconnect. The mode is reflecting the relay status. If it does not, it is an error.
@@ -113,9 +111,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnStatusArchiveRequest request) {
-        if (rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
-        }
+        log.info("<<< {}", request.toString());
         queueHandler.add(this, request);
     }
 
@@ -143,42 +139,42 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     /**
      * Attempts to publish disconnect point data
      */
-	private void updateDisconnectInfo(RfnStatusArchiveRequest request, String processor, MeterInfoStatus status) {
-		if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
-			Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key = Pair.of(
-					status.getData().getMeterDisconnectStatus().getMeterMode(),
-					status.getData().getMeterDisconnectStatus().getRelayStatus());
-			RfnMeterDisconnectState state = disconnectStates.get(key);
-			if (state != null) {
-				publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
-						request.getRfnIdentifier(), status.getTimeStamp(), processor);
-			} else {
-				log.info(
-						"Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
-						status, key);
-			}
-		}
-	}
+    private void updateDisconnectInfo(RfnStatusArchiveRequest request, String processor, MeterInfoStatus status) {
+        if (status.getData() != null && status.getData().getMeterDisconnectStatus() != null) {
+            Pair<RfnMeterDisconnectMeterMode, RfnMeterDisconnectStateType> key = Pair.of(
+                    status.getData().getMeterDisconnectStatus().getMeterMode(),
+                    status.getData().getMeterDisconnectStatus().getRelayStatus());
+            RfnMeterDisconnectState state = disconnectStates.get(key);
+            if (state != null) {
+                publishPointData(state.getRawState(), BuiltInAttribute.DISCONNECT_STATUS,
+                        request.getRfnIdentifier(), status.getTimeStamp(), processor);
+            } else {
+                log.info(
+                        "Attempt to publish point data for disconnect status {} failed. Disconnect state doesn't exist for combination {}",
+                        status, key);
+            }
+        }
+    }
     
-    /**
-     * Sends status update message to SM to update MeterProgramStatus table
-     */
-	private void archiveProgrammingStatus(MeterInfoStatus status) {
-		 if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
-			MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
-			request.setError(DeviceError.SUCCESS);
-			request.setSource(Source.SM_STATUS_ARCHIVE);
-			request.setRfnIdentifier(status.getRfnIdentifier());
-			request.setConfigurationId(status.getData().getMeterConfigurationID());
-			request.setStatus(ProgrammingStatus.IDLE);
-			request.setTimestamp(new Instant(status.getTimeStamp()));
-			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
-			thriftMessenger.send(request);
-		} else {
-			log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
-					status);
-		}
-	}
+        /**
+         * Sends status update message to SM to update MeterProgramStatus table
+         */
+        private void archiveProgrammingStatus(MeterInfoStatus status) {
+            if (status.getData() != null && status.getData().getMeterConfigurationID() != null) {
+                MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
+                request.setError(DeviceError.SUCCESS);
+                request.setSource(Source.SM_STATUS_ARCHIVE);
+                request.setRfnIdentifier(status.getRfnIdentifier());
+                request.setConfigurationId(status.getData().getMeterConfigurationID());
+                request.setStatus(ProgrammingStatus.IDLE);
+                request.setTimestamp(new Instant(status.getTimeStamp()));
+                log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
+                thriftMessenger.send(request);
+            } else {
+                log.info("Attempt to update meter programming status {} failed. MeterConfigurationID doesn't exist",
+                        status);
+            }
+        }
 
     /**
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
@@ -215,11 +211,10 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         RfnStatusArchiveResponse response = new RfnStatusArchiveResponse();
         response.setStatusPointId(request.getStatusPointId());
         if (request.getRfnIdentifier().is_Empty_()) {
-            log.info("{} acknowledged empty rfnIdentifier {} statusPointId={}", processor, request.getRfnIdentifier(),
+            log.info("{} acknowledged empty rfnIdentifier {} statusPointId {}", processor, request.getRfnIdentifier(),
                 request.getStatusPointId());
-        } else {
-            log.debug("{} acknowledged statusPointId={}", processor, request.getStatusPointId());
         }
+        log.info(">>> {}", response.toString());
         jmsTemplate.convertAndSend(response);
     }
 

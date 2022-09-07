@@ -2175,6 +2175,19 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         }
 
+        if(containsString(CmdStr, " der "))
+        {
+            // putconfig der {hex-string-payload}
+
+            if( token = matchRegex(CmdStr, "der +[0-9a-fA-F]*"); ! token.empty() )
+            {
+                CtiTokenizer cmdtok(token);
+                cmdtok();  //  go past "der"
+
+                _cmd["der"] = CtiParseValue(cmdtok());
+            }
+        }
+
         switch( type )
         {
         case ProtocolVersacomType:              // For putconfig, we may not know who we are talking to.  Decode for both.

@@ -17,6 +17,10 @@
     });
 </script>
 
+<style>
+    .H42 {height: 42px}
+</style>
+
     <tags:sectionContainer title="RFN Meter Read Archive Request Test">
         <form:form action="sendMeterReadArchiveRequest" method="post" modelAttribute="meterReading">
             <cti:csrfToken/>
@@ -149,14 +153,14 @@
                     </form:select>
                 </tags:nameValue>
                 
-                <tags:nameValue name="Reading Time">
-                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" />
+                <tags:nameValue name="Reading Time" valueClass="dif H42">
+                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}"/>
                     <tags:check id="now" path="now" label="Now" onclick="enableByCheckbox('timestamp', 'now')"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Value">
                     <form:input id="value" path="value" size="15" cssClass="fl" disabled="${meterReading.random}" />
-                    <tags:check id="random" path="random" label="Random" onclick="enableByCheckbox('value', 'random')"/>
+                    <tags:check id="random" path="random" label="Random" classes="ML10" onclick="enableByCheckbox('value', 'random')"/>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>

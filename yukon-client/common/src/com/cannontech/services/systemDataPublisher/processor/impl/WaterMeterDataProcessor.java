@@ -1,19 +1,16 @@
 package com.cannontech.services.systemDataPublisher.processor.impl;
 
-import java.util.Set;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 
 @Service
-public class WaterMeterDataProcessor extends PaoCountDataProcessor {
+public class WaterMeterDataProcessor extends DeviceGroupDataProcessor {
 
-    @Override
-    public Set<PaoType> getSupportedPaoTypes() {
-        return PaoType.getWaterMeterTypes();
-    }
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
@@ -23,5 +20,10 @@ public class WaterMeterDataProcessor extends PaoCountDataProcessor {
     @Override
     public long getPeriodInMinutes() {
         return 360;
+    }
+
+    @Override
+    public String getDeviceGroupName() {
+        return deviceGroupEditorDao.getFullPath(SystemGroupEnum.SERVICE_ACTIVE_RFW_METERS);
     }
 }

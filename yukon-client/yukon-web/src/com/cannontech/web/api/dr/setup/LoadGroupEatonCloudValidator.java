@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.setup;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
@@ -8,6 +9,7 @@ import com.cannontech.common.validator.YukonApiValidationUtils;
 
 @Service
 public class LoadGroupEatonCloudValidator extends LoadGroupSetupValidator<LoadGroupEatonCloud> {
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
 
     public LoadGroupEatonCloudValidator() {
@@ -23,11 +25,11 @@ public class LoadGroupEatonCloudValidator extends LoadGroupSetupValidator<LoadGr
     protected void doValidation(LoadGroupEatonCloud loadGroup, Errors errors) {
         // Validation for virtual RelayId field.
 
-        YukonApiValidationUtils.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
-            "Virtual RelayId ");
+        yukonApiValidationUtils.checkIfFieldRequired("virtualRelayId", errors, loadGroup.getVirtualRelayId(),
+            "Virtual Relay Id");
 
         if (!errors.hasFieldErrors("virtualRelayId")) {
-            YukonApiValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 4, true);
+            yukonApiValidationUtils.checkRange(errors, "virtualRelayId", loadGroup.getVirtualRelayId(), 1, 4, true);
         }
     }
 }

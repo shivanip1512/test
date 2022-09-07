@@ -615,6 +615,8 @@
 
     <entry key="yukon.web.modules.capcontrol.bus.feeders.updated">Feeders successfully updated. Please allow a few seconds for changes to be reflected.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.feeders.update.error">Unable to unassign Feeder. CapBank associated with Feeder is currently assigned to a Zone, please navigate to the Zone editor and remove the associated CapBank from the Zone and then try again.</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.feeders.update.voltagePoint.error">Unable to unassign Feeder. Voltage Points associated with the Feeder are currently assigned to a Zone, please navigate to the Zone editor and re-assign the associated Voltage Points from the Feeder and then try again.</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.feeders.update.regulatorPoint.error">Unable to unassign Feeder. Regulators associated with the Feeder are currently assigned to a Zone, please navigate to the Zone editor and re-assign the associated Regulators from the Feeder and then try again.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.edit.feeders">Add/Remove Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.bus.edit.feeders.label">Add/Remove Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.bus.schedules.updated">Schedules successfully updated.</entry>
@@ -631,6 +633,8 @@
     <entry key="yukon.web.modules.capcontrol.feeder.saved">Feeder was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.noAssignedCapBanks">No Assigned CapBanks</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.delete.error">Error deleting feeder {0}. CapBank is currently assigned to a Zone, please navigate to the Zone editor and remove the associated CapBank from the Zone and then try again.</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.delete.voltagePoint.error">Error deleting feeder {0}. Voltage Points associated with the Feeder are currently assigned to a Zone, please navigate to the Zone editor and re-assign the associated Voltage Points from the Feeder and then try again.</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.delete.regulatorPoint.error">Error deleting feeder {0}. Regulators associated with the Feeder are currently assigned to a Zone, please navigate to the Zone editor and re-assign the associated Regulators from the Feeder and then try again.</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.dmvTestRunning.hoverText">Currently being used in a DMV test.</entry>
     

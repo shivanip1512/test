@@ -148,6 +148,7 @@
     <bean id="i18nBasenames" class="com.cannontech.common.i18n.I18nBasenamesFactory" factory-method="getBaseNames">
         <constructor-arg>
             <list>
+                <value>classpath:com/cannontech/yukon/api/derEdge/derEdge</value>
                 <value>classpath:com/cannontech/yukon/api/deviceReading/deviceData</value>
                 <value>classpath:com/cannontech/yukon/api/error</value>
                 <value>classpath:com/cannontech/yukon/common/general</value>
@@ -269,6 +270,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/comprehensiveMap</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/commChannel</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/signalTransmitter</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
@@ -282,6 +284,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/tools/fdrTranslationManagement</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/scripts</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/paoNotesSearch</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/notificationGroup</value>
                 <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigrationTemplate</value>
@@ -300,6 +303,8 @@
                 <value>classpath:com/cannontech/yukon/web/modules/dashboards/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/routes</value>
             </list>
         </constructor-arg>
     </bean>
@@ -475,6 +480,7 @@
     <bean class="com.cannontech.database.db.pao.dao.impl.StaticPaoInfoDaoImpl"/>
     
     <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
+    <bean class="com.cannontech.development.service.impl.DemandResponseSetupServiceImpl"/>
     
     <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
     <bean class="com.cannontech.common.config.YukonHttpProxyHandler"/>

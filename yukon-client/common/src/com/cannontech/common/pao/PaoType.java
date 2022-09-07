@@ -150,6 +150,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN520FRXE(DeviceTypes.RFN520FRXE, "RFN-520fRXe", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN520FAXED(DeviceTypes.RFN520FAXED, "RFN-520fAXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN520FRXED(DeviceTypes.RFN520FRXED, "RFN-520fRXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRL520FAXE(DeviceTypes.CRL520FAXE, "CRL-520fAXe", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRL520FRXE(DeviceTypes.CRL520FRXE, "CRL-520fRXe", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRL520FAXED(DeviceTypes.CRL520FAXED, "CRL-520fAXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRL520FRXED(DeviceTypes.CRL520FRXED, "CRL-520fRXeD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN530FAX(DeviceTypes.RFN530FAX, "RFN-530fAX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530FRX(DeviceTypes.RFN530FRX, "RFN-530fRX", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -157,6 +161,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN530FRXE(DeviceTypes.RFN530FRXE, "RFN-530fRXe", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN530S4X(DeviceTypes.RFN530S4X, "RFN-530S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRL530S4X(DeviceTypes.CRL530S4X, "CRL-530S4x", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAX(DeviceTypes.RFN530S4EAX, "RFN-530S4eAX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4EAXR(DeviceTypes.RFN530S4EAXR, "RFN-530S4eAXR", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN530S4ERX(DeviceTypes.RFN530S4ERX, "RFN-530S4eRX", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -305,6 +310,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    RFN530S4X_DER(DeviceTypes.RFN530S4X_DER, "RFN-530S4X-DER", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     
     // WHEN ADDING A NEW PAO TYPE, REMEMBER TO ADD A NEW I18N ENTRY TO 
@@ -323,6 +330,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> itronTypes;
     private final static ImmutableSet<PaoType> rfTypes;
     private final static ImmutableSet<PaoType> rfMeterTypes;
+    private final static ImmutableSet<PaoType> rfMeterTypesThatSupportPoints;
     private final static ImmutableSet<PaoType> rfElectricTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
     private final static ImmutableSet<PaoType> regulatorTypes;
@@ -362,6 +370,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> virtualTypes;
     private final static ImmutableSet<PaoType> cloudLcrTypes;
     private final static ImmutableSet<PaoType> cellularTypes;
+    private final static ImmutableSet<PaoType> noPointSupportMeterTypes;
+    private final static ImmutableSet<PaoType> derEdgeCoordinatorTypes;
 
     public final static int INVALID = -1;
     
@@ -538,11 +548,16 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRXE,
             RFN520FAXED,
             RFN520FRXED,
+            CRL520FAXE,
+            CRL520FAXED,
+            CRL520FRXE,
+            CRL520FRXED,
             RFN530FAX,
             RFN530FRX,
             RFN530FAXE,
             RFN530FRXE,
             RFN530S4X,
+            CRL530S4X,
             RFN530S4EAX,
             RFN530S4EAXR,
             RFN530S4ERX,
@@ -556,7 +571,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SIXNET,
             TRANSDATA_MARKV,
             VECTRON,
-            VIRTUAL_METER
+            VIRTUAL_METER,
+            RFN530S4X_DER
             );
         
         rfTypes = ImmutableSet.of(
@@ -595,11 +611,16 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN520FRXE,
             RFN520FAXED,
             RFN520FRXED,
+            CRL520FAXE,
+            CRL520FAXED,
+            CRL520FRXE,
+            CRL520FRXED,
             RFN530FAX,
             RFN530FRX,
             RFN530FAXE,
             RFN530FRXE,
             RFN530S4X,
+            CRL530S4X,
             RFN530S4EAX,
             RFN530S4EAXR,
             RFN530S4ERX,
@@ -614,7 +635,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6600_RFN,
             LCR6700_RFN,
             RFN_RELAY,
-            CRLY856);
+            CRLY856,
+            RFN530S4X_DER);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
@@ -630,7 +652,12 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         );
         
         cellularTypes = ImmutableSet.of(
-            CRLY856
+            CRLY856,
+            CRL520FAXE,
+            CRL520FAXED,
+            CRL520FRXE,
+            CRL520FRXED,
+            CRL530S4X
         );
         
         mctTypes = ImmutableSet.of(
@@ -753,7 +780,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         cloudLcrTypes = ImmutableSet.of(LCR6200C,
                                            LCR6600C);
-        
+
+        noPointSupportMeterTypes = ImmutableSet.of(RFN530S4X_DER);
+
+        derEdgeCoordinatorTypes = ImmutableSet.of(RFN530S4X_DER);
+
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -836,6 +867,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
+
+        rfMeterTypesThatSupportPoints = Sets.difference(rfMeterTypes, noPointSupportMeterTypes).immutableCopy();
     }
     
     /**
@@ -1050,6 +1083,18 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return cloudLcrTypes.contains(this);
     }
     
+    public boolean supportsPoints() {
+        return rfMeterTypesThatSupportPoints.contains(this);
+    }
+
+    public boolean isNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes.contains(this);
+    }
+
+    public boolean isDerEdgeCoordinator() {
+        return derEdgeCoordinatorTypes.contains(this);
+    }
+
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
@@ -1108,6 +1153,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRfMeterTypes() {
         return rfMeterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getCellularMeterTypes() {
+        return Sets.intersection(cellularTypes, rfMeterTypes).immutableCopy();
     }
     
     public static ImmutableSet<PaoType> getRfElectricTypes() {
@@ -1241,6 +1290,24 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getCellularTypes() {
         return cellularTypes;
     }
+    
+    public static ImmutableSet<PaoType> getIPLinkMeterTypes() {
+        Set<PaoType> cellMeters = Sets.intersection(cellularTypes, rfMeterTypes);
+        Set<PaoType> wifiMeters = Sets.intersection(wifiTypes, rfMeterTypes);
+        return Sets.union(cellMeters, wifiMeters).immutableCopy();
+    }
+
+    public static ImmutableSet<PaoType> getRfMeterTypesThatSupportPoints() {
+        return rfMeterTypesThatSupportPoints;
+    }
+
+    public static ImmutableSet<PaoType> getNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes;
+    }
+
+    public static ImmutableSet<PaoType> getDerEdgeCoordinatorTypes() {
+        return derEdgeCoordinatorTypes;
+    }
 
     /**
      * @return List of all LM Group types
@@ -1335,7 +1402,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         try {
             return PaoType.valueOf(paoTypeJsonString);
         } catch (@SuppressWarnings("unused") IllegalArgumentException e) {
-            throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            try {
+                return PaoType.getForDbString(paoTypeJsonString);
+            } catch (@SuppressWarnings("unused") IllegalArgumentException h) {
+                throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            }
         }
     }
 }

@@ -23,6 +23,7 @@
             <li><b>Descendant Count</b> - Choose the descendant count range(s) you would like to see on the map. 
             <li><b>Hop Count</b> - Choose the hop count range(s) you would like to see on the map. 
             <li><b>Color Code By</b> - Select whether to color code the pins by primary forward gateway, link quality, descendant count or hop count.</li>
+        </ul>
     ]]></entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
@@ -68,5 +69,5 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg">Request to update the primary route could not be sent. Please try again later.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.descendants.noDevicesReturned">No descendants were found for this device.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.descendants.missingLocations">There are descendants that do not have location coordinates. This may cause the descendant count to be higher than what is shown on the map.</entry>
-    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.deviceTypeLegends">Device Type Legends</entry>
 </properties>

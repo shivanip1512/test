@@ -253,21 +253,21 @@ public class MapController {
                     model.addAttribute("errorMsg", e.getMessage());
                 }
             } else {
-                //get Comm Status for Wi-Fi or Cellular
+                //get Connection Method for Wi-Fi or Cellular
                 if (type.isWifiDevice() || type.isCellularDevice()) {
-                    String commStatus = accessor.getMessage(mapNetworkKey + "commStatus.RF");
+                    String connectionMethod = accessor.getMessage(mapNetworkKey + "connectionMethod.RF");
                     LitePoint commStatusPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.COMM_STATUS);
                     if (commStatusPoint != null) {
                         PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
                         if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
                             if (type.isWifiDevice()) {
-                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
+                                connectionMethod = accessor.getMessage(mapNetworkKey + "connectionMethod.WiFi");
                             } else {
-                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                                connectionMethod = accessor.getMessage(mapNetworkKey + "connectionMethod.Cellular");
                             }
                         }
                     }
-                    model.addAttribute("commStatus", commStatus);
+                    model.addAttribute("connectionMethod", connectionMethod);
                 }
                 String nmError = accessor.getMessage(mapNetworkKey + "exception.metadataError");
                 Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);

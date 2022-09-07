@@ -44,6 +44,8 @@ import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
+import com.cannontech.web.capcontrol.models.ViewableFeeder;
+import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.google.common.collect.Lists;
@@ -53,6 +55,7 @@ import com.google.common.collect.Lists;
 public class ZoneWizardController {
 
     @Autowired private ZoneService zoneService;
+    @Autowired private BusService busService;
     @Autowired private ZoneDtoValidator zoneDtoValidator;
     @Autowired private FilterCacheFactory filterCacheFactory;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
@@ -224,6 +227,8 @@ public class ZoneWizardController {
         List<Integer> usedPointIds = zoneService.getAllUsedPointIds();
         model.addAttribute("usedPointIds", usedPointIds);
         addZoneEnums(model);
+        List<ViewableFeeder> feederList = busService.getFeedersForBus(zoneDto.getSubstationBusId());
+        model.addAttribute("feederList", feederList);
     }
 
     private List<Phase> getPhasesForZoneTypeAndPhase(ZoneType zoneType, Phase phase) {
@@ -336,6 +341,15 @@ public class ZoneWizardController {
     }
 
     private boolean saveZone(AbstractZone zoneDto, BindingResult bindingResult, FlashScope flashScope) {
+        //set all regulator feeders if 3 phase zone
+        if (zoneDto.getZoneType().equals(ZoneType.THREE_PHASE)) {
+            RegulatorToZoneMapping regMapping = zoneDto.getRegulatorsList().get(0);
+            if (regMapping.getFeederId() != null) {
+                zoneDto.getRegulatorsList().forEach(mapping -> {
+                   mapping.setFeederId(regMapping.getFeederId()); 
+                });
+            }
+        }
         zoneDtoValidator.validate(zoneDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return false;
@@ -375,12 +389,12 @@ public class ZoneWizardController {
     }
     
     @RequestMapping("addVoltagePoint")
-    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, String zoneType, String phase, int itemIndex) {
+    public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, int subBusId, String zoneType, String phase, int itemIndex) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);
     	pointToZone.setGraphPositionOffset(0);
         ZoneAssignmentPointRow row = zoneDtoHelper.getPointAssignmentFromMapping(pointToZone);        
-        modelMap.addAttribute("row",row);
+        modelMap.addAttribute("row", row);
         modelMap.addAttribute("itemIndex", itemIndex);
 
         ZoneType type = ZoneType.valueOf(zoneType);
@@ -393,6 +407,9 @@ public class ZoneWizardController {
         
         boolean phaseUneditable = isPhaseUneditable(type);
         modelMap.addAttribute("phaseUneditable", phaseUneditable);
+                
+        List<ViewableFeeder> feederList = busService.getFeedersForBus(subBusId);
+        modelMap.addAttribute("feederList", feederList);
         
         return "ivvc/addZoneVoltagePointRow.jsp";
     }

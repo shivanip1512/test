@@ -58,7 +58,7 @@
                         data-dialog data-ok-text="${copyText}" 
                         data-event="yukon:loadProgram:copy"
                         data-url="${renderCopyloadProgramUrl}"
-                        data-width="500"
+                        data-width="550"
                         data-height="auto">
         </div>
     </cti:displayForPageEditModes>

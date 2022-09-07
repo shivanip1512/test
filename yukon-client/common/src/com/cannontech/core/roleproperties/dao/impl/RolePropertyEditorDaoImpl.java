@@ -15,6 +15,8 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RoleDao;
@@ -64,6 +66,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         }
     }
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RoleDao roleDao;
@@ -104,6 +107,10 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                 /* TODO Do this the right way */
 //                value = new DescriptiveRoleProperty(yukonRoleProperty);
                 continue; // skip rp's that don't exist in the database
+            } else if (value.getYukonRoleProperty() == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                    && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                // Hide DER Edge RP when DER Edge CParm is missing
+                continue;
             }
             builder.put(yukonRoleProperty, value);
         }
@@ -166,12 +173,17 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         
         for (YukonRoleProperty yukonRoleProperty : properties) {
             RolePropertyValue rolePropertyValue = new RolePropertyValue(yukonRoleProperty);
-            
-            //only set the value if it was found in the lookup, otherwise use the default from YukonRoleProperty table
-            if(actualValueLookup.containsKey(yukonRoleProperty)){
+
+            // only set the value if it was found in the lookup, otherwise use the default from YukonRoleProperty table
+            if (actualValueLookup.containsKey(yukonRoleProperty)) {
                 Object actualValue = actualValueLookup.get(yukonRoleProperty);
                 rolePropertyValue.setValue(actualValue);
-            }else{
+            } else {
+                if (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                        && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                    // Hide DER Edge RP when DER Edge CParm is missing
+                    continue;
+                }
                 rolePropertyValue.setValue(descriptiveRoleProperties.get(yukonRoleProperty).getDefaultValue());
             }
             rolePropertyValues.add(rolePropertyValue);
@@ -204,6 +216,11 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         // Adding the role to the role group.
         Iterable<YukonRoleProperty> roleProperties = getFilteredRoleProperties(new RolePredicate(role));
         for (YukonRoleProperty yukonRoleProperty : roleProperties) {
+            if (yukonRoleProperty == YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION
+                    && !configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+                // Hide DER Edge RP when DER Edge CParm is missing
+                continue;
+            }
             String dbTextValue = getStringToStoreForValue(yukonRoleProperty, null);
             insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }

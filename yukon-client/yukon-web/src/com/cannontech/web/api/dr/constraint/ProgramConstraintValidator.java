@@ -13,6 +13,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class ProgramConstraintValidator extends SimpleValidator<ProgramConstraint> {
 
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public ProgramConstraintValidator() {
         super(ProgramConstraint.class);
@@ -21,7 +22,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
     @Override
     protected void doValidation(ProgramConstraint programConstraint, Errors errors) {
         // Mandatory, max length(60) and special character check for name.
-        YukonApiValidationUtils.validateName(programConstraint.getName(), errors, "Name");
+        yukonApiValidationUtils.validateName(programConstraint.getName(), errors, "Name");
         if (!errors.hasFieldErrors("name")) {
             dbCache.getAllLMProgramConstraints()
                     .stream()
@@ -34,59 +35,68 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
                         }
                     });
         }
-        
-        if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
-            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+
+        if (programConstraint.getSeasonSchedule() == null) {
+            errors.rejectValue("seasonSchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Season Schedule" }, "");
-        }
-        if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
-            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+        } else if (programConstraint.getSeasonSchedule().getId() == null) {
+            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Season Schedule Id" }, "");
+        } 
+        
+
+        if (programConstraint.getHolidaySchedule() == null) {
+            errors.rejectValue("holidaySchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Holiday Schedule" }, "");
-        }
+        } else if (programConstraint.getHolidaySchedule().getId() == null) {
+            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Holiday Schedule Id" }, "");
+        } 
+
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
-        if (!errors.hasFieldErrors("holidaySchedule")) {
+        if (!errors.hasFieldErrors("holidaySchedule") && (!errors.hasFieldErrors("holidaySchedule.id"))) {
             Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
             if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
-                YukonApiValidationUtils.checkIsBlank(errors, "holidayUsage", programConstraint.getHolidayUsage().toString(), false, "Holiday Usage");
+                yukonApiValidationUtils.checkIsBlank(errors, "holidayUsage", programConstraint.getHolidayUsage().toString(), false, "Holiday Usage");
                 if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
-                    errors.rejectValue("holidayUsage", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Holiday Usage" }, "");
+                    errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
                 }
             } else if (programConstraint.getHolidayUsage() != HolidayUsage.NONE) {
                 errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
             }
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
+        yukonApiValidationUtils.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
         if (!errors.hasFieldErrors("maxActivateSeconds")) {
-            YukonApiValidationUtils.checkRange(errors, "maxActivateSeconds", programConstraint.getMaxActivateSeconds(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxActivateSeconds", programConstraint.getMaxActivateSeconds(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
+        yukonApiValidationUtils.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
         if (!errors.hasFieldErrors("maxDailyOps")) {
-            YukonApiValidationUtils.checkRange(errors, "maxDailyOps", programConstraint.getMaxDailyOps(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxDailyOps", programConstraint.getMaxDailyOps(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
+        yukonApiValidationUtils.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
         if (!errors.hasFieldErrors("minActivateSeconds")) {
-            YukonApiValidationUtils.checkRange(errors, "minActivateSeconds", programConstraint.getMinActivateSeconds(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "minActivateSeconds", programConstraint.getMinActivateSeconds(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("minRestartSeconds", errors, programConstraint.getMinRestartSeconds(), "Min Restart");
+        yukonApiValidationUtils.checkIfFieldRequired("minRestartSeconds", errors, programConstraint.getMinRestartSeconds(), "Min Restart");
         if (!errors.hasFieldErrors("minRestartSeconds")) {
-            YukonApiValidationUtils.checkRange(errors, "minRestartSeconds", programConstraint.getMinRestartSeconds(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "minRestartSeconds", programConstraint.getMinRestartSeconds(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxHoursDaily", errors, programConstraint.getMaxHoursDaily(), "Daily");
+        yukonApiValidationUtils.checkIfFieldRequired("maxHoursDaily", errors, programConstraint.getMaxHoursDaily(), "Daily");
         if (!errors.hasFieldErrors("maxHoursDaily")) {
-            YukonApiValidationUtils.checkRange(errors, "maxHoursDaily", programConstraint.getMaxHoursDaily(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxHoursDaily", programConstraint.getMaxHoursDaily(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxHoursMonthly", errors, programConstraint.getMaxHoursMonthly(), "Monthly");
+        yukonApiValidationUtils.checkIfFieldRequired("maxHoursMonthly", errors, programConstraint.getMaxHoursMonthly(), "Monthly");
         if (!errors.hasFieldErrors("maxHoursMonthly")) {
-            YukonApiValidationUtils.checkRange(errors, "maxHoursMonthly", programConstraint.getMaxHoursMonthly(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxHoursMonthly", programConstraint.getMaxHoursMonthly(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Annually");
+        yukonApiValidationUtils.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Annually");
         if (!errors.hasFieldErrors("maxHoursAnnually")) {
-            YukonApiValidationUtils.checkRange(errors, "maxHoursAnnually", programConstraint.getMaxHoursAnnually(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxHoursAnnually", programConstraint.getMaxHoursAnnually(), 0, 99999, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("maxHoursSeasonal", errors, programConstraint.getMaxHoursSeasonal(), "Seasonal");
+        yukonApiValidationUtils.checkIfFieldRequired("maxHoursSeasonal", errors, programConstraint.getMaxHoursSeasonal(), "Seasonal");
         if (!errors.hasFieldErrors("maxHoursSeasonal")) {
-            YukonApiValidationUtils.checkRange(errors, "maxHoursSeasonal", programConstraint.getMaxHoursSeasonal(), 0, 99999, false);
+            yukonApiValidationUtils.checkRange(errors, "maxHoursSeasonal", programConstraint.getMaxHoursSeasonal(), 0, 99999, false);
         }
     }
 }

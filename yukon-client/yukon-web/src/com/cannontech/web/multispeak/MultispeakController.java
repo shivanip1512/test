@@ -2,10 +2,12 @@ package com.cannontech.web.multispeak;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -61,6 +64,7 @@ public class MultispeakController {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private com.cannontech.multispeak.dao.v4.MspObjectDao mspObjectDaoV4;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
     @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -151,7 +155,6 @@ public class MultispeakController {
         }
 
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
-
         try {
             addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
@@ -199,7 +202,7 @@ public class MultispeakController {
 
     @RequestMapping("create")
     public String create(ModelMap model) {
-
+        
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
@@ -224,6 +227,21 @@ public class MultispeakController {
                             result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
                         }
 
+                        json.put(MultispeakDefines.MSP_RESULT_MSG, result);
+                        json.put(RESULT_COLOR_ATT, "red");
+                    } else {
+
+                        json.put(MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
+                        json.put(RESULT_COLOR_ATT, "blue");
+                    }
+                } else if (version == MultiSpeakVersion.V4) {
+                    com.cannontech.msp.beans.v4.ErrorObject[] objects = mspObjectDaoV4.pingURL(mspVendor, mspService,
+                            endpointURL);
+                    if (objects != null && objects != null && objects.length > 0) {
+                        String result = "";
+                        for (int i = 0; i < objects.length; i++) {
+                            result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
+                        }
                         json.put(MultispeakDefines.MSP_RESULT_MSG, result);
                         json.put(RESULT_COLOR_ATT, "red");
                     } else {
@@ -275,6 +293,21 @@ public class MultispeakController {
 
                         json.put(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
                             + " getMethods:\n" + mspService + " is not supported.");
+                        json.put(RESULT_COLOR_ATT, "red");
+                    } else {
+                        String resultStr = mspService + " available methods:\n";
+                        for (String method : supportedMethods) {
+                            resultStr += " * " + method + "\n";
+                        }
+
+                        json.put(MultispeakDefines.MSP_RESULT_MSG, resultStr);
+                        json.put(RESULT_COLOR_ATT, "blue");
+                    }
+                } else if (version == MultiSpeakVersion.V4) {
+                    List<String> supportedMethods = mspObjectDaoV4.getMethods(mspVendor, mspService, endpointURL);
+                    if (supportedMethods.isEmpty()) {
+                        json.put(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
+                                + " getMethods:\n" + mspService + " is not supported.");
                         json.put(RESULT_COLOR_ATT, "red");
                     } else {
                         String resultStr = mspService + " available methods:\n";
@@ -341,6 +374,8 @@ public class MultispeakController {
 
         String outPassword = multispeakVendor.getOutPassword();
         String outUsername = multispeakVendor.getOutUserName();
+
+        List<MspAttribute> attributes = multispeakVendor.getAttributes();
         if (multispeak.getMspVendor().getVendorID() != null
             && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             mspInterfaces = multispeak.getMspInterfaceList();
@@ -359,7 +394,7 @@ public class MultispeakController {
 
         MultispeakVendor mspVendor =
             new MultispeakVendor(vendorId, companyName, appName, username, password, outUsername, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate);
+                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate, attributes);
 
         mspVendor.setMspInterfaces(mspInterfaces);
 
@@ -481,7 +516,9 @@ public class MultispeakController {
         }
         multispeak.setMspVendor(defaultMspVendor);
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
+        List<MultiSpeakVersion> notMspVersionList =
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
             showRoleProperties = (defaultMspVendor.getCompanyName().equals(mspVendor.getCompanyName()));
@@ -519,18 +556,21 @@ public class MultispeakController {
         // Try to get the values from the request first, then get from the system.
         // If these values were just updated, the db change may not have been received/processed yet and
         // the values returned from multispeakFuncs may be outdated.
-        multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
-        multispeak.setMspInterfaceList(mspInterfaceList);
-        multispeak.setMspVendor(mspVendor);
-
-        multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
         String paoNameAliasExtension = multispeakFuncs.getPaoNameAliasExtension();
-
-        multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
-        multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeakFuncs.getMeterLookupField();
-        multispeak.setMeterLookupField(mspMeterLookupField);
+        multispeak.setMspInterfaceList(mspInterfaceList);
+        
+        if (modelMultispeak == null) {
+            multispeak.setMspPrimaryCIS(multispeakFuncs.getPrimaryCIS());
+            multispeak.setMspVendor(mspVendor);
+            multispeak.setPaoNameAliasExtension(paoNameAliasExtension);
+            multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
+            multispeak.setPaoNameAlias(multispeakFuncs.getPaoNameAlias());
+            multispeak.setMeterLookupField(mspMeterLookupField);
+        }
+
         map.addAttribute("mspVersionList", mspVersionList);
+        map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("multispeak", multispeak);
     }
 
@@ -542,19 +582,23 @@ public class MultispeakController {
         if (modelMultispeak instanceof MultispeakModel) {
             multispeak = (MultispeakModel) modelMultispeak;
         }
-
+        
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
+        List<MultiSpeakVersion> notMspVersionList =
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
-
         map.addAttribute("mspVendor", mspVendor);
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
+        map.addAttribute("allAttributeList", List.of(MspAttribute.values()).stream()
+                                                                           .sorted(Comparator.comparing(MspAttribute::toString, String.CASE_INSENSITIVE_ORDER))
+                                                                           .collect(Collectors.toList()));
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
@@ -588,6 +632,7 @@ public class MultispeakController {
             multispeakFuncs.getMeterLookupField()));
 
         map.addAttribute("mspVersionList", mspVersionList);
+        map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("mspVersion5", mspVersion5);
         map.addAttribute("mspVersion3", mspVersion3);
         multispeak.setMspVendor(mspVendor);
