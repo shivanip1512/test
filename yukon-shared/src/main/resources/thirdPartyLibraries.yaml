@@ -6431,8 +6431,7 @@ JavaScript :
     sha1 : 8edaf35f1c43cef22bfb7373a24082090f3d158b
     jira : YUK-21241
     updated : 2022-03-22
-```suggestion
-    notes : This is used for converting GIS shapefiles into GeoJson to be used in mapping. 
+    notes : This is used for converting GIS shapefiles into GeoJson to be used in mapping.
 
   - project : sortable
     version : 0.8.0
