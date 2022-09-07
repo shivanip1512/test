@@ -7,7 +7,7 @@
         "@brightlayer-ui/icons-mui": "3.2.0",
         "@brightlayer-ui/react-auth-shared": "3.7.1",
         "@brightlayer-ui/react-auth-workflow": "2.4.0",
-        "@brightlayer-ui/react-components": "5.4.0",
+        "@brightlayer-ui/react-components": "6.1.0",
         "@brightlayer-ui/react-themes": "6.1.1",
         "@emotion/styled": "^11.10.4",
         "@material-ui/icons": "^4.11.3",
