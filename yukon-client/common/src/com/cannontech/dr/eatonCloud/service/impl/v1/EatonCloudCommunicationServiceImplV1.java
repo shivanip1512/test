@@ -208,7 +208,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                     requestEntity,
                     EatonCloudTimeSeriesDeviceResultV1[].class);
             if (commsLogger.isDebugEnabled()) {
-                    commsLogger.info(">>> [{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
+                    commsLogger.debug(">>> [{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
                     deferredJson(response.getBody()), totalTags);
             } else {
                 try {
