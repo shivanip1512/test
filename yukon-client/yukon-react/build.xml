@@ -14,7 +14,6 @@
                  <arg value="/c"/>
         	     <arg value="npm"/>
                  <arg value="install"/>
-        	 	 <arg value="--legacy-peer-deps"/>
         </exec>
 
     	<echo message="Building React Build Command - npm run build"/>
