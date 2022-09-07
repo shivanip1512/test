@@ -9,6 +9,7 @@
         "@brightlayer-ui/react-auth-workflow": "2.4.0",
         "@brightlayer-ui/react-components": "5.4.0",
         "@brightlayer-ui/react-themes": "6.1.1",
+        "@emotion/styled": "^11.10.4",
         "@material-ui/icons": "^4.11.3",
         "@material-ui/lab": "4.0.0-alpha.60",
         "@mui/styles": "^5.10.3",
