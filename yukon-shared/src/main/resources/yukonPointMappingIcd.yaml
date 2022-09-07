@@ -2107,7 +2107,7 @@ Metric IDs:
     193: { name: "Watt hour Q4",                         Unit: *Wh,     Modifiers: [ *Q4                                   ] }
     194: { name: "Watts total",                          Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4                    ] }
     195: { name: "Watts, peak, net",                     Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *MaxNet     ] }
-    196: { name: "Watts, peak, net (Frozen)",            Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *MaxNet, *Prev ] }
+    196: { name: "Watts, peak, net (Frozen)",            Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *MaxNet, *Prev    ] }
     # ------     
     197: { name: "Watts net",                            Unit: *W,      Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net              ] }
     198: { name: "Var net",                              Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net              ] }
