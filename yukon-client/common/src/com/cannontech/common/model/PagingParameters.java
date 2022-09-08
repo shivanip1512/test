@@ -6,7 +6,7 @@ public final class PagingParameters {
     
     public final static PagingParameters EVERYTHING = new PagingParameters(Integer.MAX_VALUE, 1);
     
-    private final int page;
+    private final int pageNumber;
     private final int itemsPerPage;
     private final int startIndex;
     private final int endIndex;
@@ -18,13 +18,13 @@ public final class PagingParameters {
     private PagingParameters(int itemsPerPage, int page) {
 
         this.itemsPerPage = itemsPerPage;
-        this.page = page;
+        this.pageNumber = page;
         startIndex = (page - 1) * itemsPerPage;
         endIndex = startIndex + itemsPerPage - 1;
     }
 
-    public int getPage() {
-        return page;
+    public int getPageNumber() {
+        return pageNumber;
     }
 
     public int getItemsPerPage() {
@@ -49,14 +49,14 @@ public final class PagingParameters {
 
     @Override
     public String toString() {
-        return String.format("PagingParameters [page=%s, itemsPerPage=%s, startIndex=%s, endIndex=%s]",
-                        page, itemsPerPage, startIndex, endIndex);
+        return String.format("PagingParameters [pageNumber=%s, itemsPerPage=%s, startIndex=%s, endIndex=%s]",
+                pageNumber, itemsPerPage, startIndex, endIndex);
     }
     
 
     @JsonCreator
-    public static PagingParameters of(@JsonProperty("itemsPerPage") int itemsPerPage,@JsonProperty("page") int page) {
-        return new PagingParameters(itemsPerPage, page);
+    public static PagingParameters of(@JsonProperty("itemsPerPage") int itemsPerPage,@JsonProperty("pageNumber") int pageNumber) {
+        return new PagingParameters(itemsPerPage, pageNumber);
     }
     
 }

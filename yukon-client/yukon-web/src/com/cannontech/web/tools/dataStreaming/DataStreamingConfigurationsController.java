@@ -534,7 +534,7 @@ public class DataStreamingConfigurationsController {
     private String getSortingPagingUrl(SortingParameters sorting, PagingParameters paging) {
         String baseUrl = "redirect:/tools/dataStreaming/discrepancies";
         if (paging != null) {
-            baseUrl += "?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage();
+            baseUrl += "?page=" + paging.getPageNumber() + "&itemsPerPage=" + paging.getItemsPerPage();
             if (sorting != null) {
                 baseUrl += "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
             }

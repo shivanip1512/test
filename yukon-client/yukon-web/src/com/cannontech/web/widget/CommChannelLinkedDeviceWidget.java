@@ -69,7 +69,7 @@ public class CommChannelLinkedDeviceWidget extends AdvancedWidgetControllerBase 
         ub.addParameter("sort", sortBy.name());
         ub.addParameter("dir", dir.name());
         ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
-        ub.addParameter("page", Integer.toString(paging.getPage()));
+        ub.addParameter("page", Integer.toString(paging.getPageNumber()));
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext,
                 request, ub.toString(), HttpMethod.GET, DeviceBaseModel.class, Object.class);

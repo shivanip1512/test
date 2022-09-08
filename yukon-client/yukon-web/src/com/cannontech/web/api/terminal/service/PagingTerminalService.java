@@ -26,7 +26,7 @@ public interface PagingTerminalService {
     /**
      * Retrieve all paging terminals
      */
-    PaginatedResponse<TerminalBase> retrieveAll(SortBy sortBy, Direction direction, int page, int itemsPerPage,
+    PaginatedResponse<TerminalBase> retrieveAll(SortBy sortBy, Direction direction, int pageNumber, int itemsPerPage,
             String terminalName);
 
     /**

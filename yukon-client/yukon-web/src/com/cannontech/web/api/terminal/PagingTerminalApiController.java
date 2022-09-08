@@ -57,11 +57,11 @@ public class PagingTerminalApiController {
     @GetMapping
     public ResponseEntity<Object> getAll(String name,
             @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        return new ResponseEntity<>(terminalService.retrieveAll(sortBy, direction, page, itemsPerPage, name),
+        return new ResponseEntity<>(terminalService.retrieveAll(sortBy, direction, pageNumber, itemsPerPage, name),
                 HttpStatus.OK);
     }
 

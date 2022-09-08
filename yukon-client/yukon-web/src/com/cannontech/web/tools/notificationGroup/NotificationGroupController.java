@@ -208,7 +208,7 @@ public class NotificationGroupController {
             ub.addParameter("dir", dir.name());
             ub.addParameter("name", filterValueName);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
-            ub.addParameter("page", Integer.toString(paging.getPage()));
+            ub.addParameter("page", Integer.toString(paging.getPageNumber()));
 
             response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(),
                     HttpMethod.GET, NotificationGroup.class, Object.class);

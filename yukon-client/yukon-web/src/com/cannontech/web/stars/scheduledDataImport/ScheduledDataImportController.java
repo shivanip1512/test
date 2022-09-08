@@ -333,7 +333,7 @@ public class ScheduledDataImportController {
             String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
 
             return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?startDate=" + fromDate
-                + "&endDate=" + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage()
+                + "&endDate=" + toDate + "&page=" + paging.getPageNumber() + "&itemsPerPage=" + paging.getItemsPerPage()
                 + "&dir=" + sorting.getDirection() + "&sort=" + sorting.getSort();
 
         } catch (Exception e) {
@@ -343,7 +343,7 @@ public class ScheduledDataImportController {
             String toDate = dateFormattingService.format(endDate, DateFormatEnum.DATE, userContext);
 
             return "redirect:/stars/scheduledDataImport/" + jobGroupId + "/viewHistory?startDate=" + fromDate
-                + "&endDate=" + toDate + "&page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage()
+                + "&endDate=" + toDate + "&page=" + paging.getPageNumber() + "&itemsPerPage=" + paging.getItemsPerPage()
                 + "&dir=" + sorting.getDirection() + "&sort=" + sorting.getSort();
         }
         return null;

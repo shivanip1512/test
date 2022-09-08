@@ -119,7 +119,7 @@ public class SignalTransmitterController {
             ub.addParameter("dir", dir.name());
             ub.addParameter("name", filterValueName);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
-            ub.addParameter("page", Integer.toString(paging.getPage()));
+            ub.addParameter("pageNumber", Integer.toString(paging.getPageNumber()));
 
             response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), HttpMethod.GET,
                     TerminalBase.class);

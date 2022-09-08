@@ -78,7 +78,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         }
 
         SearchResults<ReviewPoint> results =
-            SearchResults.pageBasedForSublist(reviewPoints, pagingParameters.getPage(),
+            SearchResults.pageBasedForSublist(reviewPoints, pagingParameters.getPageNumber(),
                 pagingParameters.getItemsPerPage(), reviewPoints.size());
         return results;
     }
