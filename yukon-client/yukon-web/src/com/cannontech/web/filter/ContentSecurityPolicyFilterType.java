@@ -39,6 +39,7 @@ public enum ContentSecurityPolicyFilterType {
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha"),
     CHILD_SRC("child-src 'self' ; "),
+    WORKER_SRC("worker-src 'self' blob: ; "),
     OBJECT_SRC("object-src 'self' "
         + "https://www.google.com "             // Recaptcha
         + "http://www.google.com ; "),          // Recaptcha

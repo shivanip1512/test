@@ -34,6 +34,7 @@ public class GeneralSecurityFilter implements Filter {
                 + ContentSecurityPolicyFilterType.STYLE_SRC.getValue()
                 + ContentSecurityPolicyFilterType.MEDIA_SRC.getValue()
                 + ContentSecurityPolicyFilterType.CHILD_SRC.getValue()
+                + ContentSecurityPolicyFilterType.WORKER_SRC.getValue()
                 + ContentSecurityPolicyFilterType.OBJECT_SRC.getValue()
                 + ContentSecurityPolicyFilterType.FONT_SRC.getValue()
                 + ContentSecurityPolicyFilterType.FRAME_SRC.getValue()

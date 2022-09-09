@@ -164,8 +164,25 @@ yukon.tools.map = (function() {
                 _updateStyleIfFoundInMappingColors(pao.paoId, icon);
                 icons.push(icon);
             }
-            source.addFeatures(icons);
+
+            let iconStyle = {
+                symbol: {
+                    symbolType: "image",
+                    src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.svg'),
+                    size: 24,
+                    rotateWithView: false
+                }
+            };
             
+            var pointsLayer = new ol.layer.WebGLPoints({
+                source: new ol.source.Vector({
+                    features: icons
+                }),
+                style: iconStyle,
+            });
+            
+            _map.addLayer(pointsLayer);
+
             yukon.mapping.updateZoom(_map);
 
             $('.js-status-loading').hide();
